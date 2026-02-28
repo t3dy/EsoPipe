@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import {
-  Home, BookOpen, Table2, CalendarDays, Network, Database, Info,
+  Home, BookOpen, Table2, CalendarDays, Network, Database, Info, FileText,
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -11,6 +11,7 @@ const NAV = [
   { to: '/timelines', label: 'Timelines', icon: CalendarDays },
   { to: '/graph',     label: 'Graph',     icon: Network },
   { to: '/schema',    label: 'Schema',    icon: Database },
+  { to: '/reports',   label: 'Reports',   icon: FileText },
   { to: '/about',     label: 'About',     icon: Info },
 ];
 

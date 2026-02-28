@@ -10,6 +10,7 @@ import { Timelines } from './pages/Timelines';
 import { Graph } from './pages/Graph';
 import { Schema } from './pages/Schema';
 import { About } from './pages/About';
+import { Reports } from './pages/Reports';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
               <Route path="timelines" element={<Timelines />} />
               <Route path="graph" element={<Graph />} />
               <Route path="schema" element={<Schema />} />
+              <Route path="reports" element={<Reports />} />
               <Route path="about" element={<About />} />
             </Route>
           </Routes>
