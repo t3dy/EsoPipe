@@ -69,6 +69,41 @@ EsoPipe is designed for:
 *   Independent intellectuals
 *   Creators building educational, editorial, or interpretive products
 
+## How to Run EsoPipe 2.0 Locally
+
+Because EsoPipe 2.0 uses a full Python backend and a SQLite database to power its semantic search and generated artifacts, it must be run locally on your machine rather than as a static website. 
+
+### Prerequisites
+*   [Python 3.9+](https://www.python.org/downloads/)
+*   [Node.js](https://nodejs.org/en)
+
+### Step 1: Clone and Start the Backend Server
+
+Open your terminal and clone the repository:
+```bash
+git clone https://github.com/t3dy/EsoPipe.git
+cd EsoPipe
+```
+
+Start the FastAPI backend (which loads the `esoteric_archive.db` and the Intent Router):
+```bash
+pip install fastapi uvicorn sqlite3 numpy
+python -m esopipe2.server
+```
+*The server will start on `http://localhost:8000`.*
+
+### Step 2: Start the Scholarly Studio Frontend
+
+Open a **second, separate terminal window** and navigate to the `studio` folder:
+```bash
+cd EsoPipe/studio
+npm install
+npm run dev
+```
+*The React studio will automatically open in your browser at `http://localhost:5173`.*
+
+---
+
 ## What Makes It Different
 
 *   Hybrid semantic + keyword retrieval
