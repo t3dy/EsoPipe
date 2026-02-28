@@ -1,0 +1,199 @@
+[
+  {
+    "id": "lesson_schema_design",
+    "title": "Schema Design for Scholarly Archives",
+    "summary": "Learn to model a collection of PDFs and chat transcripts into a normalized relational database. We use an esoteric studies research corpus as the worked example, turning unstructured notes into queryable data.",
+    "difficulty": "intro",
+    "estimated_time": "45 min",
+    "tags": ["databases", "schema", "python", "sqlite", "dh"],
+    "cs_concepts": [
+      {
+        "name": "Entity-Relationship Modeling",
+        "notes": "Identifying the nouns in your domain (thinkers, texts, concepts) and the verbs between them (derived-from, explains, mentions) before writing a single line of SQL."
+      },
+      {
+        "name": "Database Normalization",
+        "notes": "Organizing data to eliminate redundancy. 1NF: no repeating groups. 2NF: no partial dependencies. 3NF: no transitive dependencies. Concretely: store a thinker's birth date once, not in every row that references them."
+      },
+      {
+        "name": "JSON Schema",
+        "notes": "A vocabulary for validating the shape of JSON data — useful for ensuring your LLM-generated entity records conform to the expected structure before inserting them into the database."
+      },
+      {
+        "name": "Foreign Keys",
+        "notes": "References from one table row to another table's primary key. An edge row referencing thinker_ficino as its source uses a foreign key to guarantee that thinker exists."
+      }
+    ],
+    "scholarly_application": {
+      "domain": "Esoteric Studies",
+      "notes": "A scholarly archive of PDFs, chat transcripts, and annotated texts is full of implicit relational structure: thinker A influenced thinker B, text C mentions concept D, tool E is used by workflow F. Making this structure explicit in a database transforms passive storage into an active research instrument."
+    },
+    "sections": [
+      {
+        "heading": "Why Scholars Need Schemas",
+        "content_md": "If you have a folder of PDFs and a collection of AI chat transcripts, you have *data* — but you don't yet have a *database*. The difference is structure.\n\nA schema is a formal description of what kinds of things exist in your domain, what properties they have, and how they relate to each other. Without a schema, you search by filename and grep by keyword. With a schema, you can ask: *Which thinkers influenced Ficino? Which texts discuss emanation? Which concepts appear in both Islamic and Renaissance sources?*\n\nThe goal of this lesson is to take the implicit structure in a research corpus and make it explicit, queryable, and extensible."
+      },
+      {
+        "heading": "Identifying Your Entities",
+        "content_md": "Start by asking: **What are the stable nouns in my domain?**\n\nFor an esoteric studies archive, the answer might be:\n\n- **Thinkers** — historical persons (Ficino, Pico, Plotinus, Ikhwān al-Ṣafāʾ)\n- **Texts** — primary sources (Enneads, Rasāʾil, Oration on the Dignity of Man)\n- **Concepts** — ideas that appear across sources (emanation, microcosm, the One)\n- **Tools** — software and methods (SQLite, Python, MiniSearch)\n- **Terms** — domain-specific vocabulary (theurgy, taʾwīl, henads)\n\nEach of these becomes a **table** in your relational database, or a **node type** in your knowledge graph. The key rule: **one table per entity type.**\n\nNow ask: **What are the verbs between them?**\n\n- Pico *derived-from* Ficino\n- The Rasāʾil *explains* emanation\n- This lesson *uses* SQLite\n\nThese become your **edges table** — or, in a relational design, a junction table with `source_id`, `target_id`, and `type`."
+      },
+      {
+        "heading": "Normalization in Practice",
+        "content_md": "Normalization means: **don't store the same fact twice.**\n\nBad (un-normalized):\n```\nthinker_name | influenced_by_name | influenced_by_birth_year\nPico          | Ficino              | 1433\nBruno         | Ficino              | 1433\n```\n\nFicino's birth year appears in every row that references him. Change it once and you break the others.\n\nNormalized:\n```\n-- thinkers table\nid           | label              | birth_year\nthinker_pico  | Pico della Mirandola | 1463\nthinker_ficino| Marsilio Ficino      | 1433\n\n-- edges table\nid   | source          | target           | type\ne01  | thinker_pico    | thinker_ficino   | derived-from\n```\n\nNow Ficino's birth year is stored exactly once. The edges table captures the relationship without duplicating data.\n\nFor a scholarly archive, the practical benefit is: you can update Ficino's biographical note in one place and every page that references him reflects the update automatically."
+      },
+      {
+        "heading": "Building the Schema in SQLite",
+        "content_md": "SQLite is ideal for local scholarly work: it's a single file, needs no server, and is included in Python's standard library. Here's a minimal schema for a esoteric studies archive:\n\n```sql\nCREATE TABLE entities (\n  id          TEXT PRIMARY KEY,  -- e.g. 'thinker_ficino'\n  type        TEXT NOT NULL,     -- 'thinker'|'text'|'concept'|'tool'|'term'\n  label       TEXT NOT NULL,\n  blurb       TEXT,\n  tags        TEXT               -- JSON array stored as string\n);\n\nCREATE TABLE edges (\n  id          TEXT PRIMARY KEY,  -- e.g. 'e01'\n  source      TEXT NOT NULL REFERENCES entities(id),\n  target      TEXT NOT NULL REFERENCES entities(id),\n  type        TEXT NOT NULL,     -- 'uses'|'explains'|'derived-from'|'mentions'\n  weight      INTEGER DEFAULT 1,\n  notes       TEXT\n);\n\nCREATE TABLE lessons (\n  id          TEXT PRIMARY KEY,\n  title       TEXT NOT NULL,\n  summary     TEXT,\n  difficulty  TEXT CHECK(difficulty IN ('intro','intermediate','advanced')),\n  tags        TEXT  -- JSON array\n);\n```\n\nThis is enough to power the entire EsoPipe knowledge graph."
+      },
+      {
+        "heading": "Loading Your Research Data",
+        "content_md": "Once you have the schema, you need to populate it. The workflow is:\n\n1. **Export your AI chats** to text or JSON\n2. **Write a Python extraction script** that identifies entity mentions\n3. **Validate the extracted records** against your schema\n4. **Insert into SQLite** using `sqlite3` (built into Python)\n\nThe code snippet below shows step 4: reading your JSON entity files and inserting them into the database."
+      }
+    ],
+    "code_snippets": [
+      {
+        "lang": "python",
+        "title": "Create the SQLite schema",
+        "code": "import sqlite3\nimport json\n\n# Creates a new database file (or opens existing)\nconn = sqlite3.connect('esoteric_archive.db')\ncur = conn.cursor()\n\ncur.executescript('''\n  CREATE TABLE IF NOT EXISTS entities (\n    id    TEXT PRIMARY KEY,\n    type  TEXT NOT NULL,\n    label TEXT NOT NULL,\n    blurb TEXT,\n    tags  TEXT\n  );\n\n  CREATE TABLE IF NOT EXISTS edges (\n    id     TEXT PRIMARY KEY,\n    source TEXT NOT NULL REFERENCES entities(id),\n    target TEXT NOT NULL REFERENCES entities(id),\n    type   TEXT NOT NULL,\n    weight INTEGER DEFAULT 1,\n    notes  TEXT\n  );\n''')\n\nconn.commit()\nprint('Schema created.')\n"
+      },
+      {
+        "lang": "python",
+        "title": "Load entities from JSON into SQLite",
+        "code": "import sqlite3\nimport json\n\nconn = sqlite3.connect('esoteric_archive.db')\ncur = conn.cursor()\n\n# Load from your JSON file (same format as public/data/entities.json)\nwith open('entities.json') as f:\n    entities = json.load(f)\n\nfor e in entities:\n    cur.execute(\n        'INSERT OR REPLACE INTO entities (id, type, label, blurb, tags) '\n        'VALUES (?, ?, ?, ?, ?)',\n        (\n            e['id'],\n            e['type'],\n            e['label'],\n            e.get('blurb', ''),\n            json.dumps(e.get('tags', []))\n        )\n    )\n\nconn.commit()\nprint(f'Loaded {len(entities)} entities.')\n"
+      },
+      {
+        "lang": "python",
+        "title": "Query: who influenced Ficino?",
+        "code": "import sqlite3\n\nconn = sqlite3.connect('esoteric_archive.db')\ncur = conn.cursor()\n\n# Find all thinkers that Ficino derived his ideas from\nresults = cur.execute('''\n  SELECT e.label, ed.type, t.label AS target_label\n  FROM edges ed\n  JOIN entities e  ON e.id  = ed.source\n  JOIN entities t  ON t.id  = ed.target\n  WHERE ed.source = 'thinker_ficino'\n    AND ed.type   = 'derived-from'\n''').fetchall()\n\nfor source, rel_type, target in results:\n    print(f'{source} --[{rel_type}]--> {target}')\n"
+      },
+      {
+        "lang": "sql",
+        "title": "Find all entities tagged 'neoplatonism'",
+        "code": "-- SQLite stores tags as a JSON string; json_each unpacks the array\nSELECT id, label, type\nFROM entities\nWHERE EXISTS (\n  SELECT 1\n  FROM json_each(tags)\n  WHERE value = 'neoplatonism'\n)\nORDER BY type, label;\n"
+      }
+    ],
+    "exercises": [
+      {
+        "prompt": "You have a collection of alchemical texts (Zosimos, Jabir, Paracelsus). Design a minimal entities schema for them: what tables would you create, and what columns would each have? Write the CREATE TABLE statements.",
+        "solution_md": "```sql\nCREATE TABLE alchemical_texts (\n  id          TEXT PRIMARY KEY,  -- e.g. 'text_zosimos_visions'\n  title       TEXT NOT NULL,\n  author_id   TEXT REFERENCES alchemists(id),\n  date_approx TEXT,  -- free text: 'c. 300 CE'\n  language    TEXT,\n  summary     TEXT\n);\n\nCREATE TABLE alchemists (\n  id        TEXT PRIMARY KEY,\n  name      TEXT NOT NULL,\n  period    TEXT,  -- 'late-antique', 'medieval', 'early-modern'\n  tradition TEXT   -- 'Greek', 'Arabic', 'Latin'\n);\n\nCREATE TABLE concepts (\n  id    TEXT PRIMARY KEY,  -- e.g. 'concept_sulfur_mercury'\n  label TEXT NOT NULL,\n  notes TEXT\n);\n\nCREATE TABLE text_concepts (\n  text_id    TEXT REFERENCES alchemical_texts(id),\n  concept_id TEXT REFERENCES concepts(id),\n  PRIMARY KEY (text_id, concept_id)\n);\n```\n\nNote the **junction table** `text_concepts` for the many-to-many relationship between texts and concepts — a text can discuss many concepts, and a concept can appear in many texts."
+      },
+      {
+        "prompt": "Write a Python function `find_path(db_path, source_id, target_id)` that uses SQLite to find whether there is a path of edges between two entities (e.g., from `thinker_ikhwan` to `thinker_ficino`). Hint: use a recursive approach or a queue.",
+        "solution_md": "```python\nimport sqlite3\nfrom collections import deque\n\ndef find_path(db_path: str, source_id: str, target_id: str) -> list[str] | None:\n    \"\"\"BFS over the edges table to find a path between two entity IDs.\"\"\"\n    conn = sqlite3.connect(db_path)\n    cur = conn.cursor()\n\n    # BFS\n    queue = deque([[source_id]])  # each item is a path\n    visited = {source_id}\n\n    while queue:\n        path = queue.popleft()\n        current = path[-1]\n\n        if current == target_id:\n            return path\n\n        neighbors = cur.execute(\n            'SELECT target FROM edges WHERE source = ? '\n            'UNION SELECT source FROM edges WHERE target = ?',\n            (current, current)\n        ).fetchall()\n\n        for (neighbor,) in neighbors:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(path + [neighbor])\n\n    return None  # no path found\n\n# Example\npath = find_path('esoteric_archive.db', 'thinker_ikhwan', 'thinker_ficino')\nif path:\n    print(' -> '.join(path))\nelse:\n    print('No path found')\n```"
+      }
+    ],
+    "related_entities": ["tool_sqlite", "thinker_ikhwan", "concept_neoplatonism"]
+  },
+  {
+    "id": "lesson_prompt_engineering",
+    "title": "LLM Prompt Templates for Structured Scholarly Output",
+    "summary": "Design deterministic prompt templates that extract structured data from scholarly text — turning unstructured conversations and PDF summaries into database-ready records. Includes techniques for JSON output schema enforcement and validation.",
+    "difficulty": "intro",
+    "estimated_time": "30 min",
+    "tags": ["llm", "prompt-design", "nlp", "python"],
+    "cs_concepts": [
+      {
+        "name": "Prompt Templates",
+        "notes": "Parameterized strings with fill-in slots (like f-strings, but for LLMs). Separating the structure of a prompt from its content enables systematic reuse across different source texts."
+      },
+      {
+        "name": "JSON Output Schema Enforcement",
+        "notes": "Instructing an LLM to return valid JSON conforming to a specific structure. Modern APIs support structured outputs (tool_use / response_format) for reliable schema compliance."
+      },
+      {
+        "name": "Validation Pipelines",
+        "notes": "Using Zod (TypeScript) or Pydantic (Python) to validate LLM output before inserting it into your database. Never trust LLM output blindly — validate first."
+      }
+    ],
+    "scholarly_application": {
+      "domain": "Esoteric Studies",
+      "notes": "The ChatGPT conversation that inspired this project shows a scholar iteratively refining a prompt to produce an analytical table about Ikhwan al-Safa — first getting a basic table, then requesting richer cells and more columns. This is prompt engineering in practice. The goal here is to formalize that process into reusable templates."
+    },
+    "sections": [
+      {
+        "heading": "The Problem: Unstructured Scholarly Dialogue",
+        "content_md": "When you ask an AI assistant to analyze a philosophical text, you get prose — flowing, nuanced, and unstructured. This is great for reading but hard to index, compare, or insert into a database.\n\nThe solution is **prompt templates** that force the AI to return structured output from the start."
+      },
+      {
+        "heading": "Designing a Template: The Analytical Table Pattern",
+        "content_md": "The most useful pattern for esoteric scholarship is the **analytical table**: ask the LLM to fill in a fixed set of dimensions for any thinker or text.\n\nThe key insight from the Ikhwan al-Safa example: the scholar kept refining the prompt — adding columns, requesting historiographical questions, asking for richer cells. A well-designed template captures those requirements upfront."
+      },
+      {
+        "heading": "JSON Output and Validation (stub)",
+        "content_md": "*This section will cover enforcing JSON output from Claude/OpenAI APIs, validating the result with Pydantic or Zod, and inserting it into SQLite.*"
+      }
+    ],
+    "code_snippets": [
+      {
+        "lang": "python",
+        "title": "Basic analytical table prompt template",
+        "code": "ANALYTICAL_TABLE_PROMPT = \"\"\"\nYou are an intellectual historian specializing in {tradition}.\n\nAnalyze the following thinker or text and return a structured JSON object\nconforming EXACTLY to the schema below. Do not add extra fields.\n\nSchema:\n{{\n  \"id\": \"string (snake_case identifier)\",\n  \"label\": \"string (canonical name)\",\n  \"period\": \"string (e.g. '10th century CE')\",\n  \"tradition\": [\"array of tradition strings\"],\n  \"core_doctrines\": [\n    {{\"doctrine\": \"string\", \"description\": \"string\"}}\n  ],\n  \"influences\": [\"list of thinker/text ids\"],\n  \"influenced\": [\"list of thinker/text ids\"],\n  \"scholarly_debates\": \"string\",\n  \"key_texts\": [\"list of text titles\"]\n}}\n\nThinker/Text to analyze:\n{subject}\n\nReturn ONLY valid JSON. No prose before or after.\n\"\"\"\n\n# Usage:\nprompt = ANALYTICAL_TABLE_PROMPT.format(\n    tradition='Neoplatonism and Islamic philosophy',\n    subject='Ikhwan al-Safa (Brethren of Purity)'\n)\nprint(prompt)\n"
+      }
+    ],
+    "exercises": [
+      {
+        "prompt": "Extend the prompt template above to add a `historiographical_question` field to each doctrine — following the pattern from the Ikhwan al-Safa example where each dimension was paired with a framing question.",
+        "solution_md": "```python\n# Add this to the schema in the prompt:\n\"core_doctrines\": [\n  {\n    \"doctrine\": \"string\",\n    \"historiographical_question\": \"string (the debate this dimension opens)\",\n    \"description\": \"string\"\n  }\n]\n```\n\nThis forces the LLM to articulate *why* each doctrine is historiographically interesting, not just describe it — which is the move that made the Ikhwan al-Safa table genuinely analytical."
+      }
+    ],
+    "related_entities": ["thinker_ikhwan", "concept_neoplatonism"]
+  },
+  {
+    "id": "lesson_knowledge_graphs",
+    "title": "Knowledge Graphs for Intellectual History",
+    "summary": "Represent thinkers, texts, and ideas as graph nodes and model the transmission of philosophy across centuries as typed edges. Learn the CS theory behind graph traversal and apply it to tracing Neoplatonism from Plotinus to Ficino.",
+    "difficulty": "intermediate",
+    "estimated_time": "60 min",
+    "tags": ["graphs", "dh", "intellectual-history", "python", "networkx"],
+    "cs_concepts": [
+      {
+        "name": "Graph Theory Basics",
+        "notes": "Nodes (vertices) and edges. Directed vs undirected. Weighted edges. For intellectual history: nodes are entities, edges are relationships with types (derived-from, explains, mentions)."
+      },
+      {
+        "name": "Breadth-First Search (BFS)",
+        "notes": "Explore all nodes at depth 1 before depth 2, etc. Useful for finding shortest transmission paths: how did Plotinus's emanation doctrine reach Ficino?"
+      },
+      {
+        "name": "NetworkX",
+        "notes": "Python library for building, analyzing, and visualizing graphs. Supports directed multigraphs, centrality measures, and shortest-path algorithms — ideal for intellectual history networks."
+      },
+      {
+        "name": "Centrality Measures",
+        "notes": "Degree centrality: how many connections does a node have? Betweenness centrality: how often does a node appear on the shortest path between other nodes? High betweenness = a key transmission node."
+      }
+    ],
+    "scholarly_application": {
+      "domain": "Esoteric Studies",
+      "notes": "Intellectual history is fundamentally a graph problem. The transmission of Neoplatonism from Plotinus through Proclus, the Abbasid translation movement, Ikhwan al-Safa, and finally to Ficino is a directed path through a knowledge graph. Formalizing this as a graph makes implicit influence chains explicit and computable."
+    },
+    "sections": [
+      {
+        "heading": "Graphs as Intellectual History Models",
+        "content_md": "A knowledge graph is not just a visualization — it is a **data structure** that makes the implicit structure of intellectual history computable.\n\nOnce you have your archive in graph form, you can ask questions no keyword search can answer:\n- What is the **shortest path** from Plotinus to Pico?\n- Which concept has the **highest betweenness centrality** — appears most often as a bridge?\n- Which thinkers are in the same **connected component** as Ikhwan al-Safa?\n\nThis is digital humanities in its most useful form: not just putting things online, but making them computable."
+      },
+      {
+        "heading": "Building a Graph with NetworkX (stub)",
+        "content_md": "*This section will cover loading the edges.json file into a NetworkX DiGraph, computing centrality measures, and running BFS to find transmission paths.*"
+      },
+      {
+        "heading": "From NetworkX to This App's Graph View (stub)",
+        "content_md": "*This section will explain how the edges.json file powers the interactive React Flow graph in this application — the same data structure, visualized in the browser.*"
+      }
+    ],
+    "code_snippets": [
+      {
+        "lang": "python",
+        "title": "Build a knowledge graph with NetworkX",
+        "code": "import json\nimport networkx as nx\n\n# Load data\nwith open('public/data/entities.json') as f:\n    entities = json.load(f)\nwith open('public/data/edges.json') as f:\n    edges = json.load(f)\n\n# Build directed graph\nG = nx.DiGraph()\n\nfor entity in entities:\n    G.add_node(entity['id'], **entity)\n\nfor edge in edges:\n    G.add_edge(\n        edge['source'],\n        edge['target'],\n        type=edge['type'],\n        weight=edge['weight'],\n        notes=edge.get('notes', '')\n    )\n\nprint(f'Nodes: {G.number_of_nodes()}')\nprint(f'Edges: {G.number_of_edges()}')\n\n# Find shortest path from Plotinus to Pico\ntry:\n    path = nx.shortest_path(G.to_undirected(), 'thinker_plotinus', 'thinker_pico')\n    print('Transmission path:', ' -> '.join(path))\nexcept nx.NetworkXNoPath:\n    print('No path found')\n\n# Betweenness centrality\ncentrality = nx.betweenness_centrality(G.to_undirected())\ntop = sorted(centrality.items(), key=lambda x: x[1], reverse=True)[:3]\nprint('Most central nodes:')\nfor node_id, score in top:\n    label = G.nodes[node_id].get('label', node_id)\n    print(f'  {label}: {score:.3f}')\n"
+      }
+    ],
+    "exercises": [
+      {
+        "prompt": "Using the edges.json file, identify which entity has the highest **in-degree** (most incoming edges). What does this tell you about its intellectual-historical significance?",
+        "solution_md": "```python\nimport json\nfrom collections import Counter\n\nwith open('public/data/edges.json') as f:\n    edges = json.load(f)\n\nwith open('public/data/entities.json') as f:\n    entities = {e['id']: e['label'] for e in json.load(f)}\n\nin_degree = Counter(e['target'] for e in edges)\n\nprint('Highest in-degree nodes:')\nfor entity_id, count in in_degree.most_common(3):\n    print(f'  {entities.get(entity_id, entity_id)}: {count} incoming edges')\n```\n\n**Interpretation**: High in-degree means many other nodes *point to* this entity — it is mentioned, derived-from, or explained by many sources. In intellectual history, this is a proxy for **influence**: the entity others build on most. You might find that `concept_neoplatonism` or `concept_emanation` scores highest, reflecting that these are the hub concepts in the transmission network."
+      }
+    ],
+    "related_entities": ["thinker_ficino", "thinker_plotinus", "concept_emanation", "concept_neoplatonism"]
+  }
+]

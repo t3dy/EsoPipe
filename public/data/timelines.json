@@ -1,0 +1,84 @@
+[
+  {
+    "id": "timeline_neoplatonism_transmission",
+    "title": "Transmission of Neoplatonism",
+    "description": "How Plotinian philosophy traveled from late-antique Egypt through Islamicate encyclopedism to Renaissance Florence.",
+    "tags": ["neoplatonism", "transmission", "intellectual-history"],
+    "events": [
+      {
+        "id": "time_001",
+        "timeline_id": "timeline_neoplatonism_transmission",
+        "start": "0204",
+        "end": "0270",
+        "title": "Plotinus (c. 204–270 CE)",
+        "tags": ["neoplatonism", "late-antiquity", "greek"],
+        "related_entities": ["thinker_plotinus", "concept_emanation"],
+        "description_md": "Plotinus composes the **Enneads** (edited posthumously by Porphyry), establishing the hierarchical cosmology of the One → Intellect → Soul → Matter. His doctrine of emanation becomes the structural spine of all subsequent Neoplatonic philosophy.\n\nPlotinus writes in Greek in Rome, teaching an eclectic circle of students. The Enneads will not be translated into Latin until Ficino, but excerpts circulate via the Arabic 'Theology of Aristotle.'",
+        "citations": []
+      },
+      {
+        "id": "time_002",
+        "timeline_id": "timeline_neoplatonism_transmission",
+        "start": "0950",
+        "end": "1000",
+        "title": "Ikhwān al-Ṣafāʾ active (c. 950–1000)",
+        "tags": ["islamicate", "neoplatonism", "encyclopedism"],
+        "related_entities": ["thinker_ikhwan", "text_rasail", "concept_emanation", "concept_neoplatonism"],
+        "description_md": "The anonymous **Brethren of Purity** compose their 52-treatise *Rasāʾil* in Basra. They integrate Pythagorean arithmetic, Neoplatonic emanation cosmology, Aristotelian logic, and Islamic theology into a single ascending encyclopedia.\n\nThey access Plotinus primarily through the **Theology of Aristotle** (an Arabic paraphrase of Enneads IV–VI) and Proclean materials circulating in the Abbasid translation movement. Their synthesis will influence Ismaili philosophy and, more distantly, Renaissance syncretism.",
+        "citations": []
+      },
+      {
+        "id": "time_003",
+        "timeline_id": "timeline_neoplatonism_transmission",
+        "start": "1462",
+        "end": null,
+        "title": "Ficino translates Corpus Hermeticum (1462)",
+        "tags": ["renaissance", "neoplatonism", "translation", "florence"],
+        "related_entities": ["thinker_ficino", "concept_neoplatonism"],
+        "description_md": "Cosimo de' Medici commissions Marsilio Ficino to translate the recently arrived **Corpus Hermeticum** from Greek — asking him to set aside Plato to complete it first. Ficino goes on to translate the complete works of Plato and Plotinus's Enneads.\n\nThis act makes Neoplatonism available to the Latin West in full for the first time, catalyzing Renaissance Platonism and the magical philosophy of Pico della Mirandola, Giordano Bruno, and their successors.",
+        "citations": []
+      }
+    ]
+  },
+  {
+    "id": "timeline_ficino_pico",
+    "title": "Ficino and Pico in Renaissance Florence",
+    "description": "The two central figures of the Platonic Academy and the flowering of Renaissance philosophical syncretism.",
+    "tags": ["renaissance", "florence", "neoplatonism", "kabbalah"],
+    "events": [
+      {
+        "id": "time_004",
+        "timeline_id": "timeline_ficino_pico",
+        "start": "1433",
+        "end": null,
+        "title": "Ficino born (1433)",
+        "tags": ["renaissance", "florence", "neoplatonism"],
+        "related_entities": ["thinker_ficino"],
+        "description_md": "Marsilio Ficino is born in **Figline Valdarno**, near Florence. His father is a physician to Cosimo de' Medici, which brings the young Ficino into the orbit of the Medici court.\n\nCosimo becomes his patron and assigns him the leadership of the revived **Platonic Academy** — a loose intellectual circle rather than a formal institution — and commissions him to translate the Greek philosophical corpus into Latin.",
+        "citations": []
+      },
+      {
+        "id": "time_005",
+        "timeline_id": "timeline_ficino_pico",
+        "start": "1486",
+        "end": null,
+        "title": "Pico presents 900 Theses (1486)",
+        "tags": ["renaissance", "kabbalah", "humanism", "rome"],
+        "related_entities": ["thinker_pico", "text_oration", "concept_neoplatonism"],
+        "description_md": "At age 23, Pico della Mirandola publishes **900 Theses** (*Conclusiones philosophicae, cabalasticae et theologicae*) in Rome and proposes a public disputation to defend them all. The project is condemned by Pope Innocent VIII.\n\nThe **Oration on the Dignity of Man**, written as an introduction to the debate, argues that the human being is unique in having no fixed nature — free to descend toward the bestial or ascend toward the divine. It synthesizes Neoplatonism, Kabbalah, Arabic philosophy, and Christian theology into a single humanist vision.",
+        "citations": []
+      },
+      {
+        "id": "time_006",
+        "timeline_id": "timeline_ficino_pico",
+        "start": "1494",
+        "end": null,
+        "title": "Pico dies in Florence (1494)",
+        "tags": ["renaissance", "florence"],
+        "related_entities": ["thinker_pico", "thinker_ficino"],
+        "description_md": "Pico della Mirandola dies in Florence on **17 November 1494**, aged 31, on the same day that Charles VIII of France enters the city. The cause of his death was long debated; modern forensic analysis suggests arsenic poisoning, possibly by his secretary.\n\nFicino outlives him by five years. Pico's early death cuts short what might have been the most ambitious synthesis of Renaissance philosophy. His nephew Giovanni Francesco Pico later publishes his works.",
+        "citations": []
+      }
+    ]
+  }
+]

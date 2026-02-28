@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Theme CSS Variables ──────────────────────────────────────────────── */
+
+:root[data-theme="parchment"] {
+  --bg:           #fdf8f0;
+  --bg-surface:   #f9f0dc;
+  --bg-sidebar:   #f2deb8;
+  --bg-hover:     #e8c88e;
+  --text:         #2a231d;
+  --text-muted:   #7d6b58;
+  --text-heading: #56311a;
+  --border:       #e8c88e;
+  --border-strong:#c8883e;
+  --primary:      #a86830;
+  --primary-hover:#864f25;
+  --primary-text: #fff;
+  --shadow:       0 2px 8px rgba(90,60,20,0.15);
+  --shadow-lg:    0 4px 16px rgba(90,60,20,0.2);
+  --radius:       6px;
+  --code-bg:      #1a1510;
+  --code-text:    #f9f0dc;
+  --tag-bg:       #f2deb8;
+  --tag-text:     #56311a;
+  --tag-border:   #c8883e;
+  --font-heading: Georgia, Cambria, serif;
+  --font-body:    Georgia, Cambria, serif;
+  --font-mono:    'Fira Code', 'Consolas', monospace;
+  --badge-intro:        #15803d;
+  --badge-intermediate: #a86830;
+  --badge-advanced:     #991b1b;
+}
+
+:root[data-theme="dark-academia"] {
+  --bg:           #1a1510;
+  --bg-surface:   #2a231d;
+  --bg-sidebar:   #1f1a14;
+  --bg-hover:     #3d342b;
+  --text:         #e6e2db;
+  --text-muted:   #96846f;
+  --text-heading: #f9f0dc;
+  --border:       #3d342b;
+  --border-strong:#7d6b58;
+  --primary:      #991b1b;
+  --primary-hover:#7f1d1d;
+  --primary-text: #f9f0dc;
+  --shadow:       0 2px 8px rgba(0,0,0,0.5);
+  --shadow-lg:    0 4px 16px rgba(0,0,0,0.6);
+  --radius:       6px;
+  --code-bg:      #0f0c09;
+  --code-text:    #e6e2db;
+  --tag-bg:       #2a231d;
+  --tag-text:     #e6e2db;
+  --tag-border:   #7d6b58;
+  --font-heading: Georgia, Cambria, serif;
+  --font-body:    Georgia, Cambria, serif;
+  --font-mono:    'Fira Code', 'Consolas', monospace;
+  --badge-intro:        #166534;
+  --badge-intermediate: #92400e;
+  --badge-advanced:     #7f1d1d;
+}
+
+:root[data-theme="journal"] {
+  --bg:           #ffffff;
+  --bg-surface:   #f8f9fa;
+  --bg-sidebar:   #f0f1f3;
+  --bg-hover:     #e9ecef;
+  --text:         #111827;
+  --text-muted:   #6b7280;
+  --text-heading: #030712;
+  --border:       #e5e7eb;
+  --border-strong:#9ca3af;
+  --primary:      #1e40af;
+  --primary-hover:#1e3a8a;
+  --primary-text: #ffffff;
+  --shadow:       0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg:    0 4px 12px rgba(0,0,0,0.1);
+  --radius:       4px;
+  --code-bg:      #1e1e1e;
+  --code-text:    #d4d4d4;
+  --tag-bg:       #eff6ff;
+  --tag-text:     #1e40af;
+  --tag-border:   #bfdbfe;
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --font-body:    system-ui, -apple-system, sans-serif;
+  --font-mono:    'Fira Code', 'Consolas', monospace;
+  --badge-intro:        #15803d;
+  --badge-intermediate: #d97706;
+  --badge-advanced:     #dc2626;
+}
+
+:root[data-theme="mac80s"] {
+  --bg:           #ffffff;
+  --bg-surface:   #dddddd;
+  --bg-sidebar:   #aaaaaa;
+  --bg-hover:     #bbbbbb;
+  --text:         #000000;
+  --text-muted:   #444444;
+  --text-heading: #000000;
+  --border:       #000000;
+  --border-strong:#000000;
+  --primary:      #000000;
+  --primary-hover:#333333;
+  --primary-text: #ffffff;
+  --shadow:       2px 2px 0px #000000;
+  --shadow-lg:    3px 3px 0px #000000;
+  --radius:       0px;
+  --code-bg:      #ffffff;
+  --code-text:    #000000;
+  --tag-bg:       #ffffff;
+  --tag-text:     #000000;
+  --tag-border:   #000000;
+  --font-heading: 'Chicago', 'Geneva', 'Lucida Grande', system-ui, sans-serif;
+  --font-body:    'Geneva', 'Lucida Grande', system-ui, sans-serif;
+  --font-mono:    'Monaco', 'Courier New', monospace;
+  --badge-intro:        #000000;
+  --badge-intermediate: #444444;
+  --badge-advanced:     #888888;
+}
+
+/* ─── Base Reset ───────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  font-size: 15px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ─── Semantic theme utilities ─────────────────────────────────────────── */
+.th-bg         { background-color: var(--bg); }
+.th-surface    { background-color: var(--bg-surface); }
+.th-sidebar    { background-color: var(--bg-sidebar); }
+.th-hover:hover{ background-color: var(--bg-hover); }
+.th-text       { color: var(--text); }
+.th-muted      { color: var(--text-muted); }
+.th-heading    { color: var(--text-heading); font-family: var(--font-heading); }
+.th-border     { border-color: var(--border); }
+.th-radius     { border-radius: var(--radius); }
+.th-shadow     { box-shadow: var(--shadow); }
+.th-shadow-lg  { box-shadow: var(--shadow-lg); }
+.th-font-head  { font-family: var(--font-heading); }
+.th-font-mono  { font-family: var(--font-mono); }
+
+.th-primary {
+  background-color: var(--primary);
+  color: var(--primary-text);
+}
+.th-primary:hover { background-color: var(--primary-hover); }
+
+.th-tag {
+  display: inline-block;
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
+  border: 1px solid var(--tag-border);
+  border-radius: calc(var(--radius));
+  padding: 1px 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.th-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.th-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+
+/* ─── 80s Mac decorations ──────────────────────────────────────────────── */
+:root[data-theme="mac80s"] .mac-titlebar {
+  background: repeating-linear-gradient(
+    90deg,
+    #000 0px, #000 1px,
+    #fff 1px, #fff 2px
+  );
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+:root[data-theme="mac80s"] .mac-titlebar span {
+  background: #dddddd;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: var(--font-heading);
+}
+:root[data-theme="mac80s"] .mac-window {
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
+:root[data-theme="mac80s"] .mac-btn {
+  border: 1px solid #000;
+  padding: 2px 12px;
+  background: #dddddd;
+  box-shadow: inset -1px -1px 0 #888, inset 1px 1px 0 #fff;
+  cursor: pointer;
+}
+:root[data-theme="mac80s"] .mac-btn:active {
+  box-shadow: inset 1px 1px 0 #888, inset -1px -1px 0 #fff;
+}
+
+/* ─── Prose rendering ──────────────────────────────────────────────────── */
+.prose {
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.8;
+  max-width: 70ch;
+}
+.prose h1,.prose h2,.prose h3 {
+  font-family: var(--font-heading);
+  color: var(--text-heading);
+  line-height: 1.3;
+}
+.prose h1 { font-size: 1.75rem; margin: 1.5rem 0 0.75rem; }
+.prose h2 { font-size: 1.35rem; margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.prose h3 { font-size: 1.1rem; margin: 1.25rem 0 0.4rem; }
+.prose p  { margin: 0.75rem 0; }
+.prose ul,.prose ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+.prose li { margin: 0.25rem 0; }
+.prose strong { color: var(--text-heading); }
+.prose a { color: var(--primary); text-decoration: underline; }
+.prose code {
+  font-family: var(--font-mono);
+  background: var(--bg-hover);
+  color: var(--text-heading);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.875em;
+  border: 1px solid var(--border);
+}
+.prose pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0.75rem 0;
+}
+.prose pre code { background: none; padding: 0; border: none; color: inherit; }
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius); }
+
+/* ─── React Flow overrides ─────────────────────────────────────────────── */
+.react-flow__node {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.react-flow__node.selected, .react-flow__node:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+.react-flow__edge-path { stroke: var(--border-strong); }
+.react-flow__controls button {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+.react-flow__attribution { display: none !important; }
+.react-flow__background { --rf-background-color: var(--bg-surface) !important; }

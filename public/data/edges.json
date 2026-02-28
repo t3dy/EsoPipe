@@ -1,0 +1,122 @@
+[
+  {
+    "id": "e01",
+    "source": "lesson_schema_design",
+    "target": "tool_sqlite",
+    "type": "uses",
+    "weight": 2,
+    "notes": "SQLite is the primary database tool introduced and used throughout this lesson"
+  },
+  {
+    "id": "e02",
+    "source": "lesson_schema_design",
+    "target": "thinker_ikhwan",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Ikhwan al-Safa corpus used as the worked example domain for schema design"
+  },
+  {
+    "id": "e03",
+    "source": "lesson_schema_design",
+    "target": "concept_neoplatonism",
+    "type": "explains",
+    "weight": 1,
+    "notes": "Neoplatonism is the scholarly domain modeled in the schema exercise"
+  },
+  {
+    "id": "e04",
+    "source": "lesson_prompt_engineering",
+    "target": "thinker_ikhwan",
+    "type": "mentions",
+    "weight": 2,
+    "notes": "The Brethren of Purity analytical table used as a worked example of structured LLM output"
+  },
+  {
+    "id": "e05",
+    "source": "lesson_prompt_engineering",
+    "target": "concept_neoplatonism",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Neoplatonic texts as the test domain for structured extraction prompts"
+  },
+  {
+    "id": "e06",
+    "source": "lesson_knowledge_graphs",
+    "target": "thinker_ficino",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Ficino as a key node in the Neoplatonism transmission graph"
+  },
+  {
+    "id": "e07",
+    "source": "lesson_knowledge_graphs",
+    "target": "thinker_plotinus",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Plotinus as the origin node in the Neoplatonism transmission"
+  },
+  {
+    "id": "e08",
+    "source": "lesson_knowledge_graphs",
+    "target": "concept_neoplatonism",
+    "type": "explains",
+    "weight": 2,
+    "notes": "The transmission of Neoplatonism is the worked graph example in this lesson"
+  },
+  {
+    "id": "e09",
+    "source": "lesson_knowledge_graphs",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 1,
+    "notes": "Emanation as the key conceptual edge type in the intellectual history graph"
+  },
+  {
+    "id": "e10",
+    "source": "thinker_pico",
+    "target": "thinker_ficino",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Pico was Ficino's student and collaborator at the Platonic Academy in Florence"
+  },
+  {
+    "id": "e11",
+    "source": "thinker_ficino",
+    "target": "thinker_plotinus",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ficino's entire philosophical project was a recovery and Christianization of Plotinian Neoplatonism"
+  },
+  {
+    "id": "e12",
+    "source": "thinker_ikhwan",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 2,
+    "notes": "The Rasail presents an emanationist cosmology central to the Brethren's metaphysics"
+  },
+  {
+    "id": "e13",
+    "source": "thinker_plotinus",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Plotinus is the originator of the systematic emanation doctrine in the Enneads"
+  },
+  {
+    "id": "e14",
+    "source": "text_rasail",
+    "target": "thinker_ikhwan",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "The Rasail is the primary text authored by the Brethren of Purity"
+  },
+  {
+    "id": "e15",
+    "source": "text_oration",
+    "target": "thinker_pico",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "The Oration on the Dignity of Man is Pico's most famous text"
+  }
+]

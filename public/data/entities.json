@@ -1,0 +1,92 @@
+[
+  {
+    "id": "thinker_ficino",
+    "type": "thinker",
+    "label": "Marsilio Ficino",
+    "aliases": ["Ficino"],
+    "blurb": "Florentine philosopher and priest (1433–1499), head of the Platonic Academy in Florence. Translated the Corpus Hermeticum and Plato's complete works into Latin, synthesizing Neoplatonism with Christian theology. His De vita libri tres (1489) is the foundational text of Renaissance natural magic.",
+    "tags": ["neoplatonism", "renaissance", "hermeticism", "florence", "translation"],
+    "links": []
+  },
+  {
+    "id": "thinker_pico",
+    "type": "thinker",
+    "label": "Pico della Mirandola",
+    "aliases": ["Pico"],
+    "blurb": "Italian Renaissance philosopher (1463–1494), author of the Oration on the Dignity of Man and the 900 Theses. Synthesized Neoplatonism, Kabbalah, Hermeticism, and scholastic philosophy. Student and collaborator of Ficino at the Platonic Academy.",
+    "tags": ["neoplatonism", "renaissance", "kabbalah", "florence", "humanism"],
+    "links": []
+  },
+  {
+    "id": "thinker_ikhwan",
+    "type": "thinker",
+    "label": "Ikhwān al-Ṣafāʾ",
+    "aliases": ["Brethren of Purity", "Ikhwan al-Safa"],
+    "blurb": "Anonymous 10th-century philosophical brotherhood active in Basra (Abbasid Iraq). Authors of the Rasāʾil, a 52-treatise encyclopedia synthesizing Pythagoreanism, Neoplatonism, and Islamic theology. A model of collective authorship and epistemic integration.",
+    "tags": ["islamicate", "neoplatonism", "pythagoreanism", "encyclopedism", "10th-century"],
+    "links": []
+  },
+  {
+    "id": "thinker_plotinus",
+    "type": "thinker",
+    "label": "Plotinus",
+    "aliases": [],
+    "blurb": "Roman-era philosopher (c. 204–270 CE), founder of Neoplatonism. His Enneads describe the emanation of all reality from the One through Intellect and Soul. The most influential philosopher of late antiquity for both Islamic and Renaissance thought.",
+    "tags": ["neoplatonism", "late-antiquity", "greek", "enneads"],
+    "links": []
+  },
+  {
+    "id": "thinker_proclus",
+    "type": "thinker",
+    "label": "Proclus",
+    "aliases": ["Proclus Diadochus"],
+    "blurb": "Greek Neoplatonist philosopher (412–485 CE), head of the Platonic Academy in Athens. Systematized Neoplatonism with mathematical precision. Influenced Islamic philosophy through the Liber de Causis and Renaissance thought through Ficino's translations.",
+    "tags": ["neoplatonism", "late-antiquity", "greek", "mathematics"],
+    "links": []
+  },
+  {
+    "id": "text_rasail",
+    "type": "text",
+    "label": "Rasāʾil Ikhwān al-Ṣafāʾ",
+    "aliases": ["Epistles of the Brethren of Purity", "Rasa'il"],
+    "blurb": "A corpus of 52 philosophical treatises compiled by the Ikhwān al-Ṣafāʾ (c. 950–1000). Covers mathematics, natural science, psychology, and metaphysics in ascending encyclopedic order. One of the great synthetic works of medieval Islamic philosophy.",
+    "tags": ["islamicate", "neoplatonism", "encyclopedism", "10th-century", "primary-source"],
+    "links": []
+  },
+  {
+    "id": "text_oration",
+    "type": "text",
+    "label": "Oration on the Dignity of Man",
+    "aliases": ["Oratio de hominis dignitate"],
+    "blurb": "Pico della Mirandola's 1486 preface to his 900 Theses. Often called the 'manifesto of the Renaissance,' it argues for human freedom and the synthesis of all philosophical traditions. A key primary source for Renaissance humanism and the dignity of the human intellect.",
+    "tags": ["renaissance", "humanism", "kabbalah", "1486", "primary-source"],
+    "links": []
+  },
+  {
+    "id": "concept_emanation",
+    "type": "concept",
+    "label": "Emanation",
+    "aliases": ["emanationism", "procession"],
+    "blurb": "The Neoplatonic doctrine that all reality flows outward from a supreme principle (the One) through successive ontological levels: Intellect, Soul, and Matter. Not creation ex nihilo but continuous overflow of being. Central to Plotinus, Proclus, Ikhwan al-Safa, and Ficino.",
+    "tags": ["neoplatonism", "metaphysics", "cosmology", "ontology"],
+    "links": []
+  },
+  {
+    "id": "concept_neoplatonism",
+    "type": "concept",
+    "label": "Neoplatonism",
+    "aliases": ["Neo-Platonism"],
+    "blurb": "A philosophical tradition originating with Plotinus (c. 3rd century CE) that systematizes Plato's philosophy into a hierarchical cosmology of emanation. Transmitted through Proclus into Islamic philosophy (via the Abbasid translation movement), then into the Latin West through Ficino's translations.",
+    "tags": ["philosophy", "metaphysics", "late-antiquity", "renaissance", "transmission"],
+    "links": []
+  },
+  {
+    "id": "tool_sqlite",
+    "type": "tool",
+    "label": "SQLite",
+    "aliases": [],
+    "blurb": "A lightweight, serverless, file-based relational database engine. Ideal for local scholarly archives: a single .db file stores all your entities, texts, and relationships with full SQL query support. No server required — works offline and is included in Python's standard library.",
+    "tags": ["database", "python", "local-first", "sql", "open-source"],
+    "links": []
+  }
+]
