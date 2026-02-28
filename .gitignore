@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.env
+.DS_Store
+studio/node_modules/
+studio/dist/

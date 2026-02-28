@@ -1,0 +1,263 @@
+You’ve got the right architecture and the right “engineering posture” (versioned runs, hybrid retrieval boundary, observability UI, provenance-linked artifacts). The code you pasted is a credible v0 implementation, but there are several correctness issues and a few design choices that will quietly degrade retrieval quality once you leave the “demo query” stage.
+
+I’ll critique the retriever first (because everything depends on it), then the /whois pilot and persistence calls.
+
+HybridRetriever: correctness + quality issues
+
+Your “cosine similarity” is not cosine unless both vectors are normalized
+You compute sim = np.dot(query_vec, cand_vec). That is cosine similarity only if:
+
+query_vec is unit length
+
+cand_vec is unit length
+
+You normalize the random fallback vector, but when self.embedder is present you don’t normalize. And you also don’t normalize cand_vec after reading from the DB. Unless your indexer stored normalized vectors, your “vector_score” is a raw dot product, not cosine.
+
+Fix: enforce normalization in one place, always.
+
+Normalize query embedding after embedding.
+
+Normalize candidate embedding at indexing time (preferred) and/or at retrieval time.
+
+Store a normalized flag in embedding_runs and assert it.
+
+Object ID / rowid mismatch will break embeddings lookup and IEF
+Stage 1 pulls:
+
+turns: rowid as id from turns_fts
+
+entities: rowid as id from entities_fts
+
+tables: rowid as id from tables_fts
+
+Then you fetch embeddings with:
+
+SELECT embedding FROM prompt_embeddings
+WHERE object_type=? AND object_id=?
+
+But you pass object_id=cand['id'] where cand['id'] is a stringified rowid. If your embedding index stored object_id as the real primary key from turns.id / entities.id / scholarly_tables.id, this will miss almost everything. Same for metadata lookup: you later do SELECT ... FROM turns WHERE id=? but cand['id'] came from FTS rowid, not necessarily the same as turns.id unless you built the FTS table as an external content table and rowid matches.
+
+Fix: make IDs consistent end-to-end.
+
+Use external content FTS5 tables (content='turns', content_rowid='id') so rowid == base table id.
+
+Or explicitly select the base table’s id column from the FTS table if you stored it.
+
+Do not mix “rowid” and “id” casually.
+
+You’re ordering embeddings by run_id DESC but run_id might not sort by recency
+If run_id is a UUID or text label, ORDER BY run_id DESC does not guarantee “most recent.” You want:
+
+ORDER BY created_at DESC
+or
+
+an integer embedding_run_id FK and order by it.
+
+Fix: store embedding_run_id on each embedding row and join to embedding_runs.created_at or use an autoincrement run id.
+
+Your IEF is applied to entity candidates only, and probably uses the wrong entity identifier
+You do:
+
+ief = self._get_ief(conn, str(c['id']))
+
+But c['id'] for entity candidates is the FTS rowid, not the entity_id in entity_mentions. That makes the IEF query meaningless unless your entity_mentions.entity_id also stores that rowid.
+
+Also, the stated purpose is “boost results containing rare concepts.” That should boost turns/tables that mention rare entities, not just the entity blurb objects themselves.
+
+Fix (two parts):
+
+Make entity candidate IDs match entities.id and use that for IEF.
+
+Compute candidate-level rarity features:
+
+For a turn/table candidate, look up which entities it mentions and aggregate IEF (max/mean/top-3 sum) and boost based on that.
+
+BM25 normalization is unstable across mixed candidate sets
+You min-max normalize FTS scores across all candidates. Min-max is sensitive to outliers and query length, and mixing turns/entities/tables in one pool makes it twitchier. Two queries with different candidate distributions will produce incomparable normalized scores.
+
+Better options:
+
+Rank-based fusion (e.g., Reciprocal Rank Fusion) combining two ranked lists.
+
+Z-score normalization within each type before fusion.
+
+Or normalize BM25 separately per type.
+
+A simple robust upgrade:
+
+Get top K by FTS rank.
+
+Get vector scores.
+
+Convert both to ranks and fuse ranks.
+
+Vector score range and fusion weights need guardrails
+Even with true cosine, the range is [-1, 1]. Your fusion:
+
+combined = (0.3*norm_fts + 0.7*vec_score) * type_w * ief_boost
+
+If vec_score goes negative, it can drag good FTS matches down hard. That’s not always wrong, but for scholarly queries you usually want vector to rerank, not veto.
+
+Fix:
+
+Clamp cosine to [0, 1] via (cos+1)/2 if you want a “similarity” rather than “signed relatedness.”
+
+Or floor at 0.
+
+Then tune α/β.
+
+The LIKE fallback has arbitrary scores and no vector rerank gating
+Your fallback uses fts_score=1.0 and 2.0, which breaks your normalization assumptions and can dominate the score distribution. Also, if FTS is broken, you should still do semantic retrieval from embeddings (brute force) rather than LIKE-only.
+
+Fix:
+
+If FTS fails, do a vector-only search across the entire embedding table for that object type (4,700 items is fine).
+
+Keep LIKE as a tertiary fallback.
+
+Diversity heuristic is a hard cap; you want “soft diversity” plus minimums
+Caps (turn 5, entity 3, table 3) are fine as a first pass, but you also want:
+
+minimums (“at least 1 table if available”)
+
+soft penalties for redundancy (drop near-duplicates)
+
+optional boosting of tables when query contains “compare/table” intent terms
+
+Also note: because you apply caps after sorting by combined score, a single type can still dominate the top of the list and crowd out others if caps are high or limit is low.
+
+Context packing is too thin for downstream generation
+pack_context currently dumps res['text'] only. For provenance-aware generation, you want stable structured context:
+
+object type + canonical ID
+
+title/label
+
+snippet
+
+metadata (conversation_id, role, template)
+
+score features
+
+Otherwise the LLM cannot cite or reason with context cleanly, and your “context snapshot” becomes less useful for debugging.
+
+CommandProcessor (/whois): correctness + design issues
+
+It’s still “mock generation,” so validate the plumbing, not the content
+Your walkthrough claims “generates a structured dossier,” but the code shown just creates a stub summary and uses entity blurb. That’s fine for pipeline verification; it’s not yet evidence of generation quality.
+
+Entity resolution via label LIKE %...% is ambiguous
+This can match the wrong entity (e.g., “Pico” matches “Pico della Mirandola” and anything with “Pico” in blurb). You want deterministic resolution:
+
+Prefer exact match on entities.id
+
+Then exact match on label
+
+Then alias match
+
+Then fuzzy match with confidence and user disambiguation
+
+Artifact insert is missing fields you likely declared as NOT NULL
+Your earlier schema had created_at, revision_number, maybe payload_markdown. The insert shown only includes:
+(id, type, schema_version, payload_json, context_snapshot_json)
+
+If the DB schema requires created_at, this either fails or silently inserts NULL depending on schema. Your walkthrough said success, but ensure schema constraints match.
+
+Fix: always include:
+
+created_at (UTC ISO string)
+
+revision_number
+
+payload_markdown if you store it
+
+schema_version as semver consistently
+
+Provenance source IDs should be canonical and typed
+You now insert:
+
+INSERT INTO artifact_sources (artifact_id, source_type, source_id, weight)
+
+Good. But confirm source_id is the canonical ID (not an FTS rowid). Also consider storing:
+
+score_features_json (bm25, cosine, combined) for audit
+
+excerpt (the exact snippet used), so provenance remains meaningful if the underlying turn text changes in later mining runs.
+
+“FTS sync error → fallback to LIKE” is a smell
+FTS tables should not “encounter a sync error” under normal operation. If they do, you want:
+
+a repair command (rebuild FTS index)
+
+a migration fix (triggers / content table config)
+
+or a clear error state
+
+Fallback is good for user experience, but you should still treat FTS sync errors as a bug to eliminate, not a normal branch.
+
+Concrete improvements you should implement next (ordered by payoff)
+
+A) Make IDs consistent across base tables, FTS tables, embeddings, and provenance
+This is the single highest-risk issue. Decide the canonical IDs and ensure:
+
+FTS rowid matches base table id (external content FTS)
+
+embedding rows store object_id in that same ID space
+
+artifact_sources uses the same IDs
+
+B) Enforce embedding normalization and version gating
+
+Normalize at indexing time.
+
+Store run_id as integer PK.
+
+Retrieval uses only the most recent run for each object type unless explicitly overridden.
+
+C) Replace min-max BM25 normalization with a rank-fusion method
+Quick fix: Reciprocal Rank Fusion:
+
+rank candidates by BM25
+
+rank candidates by cosine
+
+combine with 1/(k+rank) sums
+This is stable across queries and doesn’t care about score distributions.
+
+D) Implement true “rare concept boost” at the candidate level
+
+For each turn/table candidate, compute IEF aggregate across its mentioned entities.
+
+Boost that candidate’s score.
+This actually solves “concept saturation.” Boosting only entity blurbs doesn’t.
+
+E) Make pack_context structured and provenance-ready
+Instead of plain text blocks, emit:
+
+[TURN id=… conv=… role=… score=…] snippet
+
+[TABLE id=… template=… score=…] title + first row
+
+[ENTITY id=… type=… score=…] label + blurb
+
+F) Upgrade /whois from mock to a spec-bound generator with validation
+Even if you don’t call an external LLM yet, define:
+
+WhoIsSchema v1 (strict JSON)
+
+validation rules (required fields, minimum citations)
+
+a repair pass (JSON fixing) once you wire LLM in
+
+G) Add a small evaluation harness
+You need 20–50 “gold queries” where you know what should appear in top 5. Store:
+
+query
+
+expected entity IDs
+
+expected conversation IDs (optional)
+Then run nightly regression checks on retrieval.
+
+One immediate bug to verify right now
+Your embeddings table name is prompt_embeddings, but you’re storing turns/tables/entities. That’s fine, but it’s semantically misleading and invites future confusion. Rename to embeddings or object_embeddings, or at least add object_type + object_id columns (you already query those) and treat “prompt_embeddings” as legacy.

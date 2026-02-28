@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khunrath Theosophy Summary</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Khunrath Theosophy Summary</h1>
+  <div class="meta">May 27, 2025 09:27 PM &middot; Model: auto &middot; 9 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>skip the first two chapters and give me a summary of the third</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Please remember to search the user&#x27;s documents if an answer to their question is not contained in the above snippets. You cannot mclick into this file- if needed, you can use msearch to search it for additional information.<br>
+</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;queries&quot;: [&quot;Summary of Chapter 3: Khunrath the Theosopher – a Lover of Divine Wisdom&quot;]}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Chapter 3 begins with an investigation of the significance of the <br>
+theosophical approach underpinning his work, his sense of being a lover of <br>
+divine wisdom, one taught by God. This begins with notions of theosophy from <br>
+antiquity to the early modern period; then moves to some contemporary rep-<br>
+resentatives and influences on his own theosophy, Valentin Weigel (1533–1588) <br>
+and Johann Arndt (1555–1621), before paying attention to Khunrath’s approach, <br>
+including his repeated injunction ‘Ora et Labora’ (Pray and Work), how this <br>
+manifests in his reading of the Three Books of Scripture, Nature and Oneself, <br>
+and his promotion of Ten Grades of Cognition and a Ladder of Conjunction <br>
+and Union. Chapter 4 investigates Khunrath’s interest in Christian Cabala, <br>
+providing some background information about Jewish Kabbalah, discussion <br>
+of possible sources for his ideas, including Giovanni Pico della Mirandola <br>
+(1463–1494), Johann Reuchlin (1455–1522), and Johann Pistorius (1546–1608), <br>
+followed by a detailed analysis of his Christian-Cabalist Sigillum Dei or Seal <br>
+of God.</p><p>© Peter J. Forshaw, 2025 | doi:10.1163/9789004702073_003</p><p>Chapter 3</p><p>Khunrath the Theosopher – a Lover of <br>
+Divine Wisdom</p><p>‘For GOD loveth none but him that dwelleth with WISDOM’ <br>
+(Wisdom 7:28) […] This saying of the Sage struck […] my mind when <br>
+I read it. Good GOD, what is this? GOD loves none but him that <br>
+dwells with WISDOM. He does not dwell, however, with WISDOM, <br>
+unless he walks in her ways, he loves GOD with all his heart, and <br>
+his Neighbour as himself, who first and before all things seeks the <br>
+kingdom of GOD, who fears GOD, and works righteousness, that is, <br>
+a THEOSOPHER, who alone is a countryman of true WISDOM.1</p><p>∵</p><p>This chapter considers the general conceptual framework within which Khun-<br>
+rath embedded his cabala, magic, and alchemy. In the majority of his works <br>
+he describes himself as a ‘Theosopher’ (Fig. 3.1), or rather a ‘faithful lover of <br>
+Theosophy’, and is listed as such in Johann Jacob Brucker’s Historia critica phi-<br>
+losophiae (Critical History of Philosophy, 1743).2 To most people, this probably <br>
+conjures up visions of the ‘Teutonic Theosopher’ Jacob Boehme (1575–1624) </p><p>1 Amph.II, 155 ‘Perculsit  … animum meum, dum legebam, Vox haec Sapientis. Devs bone, <br>
+quid hoc est? neminem diligere Devm, nisi eum, qui cum Sapientia inhabitet: Inhabitat <br>
+autem cum Sapientia, non nisi in viis eius qui ambulat; qui Devm ex toto corde amat, &amp; <br>
+Proximum sicut seipsum; qui primùm &amp; ante omnia quaerit regnum Dei; qui timet Devm, <br>
+&amp; operatur iustitiam, hoc est, T&lt;h&gt;eosophvs, qui solus verae Sapientiae incola.’ Carlos <br>
+Gilly, ‘The Amphitheatrum Sapientiae Aeternae of Heinrich Khunrath’, in Carlos Gilly and Cis <br>
+van Heertum (eds.<br>
+<h1>【1†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+∵</p><p>This chapter considers the general conceptual framework within which Khun-<br>
+rath embedded his cabala, magic, and alchemy. In the majority of his works <br>
+he describes himself as a ‘Theosopher’ (Fig. 3.1), or rather a ‘faithful lover of <br>
+Theosophy’, and is listed as such in Johann Jacob Brucker’s Historia critica phi-<br>
+losophiae (Critical History of Philosophy, 1743).2 To most people, this probably <br>
+conjures up visions of the ‘Teutonic Theosopher’ Jacob Boehme (1575–1624) </p><p>1 Amph.II, 155 ‘Perculsit  … animum meum, dum legebam, Vox haec Sapientis. Devs bone, <br>
+quid hoc est? neminem diligere Devm, nisi eum, qui cum Sapientia inhabitet: Inhabitat <br>
+autem cum Sapientia, non nisi in viis eius qui ambulat; qui Devm ex toto corde amat, &amp; <br>
+Proximum sicut seipsum; qui primùm &amp; ante omnia quaerit regnum Dei; qui timet Devm, <br>
+&amp; operatur iustitiam, hoc est, T&lt;h&gt;eosophvs, qui solus verae Sapientiae incola.’ Carlos <br>
+Gilly, ‘The Amphitheatrum Sapientiae Aeternae of Heinrich Khunrath’, in Carlos Gilly and Cis <br>
+van Heertum (eds.), Magia, Alchimia, Scienza dal ‘400 al ‘700. L’influsso di Ermete Trismegisto/ <br>
+Magic, Alchemy and Science 15th–18th Centuries: The Influence of Hermes Trismegistus, 2 vols.  <br>
+(Florence: Centro Di, 2002), Vol. 1, 325–350, at 342 points out that the word Sapientia <br>
+(Wisdom) occurs over three hundred times in the Amphitheatre.</p><p>2 Johann Jacob Brucker, Historia critica philosophiae (Leipzig, 1743), Vol. IV, Part 1, Chapter <br>
+III ‘De Theosophicis’, 675. For a brief introduction to Brucker, see Wouter J. Hanegraaff, <br>
+Western Esotericism: A Guide for the Perplexed (London: Bloomsbury, 2013), 63f. For a more <br>
+extended discussion, see Fernando Vidal, The Sciences of the Soul: The Early Modern Origins <br>
+of Psychology (Chicago: University of Chicago Press, 2011), 166ff.</p><p>3Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>or the Russian Helena Blavatsky (1831–1891) and the Theosophical Society.3 <br>
+Blavatsky does indeed number Khunrath among the members of her extremely <br>
+eclectic tradition, describing him as ‘a most learned Kabalist, and the great-<br>
+est authority among mediaeval Occultists’,4 and one early owner of the 1609 <br>
+Amphitheatre saw fit to bind Boehme’s Four Tables of Divine Revelation into his <br>
+copy.5 Khunrath’s Theosophy, however, should not be confused with either of <br>
+these forms, for it displays a more active engagement with all levels of reality <br>
+(physical, hyperphysical and divine) than his slightly younger contemporary, <br>
+Boehme, and, save for the occasional reference to gymnosophists, contains lit-<br>
+tle of Blavatsky’s orientalism, nor, of course, her anti-Christian orientation.6<br>
+<h1>【2†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+52 Chapter 3</p><p>Both Dorn and Khunrath more closely resemble Paracelsus in the encyclopae-<br>
+dic or pansophic scope of his activities,255 propounding a truly ‘Catholic’ the-<br>
+osophy in the sense of one that was all-encompassing in its endeavours.256</p><p>12 Khunrath’s Theosopher</p><p>Khunrath refers to the theosopher or theosophers at various points in the <br>
+Amphitheatre. His most complete description is found in the Isagoge or Intro-<br>
+ductory Commentary to the Amphitheatre’s most famous engraving, Circular <br>
+Figure 4, the Oratory-Laboratory (Fig. 3.3). There we learn that the Theosopher <br>
+is one who:<br>
+1) has the ideal of a healthy body and a healthy mind;257<br>
+2) avoids Sophistry but pursues ‘Eternal Wisdom’;<br>
+3) is not caught up in the pursuit of impure worldly wisdom;<br>
+4) is taught by God, mediately or immediately, by a spiritual or corporeal </p><p>master,258 and by the Books of Scripture and Nature;<br>
+5) has sufficient wealth to guarantee his independence of thought;<br>
+6) has practical experience in Physico-Chemistry;<br>
+7) observes God’s majesty as revealed in the activity of his minister, Nature, </p><p>in the physical world;<br>
+8) studiously imitates and attracts Nature in his work;<br>
+9) patiently and serenely waits in the Fear of God for the fruits of his works </p><p>in order to use them charitably for the help of his neighbour; and<br>
+10) keeps the secrets of divine wisdom for fear of their abuse and his conse-</p><p>quent punishment.259</p><p>Grataroli: sivè, ne fugiens prius avolet, quàm ipsum persequens, ut habet textus Dornej) <br>
+und das sich das Fewer lest machen …’. See Dorn (ed.), Trevisanus De Chymico Miraculo, <br>
+Quod Lapidem Philosophiae appellant. Dionys. Zecharius Gallus de eodem. Auctoritatibus <br>
+varijs Principum huius artis, Democriti, Gebri, Lullii, Villanovani, confirmati &amp; <br>
+illustrati per Gerardum Dorneum (Basel, 1583), 40 ‘ne fugiens prius avolet quam ipsum <br>
+persequens.’</p><p>255 Pagel, Paracelsus: An Introduction to Philosophical Medicine, 9.<br>
+256 Amph.II, 89.<br>
+257 Amph.II, 212. See too 86, 168.<br>
+258 Cf. Calumniators: ‘Traditio Praeceptoris, Lumini naturae fideliter congruens’ (The </p><p>Instruction of a Teacher, faithfully agreeing with the Light of Nature). See also Khunrath, <br>
+Confessio, 3–4 ‘Ego partim habeo a Magistro, cui in aeternum sit bene, amen: partim vero <br>
+ex Revelatione divina.’</p><p>259 See Amph.II, 212–3 for all these criteria.</p><p>53Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>The latter stipulation is reinforced a few pages later, with a reminder of the <br>
+advice from Matthew 7:6, not to give that which is holy to dogs, accompanied <br>
+by the wish,</p><p>May you fraternally talk together about the wonderful works of God;260 <br>
+in the company of TheoSophers, that is, of those who thirst for, follow <br>
+and love from the bottom of their hearts the TRUTH OF TRUE WISDOM, <br>
+even in defiance of the devil and his scales.261<br>
+<h1>【3†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+75Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>I. Recognise (Agnoscere) GOD and IHSVH Christ through Christian-Cabalist <br>
+prayer in the Oratory, on the basis of the Sacrosanct Scriptures;</p><p>II. Know (Noscere) THYSELF (Microcosm), through Divine Magic;<br>
+III. Understand (Cognoscere) the greater WORLD (Macrocosm) and its SON, </p><p>MAGNESIA of the Philosophers, through Alchemy in the Laboratory.353<br>
+Each of these goals is interconnected: the recognition of God, for example, <br>
+cannot take place without an understanding of Scripture ‘in and from’ God, <br>
+oneself, and the greater world; indeed, all three goals require knowledge of <br>
+all three ‘books’. The Recognition or Apprehension of God (Agnitio Dei) is <br>
+communicated Christian-Cabalistically, Self-Knowledge (Cognitio sui ipsius) <br>
+Divinely-Magically, and Understanding of the Macrocosm (Cognitio Mundi <br>
+maioris), Physico-Chymically.354 As the Summary explains, these three meth-<br>
+ods are taught ‘by praying in the Oratory’ and ‘by working in the Laboratory’. In <br>
+the final, concluding column of the table, Khunrath exults:</p><p>This is SOPHIA! This is highest PHILOSOPHY! This is the Theosophical, <br>
+Ter-triune, Universal, Direct, only true WAY to It, and by which the <br>
+OTHER goods (Oh! how innumerable! Oh, how wonderful!) are given to US! <br>
+Everything else is either superficial or circumferential, or false and void.355</p><p>19 I. The Book of God in the Ternary</p><p>As has been touched on above, Khunrath variously represents this knowledge <br>
+as one, two, or three ‘books.’ The notion of the world as a book had already <br>
+appeared, for example, in Synesius’s early fifth-century treatise on dreams </p><p>353 Khunrath’s editor, Erasmus Wolfart, summarises the aims in Amph.I, 10.<br>
+354 Amph.I, 7 ‘Agnitionem, Cognationem, Unionem &amp; Fruitionem Jehovae; Cognitionem </p><p>Sui ipsius; Cognitionem ac Fruitionem Mundi Maioris’ (Recognition, Association, Union <br>
+and Enjoyment of Jehovah; Understanding of Oneself; Knowledge and Enjoyment of the <br>
+Greater World). See also Wolfart’s Greetings to the Reader, Amph.I, 10 where he writes, <br>
+‘VALE, &amp; hoc Amphitheatro fruere, ad Agnitionem DEI, Cognitionem tuiipsius, digno-<br>
+tionem Naturæ, ad illuminationem Animæ, puritatem Spiritus, sanitatem Corporis’ <br>
+(Farewell, and have the use and enjoyment of this Amphitheatre for the Recognition of <br>
+God, Knowledge of yourself, the discernment of Nature, illumination of the Soul, purity <br>
+of the Spirit, [and] health of the Body).</p><p>355 Summa table: ‘Hæc Sophia! Hæc Philosophia Summa! Hæc ad Hanc Via Theosophica, <br>
+Tertriuna, Catholica, Linearis, sola vera; quâq[ue] CÆTERA bona (ôh quàm innumera! Ôh <br>
+quàm miranda!) adiiciuntur Nobis! Alia omnis, vel superficialis; aut circumferentialis; aut <br>
+falsa &amp; nulla.’</p><p>76 Chapter 3<br>
+<h1>【4†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+21Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>As with Weigel, Arndt’s emphasis is less on the book-learning of professional <br>
+theologians and more on personal devotion:</p><p>Everyone now endeavors to be eminent and distinguished in the world, <br>
+but no one is willing to learn to be pious. Everyone now seeks out men <br>
+of great learning, from whom one may learn the arts, languages, and wis-<br>
+dom, but no one is willing to learn from our only teacher, Jesus Christ.104</p><p>Arndt had praised the Amphitheatre as early as 1596/97 in his work against <br>
+Calvinist iconoclasm in the duchy of Anhalt, the Ikonographia or commentary <br>
+on the right use and misuse of pictures in the Bible.105 As Wilhelm Schmidt-<br>
+Biggemann explains in his discussion of Arndt’s ‘Theology of Emblems’, in <br>
+his defense of images Arndt argues that pictures and the art of painting have <br>
+their origin in God, from the visions and revelations of the holy patriarchs and <br>
+prophets, which are received in four different ways:<br>
+1. Face to face, as was the case with Moses;<br>
+2. Through the Holy Spirit in the hearts and minds of prophets, as was the </p><p>case with David, particularly when he played his harp; the prophet Elijah <br>
+also heard spiritual string music;</p><p>3. When seers have waking visions, as was the case with the prophets <br>
+Samuel and Zechariah;</p><p>4. In dream visions, while sleeping, as in Jacob’s vision of the ladder.106<br>
+Most significantly for our story, in a discussion of the Signatures of nature in <br>
+the ninth chapter of Ikonographia, we read:</p><p>For as the Lord God revealed divine mystery through images, in the old <br>
+and new Testament, so Nature too, and God planted the prophecies <br>
+through images in Nature. For the whole of Nature, and all elements, ani-<br>
+mals, vegetables, minerals, are full of wondrous figures, characters, and <br>
+images, by which they give themselves to be known, and reveal all their <br>
+mystery through images, and from them can all things be learned, that is <br>
+natural, indeed just as well as from a written book, as now an excellent </p><p>Kühlmann and Joachim Telle (eds.), Der Frühparacelsismus (Tübingen: Max Niemeyer <br>
+Verlag, 2001), Part 1. For more on Arndt in Basel, see Wallmann, Theologie und Frömmigkeit <br>
+im Zeitalter des Barock (Tübingen: J.C.B. Mohr, 1995), 153ff.</p><p>104 Arndt, True Christianity, 21–22.<br>
+105 Gilly, ‘The Amphitheatrum Sapientiae Aeternae of Heinrich Khunrath’, 345. See also Illg, </p><p>Ein anderer Mensch werden, 21ff, 285ff; Jörg Jochen Berns (ed.), Von Strittigkeit der Bilder: <br>
+Texte des deutschen Bildstreits im 16. Jahrhundert (Berlin: Walter de Gruyter, 2014), 923.</p><p>106 Schmidt-Biggemann, Philosophia perennis, 22, citing Arndt, Ikonographia, 13v–14r.</p><p>22 Chapter 3</p><p>Philosopher, and investigator of nature, writes in his glorious and won-<br>
+derful Amphitheatre of divine and human wisdom.107</p><p>This is an extremely early reference to Khunrath’s 1595 Amphitheatre, made <br>
+just a year or two after its publication.<br>
+<h1>【5†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+348 Brian P. Copenhaver, ‘Hermes Theologus: The Sienese Mercury and Ficino’s Hermetic <br>
+Demons’, in John W. O’Malley, Thomas M. Izbicki and Gerald Christianson (eds.), Human-<br>
+ity and Divinity in Renaissance and Reformation (Leiden: Brill, 1993), 149–184, at 178.</p><p>349 Amph.II, 107 ‘Tu sciole, qui parum Christianè negas, Devm à nobis cognosci non posse, <br>
+litiga super verbis hisce cum Sapiente nostro.’</p><p>350 Amph.II, 55 ‘Diuinorum mysteriorum cognitionem; politicae administrationis &amp; guberna-<br>
+tionis prudentiam; totiusque Naturae rerum ordinem, causas, affectus, caelestium virtu-<br>
+tes, &amp; terrestrium vires.’ See also Amph.I, 11.</p><p>74 Chapter 3</p><p>In two synoptic tables Khunrath sets forth his ‘Ter-tri-une, Catholic, True <br>
+Philosophy and the Method of Philosophising’,351 or ‘Tri-une Apocalyptic <br>
+Key,’352 to theoretical and experiential knowledge of these three domains: the <br>
+Divine, the Micro- and the Macrocosmic worlds. In the first of these tables, the <br>
+Summary of the Amphitheatre of Eternal Wisdom (Fig. 3.9), Man is exhorted to <br>
+learn to</p><p>351 Amph.II, 216.<br>
+352 Amph.I, 7 ‘APOCALYPTICA CLAVIS TRIVNA’.</p><p>Figure 3.9 Khunrath, Amphitheatrum (1609), inserted table: Summary of the Amphitheatre of Eternal <br>
+Wisdom. Allard Pierson, University of Amsterdam, PH3246</p><p>75Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>I. Recognise (Agnoscere) GOD and IHSVH Christ through Christian-Cabalist <br>
+prayer in the Oratory, on the basis of the Sacrosanct Scriptures;</p><p>II. Know (Noscere) THYSELF (Microcosm), through Divine Magic;<br>
+III. Understand (Cognoscere) the greater WORLD (Macrocosm) and its SON, </p><p>MAGNESIA of the Philosophers, through Alchemy in the Laboratory.353<br>
+Each of these goals is interconnected: the recognition of God, for example, <br>
+cannot take place without an understanding of Scripture ‘in and from’ God, <br>
+oneself, and the greater world; indeed, all three goals require knowledge of <br>
+all three ‘books’. The Recognition or Apprehension of God (Agnitio Dei) is <br>
+communicated Christian-Cabalistically, Self-Knowledge (Cognitio sui ipsius) <br>
+Divinely-Magically, and Understanding of the Macrocosm (Cognitio Mundi <br>
+maioris), Physico-Chymically.354 As the Summary explains, these three meth-<br>
+ods are taught ‘by praying in the Oratory’ and ‘by working in the Laboratory’. In <br>
+the final, concluding column of the table, Khunrath exults:</p><p>This is SOPHIA! This is highest PHILOSOPHY! This is the Theosophical, <br>
+Ter-triune, Universal, Direct, only true WAY to It, and by which the <br>
+OTHER goods (Oh! how innumerable! Oh, how wonderful!) are given to US! <br>
+Everything else is either superficial or circumferential, or false and void.355</p><p>19 I. The Book of God in the Ternary<br>
+<h1>【6†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+402 indeed <br>
+that the whole duty of man is to Fear God and avoid evil,403 in accordance <br>
+with the belief that ‘Fear of the Lord is the beginning of Wisdom.’404 Although <br>
+this at first sounds baleful, Khunrath explains that by this he does not mean <br>
+the ‘servile’ fear of the guilty expecting punishment, but the ‘filial’ fear of the <br>
+theologians,405 by which he presumably intends something like the fear of loss <br>
+of grace rather than of retribution.406</p><p>22 Filius Theanthropos – the Divinely-Human Son</p><p>This discussion of the filial brings us to the second person of the Trinity, and <br>
+the epitome of the beneficent aspect of divinity, Christ as God the Son, or in <br>
+Khunrath’s usage, God the Brother, a sentiment also found in Weigel.407 As <br>
+θεανθρωπος [theanthrōpos], God-Man or Divine Man, a term Khunrath possibly <br>
+took from Reuchlin’s On the Wonder-Working Word,408 Christ is the most per-<br>
+sonal of the hypostases and as such the focus of Khunrath’s devotion, the sym-<br>
+bol of man’s perfection, the perfect microcosm, linking God and the universe <br>
+he embodies, as both the purest image of the divine exemplar and the highest <br>
+perfection of creation.409</p><p>Thus it is that we find the Hebrew words חכמה אל (Chochmah-El) on the <br>
+tent-like tabernacle of the Oratory in the fourth circular figure, signifying </p><p>400 Amph.II, 107, 157.<br>
+401 Amph.II, 125. See Figure 1 for the Decalogue and Shema prayer, discussed in more detail in </p><p>Chapter 4.<br>
+402 Amph.II, 137.<br>
+403 Amph.II, 88, 150 (mispaginated as 148 [T3v]).<br>
+404 Proverbs 7:1, 9:10.<br>
+405 Amph.II, 102.<br>
+406 See Chaim Wirszubski, Pico della Mirandola’s Encounter with Jewish Mysticism (Cambridge, </p><p>MA: Harvard University Press, 1989), 48 concerning Recanati on two types of fear: inter-<br>
+nal and external ‘The external fear is below love, and the internal is above love.’</p><p>407 Circular Figure 2. See Weeks, Valentin Weigel, 167.<br>
+408 Reuchlin, De Verbo Mirifico, in Pistorius, Artis Cabalisticae, 952 ‘theanthropos illum: id est, </p><p>Deum hominem’; in the margin: ‘theanthropou Christi confirmatio’.<br>
+409 Amph.II, 44–5, 57.</p><p>87Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>Christ as the ‘Wisdom of God’,410 to whom all petitions are addressed, the <br>
+‘Eternal Wisdom’ of the Amphitheatre’s title.411<br>
+<h1>【7†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+3.2 Comparison of Aristotelian Grades of Cognition and Kabbalistic <br>
+Sephiroth 128</p><p>3.3 Comparison of Reuchlin and Pico’s Grades of Cognition 128<br>
+3.4 Khunrath, Amphitheatrum (1595/1609), Circular Figure 2: Ladder of </p><p>Conjunction and Union (ascending) 149<br>
+3.5 Comparison of Khunrath’s Grades of Cognition and Union with Dorn’s </p><p>meditative philosophy 187<br>
+4.1 The ten Sephiroth (descending) 222<br>
+4.2 How to unfold the Quaternarius into the Denarius 244<br>
+4.3 Comparison between Khunrath, Amphitheatrum and Reuchlin, </p><p>De arte Cabalistica 288<br>
+4.4 Khunrath, Amphitheatrum (1595/1609), Circular Figure 1 Hebrew in the 10 </p><p>sections of the circumference 292<br>
+4.5 The Decalogue aligned with the Angelic Orders 330<br>
+4.6 Comparison of Angelic Orders 333<br>
+4.7 The Decalogue aligned with the Sephiroth 356<br>
+4.8 Correspondences between Sephiroth and Shemoth in Khunrath, Agrippa, </p><p>and Ricci 358<br>
+4.9 Claude de Bourges, Amphyteatre de la Sapience (1646), fol. 1, Divine Names </p><p>and Sephiroth 363<br>
+4.10 Divine attributes (Middoth) and corresponding human virtues 399</p><p>© Peter J. Forshaw, 2025 | doi:10.1163/9789004702073_002</p><p>Introductory Note</p><p>This is the second volume in a four-volume monograph on the life and works <br>
+of the German alchemist, magus and Christian-Cabalist Heinrich Khunrath of <br>
+Leipzig (1560–1605), ‘doctor of both medicines and faithful lover of Theosophy.’ <br>
+Its two chapters focus on the more religio-philosophical dimensions of Khun-<br>
+rath’s writings. Chapter 3 begins with an investigation of the significance of the <br>
+theosophical approach underpinning his work, his sense of being a lover of <br>
+divine wisdom, one taught by God. This begins with notions of theosophy from <br>
+antiquity to the early modern period; then moves to some contemporary rep-<br>
+resentatives and influences on his own theosophy, Valentin Weigel (1533–1588) <br>
+and Johann Arndt (1555–1621), before paying attention to Khunrath’s approach, <br>
+including his repeated injunction ‘Ora et Labora’ (Pray and Work), how this <br>
+manifests in his reading of the Three Books of Scripture, Nature and Oneself, <br>
+and his promotion of Ten Grades of Cognition and a Ladder of Conjunction <br>
+and Union. Chapter 4 investigates Khunrath’s interest in Christian Cabala, <br>
+providing some background information about Jewish Kabbalah, discussion <br>
+of possible sources for his ideas, including Giovanni Pico della Mirandola <br>
+(1463–1494), Johann Reuchlin (1455–1522), and Johann Pistorius (1546–1608), <br>
+followed by a detailed analysis of his Christian-Cabalist Sigillum Dei or Seal <br>
+of God.</p><p>© Peter J. Forshaw, 2025 | doi:10.1163/9789004702073_003</p><p>Chapter 3</p><p>Khunrath the Theosopher – a Lover of <br>
+Divine Wisdom<br>
+<h1>【8†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+and Laboratory’.</p><p>Peter J. Forshaw</p><p>Ph.D. (2004), London University, is Associate Professor in History of Western </p><p>Esotericism at the University of Amsterdam. He was editor of the journal Aries</p><p>(2010-2020), has edited essay collections and published articles and chapters </p><p>on esotericism and occult philosophy.</p><p>Aries Book Series Texts and Studies in Western Esotericism / 38</p><p>ARBS<br>
+38</p><p>The Mage’s Images: <br>
+Heinrich Khunrath <br>
+in His Oratory <br>
+and Laboratory<br>
+Volume 2<br>
+Theosopher &amp; Christian Cabalist</p><p>Peter J. Forshaw</p><p>Th<br>
+e M</p><p>age’s Im<br>
+ages: H</p><p>ein<br>
+rich</p><p> K<br>
+h</p><p>u<br>
+n</p><p>rath<br>
+ in</p><p> H<br>
+is O</p><p>rato<br>
+ry an</p><p>d<br>
+ Lab</p><p>o<br>
+rato</p><p>ry<br>
+V</p><p>o<br>
+lu</p><p>m<br>
+e 2</p><p>Theosopher &amp;<br>
+ C</p><p>hristian C<br>
+abalist</p><p>P<br>
+eter J. Fo</p><p>rsh<br>
+aw</p><p>	Front Cover<br>
+	Half Title<br>
+	Series Information<br>
+	Title Page<br>
+	Copyright Page<br>
+	Contents<br>
+	Acknowledgments<br>
+	Figures<br>
+	Tables<br>
+	Introductory Note<br>
+	Chapter 3 Khunrath the Theosopher – a Lover of Divine Wisdom<br>
+	1	Pre-Modern Uses of the Term Theosophy<br>
+	2	Characteristics of Early Modern Theosophy<br>
+	3	Proto-Theosophers and Theophrastia Sancta<br>
+	4	Valentin Weigel (1533–1588)<br>
+	5	Johann Arndt (1555–1621)<br>
+	6	Enthusiasm<br>
+	7	The Anti-Trinitarians’ Contempt of Divine Tri-Unity<br>
+	8	An Unorthodox Lutheran?<br>
+	9	A Faithful Lover of Theosophy<br>
+	10	Theodidaktos – Taught by God<br>
+	11	Hermetic Philosophy and Pansophy<br>
+	12	Khunrath’s Theosopher<br>
+	13	Qualifications to be a Magus<br>
+	14	Ora et Labora<br>
+	15	Ora, Oratio, Oraculum<br>
+	16	Exegesis: Interpreting the Three Books<br>
+	17	Labora<br>
+	18	The Triune Apocalyptic Key<br>
+	19	I. The Book of God in the Ternary<br>
+	20	Book of God, Book of Scripture<br>
+	21	Deus Pater Archetypos – God, the Father, the Archetype<br>
+	22	Filius Theanthropos – the Divinely-Human Son<br>
+	23	Spiritus Polypoikilos – Multiform Spirit<br>
+	24	II. Book of Nature, Book of Creation<br>
+	25	Χαος – Chaos<br>
+	26	אלהים רוח – Ruach Elohim – Spirit of the Lord<br>
+	27	שמים – Schamaim – Heaven<br>
+	28	Three Heavens<br>
+	29	1) The Lower Sublunar Heaven<br>
+	30	2) Rachia: the Firmament of Heaven<br>
+	31	3) The Super-Supreme Empyrean<br>
+	32	III.<br>
+<h1>【9†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Thought (London: Constable, 1970), Vol. 2, 512.</p><p>135Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>according to Averroes or Albertus Magnus,680 Khunrath’s notion of ‘MIND, or <br>
+the Divinely inspired SOUL of man’, has a definite sense of being part of the <br>
+human soul, though perhaps indeed ‘external’ in the sense of ‘incorporeal’.681</p><p>34 The Threefold Eye and Three Kinds of Vision</p><p>Khunrath speaks more than once of the ‘ears as much of the reason, intellect <br>
+and mind, as of the senses or the body’682 and likewise of the ‘eyes of my mind, <br>
+intellect, reason and senses,’683 or more generally of the doors ‘of your senses, <br>
+reason, intellect and mind.’684 In this he may well be revealing the influence of <br>
+Augustine, who writes of three kinds of vision: visio corporalis, spiritualis and <br>
+intellectualis, involving the outer eye, inner eye (seeing images presented to <br>
+the imagination), and eye of the mind,685 or indeed of Valentin Weigel, who <br>
+develops the concept of a threefold eye in Der güldene Griff, from the outer-<br>
+most, the Visus sensualis or imaginatio, related to the senses; moving inwards <br>
+to the Oculus rationis, and finally the innermost eye, Oculus mentis seu intel-<br>
+lectus, closest to the eternal or inner eye of God.686 Moving from the eyes of <br>
+the senses to those of the mind, drawing from Platonising philosophy and <br>
+Solomonic wisdom in support of his theosophy, Khunrath remarks in a com-<br>
+mentary on Wisdom 8:2,687</p><p>Who (as Cicero the Pagan rightly writes about WISDOM, from Divinely <br>
+illumined Plato) if she were seen with sensual eyes, she would arouse </p><p>680 Bernard Blankenhorn, The Mystery of Union with God: Dionysian Mysticism in Albert <br>
+the Great and Thomas Aquinas (Washington: The Catholic University of America Press, <br>
+2015), 163.</p><p>681 Amph.II, 90 ‘Trivna, videlicet. Primò, Natvra atque Creatvra, hoc est, Mundus maior <br>
+totus, cum creaturis Spiritualibus; &amp; Corpus ac Spiritus Hominis, id est, Mundi minoris: <br>
+Secundò, Mens, siuè Anima homini Diuinitus inspirata: Tertiò SS.a Scriptura; quod est <br>
+Verbvm Dei Biblicè scriptum.’</p><p>682 Amph.II, 3 ‘Auribus tam rationis, intellectus &amp; mentis, quam sensuum siuè corporis’.<br>
+683 Amph.II, 82 ‘oculos mentis, intellectus, rationis ac sensuum meos.’<br>
+684 Amph.II, 113 ‘Assidentem foribus, &amp;c.] Quibusnam? Sensuum tuorum, Rationis, Intellectus </p><p>ac Mentis.’<br>
+685 Veerle Fraeters, ‘Visio/Vision’, in Hollywood and Beckman (eds.), The Cambridge Compan-</p><p>ion to Christian Mysticism, 178–188, at 179.<br>
+686 Weigel, Der güldene Griff (Frankfurt, 1697), caps 3, 4, 6, 7.<br>
+687 Wisdom 8:2 ‘Her have I loved, and have sought her from my youth, and have desired to </p><p>make my wife, and I was captivated by love of her beauty.’</p><p>136 Chapter 3<br>
+<h1>【10†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+245 School of Nature: ‘Philosophandi methodo orthodoxa vereque Theosophicâ’.<br>
+246 Amph.II, 154. On Pico, see, for example, Antonella Ansani, ‘Giovanni Pico Della Mirandola’s </p><p>Language of Magic’, in Ilana Zinguer (ed.), L’Hébreu au temps de la Renaissance (Leiden: <br>
+Brill, 1992), 89–104. See Chapter 4 on Khunrath’s Cabala.</p><p>247 For a translation, see Brian P. Copenhaver, Hermetica: The Greek ‘Corpus Hermeticum’ <br>
+and the Latin ‘Asclepius’ in a new English Translation, with notes and introduction (Cam-<br>
+bridge: Cambridge University Press, 1992; repr. 1995; repr. 2000). See also Cees Leijenhorst, <br>
+‘Francesco Patrizi’s Hermetic Philosophy’, in Roelof van den Broek and Wouter J. Hane-<br>
+graaff (eds.), Gnosis and Hermeticism from Antiquity to Modern Times (New York: State <br>
+University of New York Press, 1998), 125–146; Karl Schuhmann, ‘Francesco Patrizi und die <br>
+hermetische Philosophie’, in Karl Schuhmann, Selected papers on Renaissance Philosophy <br>
+and on Thomas Hobbes, edited by Piet Steenbakkers and Cees Leijenhorst (Dordrecht: <br>
+Kluwer Academic Publishers, 2004), 157–170; Wouter J. Hanegraaff, ‘Altered States of <br>
+Knowledge: The Attainment of Gnosis in the Hermetica’, The International Journal of the </p><p>51Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>alchemy – or spiritual piety and natural science.’248 Khunrath’s philosophy is a <br>
+philosophia pia, in which the search for Truth is attained through ‘pious inves-<br>
+tigation, assiduous prayers and tireless works, in Oratory and Laboratory.’249 <br>
+Just as in the Pimander Hermes Trismegistus, whom Khunrath states ‘was <br>
+inspired by the Divine Spirit’,250 asks to be taught about the nature of things <br>
+and to know God, so the Lutheran theosopher seeks knowledge not only of the <br>
+secrets of nature, but also preparation for spiritual transformation from the <br>
+Old Adam into the New.251</p><p>Indeed, Khunrath’s Theosophy has pansophical ambitions, aiming at under-<br>
+standing ‘as much in Natural, Artificial, Mechanical things, etc. as in Meta-<br>
+physical and Divine’, and as such far exceeds the scope of the predominantly <br>
+metaphysical theosophy propounded by Weigel, Arndt, or Boehme.252 With <br>
+his interest both in the mechanical arts (which generally included alchemy, <br>
+medicine, optics, agriculture and navigation)253 and in union with the Divine, <br>
+i.e. the realms of physics and metaphysics, Khunrath more closely resembles <br>
+another ‘early protagonist of mystically and theosophically-oriented alchemy,’ <br>
+the Flemish chemical philosopher Gérard Dorn (c.1530–1584), editor and com-<br>
+mentator of Paracelsus, whose writings range from the construction of alchem-<br>
+ical furnaces to a philosophia speculativa leading to union with God, his works <br>
+occupying almost 400 pages in the first volume of the Theatrum Chemicum.254<br>
+<h1>【11†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+470 See Miklós Vassányi, Anima Mundi: The Rise of the World Soul Theory in Modern German <br>
+Philosophy (Dordrecht: Springer Verlag, 2011), Introduction, for a discussion of the Soul of <br>
+the World in Plato, Plotinus, Classical and Early Modern Conceptions of the World Soul; <br>
+Chapter 6 on Böhme and Oetinger; and Chapter 8 on Giordano Bruno’s De la causa, prin-<br>
+cipio et uno (Venice, 1584) and De l’infinito, universo e mondi (London, 1584).</p><p>471 Szulakowska, The Alchemy of Light, 24, 92.</p><p>95Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>the Servant of the Macrocosm, the counterpart to Christ as the Saviour of the <br>
+Microcosm.472 In a gloss of Wisdom 7:22 ‘In Wisdom is the Spirit’, that sounds <br>
+like a theory of divine emanation influenced by the Kabbalistic Tree of Life, <br>
+Khunrath explains that this spirit is ‘πνευμα μονογενες και πολυμερες [pneuma <br>
+monogenes kai polymeres], Only-born or Only-begotten, and Manifold, <br>
+because, born and come forth from that simple and Unique Nature of GOD, <br>
+it spreads itself as if though branches, throughout these innumerable parts of <br>
+the World.’473 He adds that ‘Multiplicity is also attributed to this Spirit of GOD, </p><p>472 For more on the relation between Christ and the Philosophers’ Stone, see Chapter 6 on <br>
+Khunrath’s Alchemy.</p><p>473 Amph.II, 56 ‘Est &amp; dicitur πνευμα μονογενἐς και πολυμερἐς, Vnigenus siue Vnigenitus, &amp; <br>
+Multiplex, quod ab illa simplici Vnicaque Dei Natura ortus &amp; profectus, se per has Mundi <br>
+partes innumeras, quasi per ramos diffundat.’ Most of this definition is not original to <br>
+Khunrath, but in fact lifted verbatim from Stephanus, Biblia Utriusque Testamenti (1557), <br>
+99r n. 22.</p><p>Figure 3.15 Khunrath, Amphitheatrum (1609), Title page, detail: Ruach Elohim mediantibus <br>
+Schamaim – Spirit of the Lord with the Heavens mediating. Royal Danish <br>
+Library, Copenhagen, Shelfmark 3, 273c, 01293 S-1977</p><p>96 Chapter 3</p><p>on account of the variety of virtues and powers infused in the Things, into <br>
+which it descends.’474</p><p>3. Micro-Cosmically, in Man, and indeed σωματικως [sōmatikōs  – <br>
+somatically], that is, corporeally, or in solid matter, in body and Spirit, <br>
+by reason of the fifth Essence, simply, [in] the Soul or mind, which is a <br>
+particle of the Divine breath.475<br>
+<h1>【12†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+It is presented by Khunrath as </p><p>466 Amph.II, 109 ‘in quadrante horulæ, imò in momento, (suspicor institutione Genii mei <br>
+boni gratia Dei mihi adsistentis) me plus intellexisse, quàm antea spatio anni totius.’</p><p>467 Amph.II, 111 ‘Virtute &amp; assistentia Spiritvs huius poteris Omnia.’<br>
+468 Amph.II, 111 ‘2. Macro-Cosmicè Naturâ (quæ Rvach elohim, Gen. 1. aut Anima </p><p>Mundi) Catholicè, hoc est, vniuersali virtute ac operatione, in Lapide Philosophorum; <br>
+Particulariter, in singulis Creaturis, tam spiritualibus quàm corporalibus, &amp; quæ ex hisce <br>
+sunt, per totum vniuersum creatum.’</p><p>469 For example, Genesis 1:2 ‘And the Spirit of God moved over the waters’. But see also Amph.<br>
+II, 9 ‘The Spirit of the Lord hath spoken by me, says David, 2 Samuel 23:2, and his word <br>
+by my tongue.’ This becomes more puzzling when we take into account Amph.II, 100 ‘It <br>
+makes the Sons of God, Romans 8:14, Whoever are led by the Spirit of God, they are the <br>
+sons of God’.</p><p>470 See Miklós Vassányi, Anima Mundi: The Rise of the World Soul Theory in Modern German <br>
+Philosophy (Dordrecht: Springer Verlag, 2011), Introduction, for a discussion of the Soul of <br>
+the World in Plato, Plotinus, Classical and Early Modern Conceptions of the World Soul; <br>
+Chapter 6 on Böhme and Oetinger; and Chapter 8 on Giordano Bruno’s De la causa, prin-<br>
+cipio et uno (Venice, 1584) and De l’infinito, universo e mondi (London, 1584).</p><p>471 Szulakowska, The Alchemy of Light, 24, 92.</p><p>95Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>the Servant of the Macrocosm, the counterpart to Christ as the Saviour of the <br>
+Microcosm.472 In a gloss of Wisdom 7:22 ‘In Wisdom is the Spirit’, that sounds <br>
+like a theory of divine emanation influenced by the Kabbalistic Tree of Life, <br>
+Khunrath explains that this spirit is ‘πνευμα μονογενες και πολυμερες [pneuma <br>
+monogenes kai polymeres], Only-born or Only-begotten, and Manifold, <br>
+because, born and come forth from that simple and Unique Nature of GOD, <br>
+it spreads itself as if though branches, throughout these innumerable parts of <br>
+the World.’473 He adds that ‘Multiplicity is also attributed to this Spirit of GOD, </p><p>472 For more on the relation between Christ and the Philosophers’ Stone, see Chapter 6 on <br>
+Khunrath’s Alchemy.<br>
+<h1>【13†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+For more on Reuchlin, see Elliot R. Wolfson, ‘Language, <br>
+Secrecy, and the Mysteries of Law: Theurgy and the Christian Kabbalah of Johannes <br>
+Reuchlin’, Kabbalah: A Journal for the Study of Jewish Mystical Texts 13 (2005): 7–41; Bernd <br>
+Roling, ‘The Complete Nature of Christ: Sources and Structures of a Christological The-<br>
+urgy in the Works of Johannes Reuchlin’, in Jan N. Bremmer and Jan R. Veenstra (eds.), The <br>
+Metamorphosis of Magic from Late Antiquity to the Early Modern Period (Leuven: Peeters, <br>
+2002), 231–266.</p><p>214 Amph.II, 34 ‘in Minervæ templo Micro-Cosmico meo’; 99 ‘Sanctuarium Sapientiæ; <br>
+Minervæ templum MicroCosmico’.</p><p>215 Amph.II, 87 ‘Cicero Ethnicus prudens’.<br>
+216 John Warwick Montgomery, Cross and Crucible: Johann Valentin Andreæ (1586–1654) </p><p>Phoenix of the Theologians, 2 vols. (The Hague: Martinus Nijhoff, 1973), Vol. 1, 17 f.n.<br>
+217 Fictuld, Der längst gewünschte und versprochene Chymisch-Philosophische Probier-Stein, </p><p>60 ‘Gar nothwendige drey fragen von D. Heinrich Cunrad in Leipzig, de 1607. Es sind </p><p>45Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>It would not be correct, however, to overly identify Khunrath with Weigel or <br>
+Arndt. As a practising doctor of medicine and physico-chymist, with a concern <br>
+for the physical, psychological and spiritual, his work more fully embodies <br>
+Paracelsus’s broad spectrum of pursuits than either the pastor Weigel or the <br>
+‘prophet of interior Protestantism’ Arndt, who were both first and foremost <br>
+theologians.218 Nor would it be wise, while acknowledging the inspiration <br>
+these ‘proto-theosophers’ drew from Paracelsus, to simply assume that they <br>
+were all practising an extended Paracelsianism, or indeed an identical ‘pro-<br>
+to’-theosophy. If anything, Weigel and Arndt could be argued to represent less <br>
+an ‘extended’ than a ‘truncated’ form of Paracelsianism, more closely resem-<br>
+bling the sublimation of its discourse in the fusion of rudimentary Paracelsian <br>
+chemical theory with Christian mysticism in the theosophy of Boehme.219 As <br>
+shall be shown, although Khunrath is indeed indebted to Paracelsus and shares <br>
+much in common with Arndt and Weigel, he draws from an extremely diverse <br>
+range of sources in the formulation of his theosophy.</p><p>9 A Faithful Lover of Theosophy</p><p>Khunrath presents himself as Theosophiae Amator, a Lover of Theosophy, on <br>
+the title page of the first edition of the Amphitheatre in 1595.220 A couple of <br>
+years later, in On Primaterial Chaos (1597), he provides several glosses and </p><p>wenige Blätter, aber sein mit der Liebe Jesu erfulltes.’ Arnold, Unpartheyische Kirchen und <br>
+Ketzer Historie, Vol. 3, 12 ‘findet man zuforderst in seinen schrifften, daß er zum grunde <br>
+alles seines vortrags das göttliche wort.’<br>
+<h1>【14†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Although Trithemius and Della Porta are describing magicians rather than <br>
+theosophers, their recommendations serve as useful comparison. Needless <br>
+to say, with such stringent requirements, the true theosopher is a rara avis, <br>
+for as Khunrath says, paraphrasing Horace, ‘it is not easy for every man to go <br>
+to Corinth, still less to the treasury of WISDOM!’287 Indeed, he believes that <br>
+it is a divine inner calling, only to be followed by those fit for the undertak-<br>
+ing, in accordance with the adage that ‘Mercury is not fashioned of just any <br>
+wood’.288 Thus it is that in the Amphitheatre’s Citadel engraving the adept has <br>
+to pass through a gate guarded by Hermes, cross a drawbridge, and then pass <br>
+through a triumphal archway bearing the words ‘NON OMNIBUS’ (Not for All) <br>
+before gaining access to the heart of the citadel. Hence, too, the reference on <br>
+the Amphitheatre’s title page, ‘To scarcely one out of thousands’, apparently <br>
+derived from the Talmudists: ‘You may have many friends, but in fact you should <br>
+reveal your secret to scarcely one out of thousands,’289 with Khunrath elsewhere <br>
+claiming that scarcely one out of thousands reach the harbour of truth,290 or <br>
+recognise the Stone for what it is worth.291</p><p>14 Ora et Labora</p><p>The Amphitheatre, Khunrath claims, Christianly teaches ‘WITH TRUE WIS-<br>
+DOM, TO WHOM, WHAT, WHERE, BY WHAT MEANS, HOW LONG, WHY, HOW, <br>
+[AND] WHEN it may and should be done’.292 Its ‘Theo-Sophical Method’293 </p><p>286 This translation is from the English edition, John Baptista Porta, Natural Magick (London, <br>
+1658), Book 1, Chapter 3. The Instruction of a Magician, and what manner of man a <br>
+Magician ought to be, 3–4.</p><p>287 Amph.II, 162. Horace, Epistles, Book 1, Epistle 17, l. 36.<br>
+288 Amph.II, 121. See Galen, De differentiis pulsuum, Lib.IV, in Erasmus, Collected Works of </p><p>Erasmus, Vol. 34, Adages II vii 1 to III iii 100, translated and annotated by R.A.B. Mynors <br>
+(Toronto: Toronto University Press, 1993), 143 II.x.42.</p><p>289 Amph.II, 172: ‘Sint tibi amicorum plures, arcanum uerò tuum vix è millibus uni reuela.’ See <br>
+also Magnesia, 45.</p><p>290 Amph.II, 215.<br>
+291 Magnesia, 45. See also Amph.I, 22.<br>
+292 Amph.I, 7 ‘Sapientia vera, cvi, qvid, vbi, qvibvs avxiliis, qvamdiv, cvr, qvo-</p><p>modo, qvando, fieri possit ac debeat.’<br>
+293 Amph.II, 92, ‘methodo TheoSophica’; 154; School of Nature.</p><p>61Khunrath the Theosopher – a Lover of Divine Wisdom<br>
+<h1>【15†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+393 Amph.II, 209 ‘Sigillvm Patris, Imago non tantum, vel ΕΙΚΩΝ sed &amp; ἀπαυχασμα, &amp; verus <br>
+gloriæ Patris splendor, Dei Verbvm, Dei Virtvs, &amp; Dei Sapientia incarnata.’ Printed <br>
+ἀπαυχασμα [apauchasma], but most likely a misprint for ἀπαυγασμα [apaugasma], radi-<br>
+ance, effulgence. Cf. Wisdom 7:26 ‘For she is the brightness of eternal light;’ Hebrews 1:3 <br>
+‘Who, being the brightness of his glory and the figure of his substance and upholding all <br>
+things by the word of his power, making purgation of sins, sitteth on the right hand of the <br>
+majesty on high.’</p><p>394 Amph.II, 73–4.<br>
+395 See Gerrish, The Old Protestantism and the New, Chapter 8, “To the Unknown God” </p><p>Luther and Calvin on the Hiddenness of God. See also the London, 1647 translation by </p><p>85Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>21 Deus Pater Archetypos – God, the Father, the Archetype</p><p>It is clear in the opening passage of the Amphitheatre, addressed to YHVH <br>
+Elohim Tzebaoth, Jehovah, Lord of Hosts, that Khunrath chooses to emphasise <br>
+the creative aspects of God’s Nature as ‘Perpetual Author, Preserver, Governor <br>
+of the whole body of formed and created things existing in the whole Universe’, <br>
+i.e. God as Creator and as Lord of the angelic hosts. As an alchemist, Christian <br>
+Cabalist and magus, Khunrath is especially drawn to the vision of God as the <br>
+Archetype of the World, the First Exemplar of the World.396 This notion of God <br>
+as Archetypos is further developed in the Amphitheatre’s second circular fig-<br>
+ure, in this case providing clues to how Khunrath perceived the relationship <br>
+between God and Man. Somewhat reminiscent of the set of three volvelles <br>
+in the thirteenth-century Franciscan logician and philosopher Ramon Lull’s <br>
+Ars Brevis, which sought to approach God through the contemplation of nine <br>
+divine ‘dignities’ or ‘axioms’ (goodness, greatness, eternity; power, wisdom, <br>
+love; virtue, truth, and glory),397 Khunrath’s second circular figure depicts ten <br>
+rays, bearing thirteen attributes (Eternal, Terrible, Just, Merciful, etc) emanat-<br>
+ing from the Sun of the divine Archetype.398</p><p>From these attributes we gain a strong impression of the Old Testament <br>
+two-fold hand of God, both Helper and Avenger, the powerful and forbid-<br>
+ding ‘YHVH Elohim Tzebaoth [Lord God of Hosts], GOD OF GODS, BEING OF <br>
+BEINGS,’ demanding recognition of the helpful hand and fear of the vengeful, <br>
+and exacting punishment from those like Pharaoh and Nebuchadnezzar who <br>
+ignore His authority.399 As with all Khunrath’s theosophy, acknowledgement <br>
+and knowledge of God involves practice as much as theory. It is not simply the </p><p>John Sparrow of Boehme, The Clavis or Key, or An Exposition of Some Principall Matters, <br>
+and Words in the Writings of Jacob Behmen, printed in The Works of Jacob Behmen, 2:7; <br>
+Sämtliche Schriften,<br>
+<h1>【16†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Figure 3.23  <br>
+Khunrath, Amphitheatrum (1609), <br>
+School of Nature, detail, Theosopher <br>
+meditating outdoors (or in his <br>
+imagination), kneeling before an <br>
+open psalter. Royal Danish Library, <br>
+Copenhagen, Shelfmark 3, 273c, 01293 <br>
+S-1977</p><p>Figure 3.24  <br>
+Theosopher at Prayer, Tabulae <br>
+Theosophicae Cabbalisticae <br>
+London, British Library Ms. <br>
+Sloane 181, detail. © The British <br>
+Library Board</p><p>165Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>out from these potent symbols, which are superimposed on his face, surely <br>
+encouraging some form of mystical reflection and identification with Christ, <br>
+Eternal Wisdom and Adam, the spiritually reborn inner man, Lover of Wisdom.</p><p>39 3) Cognitio (Knowledge) and 4) Amor (Love)</p><p>In his seventeenth-century translation of the Amphitheatre, commenting on <br>
+the Ladder of Union, Claude de Bourges writes</p><p>It is necessary to meditate in order to happily attain Knowledge, which <br>
+will be to pass through the second degree of Union, for Meditation based <br>
+on the principles makes [one] configure the subject of Meditation men-<br>
+tally and in spirit until such a point that one perceives the truth which <br>
+must be put into practice as a result of Knowledge.831</p><p>When writing of Neoplatonically ascending in thought to the One, <br>
+both Ficino and Pico distinguished between logical understanding and </p><p>831 Amsterdam, Ritman Library, Ms. BPH M490 L’Amphyteatre de la Sapience eternelle, 23 <br>
+‘Il fault mediter pour heureusement parvenir a la science, qui sera passer par le second <br>
+degré d’union, car la meditation appuiee sur les principes faict dessigner mentallement <br>
+et en esprit le subiet de meditation jusqua tel point que l’on appercoiue la verité laquelle <br>
+doit estre mise en pratique par l’effect de cognoissance.’</p><p>Figure 3.25 Khunrath, Amphitheatrum (1595), Oratory-Laboratory, detail: <br>
+Theosopher meditating in front of Amphitheatre Circular <br>
+Figures 1 &amp; 2. Oberösterreichische Landesbibliothek, Linz</p><p>166 Chapter 3</p><p>dialectical contemplation, which is the summit of the soul’s intellectual <br>
+activity.832 Ultimately, the thought by which the human soul is able to transcend <br>
+itself is not the process of discursive reasoning concerned with the abstrac-<br>
+tion of universal ideas, but rather an intuitive vision of intelligible reality.833 In <br>
+Hugh of St Victor’s terms, this is the movement from meditation to contempla-<br>
+tion, as it were a paradigm shift of the soul, a transition from ratio to intellectus, <br>
+scientia to sapientia, epistēmē to gnōsis, to the more-than-rational conclusion <br>
+of a dialectical process in the goal of amor intellectualis. In the ‘Outline of the <br>
+Third Grade’, Khunrath’s use of the terms nosse and scire to denote two differ-<br>
+ent forms of knowledge, the one experiential, the other intellectual seems to <br>
+suggest a similar understanding.834<br>
+<h1>【17†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+This book is printed on acid-free paper and produced in a sustainable manner.</p><p>Cover illustration: Cover illustration: Adam Androgyne. From Heinrich Khunrath, Amphitheatrum <br>
+sapientiae aeternae (Hamburg, 1595). Duveen Collection, University of Wisconsin-Madison.</p><p>The Library of Congress Cataloging-in-Publication Data is available online at https://catalog.loc.gov  <br>
+LC record available at https://lccn.loc.gov/2024026857<br>
+LC ebook record available at https://lccn.loc.gov/2024026858</p><p>http://brill.com/brill-typeface<br>
+https://www.brill.com<br>
+https://www.copyright.com<br>
+http://info@brill.com<br>
+https://catalog.loc.gov<br>
+https://lccn.loc.gov/2024026857<br>
+https://lccn.loc.gov/2024026858</p><p>For Wendy, Cecil, Hilda, and May</p><p>∵</p><p>Contents</p><p>Acknowledgments xi<br>
+List of Figures xv<br>
+List of Tables xxii</p><p> Introductory Note 1</p><p>3 Khunrath the Theosopher – a Lover of Divine Wisdom 2<br>
+1 Pre-Modern Uses of the Term Theosophy 4<br>
+2 Characteristics of Early Modern Theosophy 8<br>
+3 Proto-Theosophers and Theophrastia Sancta 11<br>
+4 Valentin Weigel (1533–1588) 13<br>
+5 Johann Arndt (1555–1621) 19<br>
+6 Enthusiasm 28<br>
+7 The Anti-Trinitarians’ Contempt of Divine Tri-Unity 35<br>
+8 An Unorthodox Lutheran? 38<br>
+9 A Faithful Lover of Theosophy 45<br>
+10 Theodidaktos – Taught by God 48<br>
+11 Hermetic Philosophy and Pansophy 50<br>
+12 Khunrath’s Theosopher 52<br>
+13 Qualifications to be a Magus 58<br>
+14 Ora et Labora 60<br>
+15 Ora, Oratio, Oraculum 62<br>
+16 Exegesis: Interpreting the Three Books 65<br>
+17 Labora 71<br>
+18 The Triune Apocalyptic Key 73<br>
+19 I. The Book of God in the Ternary 75<br>
+20 Book of God, Book of Scripture 82<br>
+21 Deus Pater Archetypos – God, the Father, the Archetype 85<br>
+22 Filius Theanthropos – the Divinely-Human Son 86<br>
+23 Spiritus Polypoikilos – Multiform Spirit 89<br>
+24 II. Book of Nature, Book of Creation 97<br>
+25 Χαος – Chaos 103<br>
+Ruach Elohim – Spirit of the Lord 105 – רוח אלהים 26<br>
+Schamaim – Heaven 113 – שמים 27<br>
+28 Three Heavens 117<br>
+29 1) The Lower Sublunar Heaven 117<br>
+30 2) Rachia: the Firmament of Heaven 118<br>
+31 3) The Super-Supreme Empyrean 119</p><p>viii Contents<br>
+<h1>【18†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+totus, cum creaturis Spiritualibus; &amp; Corpus ac Spiritus Hominis, id est, Mundi minoris: <br>
+Secundò, Mens, siuè Anima homini Diuinitus inspirata: Tertiò SS.a Scriptura; quod est <br>
+Verbvm Dei Biblicè scriptum … Literæ, quibus Verbvm in Bibliis scriptum, columna <br>
+vna &amp; septima’. Khunrath quotes Proverbs 9:1 ‘Wisdom hath built herself a house: she <br>
+hath hewn her out seven pillars.’</p><p>79Khunrath the Theosopher – a Lover of Divine Wisdom</p><p>Early on in the Amphitheatre we find a passage in which Khunrath provides <br>
+a relatively straightforward explanation of the instruction received concerning <br>
+body, spirit and soul:</p><p>Instruction, which Divinely falls to one’s lot, comes to be embraced with <br>
+great quickness of mind, with heavenly and holy desire. Let it here be <br>
+noted that it is a learned Intelligence, not that vulgar, common and easily <br>
+attained kind; but that which knows celestial, Theological, macro- and <br>
+micro-cosmic instruction. It is divided into Justice, which concerns the <br>
+soul of man; Judgement, which concerns his body; [and] Rectitude, which <br>
+concerns his spirit, and morals, whose duty and calling it forms; so that <br>
+one acts religiously in divine matters, justly in human, [and] rightly in <br>
+one’s own, towards God, men and oneself.376</p><p>This passage evidently made a strong impression on one seventeenth-century <br>
+reader, whose Ramist diagrammatic rendition of the information can be found <br>
+in a copy of the Amphitheatre in the Warburg Institute, London (Fig. 3.11).377</p><p>376 Amph.II, 4: ‘Et suscipiendam] Eruditio, quæ Diuinitùs contingit, magna solertia, cælesti &amp; <br>
+sancto desiderio amplectenda venit. Notanda etiam hîc est erudita Intelligentia; non vul-<br>
+garis illa, communis &amp; cuiuis obuia; sed quæ cælestem eruditionem sapiat, Theologicam, <br>
+macro &amp; microcosmicam. Hanc distribuit in Iustitiam, quæ animam hominis concernit; <br>
+in Iudicium, quod corpus; in Rectitudinem, quæ spiritum, mores, &amp; cuiusque officium ac <br>
+vocationem conformat: vt sanctè agat in diuinis, iustè in humanis, rectè in propriis<br>
+Visible: 0% - 94%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p><strong>Summary of Chapter 3: &quot;Khunrath the Theosopher – a Lover of Divine Wisdom&quot;</strong>  <br>
+from <em>Peter J. Forshaw, _The Mage’s Images: Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ (Brill, 2025)</em></p><p><hr></p><p>This chapter explores the theosophical framework underlying Heinrich Khunrath’s fusion of magic, cabala, and alchemy, emphasizing his identity as a “lover of divine wisdom” — a <em>Theosophiae Amator</em> — taught directly by God (<em>Theodidaktos</em>).</p><p><h3>Key Themes:</h3></p><p><h4>1. <strong>Theosophy and Its Traditions</strong></h4><br>
+<ul><li>The chapter begins with an overview of <em>theosophy</em> from antiquity to the early modern period, differentiating Khunrath’s vision from Jacob Boehme’s mysticism and Helena Blavatsky’s orientalist theosophy.</li><br>
+<li>His spiritual lineage is traced through Valentin Weigel and Johann Arndt, both of whom emphasize personal piety over scholastic theology【8:4†source】.</li><br>
+</ul><br>
+<h4>2. <strong>Khunrath’s Vision of the Theosopher</strong></h4><br>
+<ul><li>A true theosopher is:</li><br>
+</ul>  - God-taught through scripture, nature, or a spiritual master.<br>
+  - Grounded in moral rectitude and divine fear (not servile, but filial).<br>
+  - Engaged with both physical and metaphysical realities (the microcosm and macrocosm)【8:2†source】.<br>
+<ul><li>The theosopher must combine a healthy body, spiritual discipline, and scientific understanding, particularly in alchemy and natural magic.</li><br>
+</ul><br>
+<h4>3. <strong>Threefold Path: Ora et Labora</strong></h4><br>
+<ul><li>Khunrath’s motto <em>“Pray and Work”</em> (<em>Ora et Labora</em>) underpins his method of gaining wisdom:</li><br>
+</ul>  - <em>Oratory</em>: prayer and contemplation of Scripture.<br>
+  - <em>Laboratory</em>: empirical investigation of Nature.<br>
+  - <em>Self</em>: introspective understanding of one’s soul.<br>
+<ul><li>These correspond to three “books”: Scripture (Word of God), Nature (Creation), and Self (Microcosm)【8:3†source】.</li><br>
+</ul><br>
+<h4>4. <strong>Ladder of Cognition and Conjunction</strong></h4><br>
+<ul><li>Khunrath elaborates a structured ascent through ten grades of cognition culminating in mystical union.</li><br>
+<li>This ladder, paralleling Kabbalistic Sephiroth and Neoplatonic ascent, reflects a process from sensual perception to divine love (<em>amor intellectualis</em>)【8:16†source】.</li><br>
+</ul><br>
+<h4>5. <strong>Trinitarian Framework of Knowledge</strong></h4><br>
+<ul><li>He describes a <em>Ter-triune</em> system:</li><br>
+</ul>  1. <strong>Recognition of God (Agnoscere)</strong> – through Christian-Cabalist prayer.<br>
+  2. <strong>Knowledge of Self (Noscere)</strong> – through divine magic.<br>
+  3. <strong>Understanding the World (Cognoscere)</strong> – through alchemy.<br>
+<ul><li>Each domain is approached through its own mode of knowledge but integrated in practice【8:3†source】.</li><br>
+</ul><br>
+<h4>6. <strong>Khunrath’s Theological Alchemy</strong></h4><br>
+<ul><li>His thought integrates Paracelsian alchemical traditions with mystical Christianity. He sees Christ as the archetype (<em>Deus Pater Archetypos</em>), and as <em>Chochmah-El</em> (Wisdom of God), mediating divine wisdom into the world.</li><br>
+<li>The Spirit (<em>Ruach Elohim</em>) is both divine and manifold, immanent in all creation, like the Kabbalistic <em>Shekhinah</em>【8:6†source】.</li><br>
+</ul><br>
+<hr></p><p><strong>Overall</strong>, Chapter 3 portrays Khunrath as a theosopher whose religious life and scientific work are inseparable. His work offers a comprehensive spiritual epistemology where prayer, natural inquiry, and inner transformation form a single path toward divine wisdom.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>continue with the next chapter. give me page number references and direct quotations of forshaw&#x27;s exact words at key moments</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;queries&quot;: [&quot;Summary of Chapter 4: Christian Cabala’s Wonder-Working Word with key quotations and page numbers&quot;]}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+9	A Faithful Lover of Theosophy<br>
+	10	Theodidaktos – Taught by God<br>
+	11	Hermetic Philosophy and Pansophy<br>
+	12	Khunrath’s Theosopher<br>
+	13	Qualifications to be a Magus<br>
+	14	Ora et Labora<br>
+	15	Ora, Oratio, Oraculum<br>
+	16	Exegesis: Interpreting the Three Books<br>
+	17	Labora<br>
+	18	The Triune Apocalyptic Key<br>
+	19	I. The Book of God in the Ternary<br>
+	20	Book of God, Book of Scripture<br>
+	21	Deus Pater Archetypos – God, the Father, the Archetype<br>
+	22	Filius Theanthropos – the Divinely-Human Son<br>
+	23	Spiritus Polypoikilos – Multiform Spirit<br>
+	24	II. Book of Nature, Book of Creation<br>
+	25	Χαος – Chaos<br>
+	26	אלהים רוח – Ruach Elohim – Spirit of the Lord<br>
+	27	שמים – Schamaim – Heaven<br>
+	28	Three Heavens<br>
+	29	1) The Lower Sublunar Heaven<br>
+	30	2) Rachia: the Firmament of Heaven<br>
+	31	3) The Super-Supreme Empyrean<br>
+	32	III. Book of Man, Book of Conscience<br>
+	33	Ten Grades of Cognition<br>
+	34	The Threefold Eye and Three Kinds of Vision<br>
+	35	The Ladder of Conjunction and Union<br>
+	36	Prologue: Seven Steps to the Sanctuary<br>
+	37	1) Fides (Faith)<br>
+	38	2) Meditatio (Meditation)<br>
+	39	3) Cognitio (Knowledge) and 4) Amor (Love)<br>
+	40	5) Spes (Hope)<br>
+	41	6) Oratio (Prayer)<br>
+	42	7) Conjunctio (Conjunction)<br>
+	43	8) Frequentia (Concourse &amp; Constant Practice)<br>
+	44	Gerard Dorn’s Speculative or Meditative Philosophy<br>
+	45	9) Familiaritas (Familiarity)<br>
+	46	10) Similitudo (Likeness)<br>
+	47	Deification<br>
+	48	Conclusion<br>
+	49	Ascent and Descent</p><p>	Chapter 4 Christian Cabala’s Wonder-Working Word<br>
+	1	The Origins of Christian Cabala<br>
+	2	Proto-Kabbalah of the Sepher Yetzirah<br>
+	3	Bahir: Book of Illumination<br>
+	4	The Works of Bereshit and Merkavah<br>
+	5	Zohar: Book of Splendour<br>
+	6	Ten Sephiroth on the Tree of Life<br>
+	7	Giovanni Pico della Mirandola and the Genesis of Christian Cabala<br>
+	8	Exegetical Techniques in Jewish Kabbalah<br>
+	9	Gematria<br>
+	10	Notarikon/Notariacon<br>
+	11	Temurah or Tziruf<br>
+	12	Exegetical Examples from Pico’s Conclusions and Heptaplus<br>
+	13	Johann Reuchlin’s Neo-Pythagorean Cabala<br>
+	14	On the Wonder-Working Word (1494)<br>
+	15	On the Cabalistic Art (1517)<br>
+	16	Heinrich Cornelius Agrippa’s Occult Philosophy<br>
+	17	John Dee’s Hieroglyphic Monad<br>
+	18	Sources for Khunrath’s Knowledge of Cabala<br>
+	19	Other Potential Sources<br>
+	20	Cabala in Khunrath’s Works<br>
+	21	Aben –<br>
+<h1>【1†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Chapter 4 Christian Cabala’s Wonder-Working Word<br>
+	1	The Origins of Christian Cabala<br>
+	2	Proto-Kabbalah of the Sepher Yetzirah<br>
+	3	Bahir: Book of Illumination<br>
+	4	The Works of Bereshit and Merkavah<br>
+	5	Zohar: Book of Splendour<br>
+	6	Ten Sephiroth on the Tree of Life<br>
+	7	Giovanni Pico della Mirandola and the Genesis of Christian Cabala<br>
+	8	Exegetical Techniques in Jewish Kabbalah<br>
+	9	Gematria<br>
+	10	Notarikon/Notariacon<br>
+	11	Temurah or Tziruf<br>
+	12	Exegetical Examples from Pico’s Conclusions and Heptaplus<br>
+	13	Johann Reuchlin’s Neo-Pythagorean Cabala<br>
+	14	On the Wonder-Working Word (1494)<br>
+	15	On the Cabalistic Art (1517)<br>
+	16	Heinrich Cornelius Agrippa’s Occult Philosophy<br>
+	17	John Dee’s Hieroglyphic Monad<br>
+	18	Sources for Khunrath’s Knowledge of Cabala<br>
+	19	Other Potential Sources<br>
+	20	Cabala in Khunrath’s Works<br>
+	21	Aben – Stone<br>
+	22	Sol/Shemesh<br>
+	23	Urim and Thummim<br>
+	24	Sigillum Dei: Khunrath’s Christian-Cabalist Seal of God<br>
+	25	1. Circumference: Tetraktys and Decalogue<br>
+	26	2. The Angelic Hierarchy<br>
+	27	3. A Prayer for Christians and Jews<br>
+	28	4. 22 Foundational Letters<br>
+	29	5. Ensoph – The Infinite<br>
+	30	6. Emet – Truth<br>
+	31	7. Sephiroth: Emanations of the Divine<br>
+	32	8. Shemoth: the Names of God<br>
+	33	9. יהשוה YHSVH, Pentagrammaton, Verbum Mirificum<br>
+	34	10. Christ θεανθρωπος<br>
+	35	A Christian-Cabalist Adam Androgyne<br>
+	36	Rejection of the Binary<br>
+	37	Cabalistic Conclusions concerning Khunrath</p><p>	Index of Names<br>
+	Index of Subjects<br>
+	Back Cover<br>
+<h1>【2†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+viii Contents</p><p>32 III. Book of Man, Book of Conscience 120<br>
+33 Ten Grades of Cognition 123<br>
+34 The Threefold Eye and Three Kinds of Vision 135<br>
+35 The Ladder of Conjunction and Union 140<br>
+36 Prologue: Seven Steps to the Sanctuary 145<br>
+37 1) Fides (Faith) 151<br>
+38 2) Meditatio (Meditation) 158<br>
+39 3) Cognitio (Knowledge) and 4) Amor (Love) 165<br>
+40 5) Spes (Hope) 171<br>
+41 6) Oratio (Prayer) 173<br>
+42 7) Conjunctio (Conjunction) 182<br>
+43 8) Frequentia (Concourse &amp; Constant Practice) 186<br>
+44 Gerard Dorn’s Speculative or Meditative Philosophy 187<br>
+45 9) Familiaritas (Familiarity) 192<br>
+46 10) Similitudo (Likeness) 194<br>
+47 Deification 198<br>
+48 Conclusion 211<br>
+49 Ascent and Descent 212</p><p>4 Christian Cabala’s Wonder-Working Word 215<br>
+1 The Origins of Christian Cabala 215<br>
+2 Proto-Kabbalah of the Sepher Yetzirah 217<br>
+3 Bahir: Book of Illumination 218<br>
+4 The Works of Bereshit and Merkavah 219<br>
+5 Zohar: Book of Splendour 220<br>
+6 Ten Sephiroth on the Tree of Life 221<br>
+7 Giovanni Pico della Mirandola and the Genesis of </p><p>Christian Cabala 228<br>
+8 Exegetical Techniques in Jewish Kabbalah 232<br>
+9 Gematria 234<br>
+10 Notarikon/Notariacon 237<br>
+11 Temurah or Tziruf 240<br>
+12 Exegetical Examples from Pico’s Conclusions and Heptaplus 240<br>
+13 Johann Reuchlin’s Neo-Pythagorean Cabala 245<br>
+14 On the Wonder-Working Word (1494) 248<br>
+15 On the Cabalistic Art (1517) 249<br>
+16 Heinrich Cornelius Agrippa’s Occult Philosophy 254<br>
+17 John Dee’s Hieroglyphic Monad 257<br>
+18 Sources for Khunrath’s Knowledge of Cabala 263</p><p>ixContents<br>
+<h1>【3†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+277Christian Cabala’s Wonder-Working Word</p><p>way treat of the names of God.’264 From the opening sentence, it is clear whom <br>
+he has primarily in mind with his criticisms:</p><p>Wonders are produced by the Paracelsians, promising Christian-Kabalist, <br>
+divinely-magical, physico-chymical, ter-triune, Universal [things], Fie the <br>
+Devil.265</p><p>Cabala is an identifying trait of Paracelsian philosophy, and Khunrath’s <br>
+Amphitheatre, apparently, is a prime representative.266</p><p>20 Cabala in Khunrath’s Works</p><p>What is immediately apparent on the 1609 Amphitheatre’s title-page (Fig. 4.20), <br>
+where we see the Tetragrammaton יהוה [YHVH] in a Tetratkys, אש [Esch – <br>
+Fire], שמש [Shemesh – Sun],267 and אורים יה [Urim Yah – God’s Lights] at the </p><p>264 Libavius, Appendix necessaria Syntagmatis Arcanorum Chymicorum (1615), 76 ‘Tertiam <br>
+excogitarunt interpretes rabini, qui literas &amp; syllabas biblicas linguae sacrae colligunt, <br>
+in numeros vertunt, mutant, transmutant, atque ita tacitos sensus eiiciunt praesertim <br>
+nomina Dei mirabiliter tractantes.’</p><p>265 Libavius, Appendix necessaria Syntagmatis Arcanorum Chymicorum (1615), 76 ‘Mira pro-<br>
+duntur à Paracelsistis, promittentibus Christiano Kabalistica, divinomagica, physico-<br>
+chymica, tertriuna, Catholica, Phy Diabolo’.</p><p>266 See Daniel Sennert, Tractatus de Consensu, &amp; Dissensu Galenicorum &amp; Peripateticorum <br>
+cum Chymicis, Caput XIII. De Fundamentis Medicinae, in Opera omnia medica (Paris, 1641), <br>
+Vol. 1, 937 for references to Paracelsus, ‘Heinrici Cunradi in Amphitheatro’ and Croll as <br>
+sharing sentiments with Weigel; 1002 for a discussion of the ‘Cabalistica Magia Paracelsi’. <br>
+Sennert recycles Libavius’s comment: ‘Cabala Paracelsistarum commune perfugium est’, <br>
+and singles out Ernestus Burgravius, in particular his Achilles Panoplos Redivivus, seu <br>
+Panoplia physico-vulcania [sic] (Amsterdam, 1612), a work which plagiarised a great deal <br>
+of material from Khunrath. See Chapter 5 on Khunrath’s Magic for more information.</p><p>267 Amphitheatrum (1609), Title page, ‘Shemesh’. Cf.<br>
+<h1>【4†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+223 Neander, Sanctae linguae Hebraeae Erotemata, 517 ‘Ad hanc vocem Cabala videtur allu-<br>
+dere Apostolus 1. ad Timoth. Vbi scribit: Fidelis &amp; certus sermo est, &amp; omni acceptione <br>
+seu Cabala dignus, quod Iesus Christus venit in mundum ut peccatores salvos facerit.’ For <br>
+more on Cabala, Neander refers his reader to Paul Fagius’s commentaries on Chapter 26 <br>
+of Genesis and 11 of Numbers, in the Biblia Chaldaica, presumably in Thargum, hoc est, <br>
+Paraphrasis Onkeli Chaldaica in sacra Biblia (Strasbourg, 1546); to Petrus Galatinus, in De <br>
+Arcanis Catholicae veritatis (Basel, 1550); to Reuchlin’s cabalistic works and to his Speculum <br>
+Oculare, i.e. Augenspiegel (Tübingen, 1511); to Antonius Margarita, in De Caeremoniis <br>
+Iudaeorum, presumably Der gantz judisch Glaub (Augsburg, 1530), to Guillaume Postel’s <br>
+Liber de Originibus, seu de Hebraicae linguage antiquitate (Paris, 1538), Cap. 17, and finally <br>
+Book 10, Chapter 1 of Ludovicus Rhodiginus’s Antiquarum Lectionum commentarii libri xvi <br>
+(Venice, 1516). For the reading of 1 Timothy 1:15, as a reference to Cabala, see John Gill’s <br>
+Exposition of the Entire Bible (Dublin: Gill, 1887).</p><p>224 On Pantheus, see Lynn Thorndike, A History of Magic and Experimental Science, 8 vols. (New <br>
+York: Columbia University Press, 1923–58), Vol. V, 537–40; Hilda Norrgrén, ‘Interpretation <br>
+and the Hieroglyphic Monad: John Dee’s Reading of Pantheus’s Voarchadumia’, Ambix 52:3 <br>
+(November, 2005): 217–245. See also Forshaw, ‘Cabala Chymica or Chemia Cabalistica – <br>
+Early Modern Alchemists and Cabala’. For the references to “Cabala of the Metals”, see <br>
+Pantheus, Voarchadumia (Venice, 1530), ‘metallorum Cabala’, 11r, 22r; (Paris, 1550), ‘metal-<br>
+lorum Cabala’, 15r 23r; ‘cabala metallorum’, 53v.</p><p>225 Magnesia, 92 ‘Aus diesem/ und sonsten keinem andern/ natürlichen grunde gehet <br>
+VOARCH BETH ADAMOTH der alten Weisen’; 184 ‘und finden VOARCH BETH ADAMOTH, <br>
+ja alles/ was sein Philosophisch Hertz begehret.’ See also Lux in Tenebris, 23. For spec-<br>
+ulation on what these terms mean, see Michael T. Walton and Phyllis J. Walton, ‘The <br>
+Geometrical Kabbalahs of John Dee and Johannes Kepler: The Hebrew Tradition and <br>
+the Mathematical Study of Nature’, in P. Theerman and Karen Hunger Parshall (eds.), <br>
+Experiencing Nature: Proceedings of a Conference in Honor of Allen G. Debus (Dordrecht: </p><p>267Christian Cabala’s Wonder-Working Word<br>
+<h1>【5†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+With a slight <br>
+modification of Gilly, who writes of Theosophie and Theosophisten. I argue that Khunrath <br>
+distinguishes between good ‘Theosophers’ and bad ‘Theosophists’. See, for example, <br>
+Amph.II, 58 ‘Grant me, Oh Jehovah, that I do not tremble inside, and do not fear the <br>
+destructive power of the Theo-Sophists in public life, Amen’ (Largire mihi, ô Iehovah, <br>
+intus ne paueam, foris ne formidem Theo Sophistarum fulmen, Amen); 70 ‘There are cer-<br>
+tain Theosophists, scorners, impure worldlings, prattlers’ (Sunt quidam Theosophistæ, <br>
+nasutuli, mundani immundi, locutelei); 29 ‘See, then, O Tyrants, that you have to answer <br>
+for your tyranny, as much towards strangers as to your subjects; [and you] O Theo-sophists, <br>
+for [your] fanatic, impious, blasphemous, incurable passion for disputing, at which you <br>
+insolently work’ (Videte ergò Tyranni, vt habeatis quod respondeatis pro tyrannide, tam <br>
+erga peregrinos, quàm subditos vestros: Theosophistæ, defanatico, impio, blasphemo &amp; <br>
+insanabili, quo insolenter laboratis, disputandi cacoëthe); 148 ‘with Theo-Sophers and <br>
+Theo-Sophists; with the good [and] the bad, the white [and] the black’ (cum Theo-Sophis <br>
+atque Theo-Sophistis; bonis, malis; albis, nigris). Gilly, ibid, 11 mentions for example, <br>
+‘the philosophical movement from Paracelsus, Weigel, Arndt, Sclei, Crollius, Haslmayr, <br>
+Nollius, Hirsch, Fludd, Boehme, Franckenberg, van Helmont, Kozak, Comenius to Maul, <br>
+Welling and Oetinger, or the “Brotherhood of the Theosophers of RosenCreutz”.’</p><p>1114 Gilly, ‘The Amphitheatrum Sapientiae Aeternae of Heinrich Khunrath’, 342.<br>
+1115 Amph.II, 92 ‘Media Theosophica’.<br>
+1116 Amph.II, 25 ‘per Christiano Cabalam, Diuino Mageiam, &amp; Physico Chemiam: quod </p><p>studium Triunum, vera Theosophia Catholica’.</p><p>© Peter J. Forshaw, 2025 | doi:10.1163/9789004702073_004</p><p>Chapter 4</p><p>Christian Cabala’s Wonder-Working Word</p><p>1 The Origins of Christian Cabala<br>
+<h1>【6†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+577 Giller, Reading the Zohar: The Sacred Text of the Kabbalah, xvii; Wolfson, Alef, Mem, Tau, 82.<br>
+578 My thanks to Joseph Peterson for informing me about this Key of Solomon manuscript </p><p>VadSlg Ms. 334 ‘Secrets of Zahel’ dating from around 1550 in the Vadian Collection <br>
+(Vadianische Sammlung) in St Gallen, Switzerland.</p><p>352 Chapter 4</p><p>form of the Sephiroth (Fig. 4.45) in Oedipus Aegyptiacus (Egyptian Oedipus, <br>
+1653), with the explanation that the central letter Aleph, containing the ten <br>
+Sephiroth represents the archetypal man, while the surrounding ring, also con-<br>
+taining the ten Sephiroth, is the ‘circle of divine infinity’ and the ‘inaccessi-<br>
+ble abyss of the fount of light’, in which ‘all things are one, and God all in all <br>
+things’.579 In Chapter 2’s introduction to Khunrath’s engraving the non-Jewish <br>
+clockwise progression of the letters of the Hebrew alphabet was noted. The <br>
+same is the case for Khunrath’s Sephiroth, in contrast, for example to Kircher’s <br>
+annular form, where we find them rotating in a counter-clockwise direction.580 <br>
+The same is the case with Khunrath’s presentation of the Shemoth or divine <br>
+names.581 A partial Latin translation of Cordovero’s work would be published <br>
+in the mid-seventeenth century, in Christian Knorr von Rosenroth’s Kabbala <br>
+Denudata (Kabbalah Unveiled, 1677), together with some variant representa-<br>
+tions of the Sephiroth (Fig. 4.46).582</p><p>579 Kircher, Oedipus Aegpytiacus (1653), Vol. 2, Part 1, ‘Cabala Hebraeorum’, Cap.IX, § I. Alia <br>
+repraesentatio decem Sephiroth sub similitudine figurae humanae, 300–303, image at 302, <br>
+citing Pardes on 303, when discussing the image of the letter Aleph containing the ten <br>
+Sephiroth inside a circle that also contains the Sephiroth. The explanation given is that the <br>
+Aleph represents the archetypal man (Archetypum hominem), surrounded by the ‘circle <br>
+of divine infinity’ (circulus divinae infinitudinis) and the ‘inaccessible abyss of the fount <br>
+of light’ (fontani luminis inaccessam abyssum), in which ‘all things are one, and God all <br>
+in all things’ (omnia unum sunt, &amp; Deus in omnibus omnia).</p><p>580 Kircher, Oedipus Aegyptiacus (Egyptian Oedipus, 1653), Vol. 2, Part 1, 302.<br>
+581 Vide infra, Chapter 4 on Khunrath’s Cabala.<br>
+582 See, for example, the discussion of the Kliphotic realms in the analysis of Figura XVI </p><p>in Kabbala Denudata, Vol. 1, ‘Apparatus in Librum Sohar Pars Quarta, Quae continet </p><p>Figure 4.45  <br>
+Kircher, Oedipus Aegyptiacus (1653), <br>
+Vol. 2, Part 1, 302. Large Aleph &amp; <br>
+Annular Representation of Sephiroth. <br>
+Bayerische Staatsbibliothek, Munich</p><p>353Christian Cabala’s Wonder-Working Word<br>
+<h1>【7†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Chapter 4</p><p>Christian Cabala’s Wonder-Working Word</p><p>1 The Origins of Christian Cabala</p><p>Khunrath’s Christian engagement with the Jewish mystical tradition of <br>
+Kabbalah lies at the heart of his theosophy.1 Kabbalistic notions of emana-<br>
+tions of the Godhead into the universe and the power contained in divine and <br>
+angelic names pervade his philosophical outlook. This chapter begins with <br>
+a brief consideration of the main aspects of Jewish Kabbalah and Christian <br>
+Cabala preceding Khunrath, most notably in the works of the first Christian <br>
+‘phenomenologists of Kabbalah’,2 Giovanni Pico della Mirandola (1463–1494), <br>
+Johann Reuchlin (1455–1522) and Heinrich Cornelius Agrippa (1486–1535), <br>
+before examining evidence of related ideas in Khunrath’s own works.</p><p>1 Please note: when referring to the Jewish tradition, the term ‘Kabbalah’ is used; but when <br>
+to the Christian tradition, especially in Latin, it becomes ‘Cabala’. Cf. Andreas Libavius, <br>
+Appendix necessaria Syntagmatis Arcanorum Chymicorum (Frankfurt, 1615), 76 ‘Kabbalah, <br>
+seu, ut vulgo scribitur, Cabala’ (Kabbalah, or, as it is commonly written, Cabala). On Kabbala <br>
+and Cabala, see also Pierre Béhar, Les Langues Occultes de la Renaissance (Paris: Éditions <br>
+Desjonquères, 1996), 247; Harkness, John Dee’s Conversations with Angels: Cabala, Alchemy, <br>
+and the End of Nature (Cambridge: Cambridge University Press, 1999), 173.</p><p>2 Moshe Idel, ‘Jewish Thinkers versus Christian Kabbalah’, in Wilhelm Schmidt-Biggemann <br>
+(ed.), Christliche Kabbala (Ostfildern: Thorbecke, 2003), 49–65, at 63.</p><p>Figure 4.1  <br>
+Tabulae Theosophicae Cabbalisticae, <br>
+detail: Christ on Cross above  <br>
+IHSVH. London, British Library  <br>
+Ms. Sloane 181. © The British  <br>
+Library Board</p><p>216 Chapter 4</p><p>The Hebrew term קבלה Kabbalah, which translates as ‘reception’, ‘received <br>
+lore’, or ‘tradition’, refers to the Jewish esoteric teaching that emerged in the <br>
+High Middle Ages in Provence and Northern Spain,3 though with claims to rev-<br>
+elations reaching back to Moses during his encounter with Jehovah on Mount <br>
+Sinai, where he received a two-fold revelation, a ‘literal’ written and ‘spiritual’ <br>
+oral Law, being told ‘These words shalt thou declare, and these shalt thou hide’ <br>
+(2 Esdras 14:6). The former were the Ten Commandments; the latter secret oral <br>
+teachings transmitted from master to disciple over the generations to the elect <br>
+few.4 Others believed that God had revealed the names of all things to Adam <br>
+in the Garden of Eden, the correct pronunciation of which evoked their true <br>
+essence,5 or that Adam had learned Eternal Wisdom from the book held by <br>
+Raziel, angel of the highest Mysteries.6<br>
+<h1>【8†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+245Christian Cabala’s Wonder-Working Word</p><p>apologetic and polemical purposes. The midrashic and kabbalistic method of <br>
+reading Hebrew texts without diacritic marks, that is, without any vowel indi-<br>
+cators, increases interpretative possibilities and generates multiple readings of <br>
+a single text, including the possibility of proving the supremacy of the name of <br>
+Jesus and the mystery of the Trinity.121</p><p>Pico’s Cabala should not, however, be viewed simply as Christian apologet-<br>
+ics, for he moves beyond the confirmation of Christianity. In his desire to estab-<br>
+lish the unity of truth he suggests correspondences between not just Judaism <br>
+and Christianity, but also proposes connections with Platonism, mysticism <br>
+and magic. Chaim Wirszubski emphasizes that Pico viewed Kabbalah from an <br>
+entirely new standpoint, arguing that ‘he is the first Christian who considered <br>
+cabala to be simultaneously a witness for Christianity and an ally of natural <br>
+magic.’122 Joseph Dan likewise suggests that even early Christian-Cabalist works <br>
+like Pico’s conveyed the message that non-biblical Jewish sources also held <br>
+great relevance for their Christian readers, not only as a way of strengthening <br>
+and upholding their faith, but as a way of reinvigorating the Christian religion, <br>
+discovering a deeper, more profound understanding of its nature, including the <br>
+possibility of personal transformation and spiritual transfiguration.123 Indeed, <br>
+the extreme nature of the claims Pico makes regarding the role of Kabbalah <br>
+was instrumental in ensuring a wide-spread interest in this mystical Jewish <br>
+tradition, among both sympathetic and antagonistic audiences.</p><p>13 Johann Reuchlin’s Neo-Pythagorean Cabala</p><p>Although Pico della Mirandola gets the credit for first introducing the term <br>
+Cabala into Christian circles, Khunrath’s major Christian-Cabalist source is <br>
+one of his fellow country-men, the German scholar Johann Reuchlin (1455– <br>
+1522), described by Charles Zika as ‘one of the key figures of European schol-<br>
+arship and intellectual life at the turn of the sixteenth century’.124 A close </p><p>121 Farmer, Syncretism in the West, 523.<br>
+122 Wirszubski, Pico della Mirandola’s Encounter with Jewish Mysticism, 151. On the relation </p><p>between Pico’s Cabala and magic, see Flavia Buzzetta, Magia naturalis e scientia cabalae <br>
+in Giovanni Pico della Mirandola (Florence: Leo S. Olschki, 2019).</p><p>123 Dan, ‘The Kabbalah of Johannes Reuchlin,’ 57.<br>
+124 Charles Zika, ‘Reuchlin’s De Verbo Mirifico and the Magic Debate of the Late Fifteenth </p><p>Century’, The Journal of the Warburg and Courtauld Institutes 39 (1976): 104–138, at 104. On <br>
+Reuchlin, see also Moshe Idel, ‘Johannes Reuchlin: Kabbalah, Pythagorean Philosophy <br>
+and Modern Scholarship’, Studia Judaica 16 (2008): 30–55; reprinted in Idel, Represent-<br>
+ing God, 123–148; Wilhelm Schmidt-Biggemann, ‘Einleitung: Johannes Reuchlin und die <br>
+Anfänge der christlichen Kabbala’, in Schmidt-Biggemann (ed.), Christliche Kabbala, 9–48.</p><p>246 Chapter 4<br>
+<h1>【9†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+262 Libavius, Appendix necessaria Syntagmatis Arcanorum Chymicorum (Frankfurt, 1615), 76 <br>
+‘Kabala perfugium est Paracelsistarum, iuxta quam omnia pro lubitu fingunt quorum <br>
+rationem reddere nequeunt &amp; tamen non ipsi principiis Kabalae reguntur, sed Kabala <br>
+cogitur se accommodare, parereque ipsorum ingenio.’ Libavius is most likely alluding to <br>
+Khunrath’s use of ‘Kabala’ in his portrait engraving and ‘Christiano-Kabalisticum’ in the <br>
+Amphitheatre’s title.</p><p>263 Henning Scheunemann, Hydromantia Paracelsica (Frankfurt, 1613); Medicina Reformata, <br>
+seu Denarius Hermeticus Philosophicus Medico-Chymicus (Frankfurt, 1617). For a direct ref-<br>
+erence to Khunrath and his Athanor, see De Morbo Sulphureo Cagastrico (Frankfurt, 1610), <br>
+Epistola Dedicatoria, B2v.</p><p>277Christian Cabala’s Wonder-Working Word</p><p>way treat of the names of God.’264 From the opening sentence, it is clear whom <br>
+he has primarily in mind with his criticisms:</p><p>Wonders are produced by the Paracelsians, promising Christian-Kabalist, <br>
+divinely-magical, physico-chymical, ter-triune, Universal [things], Fie the <br>
+Devil.265</p><p>Cabala is an identifying trait of Paracelsian philosophy, and Khunrath’s <br>
+Amphitheatre, apparently, is a prime representative.266</p><p>20 Cabala in Khunrath’s Works</p><p>What is immediately apparent on the 1609 Amphitheatre’s title-page (Fig. 4.20), <br>
+where we see the Tetragrammaton יהוה [YHVH] in a Tetratkys, אש [Esch – <br>
+Fire], שמש [Shemesh – Sun],267 and אורים יה [Urim Yah – God’s Lights] at the </p><p>264 Libavius, Appendix necessaria Syntagmatis Arcanorum Chymicorum (1615), 76 ‘Tertiam <br>
+excogitarunt interpretes rabini, qui literas &amp; syllabas biblicas linguae sacrae colligunt, <br>
+in numeros vertunt, mutant, transmutant, atque ita tacitos sensus eiiciunt praesertim <br>
+nomina Dei mirabiliter tractantes.’</p><p>265 Libavius, Appendix necessaria Syntagmatis Arcanorum Chymicorum (1615), 76 ‘Mira pro-<br>
+duntur à Paracelsistis, promittentibus Christiano Kabalistica, divinomagica, physico-<br>
+chymica, tertriuna, Catholica, Phy Diabolo’.<br>
+<h1>【10†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+85  Ioan Caramvelis Lobcowitzi, Cabalae totius brevissimum specimen, in Erycius Puteanus <br>
+(1574–1646), De anagrammatismo quae cabalae pars est (Brussels, 1643), 67ff, at 68 ‘Cabala <br>
+igitur, seu Hebraeorum Theologia, sex facultates sacras (nimirum Transmaterializationem, <br>
+Transformationem, Transfigurationem, Transpositionem, Transpunctionem, &amp; Transnu-<br>
+merationem) velut species habet.’ Lobkowitz then goes on to list them with Hebrew terms. <br>
+See Yossef Schwartz, ‘“On Rabbinic Atheism”: Caramuel’s Critique of Cabala’.</p><p>Figure 4.10  <br>
+Agrippa, De Occulta <br>
+Philosophia, Book 2,  <br>
+Chapter 19, in Opera <br>
+(Beringos Fratres, <br>
+n.d.), 169 Hebrew <br>
+Alphabet. Allard Pierson, <br>
+Amsterdam PH1830</p><p>235Christian Cabala’s Wonder-Working Word</p><p>Figure 4.11 Agrippa, De Occulta Philosophia (July 1533), Book 2, Chapter 22, CXLVIII <br>
+Gematria: Divine names corresponding to the numbers of the planets. Allard <br>
+Pierson, University of Amsterdam, PH1680</p><p>nothing to do with one other on the lexical level,86 thereby revealing inter-<br>
+nal resonances within seemingly disparate sources.87 Even the most literal <br>
+and mundane-sounding text could, by means of the isopsephic equations in <br>
+the technique of Gematria, be reinterpreted in novel ways, giving it a symbolic </p><p>86  Reichert, ‘Christian Kabbalah in the Seventeenth Century’, 131.<br>
+87  Dan and Kiener, The Early Kabbalah, 11.</p><p>236 Chapter 4</p><p>transvaluation, imbuing it with new depth.88 The 32 ‘wondrous paths of wis-<br>
+dom’ with which the Sepher Yetzirah opens, for example, are denoted by the <br>
+Hebrew letters ל Lamed (with the value 30) and ב Beth (with the value 2), <br>
+which combine to form the Hebrew word לב ‘Leb’, meaning ‘heart’.89 These <br>
+letters are also the first and last letters of the Torah – the Beth of בראשית <br>
+(Bereshit), the first word of Genesis 1:1 and the Lamed of ישראל (Israel), the last  <br>
+word of Deuteronomy 34:12. Thus the five books of Moses constitute the ‘heart’ <br>
+of the Kabbalah, together with the ten Sephiroth and the 22 letters of the alpha-<br>
+bet that form all the Shemoth or divine names.90 On a more sophisticated level, <br>
+Abulafia provides support for the traditional claim that the world was created <br>
+with ten utterances by demonstrating that the phrases the ‘Work of Creation’ <br>
+-Ba-ʾasa) בעשרה השמות ’and ‘with ten names (Ma ʾaseh Bereshit) מעשה בראשית<br>
+rah ha-shemot) both add up to the same total of 1328.91 Abulafia also provides <br>
+the oldest documentation of a conversion to Christianity due to a kabbalistic <br>
+style of exegesis of Song of Songs 2:3 ‘As the apple tree among the trees of the <br>
+woods, so is my beloved among the sons.<br>
+<h1>【11†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+125 Direct, unacknowledged lifts from Reuchlin’s De arte cabalistica can be found, for exam-<br>
+ple, on Amph.II, 4, 10, 57, 65, etc.</p><p>126 ‘Smoky’, a Greek pun on Reuchlin’s surname, which he derives from the German word for <br>
+‘Smoke’ (Rauch).</p><p>127 Reuchlin, On the Art of the Kabbalah, 88.<br>
+128 See Reuchlin’s concluding letter to Pope Leo X in On the Art of the Kabbalah, 357.<br>
+129 Shimeon Brisman, History and Guide to Judaic Dictionaries and Concordances (Hoboken, </p><p>NJ: Ktav Publishing House, 2000), Vol. 3, Part 1, 54. A work used by Martin Luther, who was <br>
+also familiar with De Arte Cabalistica, and consulted Reuchlin as an expert on Hebrew. <br>
+See William J. Wright, Martin Luther’s Understanding of God’s Two Kingdoms: A Response <br>
+to the Challenge of Skepticism (Grand Rapids, MI: Baker Academic, 2010), 94.</p><p>130 Reuchlin, In septem psalmos poenitentiales interpretatio (Tübingen, 1512); Brisman, History <br>
+and Guide to Judaic Dictionaries and Concordances, 54; Secret, Les Kabbalistes chrétiens, 51.</p><p>131 Werner Schwarz, Principles and Problems of Biblical Translation: Some Reformation <br>
+Controversies and their Background (Cambridge: Cambridge University Press, 1955), 68; <br>
+G. Lloyd Jones, The Discovery of Hebrew in Tudor England: A Third Language (Manchester: <br>
+Manchester University Press, 1983), 25.</p><p>132 Reuchlin, On the Art of the Kabbalah, 95. Joseph Dan, in The Christian Kabbalah, 63 points <br>
+out that some of these works are not regarded by Jews as kabbalistic. Eleazar of Worms, <br>
+for example, is a ‘prominent writer of the Kalonymus school of Jewish esoterics in medi-<br>
+eval Germany who are usually called the “Ashkenazi Hasidim”.’</p><p>247Christian Cabala’s Wonder-Working Word</p><p>Figure 4.15 Reuchlin, De rudimentis hebraicis (1506), 5 Introduction to the Hebrew <br>
+Alphabet. Allard Pierson, University of Amsterdam, OTM ROF A-413</p><p>248 Chapter 4</p><p>much-condemned Talmud, in his Battle of the Books with the Jewish converso <br>
+Johannes Pfefferkorn (1469–1523).133</p><p>14 On the Wonder-Working Word (1494)</p><p>The year of Pico’s death saw the publication of De Verbo Mirifico (On the <br>
+Wonder-Working Word), a conversation in three books between the Greek Epi-<br>
+curean philosopher Sidonius, the Jew Baruchias and the Christian Capnion.134 <br>
+Reuchlin’s first Christian-Cabalist work was significant for its ideas about lan-<br>
+guage and the contribution it made to the Renaissance debate on the occult <br>
+powers and properties of words and names, discussing as it did the interests of</p><p>Certain curious explorers of arcane things  … the recondite powers of <br>
+words, and abstruse energies of expressions, and the divine characters <br>
+of secret names  … the symbols of that sacred Philosophy, and revered <br>
+signs of supernatural virtues.135<br>
+<h1>【12†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+132 Reuchlin, On the Art of the Kabbalah, 95. Joseph Dan, in The Christian Kabbalah, 63 points <br>
+out that some of these works are not regarded by Jews as kabbalistic. Eleazar of Worms, <br>
+for example, is a ‘prominent writer of the Kalonymus school of Jewish esoterics in medi-<br>
+eval Germany who are usually called the “Ashkenazi Hasidim”.’</p><p>247Christian Cabala’s Wonder-Working Word</p><p>Figure 4.15 Reuchlin, De rudimentis hebraicis (1506), 5 Introduction to the Hebrew <br>
+Alphabet. Allard Pierson, University of Amsterdam, OTM ROF A-413</p><p>248 Chapter 4</p><p>much-condemned Talmud, in his Battle of the Books with the Jewish converso <br>
+Johannes Pfefferkorn (1469–1523).133</p><p>14 On the Wonder-Working Word (1494)</p><p>The year of Pico’s death saw the publication of De Verbo Mirifico (On the <br>
+Wonder-Working Word), a conversation in three books between the Greek Epi-<br>
+curean philosopher Sidonius, the Jew Baruchias and the Christian Capnion.134 <br>
+Reuchlin’s first Christian-Cabalist work was significant for its ideas about lan-<br>
+guage and the contribution it made to the Renaissance debate on the occult <br>
+powers and properties of words and names, discussing as it did the interests of</p><p>Certain curious explorers of arcane things  … the recondite powers of <br>
+words, and abstruse energies of expressions, and the divine characters <br>
+of secret names  … the symbols of that sacred Philosophy, and revered <br>
+signs of supernatural virtues.135</p><p>It contained extraordinary examples of marvellous deeds achieved through <br>
+the wonder-working word, from feeding the hungry and curing the sick to exor-<br>
+cising demons and reviving the dead. Reuchlin makes his intentions clear in <br>
+the opening letter to the book, declaring that his task is ‘to elucidate the occult <br>
+property of names; and so from these, and from such numerous and great <br>
+names, the occasion of our finally choosing one supreme, wonder-working and <br>
+blessed name’.136</p><p>133 See Idel, ‘Jewish Thinkers versus Christian Kabbalah’, 52. For varied perspectives on <br>
+this episode, see Erika Rummel, The Case Against Johann Reuchlin: Religious and Social <br>
+Controversy in Sixteenth-Century Germany (Toronto: University of Toronto Press, 2002); <br>
+David H. Price, Johannes Reuchlin and the Campaign to Destroy Jewish Books (Oxford: <br>
+Oxford University Press, 2011); Daniel O’Callaghan (ed. and trans.), The Preservation of <br>
+Jewish Religious Books in Sixteenth-Century Germany: Johannes Reuchlin’s Augenspiegel <br>
+(Leiden: Brill, 2013).</p><p>134 Schmidt-Biggemann, ‘Johannes Reuchlin und die Anfänge der christlichen Kabbala’, 9. <br>
+According to Béhar, Les Langues Occultes de la Renaissance, 21 Pope Alexander VI’s rev-<br>
+ocation of the ban against Pico in 1493 enabled the publication of Reuchlin’s De Verbo <br>
+Mirifico in 1494. For more on De Verbo Mirifico, see Zika, ‘Reuchlin’s De Verbo Mirifico and <br>
+the Magic Debate of the Late Fifteenth Century’.<br>
+<h1>【13†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+181 Agrippa, The Vanity of Arts and Sciences (1676), 122 ‘the knowledge of more sublime <br>
+things, as of Divine and Angelical Powers’; De Vanitate (Lyon: Beringos Fratres, [1550]), <br>
+78 ‘Alteram vero ejus scientiam vocant de Marcana [sic], quae est de sublimioribus <br>
+divinarum, angelicarumque virtutum ac sacrorum nominum, &amp; signaculorum contem-<br>
+plationibus quaedam quasi symbolica Theologia, in qua literae, numeri, figurae, res &amp; <br>
+nomina, &amp; elementorum apices, ac lineae, puncta &amp; accentus nomina sunt profundissi-<br>
+marum rerum &amp; magnorum arcanorum signivicativa [sic].’</p><p>182 Agrippa, De Vanitate (Lyon: Beringos Fratres, [1550]), 78 ‘Hanc rursus bifariam secant, <br>
+in Arithmantiam videlicet quae notaria convocatur, de angelicis virtutibus, nomin-<br>
+ibus signaculisque etiam daemonum ac animarum conditionibus tractans: atque in <br>
+Theomantiam, quae divinae majestatis mysteria, emanationes, sacraque nomina &amp; pen-<br>
+tacula scrutatur: quam qui norit, hunc ajunt admirandis pollere virtutibus, ita quod dum <br>
+velit, futura omnia praesciat, toti naturae imperet, in daemones, &amp; angelos jus habeat, &amp; <br>
+miracula faciat.’</p><p>257Christian Cabala’s Wonder-Working Word</p><p>the most enduring image of early modern Christian Cabala, we find a very dif-<br>
+ferent spirit. Despite (or perhaps because of) the fact that Agrippa only shows <br>
+knowledge of the works of Christian Cabalists like Pico, Reuchlin, Ricci and <br>
+Giorgio, rather than direct engagement with Hebrew or Aramaic sources, this <br>
+work was to become one of the most widely-consulted sources for Cabala in <br>
+the Christian world. Agrippa presents a similar intermingling of Pythagorean, <br>
+Neoplatonic and kabbalistic ideas to Reuchlin. Here we find iterated claims <br>
+to Hebrew being the ‘original language’ and the significance of the 22 letters <br>
+as the foundation of the world.183 Scholem considers the place of honour in <br>
+De Occulta Philosophia is accorded to practical Kabbalah and arithmology, <br>
+for Book 2 is a rich source of information on the occult and kabbalistic sig-<br>
+nificance of numbers,184 the Hebrew alphabet’s combination of numbers <br>
+and letters;185 while Book Three devotes whole chapters to discussions of the <br>
+Sephiroth,186 numerical calculations of the names of God, angels and spirits,187 <br>
+and the significance of the Biblical matrix-languages (Latin, Greek, Hebrew) for <br>
+Agrippa’s notion of a sacralized magic.188 Here, too, we find discussed Plato’s <br>
+notion of the unity of word and referent, the natural signification of language <br>
+from Cratylus and the biblical narrative of Adam’s naming of the animals.189 <br>
+Agrippa extends this idea of knowledge of the world being discovered through <br>
+the study of Hebrew to the mysteries of other early alphabets and languages, <br>
+such as Greek and Latin, much as John Dee was to attempt later in the Monas <br>
+Hieroglyphica (1564).190</p><p>17 John Dee’s Hieroglyphic Monad<br>
+<h1>【14†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+46  On Ricius, see Crofton Black, ‘From Kabbalah to Psychology: The Allegorizing Isagoge <br>
+of Paulus Ricius, 1509–41’, Magic, Ritual, and Witchcraft 2:2 (2007): 136–173; Secret, <br>
+Les Kabbalistes chrétiens de la Renaissance, 87–99; Stefan Tilg, ‘Zu Paulus Ricius <br>
+(ca. 1480–1541/1542): eine außergewöhnliche Karriere in der Zeit des Humanismus’, <br>
+ASCHKENAS – Zeitschrift für Geschichte und Kultur der Juden 16:2 (2006): 561–582.</p><p>47  See Purš, ‘The Habsburgs on the Bohemian Throne and Their Interest in Alchemy and the <br>
+Occult Sciences’, 99 concerning Hebraic and Cabalistic studies.</p><p>48  Purš, ‘Rudolf II’s Patronage of Alchemy and the Natural Sciences’, 170. For Ricius’s Latin <br>
+translation, see Joseph Gikatilla, Portae Lucis, Haec est porta Tetragrammaton iusti <br>
+intrabunt per eam (Augsburg, 1516); Rabi Iosephi Castiliensis, de Porta Lucis Tractatus <br>
+pulcherrimus, in Pistorius, Artis Cabalisticae (1587), 138ff; for a modern translation, Rabbi <br>
+Joseph Gikatilla, the son of Abraham, Sha ʾare Orah: Gates of Light, translated by Avi <br>
+Weinstein (San Francisco: Harper Collins, 1994).</p><p>224 Chapter 4</p><p>Tree of Life diagrams<br>
+Figure 4.2  <br>
+Gikatilla, Portae Lucis (1516), title <br>
+page. Ritman Library, Amsterdam</p><p>Figure 4.3  <br>
+Gikatilla, Portae Lucis (1516), <br>
+sig. Kiiijv. Ritman Library, <br>
+Amsterdam</p><p>Figure 4.4  <br>
+Ricius, De Coelesti Agricultura <br>
+(1541), CXIIIv. Österreichische <br>
+Nationalbibliothek, Vienna</p><p>Figure 4.5  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 39v Tree of Life. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>Figure 4.6  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 43v Tree of Life. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>Figure 4.7  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 89v Divine Name. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>225Christian Cabala’s Wonder-Working Word<br>
+<h1>【15†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+It is worthy of note, moreover, that Arndt’s Judicium, making a distinction <br>
+between Magic and Cabala, emphasises the latter’s verbal rather than numer-<br>
+ical aspect, declaring that:</p><p>Magic reveals its mysteries through prepared images, figures, characters, <br>
+and through the commendable art of Signatures, and signed knowledge. <br>
+But Cabala shows or rather conceals, its Wisdom in dark words, proverbs, <br>
+riddles, deeply-meaningful discourse, whence the prophets spoke in a <br>
+cabalistic way in many of the Scriptures, such that beneath the letters <br>
+much heavenly wisdom lies hidden.333</p><p>Philip Beitchman is mistaken in arguing in Alchemy of the Word: Cabala of the <br>
+Renaissance, that Khunrath displays a ‘structural distrust of a Jewish Cabala, <br>
+taken to be perverted by a crassly materialistic magic, while a Christian sort <br>
+would be abstract, elevated, and spiritual,’ for, as we shall see in the following <br>
+chapter, Khunrath was greatly interested in ‘physical’ forms of magic. Nor, as <br>
+should be obvious by now, is it simply the case that ‘Cabala, to become usable <br>
+gold, needs to be cleaned of its Hebrew dross’, for Khunrath evidently found <br>
+a knowledge of Hebrew and the Jewish Kabbalistic exegetical techniques a <br>
+source of inspiration.334 One such example is his unpacking of John Dee’s enig-<br>
+matic phrase at the end of the Monas Hieroglyphica: ‘IN TE L LECTUS IVDICAT <br>
+VERITATEM’ (Fig. 4.27), which Kurt Josten simply translates as ‘intellect exam-<br>
+ines the truth’.335</p><p>Khunrath’s knowledge of Hebrew, however, enables him to provide a sec-<br>
+ondary meaning in his work On Primaterial Chaos, where he extends the </p><p>333 Arndt, Judicium, 114 ‘Die Magia offenbahret ihre Geheimnuß durch Bilderzurichten/ <br>
+Figuren, Character, und durch die löbliche Kunst die Signatur, und Scientiam signatam. <br>
+Die Cabala aber offenbahret ja verberget jhre Weißheit in dunkelen worten/ Sprüchen/ <br>
+Rätzeln/ tieffsinnigen Reden/ Darumb die Propheten viel in der Schrifft Cabalistischer <br>
+weise geredt haben/ da unter dem Buchstaben viel heimlicher Weißheit verborgen liget.’</p><p>334 Beitchman, Alchemy of the Word, 176.<br>
+335 Dee, Monas Hieroglyphica, 219. Josten, ‘A Translation’, 171 misses the significance of Dee’s </p><p>reference to ‘El’ in Theorem XVI, 16. NOTE: This subtlety is lost in the typography of the <br>
+1602 Theatrum Chemicum edition, 243. See Ludovica Koch et al, Etimologia: pratiche e <br>
+invenzioni (Naples: Istituto Universitario Orientale, 1983), 176 ‘Te lo conferma un’altra <br>
+“etimologia”: tu stesso sei raccolto nel tuo cervello (intellectus/in te lectus); cerca solo di <br>
+non addormentarti su quel letto!’ See Peter J. Forshaw, ‘“Possibly the most obscure work <br>
+ever written by an Englishman?”: The Early Alchemical Reception of John Dee’s Monas <br>
+Hieroglyphica’, Ambix 52:3 (Nov. 2005): 247–269, at 250–251.</p><p>295Christian Cabala’s Wonder-Working Word<br>
+<h1>【16†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+224 Chapter 4</p><p>Tree of Life diagrams<br>
+Figure 4.2  <br>
+Gikatilla, Portae Lucis (1516), title <br>
+page. Ritman Library, Amsterdam</p><p>Figure 4.3  <br>
+Gikatilla, Portae Lucis (1516), <br>
+sig. Kiiijv. Ritman Library, <br>
+Amsterdam</p><p>Figure 4.4  <br>
+Ricius, De Coelesti Agricultura <br>
+(1541), CXIIIv. Österreichische <br>
+Nationalbibliothek, Vienna</p><p>Figure 4.5  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 39v Tree of Life. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>Figure 4.6  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 43v Tree of Life. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>Figure 4.7  <br>
+Cordovero, Pardes Rimonim <br>
+(1591), 89v Divine Name. <br>
+Allard Pierson, University of <br>
+Amsterdam, OTM ROF A-67</p><p>225Christian Cabala’s Wonder-Working Word</p><p>What has come to be the standard version, with different proportions from <br>
+Ricci’s versions, is modelled on a diagram that appeared in the Hebrew print <br>
+edition of Moses Cordovero’s Sepher Pardes Rimonim (Book of the Orchard of <br>
+Pomegranates, Figs. 4.5 &amp; 4.6), written in Safed in 1548; published in Cracow <br>
+in 1591, where we also find representations of the divine name (such as Yah <br>
+and Hu in a large Aleph, Fig. 4.7).49 By the seventeenth century, the Christian <br>
+West had access to elaborate representations of the Tree of Life in the Jesuit <br>
+Athanasius Kircher’s Oedipus Aegyptiacus (Egyptian Oedipus, 1652–54, Fig. 4.8) <br>
+and Christian Knorr von Rosenroth’s Kabbala denudata (Kabbalah Unveiled, </p><p>49  Segol, Word and Image in Medieval Kabbalah: The Texts, Commentaries, and Diagrams of <br>
+the Sefer Yetsirah, 170 n. 22.</p><p>Figure 4.8 <br>
+Kircher, Oedipus <br>
+Aegyptiacus (1653), <br>
+Vol. 2, Part 1, between <br>
+pp. 288–9 ‘Systema <br>
+Sephiroticum’. <br>
+Bayerische <br>
+StaatsBibliothek <br>
+Munich</p><p>226 Chapter 4</p><p>1677–78, Fig. 4.9),50 the top three ‘supernal’ sefiroth often equated by Christian <br>
+Cabalists with the three persons of the Trinity.51</p><p>Following the expulsion of the Jews from Spain in 1492 and then from <br>
+Portugal in 1497, kabbalistic works and doctrines enjoyed a wide dissemination <br>
+throughout Europe in Sephardic and Ashkenazi communities.52 By this time, <br>
+as Moshe Idel has shown, there were three major models of Kabbalah: 1) the <br>
+ecstatic or prophetic Kabbalah of the school of the Spanish kabbalist Abraham <br>
+Abulafia (1240–1291) with its emphasis on the permutations of the Shemoth <br>
+(divine names) for possible union with the divine; 2) a Theosophical-Theurgical <br>
+Kabbalah,<br>
+<h1>【17†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+271Christian Cabala’s Wonder-Working Word</p><p>appreciation of the Hebrew language as possessing unusual virtues, powers <br>
+and properties, springing from the original Adamic tongue.241 Johann Hüser’s <br>
+1603 multi-volume edition of Paracelsus’s Bücher und Schrifften, for example, <br>
+contains a wide variety of statements concerning Cabala, ranging from De <br>
+Natura Rerum’s ‘the Cabalistic Art had its origin with the old Magi’, rather than <br>
+from Jewish sources,242 to the Fragmenta Medica, where we learn that ‘Adam <br>
+and Moses … searched for that within themselves that is in man and opened it, <br>
+and it belongs all to Cabala; they knew no strange things from the devil or spir-<br>
+its, but from the Light of Nature.’243 Heinz Schott observes that such an inward <br>
+approach to the divine sources of spiritual light recalls the mystical practices <br>
+of Jewish Kabbalah, with Paracelsus’s Light of Nature evoking the Sephirotic <br>
+emanations of divine light.244</p><p>In the pseudepigraphic, but undeniably popular Aurora Thesaurusque <br>
+Philosophorum (Aurora and Treasury of the Philosophers, 1577) we find Cabala <br>
+mentioned on the very first page and later read of its prophetic nature and the <br>
+insight it provides into terrestrial and celestial creation:</p><p>distinguish sharply between genuine and spurious Paracelsian works. Joachim Telle’s <br>
+position was one of accepting the medical works as genuine; rejection of the chrysopoetic <br>
+as spurious, e.g. Joachim Telle, ‘Benedictus Figulus: Zu Leben und Werk eines deutschen <br>
+Paracelsisten’, in G. Mann and B. Fabian (eds.), Medizin historisches Journal 22:4 (1987): <br>
+303–326, at 320; idem, ‘Johann Huser in seinen Briefen. Zum Schlesischen Paracelsismus <br>
+im 16. Jahrhundert’, in Joachim Telle (ed.), Parerga Paracelsica. Paracelsus in Vergangenheit <br>
+und Gegenwart (Stuttgart: Franz Steiner Verlag, 1991), 220. Urs Leo Gantenbein has a less <br>
+polarised approach concerning Paracelsus and transmutation, see e.g. ‘Paracelsus und <br>
+die Quellen seiner medizinischen Alchemie’, in Albrecht Classen (ed.), Religion und <br>
+Gesundheit: der heilkundliche Diskurs im 16. Jahrhundert (Berlin: Walter de Gruyter, 2011), <br>
+129–134, at 115–119. See also Andrew Weeks, ‘Paracelsus’, in Partridge (ed.), The Occult <br>
+World, 99–106. My approach in this monograph is that if Khunrath seems to present a book <br>
+as the work of Paracelsus, it is treated as such for its relevance to Khunrath’s work.</p><p>241 Paracelsus, De Natura Rerum, Lib.IX, De Signatura Rerum Naturalium, in Hüser (ed.), <br>
+Bücher und Schriften (Frankfurt, 1603), Vol. 1, 908f, at 918, in the section ‘Von ettlichen <br>
+besondern Zeichen der natürlichen und ubernatürlichen.’<br>
+<h1>【18†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+Philosophia (1533) Book 2, Chapter 10 where, for instance, we read of the ‘Seven habita-<br>
+tions of infernals, which Rabbi Joseph of Castilia the Cabalist describes in the Garden <br>
+of Nuts.’</p><p>83  Morlok, Rabbi Joseph Gikatilla’s Hermeneutics, 72, 225. See also Reuchlin, On the Art of the <br>
+Kabbalah, 299.</p><p>234 Chapter 4</p><p>revolutions and combinations the prophets entered into and perceived <br>
+the depths of the Torah.84</p><p>One of the most evocative and succinct statements of the exegetical potential <br>
+of these approaches is found in the Spanish scholastic philosopher Juan Car-<br>
+amuel Lobkowitz’s Cabalae totius brevissimum specimen (A very brief Expla-<br>
+nation of the Whole of Cabala, 1643), where he writes that ‘Cabala, therefore, <br>
+or the Theology of the Hebrews, has as it were six sacred faculties or species’ <br>
+(namely: Transmaterialization, Transformation, Transfiguration, Transposition, <br>
+Transpunction, &amp; Transnumeration).85</p><p>9 Gematria</p><p>Because every Hebrew letter possesses an inherent numerical value (Fig. 4.10), <br>
+every letter, word and phrase in the Torah has a mathematical significance by <br>
+which correspondences can be found between words and phrases that have </p><p>84  Morlok, Rabbi Joseph Gikatilla’s Hermeneutics, 177. On the Latin translation of the Sefer <br>
+ha-Niqqud for Pico della Mirandola, see Yosef Giqatilla, The Book of Punctuation: Flavius’s <br>
+Mithridates’ Latin Translation, the Hebrew Text, and an English Version, edited by Annett <br>
+Martini with a Foreword by Giulio Busi.</p><p>85  Ioan Caramvelis Lobcowitzi, Cabalae totius brevissimum specimen, in Erycius Puteanus <br>
+(1574–1646), De anagrammatismo quae cabalae pars est (Brussels, 1643), 67ff, at 68 ‘Cabala <br>
+igitur, seu Hebraeorum Theologia, sex facultates sacras (nimirum Transmaterializationem, <br>
+Transformationem, Transfigurationem, Transpositionem, Transpunctionem, &amp; Transnu-<br>
+merationem) velut species habet.’ Lobkowitz then goes on to list them with Hebrew terms. <br>
+See Yossef Schwartz, ‘“On Rabbinic Atheism”: Caramuel’s Critique of Cabala’.</p><p>Figure 4.10  <br>
+Agrippa, De Occulta <br>
+Philosophia, Book 2,  <br>
+Chapter 19, in Opera <br>
+(Beringos Fratres, <br>
+n.d.), 169 Hebrew <br>
+Alphabet. Allard Pierson, <br>
+Amsterdam PH1830</p><p>235Christian Cabala’s Wonder-Working Word</p><p>Figure 4.11 Agrippa, De Occulta Philosophia (July 1533), Book 2, Chapter 22, CXLVIII <br>
+Gematria: Divine names corresponding to the numbers of the planets. Allard <br>
+Pierson, University of Amsterdam, PH1680</p><p>nothing to do with one other on the lexical level,86 thereby revealing inter-<br>
+nal resonances within seemingly disparate sources.87 Even the most literal <br>
+and mundane-sounding text could, by means of the isopsephic equations in <br>
+the technique of Gematria, be reinterpreted in novel ways, giving it a symbolic<br>
+<h1>【19†(Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf†file-DQkePVcf9mzqisvuXNb4pq】</h1><br>
+Content source: Source.file<br>
+Title: (Aries Book) Peter J Forshaw - The Mage&#x27;s Images_ Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ Theosopher &amp; Christian Cabalist-Brill (2025).pdf<br>
+Content Snippet:<br>
+244 Chapter 4</p><p>Figure 4.14  <br>
+Tetragrammaton &amp; <br>
+Tetraktys in Agrippa, <br>
+De Occulta Philosophia in <br>
+Opera (Beringos Fratres, <br>
+n.d.), 157. Allard Pierson, <br>
+University of Amsterdam, <br>
+OTM OK 62-6338</p><p>Table 4.2 How to unfold the Quaternarius into the Denarius</p><p>Yod (10) = 10<br>
+Yod (10) + He (5) = 15<br>
+Yod (10) + He (5) + Vau (6) = 21<br>
+Yod (10) + He (5) + Vau (6) + He (5) = 26</p><p>= 72</p><p>Pico’s alleged initial motivation for studying the Kabbalah is for evangelis-<br>
+ing against heretics and Jews. In the Apologia he composed in 1487 – following <br>
+the condemnation of 13 of his theses as heretical – he avows that his motive is <br>
+‘to do battle for the faith against the relentless slanders of the Hebrews.’119 As <br>
+his second set of Cabalistic Conclusions explains, his intention is one of ‘pro-<br>
+viding powerful confirmation of the Christian religion from the very principles <br>
+of the Hebrew Sages,’ so that the Jews can be refuted by their own kabbalis-<br>
+tic books.120 His Cabala combines the Christian concept of the divine act of <br>
+redemption through Jesus with notions of creation and revelation common to <br>
+both Judaism and Christianity, in order to provide a Christian interpretation <br>
+for existing texts and adopt recognizable doctrines, symbols and methods for </p><p>119 Copenhaver, ‘The Secret of Pico’s Oration: Cabala and Renaissance Philosophy,’ 75.<br>
+120 Pico della Mirandola, On the Dignity of Man<br>
+Visible: 0% - 98%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p><strong>Summary of Chapter 4: “Christian Cabala’s Wonder-Working Word”</strong>  <br>
+From <em>Peter J. Forshaw, _The Mage’s Images: Heinrich Khunrath in His Oratory and Laboratory, Volume 2_ (Brill, 2025)</em>  <br>
+(Pages 215–295)</p><p><hr></p><p>This chapter examines the role of Christian Cabala in Khunrath’s spiritual and magical worldview, tracing its Jewish origins, its Christian reinterpretation, and Khunrath’s own adaptations. Forshaw charts a genealogy of Christian-Cabalist figures (Pico, Reuchlin, Agrippa, Dee) and identifies specific Cabalistic elements in Khunrath’s <em>Amphitheatrum Sapientiae Aeternae</em> and other works.</p><p><hr></p><p><h3>1. <strong>Origins of Kabbalah and Christian Adaptation</strong></h3><br>
+<ul><li>“Khunrath’s Christian engagement with the Jewish mystical tradition of Kabbalah lies at the heart of his theosophy” (p. 216).</li><br>
+<li>Forshaw explains how Jewish Kabbalah (קבלה, “reception”) was believed to derive from divine oral traditions revealed to Moses or Adam【12:7†source】.</li><br>
+<li>Key texts explored include the <em>Sefer Yetzirah</em>, <em>Bahir</em>, <em>Zohar</em>, and traditions of <em>ma‘aseh bereshit</em> and <em>merkavah</em> mysticism.</li><br>
+</ul><br>
+<hr></p><p><h3>2. <strong>Techniques of Interpretation: Gematria, Notarikon, Temurah</strong></h3><br>
+<ul><li>“Even the most literal and mundane-sounding text could, by means of the isopsephic equations in the technique of Gematria, be reinterpreted in novel ways” (p. 236)【12:10†source】.</li><br>
+<li>These exegetical techniques allow for deep symbolic readings based on letter manipulation and numerical equivalence, forming the basis of a Cabalist “hermeneutics of wonder.”</li><br>
+</ul><br>
+<hr></p><p><h3>3. <strong>Giovanni Pico della Mirandola: Kabbalah as Theological Weapon</strong></h3><br>
+<ul><li>Pico sought to “provide powerful confirmation of the Christian religion from the very principles of the Hebrew Sages” and claimed this was to “do battle for the faith against the relentless slanders of the Hebrews” (p. 244)【12:19†source】.</li><br>
+<li>Forshaw quotes Pico’s vision of Kabbalah as both an apologetic and transformative tool that merged Christianity with mysticism and Neoplatonism.</li><br>
+</ul><br>
+<hr></p><p><h3>4. <strong>Reuchlin’s <em>De Verbo Mirifico</em> (1494) and the Power of the Divine Name</strong></h3><br>
+<ul><li>Forshaw describes this as “Reuchlin’s first Christian-Cabalist work… significant for its ideas about language and the contribution it made to the Renaissance debate on the occult powers and properties of words and names” (p. 248).</li><br>
+<li>Reuchlin speaks of “the recondite powers of words, and abstruse energies of expressions, and the divine characters of secret names” (p. 248)【12:12†source】.</li><br>
+</ul><br>
+<hr></p><p><h3>5. <strong>Heinrich Cornelius Agrippa and John Dee</strong></h3><br>
+<ul><li>Agrippa’s <em>De Occulta Philosophia</em> expands upon Reuchlin’s ideas, emphasizing the 22 Hebrew letters and their symbolic meanings.</li><br>
+<li>Forshaw: “Book Two is a rich source of information on the occult and kabbalistic significance of numbers” and Book Three discusses “the Sephiroth, numerical calculations of the names of God, angels and spirits” (p. 257)【12:13†source】.</li><br>
+<li>Dee’s <em>Monas Hieroglyphica</em> inspires Khunrath’s diagrams and mystical interpretations, including Cabalist readings of Latin and Hebrew phrases.</li><br>
+</ul><br>
+<hr></p><p><h3>6. <strong>Cabala in Khunrath’s Own Work</strong></h3><br>
+<ul><li>Forshaw observes that Khunrath “evidently found a knowledge of Hebrew and the Jewish Kabbalistic exegetical techniques a source of inspiration” (p. 295)【12:15†source】.</li><br>
+<li>The 1609 title page of the <em>Amphitheatrum</em> features names like יהוה (YHVH), אש (Esh – Fire), שמש (Shemesh – Sun), and אורים יה (Urim Yah – God’s Lights) arranged in mystical configurations (p. 277)【12:9†source】.</li><br>
+<li>Khunrath describes “a Christian-Cabalist Adam Androgyne,” rejecting the binary and aligning with a divine hermaphroditism associated with Kabbalah’s unification themes (p. 295)【12:15†source】.</li><br>
+</ul><br>
+<hr></p><p><h3>7. <strong>Conclusion: Cabala’s Theological and Magical Function</strong></h3><br>
+<ul><li>Khunrath’s Cabala is not merely theoretical—it is operative, aimed at spiritual transformation and the production of wonders.</li><br>
+<li>“His task,” Forshaw writes, “was ‘to elucidate the occult property of names; and so from these... the occasion of our finally choosing one supreme, wonder-working and blessed name’” (p. 248, quoting Reuchlin)【12:12†source】.</li><br>
+</ul><br>
+<hr></p><p>Let me know if you’d like a table of the 10-part Cabalist structure in Khunrath’s theology, or a diagrammatic summary of the Sephirothal mappings.</p>
+  </div>
+</div>
+</div>
+</body>
+</html>

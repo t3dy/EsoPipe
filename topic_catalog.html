@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Esoteric Studies Catalog</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Georgia', serif;
+    background: #1a160e;
+    color: #e8dfc8;
+    line-height: 1.7;
+    padding: 2rem 1rem 6rem;
+}
+h1.site-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #d4a843;
+    letter-spacing: .06em;
+    margin-bottom: .3rem;
+}
+.subtitle {
+    text-align: center;
+    color: #9a8a6a;
+    font-size: .9rem;
+    margin-bottom: 3rem;
+    font-style: italic;
+}
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+.stat {
+    text-align: center;
+}
+.stat .num {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #d4a843;
+    display: block;
+    font-family: 'Georgia', serif;
+}
+.stat .lbl {
+    font-size: .8rem;
+    color: #9a8a6a;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+section.category {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+}
+section.category h2 {
+    font-size: 1.3rem;
+    color: #d4a843;
+    border-bottom: 1px solid #3a3020;
+    padding-bottom: .4rem;
+    margin-bottom: 1.2rem;
+    letter-spacing: .04em;
+}
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.card {
+    background: #252015;
+    border: 1px solid #3a3020;
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    transition: border-color .2s;
+}
+.card:hover { border-color: #d4a843; }
+.card-label {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #e8dfc8;
+    margin-bottom: .3rem;
+}
+.card-type {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #6a5a3a;
+    margin-bottom: .5rem;
+}
+.card-blurb {
+    font-size: .85rem;
+    color: #b0a080;
+    margin-bottom: .8rem;
+    line-height: 1.5;
+}
+.card-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: .8rem;
+    color: #9a8a6a;
+}
+.card-stats strong { color: #d4a843; }
+.tags {
+    margin-top: .6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem;
+}
+.tag {
+    background: #1a1408;
+    border: 1px solid #3a3020;
+    border-radius: 4px;
+    padding: .1rem .45rem;
+    font-size: .72rem;
+    color: #7a6a4a;
+}
+.request-section {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+}
+.request-section h2 {
+    font-size: 1.3rem;
+    color: #d4a843;
+    border-bottom: 1px solid #3a3020;
+    padding-bottom: .4rem;
+    margin-bottom: 1.2rem;
+}
+.req-bars { display: flex; flex-direction: column; gap: .5rem; }
+.req-row { display: flex; align-items: center; gap: .8rem; }
+.req-label { width: 160px; font-size: .88rem; color: #b0a080; text-align: right; }
+.req-bar-wrap { flex: 1; background: #1a1408; border-radius: 3px; height: 18px; }
+.req-bar { background: #d4a843; border-radius: 3px; height: 18px; }
+.req-count { font-size: .8rem; color: #6a5a3a; width: 40px; }
+.timeline-section {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+}
+.timeline-section h2 {
+    font-size: 1.3rem;
+    color: #d4a843;
+    border-bottom: 1px solid #3a3020;
+    padding-bottom: .4rem;
+    margin-bottom: 1.2rem;
+}
+.year-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: .6rem;
+}
+.year-cell {
+    background: #252015;
+    border: 1px solid #3a3020;
+    border-radius: 6px;
+    padding: .7rem 1rem;
+}
+.year-cell .yr { font-size: 1.1rem; color: #d4a843; font-weight: 700; }
+.year-cell .topics { font-size: .8rem; color: #9a8a6a; margin-top: .2rem; }
+.desire-section {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+}
+.desire-section h2 {
+    font-size: 1.3rem;
+    color: #d4a843;
+    border-bottom: 1px solid #3a3020;
+    padding-bottom: .4rem;
+    margin-bottom: 1.2rem;
+}
+.desire-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+}
+.desire-table th {
+    text-align: left;
+    padding: .4rem .8rem;
+    color: #9a8a6a;
+    font-weight: 600;
+    border-bottom: 1px solid #3a3020;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.desire-table td {
+    padding: .4rem .8rem;
+    border-bottom: 1px solid #1a1408;
+    color: #b0a080;
+}
+.desire-table td:first-child { color: #e8dfc8; }
+.desire-table td.cnt { color: #d4a843; font-weight: 700; }
+footer {
+    text-align: center;
+    color: #4a3a2a;
+    font-size: .8rem;
+    margin-top: 4rem;
+}
+</style>
+</head>
+<body>
+<h1 class="site-title">Esoteric Studies — Topic Catalog</h1>
+<p class="subtitle">Auto-generated from 249 ChatGPT conversations &bull; 2026-02-27 23:58</p>
+
+<div class="stats-bar">
+  <div class="stat"><span class="num">249</span><span class="lbl">Conversations</span></div>
+  <div class="stat"><span class="num">4056</span><span class="lbl">Questions Asked</span></div>
+  <div class="stat"><span class="num">45</span><span class="lbl">Topics Tracked</span></div>
+  <div class="stat"><span class="num">3162k</span><span class="lbl">Words of AI Text</span></div>
+  <div class="stat"><span class="num">2024-09</span><span class="lbl">First Chat</span></div>
+</div>
+
+<section class="category">
+<h2>Thinkers & Figures</h2>
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Plato</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Athenian philosopher (c.428-348 BCE), founder of the Academy.</div>
+    <div class="card-stats"><span><strong>108</strong> conversations</span><span><strong>913</strong> mentions</span></div>
+    <div class="tags"><span class="tag">ancient-greek</span><span class="tag">philosophy</span><span class="tag">forms</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Aristotle</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Greek philosopher (384-322 BCE), student of Plato.</div>
+    <div class="card-stats"><span><strong>104</strong> conversations</span><span><strong>1000</strong> mentions</span></div>
+    <div class="tags"><span class="tag">ancient-greek</span><span class="tag">philosophy</span><span class="tag">logic</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Hermes Trismegistus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Legendary author of the Hermetic corpus; syncretised Hermes and Egyptian Thoth.</div>
+    <div class="card-stats"><span><strong>84</strong> conversations</span><span><strong>351</strong> mentions</span></div>
+    <div class="tags"><span class="tag">hermeticism</span><span class="tag">alchemy</span><span class="tag">astrology</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Paracelsus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Swiss alchemist and physician (1493-1541), founded iatrochemistry.</div>
+    <div class="card-stats"><span><strong>80</strong> conversations</span><span><strong>581</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">alchemy</span><span class="tag">medicine</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Heinrich Cornelius Agrippa</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">German polymath (1486-1535), author of De occulta philosophia.</div>
+    <div class="card-stats"><span><strong>61</strong> conversations</span><span><strong>397</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">magic</span><span class="tag">kabbalah</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Marsilio Ficino</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Florentine philosopher (1433-1499), translated Plato and Corpus Hermeticum, founded Platonic Academy.</div>
+    <div class="card-stats"><span><strong>56</strong> conversations</span><span><strong>396</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">neoplatonism</span><span class="tag">florence</span><span class="tag">translation</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Plotinus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Neoplatonist philosopher (c.204-270 CE), author of the Enneads.</div>
+    <div class="card-stats"><span><strong>56</strong> conversations</span><span><strong>309</strong> mentions</span></div>
+    <div class="tags"><span class="tag">late-antiquity</span><span class="tag">neoplatonism</span><span class="tag">emanation</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">John Dee</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">English mathematician and occultist (1527-1608), advisor to Elizabeth I.</div>
+    <div class="card-stats"><span><strong>54</strong> conversations</span><span><strong>306</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">angelic-magic</span><span class="tag">enochian</span><span class="tag">alchemy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Giordano Bruno</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Italian philosopher and Dominican friar (1548-1600), art of memory and pantheistic cosmology.</div>
+    <div class="card-stats"><span><strong>53</strong> conversations</span><span><strong>516</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">magic</span><span class="tag">memory</span><span class="tag">cosmology</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Pythagoras</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Pre-Socratic philosopher (c.570-495 BCE), founder of the Pythagorean brotherhood.</div>
+    <div class="card-stats"><span><strong>51</strong> conversations</span><span><strong>257</strong> mentions</span></div>
+    <div class="tags"><span class="tag">ancient-greek</span><span class="tag">mathematics</span><span class="tag">cosmology</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Albertus Magnus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Dominican friar and polymath (c.1200-1280), wrote on natural magic.</div>
+    <div class="card-stats"><span><strong>41</strong> conversations</span><span><strong>244</strong> mentions</span></div>
+    <div class="tags"><span class="tag">scholastic</span><span class="tag">magic</span><span class="tag">natural-philosophy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Roger Bacon</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">English philosopher and Franciscan friar (c.1214/20-1292).</div>
+    <div class="card-stats"><span><strong>41</strong> conversations</span><span><strong>199</strong> mentions</span></div>
+    <div class="tags"><span class="tag">scholastic</span><span class="tag">magic</span><span class="tag">natural-philosophy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Giovanni Pico della Mirandola</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Renaissance philosopher (1463-1494), wrote Oration on the Dignity of Man.</div>
+    <div class="card-stats"><span><strong>41</strong> conversations</span><span><strong>695</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">kabbalah</span><span class="tag">humanism</span><span class="tag">magic</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Iamblichus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Syrian Neoplatonist (c.245-325 CE), systematised theurgy, wrote De mysteriis.</div>
+    <div class="card-stats"><span><strong>39</strong> conversations</span><span><strong>194</strong> mentions</span></div>
+    <div class="tags"><span class="tag">late-antiquity</span><span class="tag">neoplatonism</span><span class="tag">theurgy</span><span class="tag">syrian</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Proclus</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Late Neoplatonist philosopher (412-485 CE), head of Platonic Academy in Athens.</div>
+    <div class="card-stats"><span><strong>38</strong> conversations</span><span><strong>291</strong> mentions</span></div>
+    <div class="tags"><span class="tag">late-antiquity</span><span class="tag">neoplatonism</span><span class="tag">theurgy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Ibn Sina</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Persian polymath (980-1037 CE), philosopher-physician.</div>
+    <div class="card-stats"><span><strong>35</strong> conversations</span><span><strong>196</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">medicine</span><span class="tag">philosophy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Porphyry</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Neoplatonist philosopher (c.233-305 CE), edited the Enneads, author of Isagoge.</div>
+    <div class="card-stats"><span><strong>31</strong> conversations</span><span><strong>120</strong> mentions</span></div>
+    <div class="tags"><span class="tag">late-antiquity</span><span class="tag">neoplatonism</span><span class="tag">isagoge</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Robert Fludd</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">English physician and Hermetic philosopher (1574-1637), known for cosmic diagrams.</div>
+    <div class="card-stats"><span><strong>28</strong> conversations</span><span><strong>166</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">rosicrucian</span><span class="tag">music-of-the-spheres</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Ibn Rushd</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Andalusian philosopher (1126-1198 CE), major commentator on Aristotle.</div>
+    <div class="card-stats"><span><strong>17</strong> conversations</span><span><strong>76</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">aristotle</span><span class="tag">philosophy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Pseudo-Dionysius</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Anonymous 5th-6th century Christian Neoplatonist, wrote Celestial Hierarchy.</div>
+    <div class="card-stats"><span><strong>17</strong> conversations</span><span><strong>119</strong> mentions</span></div>
+    <div class="tags"><span class="tag">late-antiquity</span><span class="tag">christian-neoplatonism</span><span class="tag">mysticism</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Athanasius Kircher</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">German Jesuit polymath (1602-1680), wrote on hieroglyphs, music, and cosmology.</div>
+    <div class="card-stats"><span><strong>16</strong> conversations</span><span><strong>55</strong> mentions</span></div>
+    <div class="tags"><span class="tag">baroque</span><span class="tag">encyclopaedist</span><span class="tag">hieroglyphs</span><span class="tag">jesuit</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Abraham Abulafia</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Spanish-Jewish Kabbalist (1240-c.1291), founder of prophetic/ecstatic Kabbalah.</div>
+    <div class="card-stats"><span><strong>13</strong> conversations</span><span><strong>50</strong> mentions</span></div>
+    <div class="tags"><span class="tag">kabbalah</span><span class="tag">jewish</span><span class="tag">13th-century</span><span class="tag">prophetic-kabbalah</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">al-Farabi</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Islamic Neoplatonist philosopher (c.872-950 CE).</div>
+    <div class="card-stats"><span><strong>7</strong> conversations</span><span><strong>33</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">philosophy</span><span class="tag">neoplatonism</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Ikhwan al-Safa</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">Anonymous 10th-century Islamic brotherhood who composed the encyclopaedic Rasa'il.</div>
+    <div class="card-stats"><span><strong>5</strong> conversations</span><span><strong>14</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">pythagorean</span><span class="tag">encyclopaedia</span><span class="tag">10th-century</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">al-Buni</div>
+    <div class="card-type">thinker</div>
+    <div class="card-blurb">North African Islamic mystic (d. 1225), author of Shams al-Ma'arif.</div>
+    <div class="card-stats"><span><strong>2</strong> conversations</span><span><strong>11</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">magic</span><span class="tag">letter-mysticism</span></div>
+  </div>
+</div></section>
+<section class="category">
+<h2>Texts & Sources</h2>
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Corpus Hermeticum</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Collection of Greek Hermetic treatises (2nd-4th century CE), translated by Ficino.</div>
+    <div class="card-stats"><span><strong>61</strong> conversations</span><span><strong>343</strong> mentions</span></div>
+    <div class="tags"><span class="tag">hermeticism</span><span class="tag">greek</span><span class="tag">late-antiquity</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">De occulta philosophia</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Three-volume magical encyclopaedia by Agrippa (1531).</div>
+    <div class="card-stats"><span><strong>41</strong> conversations</span><span><strong>178</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">magic</span><span class="tag">kabbalah</span><span class="tag">agrippa</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Enneads</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Collected works of Plotinus in 6 groups of 9, edited by Porphyry c.301 CE.</div>
+    <div class="card-stats"><span><strong>31</strong> conversations</span><span><strong>94</strong> mentions</span></div>
+    <div class="tags"><span class="tag">neoplatonism</span><span class="tag">plotinus</span><span class="tag">treatises</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Picatrix</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Arabic magical compendium (c.10th cent. CE), translated into Latin in 13th cent.</div>
+    <div class="card-stats"><span><strong>28</strong> conversations</span><span><strong>139</strong> mentions</span></div>
+    <div class="tags"><span class="tag">arabic</span><span class="tag">magic</span><span class="tag">astral-magic</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Oration on the Dignity of Man</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Pico's preface to his 900 Theses (1486), manifesto of Renaissance humanism.</div>
+    <div class="card-stats"><span><strong>24</strong> conversations</span><span><strong>151</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">humanism</span><span class="tag">pico</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Rasa'il</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">52-epistle encyclopaedia by Ikhwan al-Safa covering mathematics, cosmology, philosophy.</div>
+    <div class="card-stats"><span><strong>16</strong> conversations</span><span><strong>33</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">encyclopaedia</span><span class="tag">10th-century</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Zohar</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Central text of Kabbalah, compiled c.1280 CE in Castile.</div>
+    <div class="card-stats"><span><strong>15</strong> conversations</span><span><strong>52</strong> mentions</span></div>
+    <div class="tags"><span class="tag">kabbalah</span><span class="tag">jewish</span><span class="tag">mysticism</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Sefer Yetzirah</div>
+    <div class="card-type">text</div>
+    <div class="card-blurb">Early Jewish mystical text describing creation through 32 paths of wisdom.</div>
+    <div class="card-stats"><span><strong>11</strong> conversations</span><span><strong>42</strong> mentions</span></div>
+    <div class="tags"><span class="tag">kabbalah</span><span class="tag">jewish</span><span class="tag">cosmology</span></div>
+  </div>
+</div></section>
+<section class="category">
+<h2>Concepts & Traditions</h2>
+<div class="cards">
+  <div class="card">
+    <div class="card-label">alchemy</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Pre-modern philosophical and proto-scientific tradition of transformation.</div>
+    <div class="card-stats"><span><strong>187</strong> conversations</span><span><strong>3618</strong> mentions</span></div>
+    <div class="tags"><span class="tag">natural-philosophy</span><span class="tag">transmutation</span><span class="tag">hermetic</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Neoplatonism</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Philosophical tradition from Plotinus (c.250 CE) synthesising Plato with eastern thought.</div>
+    <div class="card-stats"><span><strong>108</strong> conversations</span><span><strong>966</strong> mentions</span></div>
+    <div class="tags"><span class="tag">philosophy</span><span class="tag">late-antiquity</span><span class="tag">renaissance</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">the One</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">The first principle in Neoplatonic metaphysics: absolutely simple, beyond being.</div>
+    <div class="card-stats"><span><strong>93</strong> conversations</span><span><strong>710</strong> mentions</span></div>
+    <div class="tags"><span class="tag">neoplatonism</span><span class="tag">theology</span><span class="tag">plotinus</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">kabbalah</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Jewish esoteric tradition interpreting Torah through ten sefirot.</div>
+    <div class="card-stats"><span><strong>57</strong> conversations</span><span><strong>548</strong> mentions</span></div>
+    <div class="tags"><span class="tag">jewish</span><span class="tag">mysticism</span><span class="tag">tree-of-life</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">theurgy</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Ritual practice aimed at drawing divine power into the soul; theorised by Iamblichus.</div>
+    <div class="card-stats"><span><strong>57</strong> conversations</span><span><strong>354</strong> mentions</span></div>
+    <div class="tags"><span class="tag">neoplatonism</span><span class="tag">ritual-magic</span><span class="tag">iamblichus</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">astral magic</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Ritual practice drawing on planetary powers through images and timings.</div>
+    <div class="card-stats"><span><strong>53</strong> conversations</span><span><strong>334</strong> mentions</span></div>
+    <div class="tags"><span class="tag">magic</span><span class="tag">astrology</span><span class="tag">planets</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">emanation</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Neoplatonic doctrine that reality flows outward from the One through hypostases.</div>
+    <div class="card-stats"><span><strong>51</strong> conversations</span><span><strong>339</strong> mentions</span></div>
+    <div class="tags"><span class="tag">neoplatonism</span><span class="tag">cosmology</span><span class="tag">ontology</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Renaissance magic</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Learned magical practice of the 15th-17th centuries.</div>
+    <div class="card-stats"><span><strong>51</strong> conversations</span><span><strong>380</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">magic</span><span class="tag">natural-philosophy</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">world soul</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Neoplatonic hypostasis between Intellect and Matter; animates the cosmos.</div>
+    <div class="card-stats"><span><strong>32</strong> conversations</span><span><strong>100</strong> mentions</span></div>
+    <div class="tags"><span class="tag">neoplatonism</span><span class="tag">cosmology</span><span class="tag">magic</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">prisca theologia</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Renaissance idea of a single primordial theology underlying all ancient wisdom.</div>
+    <div class="card-stats"><span><strong>24</strong> conversations</span><span><strong>90</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">syncretism</span><span class="tag">ficino</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">memory palace</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Mnemonic technique placing mental images in imagined architectural spaces.</div>
+    <div class="card-stats"><span><strong>18</strong> conversations</span><span><strong>103</strong> mentions</span></div>
+    <div class="tags"><span class="tag">renaissance</span><span class="tag">mnemotechnics</span><span class="tag">bruno</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label">magic squares</div>
+    <div class="card-type">concept</div>
+    <div class="card-blurb">Squares of numbers with equal row/column/diagonal sums; used in Islamic talismanic magic.</div>
+    <div class="card-stats"><span><strong>7</strong> conversations</span><span><strong>54</strong> mentions</span></div>
+    <div class="tags"><span class="tag">islamic</span><span class="tag">numerology</span><span class="tag">al-buni</span></div>
+  </div>
+</div></section>
+<div class="request-section">
+<h2>How You Like to Learn</h2>
+<div class="req-bars">
+  <div class="req-row">
+    <div class="req-label">other</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:100%"></div></div>
+    <div class="req-count">2104</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">table</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:28%"></div></div>
+    <div class="req-count">607</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">summary</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:24%"></div></div>
+    <div class="req-count">523</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">explanation</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:14%"></div></div>
+    <div class="req-count">303</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">refinement</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:11%"></div></div>
+    <div class="req-count">240</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">close-reading</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:11%"></div></div>
+    <div class="req-count">239</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">methodology</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:10%"></div></div>
+    <div class="req-count">213</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">list</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:8%"></div></div>
+    <div class="req-count">178</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">python</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:7%"></div></div>
+    <div class="req-count">165</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">timeline</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:4%"></div></div>
+    <div class="req-count">91</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">comparison</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:3%"></div></div>
+    <div class="req-count">80</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">analysis</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:3%"></div></div>
+    <div class="req-count">77</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">bibliography</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:3%"></div></div>
+    <div class="req-count">72</div>
+  </div>
+  <div class="req-row">
+    <div class="req-label">visualisation</div>
+    <div class="req-bar-wrap"><div class="req-bar" style="width:1%"></div></div>
+    <div class="req-count">42</div>
+  </div>
+</div></div>
+<div class="timeline-section">
+<h2>Your Research Through Time</h2>
+<div class="year-grid">
+  <div class="year-cell">
+    <div class="yr">2024</div>
+    <div class="topics">alchemy (3259), Aristotle (797), Neoplatonism (704)</div>
+  </div>
+  <div class="year-cell">
+    <div class="yr">2025</div>
+    <div class="topics">alchemy (282), Neoplatonism (216), Plato (199)</div>
+  </div>
+  <div class="year-cell">
+    <div class="yr">2026</div>
+    <div class="topics">alchemy (77), Neoplatonism (46), the One (44)</div>
+  </div>
+</div></div>
+<div class="desire-section">
+<h2>Scholarly Desires (Entity x Request Type)</h2>
+<table class="desire-table">
+<thead><tr><th>Figure / Text / Concept</th><th>Request Type</th><th>Count</th></tr></thead>
+<tbody>
+  <tr><td>alchemy</td><td>other</td><td class="cnt">243</td></tr>
+  <tr><td>alchemy</td><td>table</td><td class="cnt">110</td></tr>
+  <tr><td>alchemy</td><td>explanation</td><td class="cnt">84</td></tr>
+  <tr><td>alchemy</td><td>methodology</td><td class="cnt">63</td></tr>
+  <tr><td>alchemy</td><td>refinement</td><td class="cnt">57</td></tr>
+  <tr><td>Giovanni Pico della Mirandola</td><td>other</td><td class="cnt">52</td></tr>
+  <tr><td>alchemy</td><td>summary</td><td class="cnt">51</td></tr>
+  <tr><td>alchemy</td><td>timeline</td><td class="cnt">44</td></tr>
+  <tr><td>alchemy</td><td>close-reading</td><td class="cnt">38</td></tr>
+  <tr><td>Plato</td><td>explanation</td><td class="cnt">38</td></tr>
+  <tr><td>alchemy</td><td>list</td><td class="cnt">36</td></tr>
+  <tr><td>Aristotle</td><td>other</td><td class="cnt">35</td></tr>
+  <tr><td>Plato</td><td>other</td><td class="cnt">35</td></tr>
+  <tr><td>the One</td><td>methodology</td><td class="cnt">34</td></tr>
+  <tr><td>the One</td><td>explanation</td><td class="cnt">33</td></tr>
+  <tr><td>alchemy</td><td>analysis</td><td class="cnt">31</td></tr>
+  <tr><td>alchemy</td><td>python</td><td class="cnt">31</td></tr>
+  <tr><td>Aristotle</td><td>explanation</td><td class="cnt">29</td></tr>
+  <tr><td>Aristotle</td><td>methodology</td><td class="cnt">29</td></tr>
+  <tr><td>Giordano Bruno</td><td>table</td><td class="cnt">29</td></tr>
+  <tr><td>Giovanni Pico della Mirandola</td><td>explanation</td><td class="cnt">29</td></tr>
+  <tr><td>Plato</td><td>methodology</td><td class="cnt">28</td></tr>
+  <tr><td>Aristotle</td><td>close-reading</td><td class="cnt">27</td></tr>
+  <tr><td>the One</td><td>refinement</td><td class="cnt">26</td></tr>
+  <tr><td>Giordano Bruno</td><td>other</td><td class="cnt">26</td></tr>
+  <tr><td>Plato</td><td>close-reading</td><td class="cnt">23</td></tr>
+  <tr><td>the One</td><td>timeline</td><td class="cnt">22</td></tr>
+  <tr><td>alchemy</td><td>bibliography</td><td class="cnt">21</td></tr>
+  <tr><td>Neoplatonism</td><td>explanation</td><td class="cnt">20</td></tr>
+  <tr><td>Aristotle</td><td>table</td><td class="cnt">20</td></tr>
+  <tr><td>the One</td><td>comparison</td><td class="cnt">19</td></tr>
+  <tr><td>alchemy</td><td>comparison</td><td class="cnt">18</td></tr>
+  <tr><td>Neoplatonism</td><td>other</td><td class="cnt">18</td></tr>
+  <tr><td>Aristotle</td><td>refinement</td><td class="cnt">18</td></tr>
+  <tr><td>Aristotle</td><td>comparison</td><td class="cnt">17</td></tr>
+  <tr><td>Plato</td><td>comparison</td><td class="cnt">17</td></tr>
+  <tr><td>Aristotle</td><td>timeline</td><td class="cnt">16</td></tr>
+  <tr><td>Marsilio Ficino</td><td>other</td><td class="cnt">16</td></tr>
+  <tr><td>Proclus</td><td>explanation</td><td class="cnt">16</td></tr>
+  <tr><td>alchemy</td><td>visualisation</td><td class="cnt">15</td></tr>
+</tbody></table></div>
+<footer>Generated by mine_chats.py from E:\pdf\esoteric studies chats &bull; 2026-02-27 23:58</footer>
+</body></html>

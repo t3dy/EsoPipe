@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agrippa</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Agrippa</h1>
+  <div class="meta">February 06, 2026 07:08 PM &middot; Model: gpt-5-2 &middot; 16 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>summarize these documents</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file0 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 3&gt;<br>
+Société d&#x27;Études Latines de Bruxelles is collaborating with JSTOR to digitize, preserve and extend access to Latomus.<br>
+http://www.jstor.org<br>
+Société d&#x27;Études Latines de Bruxelles<br>
+Review <br>
+Author(s): R. Desmed <br>
+Review by: R. Desmed <br>
+Source: Latomus, T. 38, Fasc. 3 (JUILLET-SEPTEMBRE 1979), pp. 752-753<br>
+Published by: Société d&#x27;Études Latines de Bruxelles<br>
+Stable URL: http://www.jstor.org/stable/41531298<br>
+Accessed: 21-10-2015 06:22 UTC<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at http://www.jstor.org/page/<br>
+info/about/policies/terms.jsp<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of content <br>
+in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms of scholarship. <br>
+For more information about JSTOR, please contact support@jstor.org.<br>
+This content downloaded from 128.248.155.225 on Wed, 21 Oct 2015 06:22:41 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 3&gt;<br>
+752 NOTICES BIBLIOGRAPHIQUES <br>
+particulière, dont s&#x27;est servi Armonio. Nous signalons, enfin, avec plaisir, que M. Ludwig <br>
+présente dans sa préface un vibrant plaidoyer en faveur de l&#x27;édition systématique et <br>
+scientifique des textes latins de la Renaissance. <br>
+R. Desmed. <br>
+Opera omnia Desidera Er asmi RoterodamU recognita et adnotatione critica instructa <br>
+notisque illustrata. Ordinis quinti tomus primus (V-l), Amsterdam et Oxford, North￾Holland Publishing Company, 1977, viii-410 p., 26,1 cmx 17,5, 7 pl. <br>
+Ce volume contient cinq ouvrages de caractère spirituel ou catéchétique, dont quatre <br>
+exécutés sur commande. <br>
+De contemptu mundi (éd. S. Dresden) : première œuvre d&#x27;Érasme, rédigée sans doute <br>
+avant 1490, mais publiée seulement à Louvain en 1521. L&#x27;introduction conclut, compte <br>
+tenu des conventions littéraires, que, dans sa teneur générale, cette epistola sur la vie <br>
+monastique mérite d&#x27;être prise au sérieux. Elle s&#x27;inscrit dans une tradition qui remonte au<br>
+Moyen Age. Le chapitre XII, rédigé après coup, n&#x27;est pas en contradiction absolue avec le <br>
+corps de l&#x27;ouvrage. <br>
+Virginis Matris apud Lauretum cultae Liturgia (éd. L. E. Halkin) : la princeps, Bàie, <br>
+1 523, ne donnait que le texte même de la messe : on suit ici la seconde édition, accrue d&#x27;un <br>
+sermon et de l&#x27;approbation de l&#x27;archevêque de Besançon. L&#x27;introduction souligne le <br>
+caractère complexe de la piété d&#x27;Érasme. <br>
+Modus orandi Deum (éd. J. N. Bakhuizen Van Den Brink) : texte de la princeps, Bàie, <br>
+1523, où sont insérés les importants compléments de 1525. L&#x27;introduction analyse les <br>
+concepts théologiques et retrace latradition littéraire dugenre. Une heureuse initiative : <br>
+l&#x27;éditeur, pour cette œuvre comme pour la suivante, donne la description bibliographique <br>
+complète des éditions utilisées. <br>
+Explanatio Symboli Apostolorum (éd. J. N. Bakhuizen Van Den Brink) : éd. princeps, <br>
+Bále, 1 533. Dès la fin du Moyen Age, l&#x27;instruction de la foi a cédé sa place prépondérante <br>
+à l&#x27;enseignement moral. Par ce traité didactique très complet, Érasme renoue avec une <br>
+longue tradition. Quant à l&#x27;authenticité philologique des différents Credo, son opinion, qui <br>
+est celle de son temps, reste flottante. <br>
+De praeparatione ad mortem (éd. A. Van Heck) :la princeps, Bàie, 1 534, est comparée <br>
+au manuscrit autographe, qui représente un état antérieur du texte. L&#x27;introduction retrace <br>
+la diffusion du livre et dresse un inventaireaisonné des variantes. Une constatation <br>
+intéressante : làoù les citations bibliques d&#x27;Érasme s&#x27;écartent de la Vulgate, c&#x27;est par <br>
+réminiscence duchant liturgique. <br>
+Roland Crahay. <br>
+Henry Cornelius Agrippa, Of the Vanitie and Uncertaintie of Artes and Sciences , ed. by Catherine M. Dunn, Northridge, California State University, 1974, xxxv-453 p., 1 port. <br>
+Henri Corneille Agrippa de Nettesheim connut une vie agitée tant sur le plan spirituel <br>
+que sur le plan matériel ; son intérêt pour les sciences occultes et ses sympathies pour la <br>
+Réforme ne contribuèrent pas à lui assurer la tranquillité, comme le montre M&quot;* Dunn <br>
+dans une courte introduction. Agrippa écrivit son De incertitudine et vanitate scientiarum <br>
+et artium, l&#x27;ouvrage le plus représentatif de sa pensée, en 1 526, à un moment de profond <br>
+découragement, de pessimisme et de scepticisme envers toutes les connaissances. Il croyait <br>
+trouver dans la religion, ou plutôt dans une sorte de fidéisme, la réponse à ses problèmes intellectuels et moraux, tout en dénonçant les<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file1 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 16&gt;<br>
+KNOWLEDGE AND FAITH IN THE THOUGHT OF CORNELIUS AGRIPPA<br>
+Author(s): George H. Daniels, Jr<br>
+Source: Bibliothèque d&#x27;Humanisme et Renaissance, T. 26, No. 2 (1964), pp. 326-340<br>
+Published by: Librairie Droz<br>
+Stable URL: http://www.jstor.org/stable/41430598 .<br>
+Accessed: 28/06/2014 07:33<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at .<br>
+http://www.jstor.org/page/info/about/policies/terms.jsp<br>
+ .<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of<br>
+content in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms<br>
+of scholarship. For more information about JSTOR, please contact support@jstor.org.<br>
+ .<br>
+Librairie Droz is collaborating with JSTOR to digitize, preserve and extend access to Bibliothèque<br>
+d&#x27;Humanisme et Renaissance.<br>
+http://www.jstor.org <br>
+This content downloaded from 46.243.173.29 on Sat, 28 Jun 2014 07:33:01 AM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 16&gt;<br>
+KNOWLEDGE AND FAITH IN THE THOUGHT <br>
+OF CORNELIUS AGRIPPA <br>
+The enigmatic figure of Heinrich Cornelius Agrippa von Nettes￾heim (1486-1535) has been subjected to various interpretations since <br>
+the early 16th Century. Even his contemporaries were never quite <br>
+sure what to do with him. Lauded as a great scholar and leading <br>
+man of letters on the one hand, he was condemned as a wicked <br>
+practitioner of the black arts and collaborator with devils on the <br>
+other 1. Men of later generations were equally divided. The great <br>
+skeptical works of Sir Philipp Sidney and of Montaigne were con￾sciously modeled after Agrippa&#x27;s volume, On the Uncertainty and <br>
+Vanity of the Arts and Sciences , while Giordano Bruno and Thomas <br>
+Vaughan took his three books of occult philosophy as a model. For <br>
+Marlowe and, to a lesser extent, for Goethe, Cornelius Agrippa was <br>
+the original Faust 2. <br>
+The difficulty is that there has always seemed to be two Agrip￾pas - the one who wrote De Occulta Philosophia , proclaiming that <br>
+the world was tied together with pervasive mystic bonds and that the <br>
+intelligence of man was capable of utilizing the occult qualities of the <br>
+universe for his own advantage, and the other Agrippa, the author <br>
+of De Incertitudine et Vanitate Scientiarum9 Declamatio Invectiva , et <br>
+Excellentia Verbi Dei , a violent declamation against all of man&#x27;s <br>
+learning and against the possibility of his reaching understanding <br>
+1 According to his first biographer, at one time Agrippa was offered employment by three different courts, including that of the Emperor Charles V, into whose court he entered in1530 as Imperial Historiographer. See Henry Morely, The Life of Henry Cornelius Agrippa von Nettesheim , Doctor and Knight , Commonly Known as a Magician (London : Chapman and Hall, 1856), Vol. 2, p. 259. On the other hand, Melanchthon regarded him as being on intimate terms with the devil. On this point, see the quotation in Philip Mason Palmer and Robert Pattison More, The Sources of the Faust Tradition (New York : Oxford University Press, 1936), p. 102. 2 For the similarity of Sidney&#x27;s «Apology for Poetrie » and Agrippa&#x27;s de Vanitate , <br>
+see A. C. Hamilton, « Sidney and Agrippa », Review of English Studies , ns, 7 : 151-7, (April, 1956). Pierre Villey in his Les Sources et révolution des Essais de Montaigne (Paris, 1933), II, 166-170, notes the close relationship between de Vanitate and parts of Montaigne&#x27;s « Apology for Raymond Sebond ».For Giordano Bruno, see Ernest Cassier, Das Erkenntnisproblem in der Philosophie und Wissenschaft in Neueren Zeit (Berlin, 1906-7), I, p. 344-5. For Thomas and Henry Vaughan, see А. С. Judson, « Cornelius Agrippa and Henry Vaughan », Modem Lan￾guage Notes , 41 : 178-181 (March, 1926). In Scene I, lines 96-116, Marlowe&#x27;s Faust specifically takes Agrippa as his ideal. For the relationship of Agrippa to Goethe&#x27;s Faust, see Anton Reichl, « Agrippa and Gœthe&#x27;s Faust,» Euphorion , IV, 1897, p. 287-301. <br>
+This content downloaded from 46.243.173.29 on Sat, 28 Jun 2014 07:33:01 AM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 16&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 16&gt;<br>
+THOUGHT OF CORNELIUS AGRIPPA 327 <br>
+through reason г. On the surface at least, the two Agrippas do seem <br>
+incompatible, and until very recently, historians have followed the <br>
+pattern of choosing one of them and discounting the other as a fraud, <br>
+or at least, the victim of a temporary intellectual aberration. A few, <br>
+following Marlowe, have looked upon him as a Faustian character <br>
+who, at a certain point, renounces scholarly allegiance to human <br>
+sciences and turns to the black arts 2. <br>
+In 1957, an ingenious attempt was made by Charles G. Nauert <br>
+to unite the two strands in the character of Agrippa, by interpreting <br>
+him as a paradigm of the dialectical movement of Western European <br>
+thought which Hiram Haydn saw as characterizing the period 3. <br>
+This paper arose out of the conviction that an insistence upon <br>
+viewing Agrippa either in terms of intellectual development or <br>
+discounting one side of his thought necessitates an entirely false final <br>
+evaluation of the man, and, what is more serious, a misunderstanding <br>
+of his real significance in the history of thought. A comparison <br>
+<ul><li>implied or otherwise - of Agrippa with Faust does have a certain </li><br>
+</ul>seductive appeal, and interpreting him as a paradigm of the dialectical <br>
+movement of Haydn&#x27;s &quot; Counter-Renaissance &quot; thesis is even more <br>
+tempting. But either effort precludes a real understanding of the <br>
+relationship between magic, skepticism, and modern science. A <br>
+brief chronological sketch of the major events in Agrippa&#x27;s life will <br>
+make clear the difficulty of a developmental analysis. <br>
+Agrippa was born in 1486 at Cologne and sometime before 1506 <br>
+had studied jurisprudence and medicine at Cologne and Paris, <br>
+although he took no degree. He spent the next two years in Spain, in <br>
+part as a military adventurer and in part as a student in the company <br>
+1 The edition I have used is Agrippae : Opera in Duos Tomos Concinne , Lugduni, Per Beringos Fratres, n.d. (fictitious imprint: probably Strasburg in the early 17th <br>
+Century). (All translations areby me.) 2 Lynn Thorndyke, A History of Magic and Experimental Science (New York : <br>
+Columbia University Press, 1941) ; V, Chapter 8,sees Agrippa as primarily a practi￾tioner of the black arts ; August Prost, in Corneille Agrippa: sa vie et ses œuvres (Paris, <br>
+1881, 1882) interprets him as a skeptic and a charlatan. The Faust interpretation can <br>
+be found in various places, most prominently in the article referred to above by Reichl, but also in Agnes Bartscherer, Paracelsus , Paracelsisten und Gœthes Faust , (Dortmund, 1911) especially p. 23-25, and in Harold Jantz, Gœthe&#x27;s Faust as a Renaissance Man <br>
+(Princeton : Princeton University, 1951), passim. For a good summary of interpretations of Agrippa, see Charles G. Nauert, &quot;Magic and Skepticism in Agrippa&#x27;s Thought&quot;, Journal of the History of Ideas , 18 : 161 fï., (April, 1957). Nauert also deals with the <br>
+question of whether Agrippa was merely &quot;declaiming &quot; in his De Vanitate and demon￾strates that he did not, in his Apologia , retract any of the views, as distinghished from <br>
+some of the obviously fantastic stories, whiche had expressed in the earlier work. <br>
+3 Nauert, &quot;Magic and Skepticism in Agrippa&#x27;s Thought.&quot; Nauerťs debt to Haydn <br>
+is not, of course, without acknowledgement. Nauert summarizes the Haydn thesis <br>
+on pp. 165-6 in the following manner : &quot;In opposition to the orderly world view which <br>
+the Thomists and the humanists shared, there arose ageneral skepticism concerning the power of the human mind to gain truth. This skepticism in turn produced two <br>
+results, sometimes at odds but often found in the same person : unsystematic empiricism, which granted truth only to sensory knowledge, and occultism, which appealed rather <br>
+to gnostic traditions ofrevealed truth, especially the Hermetic and the cabalistic. <br>
+Finally, these two tendencies, especially the empirical, contributed in some measure to<br>
+the birth of modern scientific methodology, which restored faith in the power of the <br>
+human mind, but on a different level from that of medieval rationalism.&quot; For Haydn&#x27;s <br>
+thesis, see The Counter-Renaissance , New York, 1951. <br>
+This content downloaded from 46.243.173.29 on Sat, 28 Jun 2014 07:33:01 AM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 3 / 16&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 16&gt;<br>
+328 GEORGE H. DANIELS, JR. <br>
+of a group of theosophists. In 1509, he lectured at the University of <br>
+Dole on Reuchlin&#x27;s Hebraic studies, with such success that, according <br>
+to his own account, he was granted a degree of Doctor of Divinity <br>
+by the University. In the same year, he wrote his treatise on the <br>
+nobility and pre-eminence of women, a logical argument combined <br>
+with tortuous Biblical exegesis. In the following year, he wrote the <br>
+first draft of his three books on occult philosophy. He was then sent <br>
+on a diplomatic mission by the Emperor Maximilian to England, <br>
+where he was a guest of Dean Colet. By the end of 1510, he was in <br>
+Italy, where he was knighted for bravery at the battle of Ravenna. <br>
+In 1515 - again according to his own account - he was admitted as <br>
+Doctor of Medicine and of Jurisprudence for his lectures at Pavia on <br>
+Hermetic philosophy and Marcilio Ficino&#x27;s commentary on the <br>
+Pimander. In the next few years, Agrippa was town advocate and <br>
+orator at Metz, where he also practiced alchemy on the side ; municipal <br>
+physician at Fribourg, and physician to Louise of Savoy. He was <br>
+forced to leave the service of Louise in 1526 for having first refused <br>
+to cast a horoscope for her on the grounds that it was &quot; superstition, <br>
+unworthy of a Christian &quot;, and then, upon being pressured, casting <br>
+a horoscope which anticipated the success of the Duke of Bourbon. <br>
+It was in this year that he wrote his skeptical Treatise, de Vantiate. <br>
+The treatise was not printed until 1530, the same year in which he <br>
+addressed a paper advocating empiricism in medicine to the Grand <br>
+Council of the Netherlands. This wras intended as a defense of Jean <br>
+Thibault, who had practiced with him at Antwerp during the plague. <br>
+The next year he began preparing his de Occulta Philosophia for <br>
+publication, acknowledging in his dedication to Hermann von Weid <br>
+that despite the inclusion of much that was probably in error, the <br>
+work contained &quot; <br>
+many useful and necessary things &quot;. In 1533, he <br>
+published his commentary on the Lullian system. He spent his last <br>
+two years wandering, and died under obscure circumstances at <br>
+Grenoble in 1535. His only publications in this final period of his life <br>
+were a series of letters exposing the injustices to him of Louise of <br>
+Savoy - letters for which he spent some months in prison г. <br>
+From this chronology, it is evident that Agrippa, to say the least, <br>
+was hardly a Faust figure. True, both Faust and Agrippa had grasped <br>
+the whole range of human learning and both had found it wanting. <br>
+But it is not accurate to say that Agrippa turned to magic - there is <br>
+no dramatic turning point in his life, nor is there a series of minor <br>
+turning points which can fit into<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file2 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 23&gt;<br>
+ESTHER GILMAN RICHEY <br>
+“To Undoe the Booke”: <br>
+Cornelius Agrippa, Aemilia Lanyer <br>
+and the Subversion of Pauline Authority <br>
+omen of the Renaissance were enjoined to silence and sub￾mission by a voice that echoed with renewed force through￾out the seventeenth century, a voice privileged in the ser￾mons, tracts, and arguments of that time-the unequivocal pronounce￾ment of the Apostle Paul:’ “Let the woman learne in silence with all <br>
+subjection. I permit not a woman to teache, nether to usurpe autoritie <br>
+over the man, but to be in silence. For Adam was first formed, then Eve. <br>
+And Adam was not deceived, but the woman was deceived &amp; was in the <br>
+transgression” (I Tim. 2.11-14).~ If women were to find a place for <br>
+themselves as speakers and writers, they must first call into question <br>
+Paul’s interpretation of Genesis; they must first overturn his assessment of <br>
+Eve.3 Among those who took up this task, no woman did so with more <br>
+I. Suzanne W. Hull discusses the influence of Pauline authority on women in Chaste, Silent <br>
+and Obedient (San Marino, 1982), pp. 106-26, and a wide range of criticism offers the same <br>
+assessment. See, e.g., Margaret Ezell, The Patriarch’s Wqe: Literary Evidence and the History oJthe <br>
+Family (Chapel Hill, 1987). p. 16; Silent Butfor the Word, ed. Margaret Patterson Hannay (Kent, <br>
+OH, 1985); Constance Jordan, Renaissance Feminism (Ithaca, 1990). pp. 22-33; The Paradise of <br>
+Women ed. Betty Travitsky (London, 198 I), p. 5; Elaine Hobby, Virtue OfNecessity (Ann Arbor, <br>
+19891,pp. 5-11. <br>
+2. The Geneva Bible: a Facsimile ofthe 1560 edition (Madison, 1969). <br>
+3. For an analysis of Paul’s influence on Renaissance texts in general, see John S. Coolidge, <br>
+The Pauline Renaissance in England: Puritanism and the Bible (Oxford, 1970). Coolidge argues that <br>
+Pauline authority led the Puritans to “feel the old modes ofpresentation as a form ofbondage” <br>
+(p. xiii). As I will demonstrate here, a number ofwriters felt that Paul had not gone far enough. <br>
+Because Paul placed women under the “law,” he put them in the very “bondage” kom which <br>
+Christ came to liberate them. When it came to defining woman’s role on the basis of the biblical <br>
+record, men and women of the Renaissance found themselves in a double bind it was the <br>
+“Word” that liberated women to speak and to write if they took seriously the statement of the <br>
+I 06 <br>
+&lt;IMAGE FOR PAGE: 1 / 23&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 23&gt;<br>
+Esther Gilman Richey 107 <br>
+art, authority, or skill than Aemilia Lanyer in Salve Deus RexJudaeonrm <br>
+(161 I). Yet despite the recent surge in scholarly criticism of Lanyer’s <br>
+we have not yet analyzed the revision of Paul that informs Lan￾yer’s passion narrative, nor have we identified the subversive herme￾neutic method that provides Lanyer with the impetus for this revision. <br>
+What we have identified are the questions that puzzle us. Barbara K. <br>
+Lewalski, for example, closes each of her articles with an awareness of <br>
+how much we do not know, particularly about Lanyer’s feminism: <br>
+“How should we account for the feminist thrust of [Lanyer’s] volume, <br>
+which rewrites patriarchy by revising the fundamental Christian myths: <br>
+Eden, the Passion of Christ, the Communion of Saints, with women at <br>
+prophet Joel, “I wdl pour out my Spirit upon all flesh; and your sons and your daughters shall <br>
+prophesy” (Joel 2.28). The Word also silenced them in the definitive pronouncement of the <br>
+apostle Paul. Ifwomen were to gain a voice, the prophetic reading had to be given authority, the <br>
+Pauline reading suppressed. Agrippa and Lanyer succeed in both. <br>
+4. Aemilia Lanyer’s lengthy passion poem, Salve Deus RexJudaeorum (1611). has had a <br>
+checkered literary history. First emerging under the editorial mrection of A. L. Rowse in 1974 <br>
+and called The Poems ~JShakespeare’s Dark Lady, Lanyerh text became a footnote to Rowse’s <br>
+thesis-that he had located the Dark Lady of Shakespeare’s sonnets. Scholarship has since moved <br>
+onto firmer ground. Elaine Beilin analyzes Lanyer’s poetry in the context of seventeenth￾century encomia, Barbara Lewalski assesses the competing genres and autobiographical details <br>
+which shape poem and personal outlook, and Lynette McGrath locates a feminism-at once <br>
+medieval and strangely modern-in Lanyer’s subversive metaphors. <br>
+Still more recently, the issue of Lanyer’s feminism drew a wealth of attention at the 1992 <br>
+MLA convention as Barbara Lewalski, Susanne Woods, Boyd Berry, Michael Schoenfeldt, and <br>
+Marshall Grossman responded in turn to the way Lanyer’s gender informs her relationship to her <br>
+patron, her poetic authority, her digressive “feminist” narrative, her tendency to privilege social <br>
+abjection, and her artfbl expression of matronage rather than patronage. For further discussions <br>
+of Lanyer, see Aliki Barnstone, “Women and the Garden,” Women and Literature 2 (1982). 147- <br>
+67; Elaine Beilin, “The Feminization of Praise: Aemilia Lanyer,” in Redeeming Eve (Princeton, <br>
+1987). pp. 177-207; Lorna Hutson, “Why the Lady’s eyes are nothing like the sun,” in New <br>
+Feminist Discourzes ed. Isobel Armstrong (New York, 1992). pp. 150-75; Barbara K. Lewalski, <br>
+“Of God and Good Women: The Poems of Aeda Lanyer” in Silent Butfor the Word, ed. <br>
+Hannay, pp. 203-24 and “Re-writing Patriarchy and Patronage: Margaret Clifford, Anne <br>
+Clifford, and Aemilia Lanyer,” Yearbook $English Studies 21 (1991), 87-106; Lynette McGrath, <br>
+“Metaphoric Subversions: Feasts and Mirrors in Amelia Lanier’s Salve Dues Rexjudaeorum,” Lit: <br>
+Literature Interpretation Theory 3 (1991). 101-13 and “‘Let Us Have Our Libertie Againe’: <br>
+Aemilia Lanier’s 17th-Century Feminist Voice” in Women’s Studies 20, 3-4 (1992). 33 1-48; <br>
+Jane1 Mueller, “The Feminist Poetics of Aemilia Lanyer’s Salve Deus Rexjudaeorum” in Feminist <br>
+Measures: Soundings in Poetry and Theory, ed. Lynn Keller and Cristanne Miller (Ann Arbor, <br>
+1994); Wendy Wd, The Imprint $Gender: Authorship and Publication in the English Renaissance <br>
+(Ithaca, I993), pp. 3 19-30, and “Our BodiesIOur Texts: Renaissance Women and the Trials of <br>
+Authorship” in Anxious Power: Reading, Writing, and Ambivalence in Narrative by Women, ed. <br>
+Carol J. Singley and Susan Elizabeth Sweeney (Albany, 1993). pp. 51-72; Susanne Woods, <br>
+“Aemilia Lanyer and Ben Jonson: Patronage, Authority, and Gender,” Ben /onson Journal I <br>
+(I994), 35-30. <br>
+&lt;IMAGE FOR PAGE: 2 / 23&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 23&gt;<br>
+108 English Literary Renaissance <br>
+their enter?&quot;^ At the same time Lewalski’s work on Aemilia Lanyer <br>
+suggests the beginning of an answer: she identifies the remarkable femi￾nism of Salve Deus RexJudaeonrm with the Querelle des Femmes, a genre <br>
+popular with medieval and Renaissance writers.6 The authors of the <br>
+Querelle repeatedly attack the Pauline interpretation of Genesis, contest￾ing both his analysis of the Fall and his subordination of women.’ <br>
+Among these writers, Cornelius Agrippa’s Ofthe Nobilitie and Excellencie <br>
+of Womankinde (I 542) offers the most striking parallel to the revision of <br>
+Paul found in Lanyer. A book first entering the English imagination as <br>
+an affirmation of Mary and Elizabeth’s right to ascend the throne, Ofthe <br>
+Nobility is, according to Constance Jordan, the “most explicitly feminist <br>
+text to be published in England in the first half of the century.”* Its <br>
+popularity would increase during the reign of Elizabeth, a time when <br>
+the works of Agrippa were being widely read by Sidney, Bacon, Nashe, <br>
+and Marlowe and when the debate about women was chnating in the <br>
+pamphlet wan9 <br>
+5. See Lewalski, “Re-writing Patriarchy and Patronage,” p. 106; “Of God and Good <br>
+Women,”p.224. <br>
+6. Each of the earlier critics touches upon this issue. Lewalski cites Lanyer’s final epistle “To <br>
+the Vertuous Reader” as a “remarkable contribution to the Querelle desfemmes” (“Of God and <br>
+Good Women,” p. 212), and she analyzes this epistle more completely in “Rewriting Patriarchy <br>
+and Patronage,” p. 102. Elaine Beilin sees the Querelle as a much larger influence, noting that <br>
+Lanyer “accomplished her task” by drawing upon the “traditional debate material on the <br>
+women question.” She makes a direct connection to the early defenses of women, citing <br>
+Cornelius Agrippa in particular. See Beilin, pp. 179, 323. The Querelle itself has been much <br>
+discussed. A bibliography of primary texts participating in this tradition is available in Francis <br>
+Lee Utley’s Ihe Crooked Rib (New York, 1970). For an analysis of this tradition within the <br>
+Renaissance, see Katherine Usher Henderson and Barbara E McManus, HalfHumankind (Chi￾cago, 1985); Hull, Chaste, Silent and Obedient, pp. 106-26; Joan Kelly, “Early Feminist Theory <br>
+and the Querelle des Femmes, 1400-1789,” Signs 8 (1982), 4-28; Betty Travitsky, “The Lady <br>
+Doth Protest: Protest in the Popular Writings of Renaissance Enghshwomen,” English Literary <br>
+Renaissance 14 (1984), 255-83; Linda Woodbridge, Women and the English Renaissance (Chicago, <br>
+7. In Renaissance Feminism, Constance Jordan writes that the argument over woman’s post￾lapsarian status “fueled feminist responses” throughout the sixteenth century @. 23). These <br>
+arguments emerge in a number of texts of the Querelle. See, e.g., the primary texts in Hag <br>
+Humankind, particularly the work of Jane Anger and Esther Sowerman. William Heale in his <br>
+Apologiefor Women (1609) also offers a compelling reinterpretation of Genesis @p. 60-66). <br>
+8. See Constance Jordan, Renaissance Feminism, pp. 122-126. For critical commentary on <br>
+Agrippa and the Querelle, see also Linda Woodbridge, for whom Agrippa’s text is a “personal <br>
+favorite,” although she “cannot believe it was meant to be taken seriously” @. 40). Agrippa’s <br>
+radical revision of Paul fueled the intellectual debate on the woman question, influencing other <br>
+writers in the Querelle tradition, among them Aemilia Lanyer. <br>
+9. Agrippa’s influence in the Renaissance is documented by Charles G. Nauert, Jr., Apippa <br>
+and the Crisis ofRenaissance nought (Urbana, 1965) who notes that Erasmus, Vives, Rabelais, <br>
+Sidney, Nashe, Marlowe, Bacon and Vaughan read his works @p. 325-26). That Agrippa was <br>
+19841, pp. 18-48. <br>
+&lt;IMAGE FOR PAGE: 3 / 23&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 23&gt;<br>
+Esther Gilman Richey 109 <br>
+Before turning to Lanyer, then, I shall first illustrate how Agrippa <br>
+rereads Genesis to undermine Pauline hermeneutics, thereby overturn￾ing the authority which underwrites Renaissance gender relations. By <br>
+writing the Pauline subjugation ofEve and her daughters not only out of <br>
+the Old Testament, but also out of the epistles of Paul himself, Agrippa <br>
+indicates that Eve and the women who follow her reproduce an open, <br>
+more generous New Testament-a Renaissance version of ecriturefemi￾nine.l0 I shall argue that it is this hermeneutic process-visible most <br>
+clearly in Agrippa and available to Lanyer in the general milieu of the <br>
+Querelle des Femmes-that becomes the “feminist” framework for Salve <br>
+Deus Rex Judueorum. <br>
+As Agrippa analyzes Genesis, then, he quite literally starts over, pro￾viding an altogether different “genesis” for women: “Thus blessyng was <br>
+gyven for the woman, and law for the man: The lawe I say, of anger and <br>
+of cursynge. For why, the fiuyte of the tree was forbydden to the man, <br>
+but not to the woman: which was not than created. For god wolde her <br>
+to be fiee from the begynning. Thedore the manne sinned in eatynge, <br>
+not the woman. The man gave us deathe, not the woman. . . . And we <br>
+toke orygynalle synne of oure father the man, not of our mother the <br>
+woman”” In his thorough rereading of Genesis 2. I 5-17, Agrippa ex￾plores the gaps in the chronology of the biblical narrative: God plants a <br>
+garden, places Adam within it, and issues a command not to eat the <br>
+forbidden fruit. Immediately afterwards God says, “It is not good that <br>
+the man shulde be him selfe alone: I wil make him an helpe mete for <br>
+him” (Gen. 2.18). According to Agrippa, God’s statement calls attention <br>
+to Eve’s absence: she “was not than created.” Consequently, Adam alone <br>
+is under the “Law” of the Father; Eve is fiee, subordinate neither to the <br>
+“Law” nor to Adam and therefore the conduit of divine “blessyng.” <br>
+In making Eve’s absence the locus of divine presence, Agrippa undoes <br>
+recognized as subversive by Renaissance readers is also true. John Harington (in his 1591 <br>
+translation of Orlando Furioso) cites Agrippa as calling into question the authority of court, <br>
+priests, lawyers, and physicians. See Ludovico Ariosto, Orlando Furioso in English Heroiral Vme <br>
+(1591). trans. John Harington (New York, 1970). sigs. iijz-iiij. <br>
+10. I<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file3 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 3&gt;<br>
+Sixteenth Century Journal is collaborating with JSTOR to digitize, preserve and extend access to The Sixteenth Century <br>
+Journal.<br>
+http://www.jstor.org<br>
+Review <br>
+Author(s): Charles G. Nauert <br>
+Review by: Charles G. Nauert <br>
+Source: The Sixteenth Century Journal, Vol. 28, No. 2 (Summer, 1997), pp. 688-689<br>
+Published by: Sixteenth Century Journal<br>
+Stable URL: http://www.jstor.org/stable/2543557<br>
+Accessed: 04-12-2015 13:19 UTC<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at http://www.jstor.org/page/<br>
+info/about/policies/terms.jsp<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of content <br>
+in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms of scholarship. <br>
+For more information about JSTOR, please contact support@jstor.org.<br>
+This content downloaded from 132.174.255.116 on Fri, 04 Dec 2015 13:19:48 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 3&gt;<br>
+688 Sixteenth CenturyJournal XXVIII / 2 (1997) <br>
+tion about the lesser lights who haunted the Spanish court, the English diplomatic scene and <br>
+the English/Spanish commercial arena. Many of them worked, with varying degrees of suc￾cess, in the netherworld of Catholic intrigue at a time when to be Catholic was to court <br>
+disaster in England. <br>
+Indeed, Professor Loomie&#x27;s admirable knowledge of Spanish and English sources and his <br>
+painstaking reconstruction of episodes in this often veiled area of history lead to a yearning <br>
+for more. What, for instance, in more deail were the status, responsibilities, and histories of <br>
+what was becoming the English consular service in Spain? But if knowing the actors in the <br>
+complex web of late Tudor and early Stuart diplomatic contact is as important as I believe it <br>
+to be, then Loomie has clearly provided a valuable collection of insights. He is also important <br>
+in reminding us of the subtleties at work in this period. <br>
+There is a quibble however. As much as one might want this volume in one&#x27;s collection, <br>
+one is also a little put off by such a poor example of the publisher&#x27;s craft. The articles are <br>
+simply pulled whole cloth from their original setting, and physically copied.There is thus no <br>
+pagination for this volume per se, but rather the original pagination is that of the original arti￾cles.The fonts vary article by article. But what is perhaps most disconcerting is that even the <br>
+quality of reproduction is marginal. Some pages are readable, others are reproduced so lightly <br>
+that literally only strong illumination makes the text accessible.This is book production at its <br>
+lowest common denominator, and one wishes that the contributions of the author had <br>
+deserved a more dignified treatment. Nor did Professor Loomie greatly add to his collection <br>
+with his all too terse and rare emendations tacked to the end of some of the original texts. <br>
+Considerably more could have been contributed by someone so knowledgeable in the field. <br>
+Regrettably, one detects too much haste in putting this volume together. In other words, the <br>
+redundancy one feels in dealing with this book could have been partially remedied with <br>
+greater attention to all aspects of its production. <br>
+Gary M. Bell........................................... Texas Tech University <br>
+Declamation on the Nobility and Preeminence of the Female Sex. Hen￾ricus Cornelius Agrippa [von Nettesheim]. Translated and edited by Albert <br>
+Rabil, Jr. Chicago: University of Chicago Press, 1996. xxxii + 109 pp. $33.00 <br>
+HB, $13.95 PB. <br>
+Although Agrippa von Nettesheim (1486-1535) did not regard his Declamation on the <br>
+Nobility and Preeminence ofthe Female Sex as one of his most important works, it attracted <br>
+much attention from the moment of its first publication and was quickly translated from the <br>
+original Latin into French, English, Italian, German, and (somewhat later) Polish. Its influ￾ence rested partly on its contrarian point of view as a rebuttal of the traditional misogyny of <br>
+learned and popular culture, for it provided not just a defense of the essential equality of <br>
+women to men, but even a series of arguments contending that in every important respect, <br>
+women were superior to men. It also attracted attention because despite Agrippa&#x27;s occasional <br>
+stretching of his evidence, the book presented a powerful case against the misogynists, draw￾ing on its author&#x27;s remarkably varied learning to confront and refute each of the many argu￾ments that had long been used to prove the inferiority of women and to justify the subordi￾nation imposed on women by both law and custom. Indeed, perhaps the most striking part <br>
+of this little treatise is the brief section at the end which charges that the only real cause for <br>
+the present-day subordination of women is unjust laws and customs and the exclusion of <br>
+nearly all women from the liberal education that might free them from servitude. <br>
+This English translation is based on the critical edition of the Latin original, De nobilitate <br>
+This content downloaded from 132.174.255.116 on Fri, 04 Dec 2015 13:19:48 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 3&gt;<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 3&gt;<br>
+Book Reviews 689 <br>
+et praecellentiafoem<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file4 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 4&gt;<br>
+DOI 10.1515/kl-2014-0042<br>
+Henry Cornelius Agrippa (attributable to). De Arte Chimica (On Alchemy). A Cri￾tical Edition of the Latin Text with a Seventeenth-Century English Translation.<br>
+Ed. by Sylvain Matton. Second Edition, Revised. Paris : SÉHA ; Milan : Archè,<br>
+2014. (¼ Textes et Travaux de Chrysopœia 14). 109 pp.<br>
+Le De Arte Chimica est un traité alchimique anonyme, publié pour la première<br>
+fois dans l’Auriferæ artis, quam chemiam vocant, antiquissimi authores, sive tur￾ba philosophorum (Bâle : Pietro Perna, 1572), dont on ne connaît pas de manu￾scrit antérieur à l’édition et qui fut dès la fin du XVIe siècle attribué à Marsile<br>
+Ficin, mais que son nouvel éditeur pense être d’Henri Corneille Agrippa de Net￾tesheim (1486–1536), l’auteur du De occulta philosophia (Cologne, 1531–1533).<br>
+Avant d’exposer les raisons qui ont déterminé le choix de Sylvain Matton, di￾sons un mot de ce traité. Il est divisé en vingt chapitres. Les douze premiers<br>
+préparent le lecteur à pénétrer les arcanes de l’alchimie ; les chapitres XIII à XX<br>
+sont réservés à sa pratique. Le style du De Arte Chimica est poétique, jusque<br>
+dans les parties où son auteur propose de « descendre à la praxis » (p. 52). Les<br>
+mentions des poètes et des philosophes antiques y sont nombreuses : Orphée,<br>
+Proclus, Héraclite, Aristote, Théophraste, Virgile. Un des aspects remarquables<br>
+du texte consiste en un entrelacement de théologie catholique, de mythologie<br>
+gréco-latine et de théorie alchimique1<br>
+. Cela, il est vrai, constitue la marque mê￾me de l’alchimie de la Renaissance, de sorte qu’il ne nous appartient pas ici de<br>
+la commenter outre mesure2<br>
+. Surtout, le De Arte Chimica se fonde (sans jamais<br>
+s’y référer nommément) sur la thèse brièvement exposée par Ficin dans son De<br>
+vita coelitus comparanda, à savoir que la fabrication de l’élixir ou la pierre phi￾losophale des alchimistes consiste à extraire de l’or où il est enfoui le spiritus<br>
+mundi, véhicule de l’anima mundi3<br>
+. Quant à la partie pratique de ce traité (cap.<br>
+XIII–XX), elle est conforme aux pratiques élaborées au Moyen Âge, basée sur le<br>
+Kritikon Litterarum 2014; 41(3–4): 162–165<br>
+Compte rendu par : Antoine Calvet (Paris)<br>
+1 Citons par exemple cet extrait du chapitre VI, p. 34 : « Le Ciel éthéré a été fermé à tous les<br>
+hommes, afin que tous les hommes descendissent aux Enfers et y fussent détenus pour l’éter￾nité. Mais la très humble Vierge Marie ouvrit la porte de l’Olympe éthéré […] De là vient que,<br>
+non sans raison, le Mercure est comparé à la très glorieuse la sainte Vierge Marie, etc. » (Coe￾lum æthereum fuit omnibus hominibus occlusum, ut omnes homines ad infernas sedes descende￾rent, et ibi detinerentur perpetuo. Sed Maria virgo humilima aetherei Olympi ianuam aperuit […].<br>
+Unde non immerito gloriosissimæ divæ virgini Mariæ æquiparatur mercurius, etc…).<br>
+2 Pour un bon aperçu du renouvellement de l’alchimie à la Renaissance et de son inspiration<br>
+mytho-hermétique, voir l’article de Didier Kahn : « Alchimie, Occident moderne », J. Servier<br>
+(éd.) : Dictionnaire critique de l’ésotérisme. Paris 1998, pp. 38–51.<br>
+Brought to you by | University of St Andrews Scotland<br>
+Authenticated<br>
+Download Date | 6/16/15 1:19 PM<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 4&gt;<br>
+mercure et le plus souvent voilées par des symboles, par des métaphores et des<br>
+similitudes empruntées à la création du monde, à celle de l’être humain, à la<br>
+Résurrection de Jésus, mais aussi à d’autres plus prosaïques renvoyant à des<br>
+arts voisins, comme la médecine ou l’art de la verrerie. Et si l’auteur du De Arte<br>
+Chimica convoque les plus hautes autorités de l’Antiquité, son texte garde la<br>
+trace de figures alchimiques forgées au Moyen Âge et conservées dans la Tabula<br>
+chemica de Senior Zadith ou dans le Buch der heiligen Dreifaltigkiet (le Livre de<br>
+la Sainte Trinité) qu’il attribue au Franciscain allemand Ulmannus (p. 67).4 Il<br>
+s’agit en somme d’un traité aux multiples influences, à la fois garant de la tradi￾tion alchimique médiévale et enrichi d’innovations comme celle, principale, de<br>
+l’esprit universel du monde cher à Marsile Ficin. Les qualités littéraires du De<br>
+Arte Chimica sont réelles ; cependant, il semble que, trop souvent, elles ont<br>
+pour résultat d’égarer le lecteur plutôt que de le renseigner. Que penser d’une<br>
+phrase comme : « Sunt autem hæ destillationes necessariæ, per quas depuratur<br>
+mercurius ab omni feculentia terrestri et cadit Lucifer, hoc est immunditia et<br>
+terra maledicta e coelo aureo » (Ces distillations, qui purgent le mercure de toute<br>
+saleté terrestre, sont donc nécessaires : Lucifer tombe du Ciel de l’Or, comprenez<br>
+l’impureté et la terre maudite), si ce n’est que l’allusion scripturaire5 empêche<br>
+de voir exactement ce que l’alchimiste trame dans son laboratoire.<br>
+Mais revenons au problème de son attribution que, dans son introduction<br>
+(qui reprend et<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file5 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 5&gt;<br>
+Cornelius Agrippa and Henry Vaughan<br>
+Author(s): Alexander C. Judson<br>
+Source: Modern Language Notes, Vol. 41, No. 3 (Mar., 1926), pp. 178-181<br>
+Published by: The Johns Hopkins University Press<br>
+Stable URL: http://www.jstor.org/stable/2913915 .<br>
+Accessed: 05/01/2015 17:31<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at .<br>
+http://www.jstor.org/page/info/about/policies/terms.jsp<br>
+ .<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of<br>
+content in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms<br>
+of scholarship. For more information about JSTOR, please contact support@jstor.org.<br>
+ .<br>
+The Johns Hopkins University Press is collaborating with JSTOR to digitize, preserve and extend access to<br>
+Modern Language Notes.<br>
+http://www.jstor.org <br>
+This content downloaded from 128.235.251.160 on Mon, 5 Jan 2015 17:31:14 PM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 5&gt;<br>
+178 M. L. N., XLI., 3 (MARCIH, 1926) <br>
+uxorem. Si pater virginis dare noluerit, reddet pecuniam juxta <br>
+modurm dotis, quam virgines accipere consueverunt. I I Maleficos non <br>
+patieris vivere. Further proof of ZElfred not deviating here from <br>
+his scriptural tert is afforded by the agreement2 of the Quadri￾partus translation with the Vulgate, dated 1114 by Liebermann. <br>
+OTTO B. SORELUTTER. <br>
+Brlstol, Ca&quot;. <br>
+CORNELIUS AGRIPPA AND HENRY VAUGHAN <br>
+Henry Cornelius Agrippa von Nettesheim, soldier, physician, <br>
+and reputed magician (1486-1535), is known to have exerted a <br>
+profound influence upon Thomas Vaughan, Anglican clergyman <br>
+and magician, the twin brother of the poet Henry Vaughan. Of <br>
+Agrippa, Thomas Vaughan wrote, &quot; He indeed is my author, and <br>
+next to God I owe all that I have unto him,&quot; 1 a statement that <br>
+is substantiated by the many references in the works of Thomas <br>
+to Agrippa&#x27;s two most important books, De Occulta Philosophic <br>
+and De Incertitudine et Vanitate Scientiarum et Artiunm atque <br>
+Excellentia Verbi Dei Declamatio. <br>
+No one, I believe, has hitherto called attention to Henry&#x27;s appar￾ent familiarity with the second of the above-mentioned works of <br>
+Agrippa. To me it seems clear that Henry Vaughan&#x27;s curious little <br>
+poem entitled The Ass was inspired, in part at least, by Chapter <br>
+102 of The Vanity of Arts and Sciences (to use the title of an <br>
+English translation of 1684, from which I shall quote). Agrippa&#x27;s <br>
+The Vanity of Arts and Sciences, written about 1527, attacks <br>
+ninety-nine aspects of worldly learning in as many chapters, and <br>
+then in Chapter 100 concludes that the real key to knowledge and <br>
+wisdom &quot;is nothing else but the Word of God.&quot; Agrippa&#x27;s book <br>
+is really a plea for the simple, childlike acceptance of the doctrines <br>
+of the Bible, of inspired truth. <br>
+In Chapter 101 Agrippa writes as follows: <br>
+Neither is there any sort of men less fit to receive Christian doctrine, <br>
+than they who have their mindes tainted with the knowledge of the <br>
+2-Owing to Si preceding the scribe omitted se- of seduazerit. <br>
+1 Works, ed. Waite, 1919, p. 50. <br>
+This content downloaded from 128.235.251.160 on Mon, 5 Jan 2015 17:31:14 PM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 5&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 5&gt;<br>
+NOTES AND COGMMUNICATIONS 179 <br>
+Sciences: for they are so stiff and obstinate in their self-opinions, that <br>
+they leave no place for the Holy Ghost, and do so assure themselves, and <br>
+trust in their own strength and power, that they will allow of nothing <br>
+else for truth; and they scorn and despise all those things which they <br>
+cannot understand by their own Industry. Therefore hath Christ hidden <br>
+these things from the wise acnd prudent, aJnd revealed them to little chil￾dren; that is to say, to the poor in spirit, not enriched with the treasuries <br>
+of humane knowledge; to the pure in heart, not defll&#x27;d with the vanity of <br>
+Opinions. . . . For this cause, Christ chose his Apostles not Scribes, not <br>
+Doctors, not Priests, but unlearned persons of the vulgar people, void of <br>
+knowledge, unskilful, and Asses. <br>
+Chapter 102 is entitled &quot; A Digression in praise of the Ass.&quot; This <br>
+chapter begins with the statement that, since some one might re￾proach him for calling the Apostles asses, it may be worth while <br>
+&quot; to discourse the Mysteries of the Ass.&quot; After discussing the <br>
+traits of the ass and the veneration in which he has been held, he <br>
+continues: <br>
+The Ass was consecrated by the touch of the body of Christ: for Christ <br>
+ascending to Jerusalem in triumph for the Redemption of mankind, as it <br>
+is recorded in the Gospel, rode upon an Ass; which was mysteriously fore￾told by the Oracle of Zachac<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file6 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 26&gt;<br>
+This article was downloaded by: [Central Michigan University]<br>
+On: 24 October 2014, At: 08:51<br>
+Publisher: Routledge<br>
+Informa Ltd Registered in England and Wales Registered Number: 1072954<br>
+Registered office: Mortimer House, 37-41 Mortimer Street, London W1T 3JH,<br>
+UK<br>
+Rhetoric Society Quarterly<br>
+Publication details, including instructions for<br>
+authors and subscription information:<br>
+http://www.tandfonline.com/loi/rrsq20<br>
+Occult Retraction: Cornelius<br>
+Agrippa and the Paradox of<br>
+Magical Language<br>
+Chris Miles a<br>
+a<br>
+ Communication and Media Studies , Eastern<br>
+Mediterranean University , Gazi Magusa , Mersin 10 ,<br>
+Turkey<br>
+Published online: 14 Oct 2008.<br>
+To cite this article: Chris Miles (2008) Occult Retraction: Cornelius Agrippa and<br>
+the Paradox of Magical Language, Rhetoric Society Quarterly, 38:4, 433-456, DOI:<br>
+10.1080/02773940802375467<br>
+To link to this article: http://dx.doi.org/10.1080/02773940802375467<br>
+PLEASE SCROLL DOWN FOR ARTICLE<br>
+Taylor &amp; Francis makes every effort to ensure the accuracy of all the<br>
+information (the “Content”) contained in the publications on our platform.<br>
+However, Taylor &amp; Francis, our agents, and our licensors make no<br>
+representations or warranties whatsoever as to the accuracy, completeness,<br>
+or suitability for any purpose of the Content. Any opinions and views<br>
+expressed in this publication are the opinions and views of the authors, and<br>
+are not the views of or endorsed by Taylor &amp; Francis. The accuracy of the<br>
+Content should not be relied upon and should be independently verified with<br>
+primary sources of information. Taylor and Francis shall not be liable for any<br>
+losses, actions, claims, proceedings, demands, costs, expenses, damages,<br>
+and other liabilities whatsoever or howsoever caused arising directly or<br>
+indirectly in connection with, in relation to or arising out of the use of the<br>
+Content.<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 26&gt;<br>
+This article may be used for research, teaching, and private study purposes.<br>
+Any substantial or systematic reproduction, redistribution, reselling, loan,<br>
+sub-licensing, systematic supply, or distribution in any form to anyone is<br>
+expressly forbidden. Terms &amp; Conditions of access and use can be found at<br>
+http://www.tandfonline.com/page/terms-and-conditions<br>
+Downloaded by [Central Michigan University] at 08:51 24 October 2014 <br>
+&lt;PARSED TEXT FOR PAGE: 3 / 26&gt;<br>
+Occult Retraction: Cornelius<br>
+Agrippa and the Paradox of<br>
+Magical Language<br>
+Chris Miles<br>
+Recent work on the relationship between rhetoric and magic has tended to pivot around the<br>
+issue of magic’s perceived identification of signifier and signified and what that might mean<br>
+for its relationship to larger theological, empirical, and rhetorical approaches to language.<br>
+This article seeks to problematize the assumptions underlying this issue through an<br>
+examination of the work of Cornelius Agrippa (1486–1535), the author of what is<br>
+commonly regarded as the European Renaissance’s most influential magical text, De<br>
+occulta philosophia libri tres (1533). In investigating the rhetorical strategies contained in<br>
+Agrippa’s famously ambiguous retraction of his occult works we may uncover an equally<br>
+polysemic stance toward the ability of language to deal with both the everyday world and<br>
+the realm of the sacred, a stance that uses textual instantiations of paradoxes of self￾reference to forcefully undermine the apparently paradigmatic magical identification of<br>
+signifier and signified.<br>
+Much recent investigation into the relationship between rhetoric and magic<br>
+has been premised on the assumption that magic is, in one way or another,<br>
+linguistically mistaken. So, for example, Kenneth Burke, in attempting to<br>
+stake out the territory of rhetoric, concludes that magic, although apparently<br>
+related to rhetoric in its use of language to try to effect change, fundamen￾tally ‘‘gets the whole subject turned backwards’’ (Rhetoric of Motives 42) due<br>
+to its ‘‘mistaken transference’’ of the rhetorical model to attempting to<br>
+‘‘induce motion in things’’ rather than in people. What Burke calls ‘‘word<br>
+magic’’ (43, using Richards and Ogden’s phrase) is thus both ‘‘erroneous’’<br>
+and ‘‘derived’’ and its only real significance lies in the opportunity to exam￾ine the way in which magic was used as a socializing ‘‘primitive rhetoric.’’<br>
+Chris Miles is Assistant Professor in the Faculty of Communication and Media Studies, Eastern<br>
+Mediterranean University, Gazi Magusa, Mersin 10, Turkey. E-mail: chris.miles@emu.edu.tr<br>
+Rhetoric Society Quarterly<br>
+Vol. 38, No. 4, October 2008, pp. 433–456<br>
+ISSN 0277-3945 (print)/ISSN 1930-322X (online) # 2008 The Rhetoric Society of America<br>
+DOI: 10.1080/02773940802375467<br>
+Downloaded by [Central Michigan University] at 08:51 24 October 2014 <br>
+&lt;PARSED TEXT FOR PAGE: 4 / 26&gt;<br>
+Similarly, Brian Vickers’s work on the different linguistic paradigms under￾lying the shift between the occult philosophy of the Renaissance and the<br>
+scientific method of the Enlightenment revolves around an expansive<br>
+investigation into the implications of magic’s supposed reliance on the<br>
+‘‘denotative fallacy,’’ a phrase popularized by S. J. Tambiah (although<br>
+explicitly argued against in his own work). William Covino has used<br>
+Vickers’s research to argue for the existence of an alternative, ‘‘progressive’’<br>
+rhetoric that mirrored the Renaissance magical linguistic paradigm. This<br>
+rhetoric shared the assumption that words can have an effect on the real<br>
+world, that, in some sense, there is an identity between signifier and signi￾fied. Covino characterizes this as ‘‘the pre-Enlightenment magical=rhetorical<br>
+belief in a cosmology of possibilities for re-ordering discourse and reality,<br>
+through writing that creates new phantasms, new magic rhetorics’’ (356).<br>
+For Covino, what we have now come to take as rhetoric is actually only<br>
+the victorious handmaiden of scientific empiricism—the suppressed, pro￾gressive rhetoric of ‘‘phantasms’’ having been occulted by the forces of<br>
+logical positivism in much the same way that Renaissance magical philo￾sophy was written out of the canon of knowledge by the Enlightenment.<br>
+The chronology shared by Covino and Vickers is broadly supported by<br>
+Michel Foucault in his influential The Order of Things: An Archaeology of<br>
+the Human Sciences. Foucault notes the fundamental changes in European<br>
+attitudes toward the relationship between language and the natural world<br>
+across the sixteenth century, then the Classical period, and finally into<br>
+‘‘modernity.’’ In describing the intellectual transformations across this<br>
+chronology, Foucault characterizes the epistemology of the sixteenth century<br>
+as one obliged ‘‘to accept magic and erudition on the same level.’’ For, as he<br>
+writes,<br>
+The world is covered with signs that must be deciphered, and those signs,<br>
+which reveal resemblances and affinities, are themselves no more than<br>
+forms of similitude. To know must therefore be to interpret: to find a<br>
+way from the visible mark to that which is being said by it and which,<br>
+without that mark, would lie like unspoken speech, dormant within<br>
+things. (Foucault 32)<br>
+The Classical period that follows, however, is based on a fierce rejection of<br>
+the trope of resemblance, ‘‘denouncing it as a confused mixture that must be<br>
+analyzed in terms of identity, difference, measurement and order’’ (52). In<br>
+contrast to both Covino and Vickers, Foucault displays little allegiance to<br>
+either linguistic paradigm—for him, the sixteenth-century approach to<br>
+language and the world is just as flawed as the Classical, classifying paradigm<br>
+that overtakes it. However, for the purposes of the current article, what is<br>
+434 Miles<br>
+Downloaded by [Central Michigan University] at 08:51 24 October 2014 <br>
+&lt;PARSED TEXT FOR PAGE: 5 / 26&gt;<br>
+important is that Foucault also works from the familiar assumptions<br>
+regarding the Renaissance equation of sign and reality, word and thing.<br>
+Most recently, Joshua Gunn has explored the rhetoric of the occult in a<br>
+study that is, once again, founded upon the assumption that magical<br>
+thinking is best typified by its ‘‘fixed’’ view of language ‘‘that presumes a<br>
+meaningful mind-independent reality that language, however inaccurately,<br>
+represents, a presumption that Derrida has famously dubbed ‘logocentrism ’’’<br>
+(45). As Gunn notes, contemporary rhetoric, along with the majority of the<br>
+humanities today, assumes language is fluid and ‘‘never corresponds to the<br>
+material world in a direct or transparent way’’ (45). So things remain in<br>
+much the same position as they were when Burke pointed out the errors<br>
+of the magical paradigm in 1950. Despite Covino’s enthusiasm for the pos￾sibilities of a (re-)created magical rhetoric, and Gunn’s own multidimen￾sional investigation into the generative paradoxes of occult discourse, the<br>
+motifs of fixity and identity remain fundamental to the way in which rhet￾oric scholars have tended to approach the issue of magic. In this article, how￾ever, I wish to question the assumptions of this approach and investigate the<br>
+possibility that magical paradigms of language might be far more complex<br>
+and ambiguous than previous commentators have allowed.<br>
+If contemporary rhetorical approaches to magical language are grounded<br>
+in biased assumptions, then what is at stake here is the possibility of a truly<br>
+critical approach to a large matrix of discourses. The dismissal of magical<br>
+language as ‘‘mistaken,’’ ‘‘backwards,’’ or ‘‘fallacious’’ leads to a dismissal<br>
+of those discourses that use such language to talk about the world and truth.<br>
+The labeling of a discourse as esoteric, hermetic, or occult thus carries with it<br>
+implicit pre-judgments regarding its use of language (and therefore its rhet￾oric). Inevitably, such pre-judgments lead to an impoverished engagement<br>
+with such discourses. Magical or occult language becomes a stereotyped cari￾cature playing its part in a binary opposition that, as this article will show, is<br>
+not supported by the primary literature. Even when contemporary rhetorical<br>
+approaches to occult language appear to be presenting it in a more nuanced<br>
+manner they end up repeating the established assumptions. Gunn’s study,<br>
+for example, argues that many of the linguistic and rhetorical implications<br>
+of magical and occult thinking revolve around the paradox of ineffability,<br>
+wherein ‘‘the fundamental premise, that spiritual truth is ineffable (A),<br>
+requires the seemingly contradictory act of speaking or writing (B)’’ (50).<br>
+Gunn states that this contradiction is ‘‘illusory’’ or ‘‘erroneous’’ (50, 49)<br>
+because, from the position of the modern rhetoric scholar, it is based on<br>
+the belief that there is a (sacred), external truth signified by esoteric<br>
+language, in stark contrast to the modern ‘‘rhetorical worldview’’ itself which<br>
+Occult Retraction 435<br>
+Downloaded by [Central Michigan University] at 08:51 24 October 2014 <br>
+&lt;PARSED TEXT FOR PAGE: 6 / 26&gt;<br>
+holds that ‘‘nothing means outside human modes of representation and that<br>
+‘truth’ is merely the product of sentences’’ (50). Gunn’s principal focus in his<br>
+study is the mapping of the tropes of nineteenth- and twentieth-century<br>
+occult discourse onto the ostensibly postmodern discourse of contemporary<br>
+academia, yet the foundations that underlie this mapping need to be exam￾ined carefully for their own illusory assumptions. How correct is it to say,<br>
+along with Burke, Vickers, Foucault, Gunn, and Covino, that the magical<br>
+view of language is one based on fixity? Is magical=occult discourse funda￾mentally paradoxical? And if so, is that paradox inherently ‘‘erroneous,’’<br>
+or are there other possible interpretations of the relationship between<br>
+ineffability and language that the rhetoric of magic might offer up?<br>
+In order to investigate the implications of these issues of fixity and ineffa￾bility in magical language, I will be devoting a large part of this article to a<br>
+consideration of the philosophy of language contained in the occult works of<br>
+Cornelius Agrippa (1486–1535). Next to the mythic composite Hermes<br>
+Trismegistus, Agrippa is perhaps the most influential of all Western occult<br>
+theoreticians. His work has always remained central to the European concep￾tion of ritual magic and continues to be used by those who self-identify<br>
+as occultists and magicians today. Furthermore, Agrippa was both a sly<br>
+practitioner and able theoretician of rhetoric and demonstrates a deep<br>
+engagement with issues of language and the sacred across all of his texts.<br>
+He is, correspondingly, a perfect candidate for an examination of the ways<br>
+in which occult=magical discourse deals with language and the ineffable. I<br>
+hope to demonstrate that Cornelius Agrippa, Western icon of magical dis￾course, can in no way be said to have possessed a simplistic view of language<br>
+founded on the motifs of fixity and identity and that consequently the<br>
+Western tradition of ritual magic that has been so influenced by his thought<br>
+needs to be approached with a far more open rhetorical mind than has so far<br>
+been the case. In my conclusion I will discuss the broader implications of this<br>
+for rhetorical conceptions of magic and magical language.<br>
+Determining Agrippa<br>
+Cornelius Agrippa represents in many ways the epitome of the Renaissance<br>
+occult scholar. His De occulta philosophia libri tres (circulated in manuscript<br>
+from 1510 and then published formally in 1533) is built on a synthesis of the<br>
+humanistic magic of Ficino and Pico, adaptations of Jewish Kabbalah, the<br>
+rediscovered texts of the Hermetica (thought at the time to represent a<br>
+system of the sacred actually older than Moses) and the works of the<br>
+Neoplatonists. De occulta philosophia (DOP) stands, then, as ‘‘a grandiose<br>
+436 Miles<br>
+Downloaded by [Central Michigan University] at 08:51 24 October 2014 <br>
+&lt;PARSED TEXT FOR PAGE: 7 / 26&gt;<br>
+summary of the magical speculation of the Renaissance’’ (Borchardt 65), and<br>
+the work’s strong influence on later figures such as John Dee, Giordano<br>
+Bruno, and Thomas Vaughan explains Agrippa’s position as ‘‘a nodal figure<br>
+in the transmission of the Hermetic-Cabalist tradition of the Renaissance’’<br>
+(Keefer 614).<br>
+As its full title intimates, DOP is divided into three books each given over<br>
+to one of the three different types of magic, namely, natural, celestial, and<br>
+ceremonial (thus mirroring the threefold division of the universe into<br>
+elementary, celestial, and intellectual). The first book, as well as being<br>
+concerned with the details of natural magic, also provides the fundamental<br>
+premises on which all three forms of magic are built. In this way, Agrippa<br>
+explains the threefold nature of the four elements and how those elements<br>
+are to be found in all things, not only ‘‘inferiour bodies feculent and gross’’<br>
+but also in the celestial and the ‘‘supercelestial’’ realms. In addition to the<br>
+elements are the virtues, which are of two sorts, the natural (which originate<br>
+from the elemental) and the occult (which issue from the stars<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file7 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 4&gt;<br>
+Christopher I. Lehrich. The Language of Demons and Angels: Cornelius Agrippa’s Occult Philosophy<br>
+The Language of Demons and Angels: Cornelius Agrippa’s Occult Philosophy by Christopher I<br>
+Lehrich<br>
+Review by: Steven vanden   Broeke<br>
+Renaissance Quarterly, Vol. 58, No. 2 (Summer 2005), pp. 676-678<br>
+Published by: The University of Chicago Press on behalf of the Renaissance Society of America<br>
+Stable URL: http://www.jstor.org/stable/10.1353/ren.2008.0705 .<br>
+Accessed: 28/06/2014 15:40<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at .<br>
+http://www.jstor.org/page/info/about/policies/terms.jsp<br>
+ .<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of<br>
+content in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms<br>
+of scholarship. For more information about JSTOR, please contact support@jstor.org.<br>
+ .<br>
+The University of Chicago Press and Renaissance Society of America are collaborating with JSTOR to digitize,<br>
+preserve and extend access to Renaissance Quarterly.<br>
+http://www.jstor.org <br>
+This content downloaded from 185.31.195.34 on Sat, 28 Jun 2014 15:40:53 PM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 4&gt;<br>
+Christopher I. Lehrich. The Language of Demons and Angels: Cornelius<br>
+Agrippa’s Occult Philosophy.<br>
+Brill’s Studies in Intellectual History 119. Leiden and Boston: Brill Academic Publishers,<br>
+2003. xiv + 256 pp. index. append. illus. tbls. bibl. $87. ISBN: 90–04–13574–X.<br>
+“My ardour was indeed the astonishment of the students, and my proficiency<br>
+that of the masters. Professor Krempe often asked me, with a sly smile, how<br>
+676 RENAISSANCE QUARTERLY<br>
+This content downloaded from 185.31.195.34 on Sat, 28 Jun 2014 15:40:53 PM<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 4&gt;<br>
+Cornelius Agrippa went on? Whilst Mr. Waldman expressed the most heartfelt<br>
+exultation in my progress.” Victor Frankenstein’s infamous trajectory from<br>
+Agrippan magic to Enlightenment science and back, serves as a useful reminder of<br>
+the central question underlying this book: while it is undeniable that Agrippa’s<br>
+magic was influential, we have been unable to explain why he was influential.<br>
+Christopher Lehrich’s answer agrees well with the conclusions of Van der<br>
+Poel’s important study of Agrippa as a humanist theologian (1997). There, we<br>
+learned that Agrippa’s Neoplatonic background committed him to a fundamental<br>
+distinction between faith and reason and between the study of divine and created<br>
+things. Agrippa considered the uncertainties of Christian revelation, not dogma or<br>
+articles of faith, to be the proper object of theological debate and was willing to<br>
+accommodate more esoteric texts and interpretive strategies within this project.<br>
+Lehrich shows that divine things also occupy central stage in the Agrippa’s magical<br>
+De occulta philosophia (1533) through the notion of a “chain of vivification” (57)<br>
+that connects the natural, celestial, and divine world.<br>
+This claim is developed from the perspective of the natural world in chapter<br>
+2, of the celestial world in chapter 3, and of the divine realm in chapter 4. These<br>
+three central chapters are framed by an introductory chapter, announcing possible<br>
+theoretical ramifications for the history of religion, the history of ideas, and textual<br>
+criticism, and by a concluding chapter that summarizes the coherence of Agrippa’s<br>
+intellectual project, its implications for early modern history of ideas, as well as the<br>
+aforementioned theoretical results. As is clear from this brief summary, Lehrich has<br>
+decided to “begin with a few axes to grind” and to produce “an analysis which<br>
+sacrifices coverage (and tedium) for depth” (213). The interdisciplinary nature of<br>
+Lehrich’s strategy is rather unusual among students of early modern magic, and his<br>
+book should be applauded for that reason alone. At the same time, the concluding<br>
+chapter suggests that Lehrich does privilege Agrippa’s De occulta philosophia as an<br>
+object for the history of ideas, and his book may accordingly be read as a contri￾bution to that specific tradition.<br>
+In chapter 2, Lehrich argues for a reading of De occulta philosophia, book 1,<br>
+as clearing away the vagueness that haunted Ficino’s important distinction between<br>
+natural and demonic magic. Agrippa’s solution consists in a rigid application of the<br>
+aforementioned distinction between natural, celestial, and divine spheres. But since<br>
+the separation of a natural realm also invited sceptical attacks of the type that<br>
+Agrippa published in his influential De incertitudine, the three worlds simulta￾neously remained connected, particularly in the mind of the magus. According to<br>
+Lehrich, this may constitute the true core of the controversial “Yates thesis”: to<br>
+point out the<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Remember you have access to rendered images of pages from the files, in addition to their parsed text content. Some files may include images, while others may not.<br>
+These may contain embedded text in images, infographics, complex tables, diagrams, and other visual elements not fully captured in the parsed text.<br>
+You can directly view these images to read text within images, interpret infographics, understand diagrams and complex tables. When applicable, combine insights from both parsed text and images to provide comprehensive and enriched answers.</p><p>When responding to the user, actively incorporate information from embedded text, images, tables, diagrams, and other visuals in the files when applicable.<br>
+Explicitly reference them by mentioning their location (e.g., page number) and summarizing their content. For example:<br>
+<ul><li>&quot;According to the <em>chart on page 5</em>, sales have increased by 20% over ...&quot;</li><br>
+<li>&quot;The <em>diagram on page 3</em> illustrates the workflow, highlighting ...&quot;</li><br>
+</ul></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>The file contents provided above are truncated/partial snippets. The complete content for these files IS accessible via querying.</p><p>If the user asks a question related to these files, and the provided snippets do not clearly answer it, you <strong>MUST</strong> use the <code>file_search</code> tool to search the full document contents before responding.</p><p><h2>How to invoke the file_search tool</h2><br>
+If the user&#x27;s query isn&#x27;t sufficiently answered by the provided snippets, parsed text, or images, you should invoke <code>file_search.msearch</code>.<br>
+To search the full content of the available files, you <strong>must</strong> send one message with recipient <code>to=file_search.msearch</code> in the analysis channel. Your message should be structured exactly as follows:<br>
+<pre><code>{
+  &#x27;queries&#x27;: [&#x27;Example query 1&#x27;, &#x27;Example query 2&#x27;]  // List of up to five queries to search for.
+}
+</code></pre></p><p>Carefully balance the number of <code>file_search</code> calls and the quality of your response with the latency incurred by <code>file_search</code> calls.</p><p>Important guidelines for query formatting:<br>
+<ul><li>Your message must be a valid JSON object. Do not include any extraneous text, backticks, markdown formatting, or comments beyond what is shown.</li><br>
+<li>The <code>queries</code> field must be a list of strings.</li><br>
+<li>One of the queries <strong>MUST</strong> exactly match the user&#x27;s original question, but stripped of any extraneous details, and with ambiguous references clearly resolved using context from the conversation. It <strong>MUST</strong> be a complete sentence.</li><br>
+<li>Even if you suspect the user meant something else, one query <strong>MUST</strong> still be their original question.</li><br>
+</ul><br>
+<h2>How to handle results from file_search</h2><br>
+The file search tool will respond with the relevant search results from the full files. After you receive these results:<br>
+<ul><li>Carefully evaluate each result to determine its relevance and quality.</li><br>
+<li>Use the high-quality and relevant results to inform your answer to the user&#x27;s question.</li><br>
+<li>When possible, reuse information from prior file_search results and avoid repeating identical queries.</li><br>
+</ul><br>
+<h2>Tool usage instructions and ordering</h2><br>
+When the user asks a question, carefully consider whether the provided snippets sufficiently answer the query, whether you need to invoke <code>file_search.msearch</code>, or another available tool (such as <code>web</code>, if available) should be used instead.</p><p>Tool-ordering Guidelines:<br>
+1. For queries related to uploaded files, if snippets are insufficient, strongly prefer invoking <code>file_search.msearch</code> over other tools.<br>
+    - Avoid using <code>web.run</code>, <code>python</code> analysis, or any other tools until you have either:<br>
+        - Confirmed with high confidence the answer is not in the files, or<br>
+        - Have high confidence <code>file_search_tool</code> queries are not sufficient to answer the query.<br>
+2. Avoid usage of <code>web_search/web.run</code> for queries related to uploaded files<br>
+    - Carefully consider whether the user&#x27;s query is better answered by web search results rather than available snippets or results from <code>file_search_tool</code>.<br>
+    - Unless the user&#x27;s query is clearly unrelated to the uploaded files, prefer using <code>file_search.msearch</code>. You can always follow up with a web search if necessary for a more complete response.<br>
+3. Avoid using <code>python</code> unless necessary or requested by user.<br>
+    - If the user&#x27;s query is answerable from the parsed text and images from the uploaded files, or from <code>file_search_tool</code>, do not invoke <code>python</code>.</p><p>Always keep this instruction in mind for the rest of the conversation, as the user may reference these files or ask related questions later on.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a <strong>document-by-document scholarly summary</strong>, focused on <strong>arguments, historiographical stakes, and how each text positions Agrippa</strong>. I keep this dense and content-forward, in the spirit of your earlier preferences (no fluff, no throat-clearing).</p><p><hr></p><p><h2>1. R. Desmed, review of <em>Of the Vanitie and Uncertaintie of Artes and Sciences</em>, ed. Catherine M. Dunn (1979)  </h2><br>
+fileciteturn0file0</p><p>Desmed’s review situates Dunn’s edition of <em>De incertitudine et vanitate scientiarum</em> as the most representative expression of Agrippa’s intellectual crisis in the mid-1520s. The work is read as emerging from a period of material precarity, professional instability, and spiritual disillusionment, rather than as a playful paradox or rhetorical exercise alone. Desmed emphasizes that Agrippa’s sweeping denunciation of the arts and sciences should be understood in the context of <strong>Christian fideism</strong>, not nihilism: the rejection of human knowledge is paired with an insistence that truth is accessible only through divine revelation, not through institutional learning.</p><p>Importantly, the review underscores that Agrippa’s skepticism is <strong>systematic rather than incidental</strong>. He attacks medicine, law, scholastic theology, humanist philology, astrology, and magic alike, thereby refusing to exempt even the occult sciences with which he was most closely associated. Dunn’s editorial apparatus is praised for clarifying the polemical structure of the work and for resisting the temptation to read it as a mere “recantation” of occult philosophy. The review implicitly supports the view that <em>De vanitate</em> is not a contradiction of <em>De occulta philosophia</em>, but a <strong>theological counter-voice</strong> to it.</p><p><hr></p><p><h2>2. George H. Daniels Jr., “Knowledge and Faith in the Thought of Cornelius Agrippa” (1964)  </h2><br>
+fileciteturn0file1</p><p>Daniels’ article is one of the clearest attempts to dissolve the long-standing “two Agrippas” problem: the magician of <em>De occulta philosophia</em> versus the skeptic of <em>De vanitate</em>. He argues that interpreting Agrippa developmentally (early magician → late skeptic) or psychologically (sincere → charlatan) fundamentally misunderstands Agrippa’s intellectual project.</p><p>Instead, Daniels places Agrippa within a <strong>dialectical configuration of Renaissance thought</strong>, where skepticism, occultism, and emerging empiricism coexist. Agrippa simultaneously affirms a universe saturated with occult correspondences and denies the capacity of human reason to master that universe through discursive knowledge. Faith and revelation, not method, are the bridge between these poles.</p><p>Crucially, Daniels insists that Agrippa’s skepticism is <strong>theological rather than epistemological</strong> in the modern sense. The failure of the sciences is not that they are false, but that they usurp divine authority. Agrippa’s thought thus anticipates later debates about the limits of reason without endorsing secular rationalism. The article also rejects the Faustian narrative outright: Agrippa does not “turn to magic” after abandoning learning; he <strong>never stops interrogating learning as spiritually dangerous</strong>.</p><p><hr></p><p><h2>3. Esther Gilman Richey, “‘To Undoe the Booke’: Cornelius Agrippa, Aemilia Lanyer and the Subversion of Pauline Authority” (1997)  </h2><br>
+fileciteturn0file2</p><p>Richey’s essay reframes Agrippa as a pivotal figure in Renaissance feminist hermeneutics, particularly within the <em>Querelle des Femmes</em>. She argues that <em>De nobilitate et praecellentia foeminei sexus</em> is not merely a rhetorical defense of women but a <strong>radical reworking of biblical exegesis</strong>, especially Pauline readings of Genesis and female subordination.</p><p>Agrippa’s strategy is shown to involve a close rereading of Genesis that exploits narrative gaps: Eve, not yet created when God issues the command concerning the forbidden fruit, is therefore not subject to the Law. Sin enters the world through Adam, not Eve. From this Agrippa derives a theology in which woman is aligned with grace and blessing, man with law and punishment.</p><p>Richey demonstrates how this exegetical move directly informs Aemilia Lanyer’s <em>Salve Deus Rex Judaeorum</em>, where Pauline authority is systematically displaced in favor of prophetic and Christological models that authorize female speech. Agrippa thus appears as a <strong>theoretical enabler of early modern feminist theology</strong>, not merely a curiosity in the gender debate.</p><p><hr></p><p><h2>4. Charles G. Nauert, review of <em>Declamation on the Nobility and Preeminence of the Female Sex</em> (1997)  </h2><br>
+fileciteturn0file3</p><p>Nauert’s review stresses the extraordinary reception history of Agrippa’s <em>Declamation</em>, which was rapidly translated across Europe and widely read despite Agrippa’s own apparent ambivalence about its importance. The work’s significance lies in its <strong>systematic inversion of misogynist arguments</strong>, not only asserting equality but repeatedly claiming female superiority.</p><p>What distinguishes Agrippa’s contribution, according to Nauert, is his insistence that women’s subordination is neither natural nor divinely ordained, but the product of unjust laws, customs, and exclusion from education. This moves beyond rhetorical praise into a critique of institutional power.</p><p>The review reinforces the view that Agrippa’s feminism is intellectually serious, learned, and socially subversive, even where his arguments strain credulity. The text’s enduring influence is attributed to its ability to weaponize scholastic learning against patriarchal norms.</p><p><hr></p><p><h2>5. Antoine Calvet on <em>De Arte Chimica</em> (2014 critical edition)  </h2><br>
+fileciteturn0file4</p><p>Calvet’s review presents <em>De Arte Chimica</em> as a sophisticated Renaissance alchemical treatise now plausibly attributable to Agrippa. The text combines poetic language, mythological allusion, Christian theology, and technical laboratory discourse, divided between preparatory instruction and practical operations.</p><p>Theologically, the treatise aligns alchemical work with the extraction of the <em>spiritus mundi</em> from matter, drawing implicitly on Ficino’s <em>De vita coelitus comparanda</em>. Mercury is allegorized through Marian symbolism; distillation becomes a cosmological and soteriological act. The reviewer emphasizes that the text exemplifies Renaissance alchemy’s fusion of <strong>Neoplatonism, Catholic devotion, and artisanal practice</strong>.</p><p>At the same time, Calvet notes that the density of metaphor often obscures practical instruction, reinforcing the idea that alchemical language functions as deliberate concealment rather than transparent technical prose. If Agrippa is indeed the author, the treatise complicates any simple narrative of his “retraction” of alchemy.</p><p><hr></p><p><h2>6. Alexander C. Judson, “Cornelius Agrippa and Henry Vaughan” (1926)  </h2><br>
+fileciteturn0file5</p><p>Judson traces Agrippa’s influence on the Vaughan brothers, especially Thomas Vaughan’s explicit debt to <em>De occulta philosophia</em> and <em>De vanitate</em>. The article’s key contribution is the argument that <strong>Henry Vaughan’s poetry</strong>, particularly “The Ass,” draws directly on Agrippa’s satirical theology in <em>De vanitate</em>.</p><p>Judson highlights Agrippa’s paradoxical valorization of ignorance: learned men are least fit for Christian truth, while the “asses” chosen by Christ embody spiritual receptivity. This theme becomes poetic material for Vaughan, demonstrating Agrippa’s reach beyond philosophy into devotional and literary culture.</p><p>The article reinforces the idea that <em>De vanitate</em> is not anti-intellectual mockery but a <strong>theology of humility</strong>, hostile to epistemic pride rather than to learning per se.</p><p><hr></p><p><h2>7. Chris Miles, “Occult Retraction: Cornelius Agrippa and the Paradox of Magical Language” (2008)  </h2><br>
+fileciteturn0file6</p><p>Miles challenges the dominant assumption that Renaissance magic depends on a naïve identity between words and things. Through a close reading of Agrippa’s writings and his famous “retraction,” Miles argues that Agrippa deploys <strong>self-referential paradox</strong> to destabilize any fixed theory of language.</p><p>Rather than endorsing a simple magical semiotics, Agrippa treats language as simultaneously powerful and inadequate, capable of gesturing toward divine realities while undermining its own claims. His retraction is thus not a confession of error but a rhetorical maneuver that exposes the limits of discourse itself.</p><p>This reading positions Agrippa as a theorist of <strong>linguistic ambivalence</strong>, closer to apophatic theology than to crude magical realism, and complicates Enlightenment narratives about the transition from magic to science.</p><p><hr></p><p><h2>8. Steven vanden Broeke on Christopher Lehrich, <em>The Language of Demons and Angels</em> (2005 review)  </h2><br>
+fileciteturn0file7</p><p>Broeke summarizes Lehrich’s argument that Agrippa’s occult philosophy is best understood as a coherent intellectual system grounded in Neoplatonic theology. Central is the idea of a <strong>“chain of vivification”</strong> linking the natural, celestial, and divine realms.</p><p>Lehrich rejects interpretations that isolate <em>De occulta philosophia</em> from Agrippa’s skepticism. Instead, skepticism and magic are shown to be mutually conditioning: separating nature invites doubt, while linking realms through symbolic mediation restores meaning.</p><p>The review emphasizes Lehrich’s methodological contribution: reading Agrippa through the history of religion, language theory, and theology rather than through Whiggish science narratives. Agrippa emerges as influential not because he offered techniques, but because he articulated a <strong>theory of mediation</strong> capable of surviving epistemic fracture.</p><p><hr></p><p><h3>Big picture synthesis (implicit across all texts)</h3><br>
+Across these documents, Agrippa appears not as inconsistent, but as <strong>structurally paradoxical</strong>: feminist exegete, fideist skeptic, occult metaphysician, rhetorician of language’s limits. The unity is theological rather than methodological, and the tension between magic and skepticism is not resolved—but deliberately sustained.</p><p>If you want, next steps could be:<br>
+<ul><li>a <strong>comparative table</strong> mapping each text onto debates (Yates thesis, feminism, skepticism, language, alchemy),</li><br>
+<li>or an <strong>intellectual biography spine</strong> that integrates these strands without flattening them.</li></ul></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>intellectual biography spine</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Here’s a <strong>clean, expandable intellectual-biography spine for Agrippa</strong> that integrates what <em>these documents collectively force us to take seriously</em>, without resolving the tensions they insist must remain open.</p><p>I’ll give it as a <strong>conceptual–chronological spine</strong>, not a narrative summary—this is something you could hang chapters, archival episodes, and historiography on without it collapsing into either a “Faust” story or a “two Agrippas” story.</p><p><hr></p><p><h2>Intellectual Biography Spine: <strong>Cornelius Agrippa as a Thinker of Limits, Mediation, and Authority</strong></h2></p><p><h3>I. Formation: Humanist Learning and the Promise of Total Knowledge  </h3><br>
+<strong>(c. 1500–1509)</strong></p><p><strong>Core problem:</strong>  <br>
+Can human learning—philology, philosophy, medicine, theology—recover a unified truth?</p><p><strong>Intellectual inheritance:</strong>  <br>
+<ul><li>Humanist rhetoric and philology  </li><br>
+<li>Neoplatonism (via Ficino)  </li><br>
+<li>Hermetica and prisca theologia  </li><br>
+<li>Legal and medical training</li><br>
+</ul><br>
+<strong>Key commitments:</strong>  <br>
+<ul><li>Knowledge is hierarchical, not flat  </li><br>
+<li>Truth is mediated through symbols, correspondences, and language  </li><br>
+<li>The cosmos is intelligible <em>if approached correctly</em></li><br>
+</ul><br>
+<strong>Seeds of later conflict:</strong>  <br>
+<ul><li>Early awareness that learning produces authority  </li><br>
+<li>Anxiety about whether authority belongs to institutions or revelation  </li><br>
+<li>Language already suspected as unstable, not transparent</li><br>
+</ul><br>
+<strong>Spine function:</strong>  <br>
+Agrippa begins <em>inside</em> Renaissance humanism, not outside it. There is no “turn” yet—only maximal intellectual ambition.</p><p><hr></p><p><h3>II. Occult Philosophy as Mediated Knowledge  </h3><br>
+<strong>(c. 1509–1515; <em>De occulta philosophia</em>, MS circulation)</strong></p><p><strong>Core problem:</strong>  <br>
+How can finite human language and practice access divine reality?</p><p><strong>Key idea:</strong>  <br>
+<strong>Mediation</strong>, not mastery.</p><p><ul><li>Nature, stars, and intellect form a chain (later called a “chain of vivification”)  </li><br>
+<li>Magic is not domination but alignment  </li><br>
+<li>Words, images, numbers act symbolically—not mechanically</li><br>
+</ul><br>
+<strong>Crucial clarification (from Miles + Lehrich):</strong>  <br>
+Agrippa does <strong>not</strong> believe in a crude identity between signifier and signified.  <br>
+Magical language is powerful <em>because it is inadequate</em>, not because it is literal.</p><p><strong>What this phase affirms:</strong>  <br>
+<ul><li>A symbolic cosmos  </li><br>
+<li>The legitimacy of esoteric traditions  </li><br>
+<li>The magus as interpreter, not technician</li><br>
+</ul><br>
+<strong>What it already doubts:</strong>  <br>
+<ul><li>Scholastic certainty  </li><br>
+<li>Institutional theology  </li><br>
+<li>Rationalist confidence</li><br>
+</ul><br>
+<strong>Spine function:</strong>  <br>
+This is not “pre-skeptical Agrippa.” This is Agrippa formulating a theory of <em>fragile mediation</em> that will later explode under ethical and theological pressure.</p><p><hr></p><p><h3>III. Gender, Law, and the Critique of Authority  </h3><br>
+<strong>(c. 1509–1520; <em>De nobilitate et praecellentia foeminei sexus</em>)</strong></p><p><strong>Core problem:</strong>  <br>
+Who has the right to interpret Scripture and exercise authority?</p><p><strong>Radical move:</strong>  <br>
+Agrippa relocates authority away from:<br>
+<ul><li>Custom</li><br>
+<li>Law</li><br>
+<li>Pauline hierarchy</li><br>
+</ul><br>
+…and toward:<br>
+<ul><li>Grace</li><br>
+<li>Genesis rereadings</li><br>
+<li>Christological liberation</li><br>
+</ul><br>
+<strong>Key insight (Richey):</strong>  <br>
+Agrippa’s feminism is not ornamental—it is <strong>hermeneutical warfare</strong>.</p><p><ul><li>Eve is not under the Law  </li><br>
+<li>Adam, not Eve, transmits sin  </li><br>
+<li>Patriarchy is a historical distortion, not divine order</li><br>
+</ul><br>
+<strong>Why this matters for the spine:</strong>  <br>
+This is Agrippa <strong>testing the consequences</strong> of his theory of mediation:<br>
+<ul><li>If interpretation mediates truth,</li><br>
+<li>then unjust authority can be dismantled by rereading.</li><br>
+</ul><br>
+<strong>Spine function:</strong>  <br>
+The gender treatise is not a side project—it is where Agrippa discovers that <strong>knowledge produces power</strong>, and power can be violently wrong.</p><p><hr></p><p><h3>IV. Crisis: Skepticism as Theological Protest  </h3><br>
+<strong>(c. 1526–1530; <em>De incertitudine et vanitate scientiarum</em>)</strong></p><p><strong>Core problem:</strong>  <br>
+What if <em>all</em> human knowledge—occult, scholastic, humanist—corrupts the soul?</p><p><strong>What this is <em>not</em>:</strong>  <br>
+<ul><li>A recantation  </li><br>
+<li>A loss of nerve  </li><br>
+<li>Anti-intellectual nihilism</li><br>
+</ul><br>
+<strong>What it <em>is</em> (Daniels, Judson, Desmed):</strong>  <br>
+A <strong>fideist indictment of epistemic pride</strong>.</p><p><ul><li>Sciences fail because they promise salvation  </li><br>
+<li>Learned men are least receptive to revelation  </li><br>
+<li>True wisdom requires unlearning</li><br>
+</ul><br>
+<strong>Key paradox:</strong>  <br>
+Agrippa attacks magic <em>using magical rhetoric</em>.  <br>
+He attacks learning <em>using encyclopedic learning</em>.</p><p><strong>Spine function:</strong>  <br>
+This is the book that convinces later readers there are “two Agrippas.”  <br>
+In reality, it is the ethical breaking point of his earlier commitments.</p><p><hr></p><p><h3>V. Retraction, Rhetoric, and the Problem of Language  </h3><br>
+<strong>(1530s; retractions, letters, polemics)</strong></p><p><strong>Core problem:</strong>  <br>
+How can one speak truth without re-enslaving it to language?</p><p><strong>Miles’ key contribution:</strong>  <br>
+Agrippa’s “retraction” is not confession but <strong>self-undermining rhetoric</strong>.</p><p><ul><li>Language must negate itself to avoid idolatry  </li><br>
+<li>Claims to certainty are spiritually dangerous  </li><br>
+<li>Paradox is a safeguard, not a flaw</li><br>
+</ul><br>
+<strong>Agrippa’s final stance:</strong>  <br>
+<ul><li>Language is necessary  </li><br>
+<li>Language is untrustworthy  </li><br>
+<li>Silence is ideal but impossible</li><br>
+</ul><br>
+<strong>Spine function:</strong>  <br>
+This is where Agrippa becomes fully legible as a <strong>theorist of limits</strong>, not a failed system-builder.</p><p><hr></p><p><h3>VI. Alchemy and Practice: Matter, Spirit, and Obscurity  </h3><br>
+<strong>(attributed; <em>De Arte Chimica</em>)</strong></p><p><strong>Core problem:</strong>  <br>
+Can practice embody truth without stating it?</p><p><strong>Key characteristics:</strong>  <br>
+<ul><li>Poetic, veiled language  </li><br>
+<li>Christian–Neoplatonic symbolism  </li><br>
+<li>Praxis inseparable from theology</li><br>
+</ul><br>
+<strong>Why it matters:</strong>  <br>
+Alchemy becomes a <em>test case</em> for Agrippa’s thought:<br>
+<ul><li>Knowledge that must be done, not explained  </li><br>
+<li>Truth hidden to protect it from misuse</li><br>
+</ul><br>
+<strong>Spine function:</strong>  <br>
+Alchemy is neither abandoned nor affirmed outright—it becomes <strong>ethical obscurity in action</strong>.</p><p><hr></p><p><h3>VII. Afterlives: Influence Without Resolution  </h3><br>
+<strong>(Vaughan, Lanyer, Bruno, Dee, Faust tradition)</strong></p><p><strong>What survives:</strong>  <br>
+<ul><li>Feminist hermeneutics  </li><br>
+<li>Skeptical theology  </li><br>
+<li>Magical language as paradox  </li><br>
+<li>Anti-authoritarian epistemology</li><br>
+</ul><br>
+<strong>What does not:</strong>  <br>
+<ul><li>Any stable “system”  </li><br>
+<li>Any clear disciplinary legacy</li><br>
+</ul><br>
+<strong>Agrippa’s historical role:</strong>  <br>
+Not a bridge from magic to science—but a <strong>fault line</strong> where:<br>
+<ul><li>Knowledge fractures</li><br>
+<li>Authority destabilizes</li><br>
+<li>Language turns against itself</li><br>
+</ul><br>
+<hr></p><p><h2>One-Sentence Spine Thesis (useful for a book proposal)</h2></p><p><blockquote><em>Agrippa’s intellectual life is best understood not as a movement from magic to skepticism, but as a sustained attempt to think knowledge, language, and authority under conditions where mediation is unavoidable and certainty is spiritually dangerous.</em></blockquote></p><p>If you want, next we can:<br>
+<ul><li>map this spine onto <strong>chapter titles with primary texts</strong>,  </li><br>
+<li>or write a <strong>methodological preface</strong> defending this approach against Yates / Thorndike / Faust narratives.</li></ul></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>methodological preface defending this approach against Yates / Thorndike / Faust narratives</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a <strong>methodological preface</strong> written as if it would open an academic monograph.  <br>
+It is <strong>defensive, historiographically explicit, and polemical in a controlled way</strong>, aimed directly at <strong>Yates / Thorndike / Faust</strong> readings without rehearsing them laboriously.  <br>
+Tone: <em>quietly uncompromising</em>.</p><p><hr></p><p><h2>Methodological Preface  </h2><br>
+<h3>Against Systems, Conversions, and Legends: Reading Agrippa Without a Plot</h3></p><p>This study proceeds from a simple refusal: <strong>Cornelius Agrippa will not be treated as a character in a story we already know how to tell</strong>. The dominant narratives that have framed his reception—whether as Renaissance magus, failed rationalist, skeptical convert, or proto-Faust—share a methodological assumption rarely made explicit: that Agrippa’s intellectual life must culminate in a resolution. This book argues that it does not, and that the attempt to impose one has obscured what is most historically and philosophically significant about his work.</p><p>Three interpretive traditions in particular have shaped Agrippa’s modern image: the <strong>scientific–developmental narrative</strong> associated with Lynn Thorndike; the <strong>Hermetic–progressivist narrative</strong> crystallized by Frances Yates; and the <strong>literary–mythic narrative</strong> that assimilates Agrippa to Faust. Each has yielded insights, but each has done so by subordinating Agrippa’s texts to an external explanatory plot. This study rejects that procedure.</p><p><h3>I. Against Developmental Reduction: Thorndike and the Problem of “Primitive Science”</h3></p><p>Thorndike’s monumental <em>History of Magic and Experimental Science</em> established an enduring framework in which Agrippa appears as a transitional figure: an intellectually ambitious but ultimately confused thinker whose occult commitments represent a pre-scientific stage soon to be superseded by empirical method. Within this model, <em>De occulta philosophia</em> becomes an embarrassment to be explained away, while <em>De incertitudine et vanitate scientiarum</em> is read as evidence of disillusionment or failure.</p><p>The difficulty with this account is not merely its Whiggish teleology, but its <strong>category error</strong>. Agrippa is not attempting to do science badly. He is interrogating the <strong>conditions under which knowledge claims acquire authority at all</strong>. To treat occult philosophy as a primitive explanatory system is to miss its theological, rhetorical, and ethical dimensions—dimensions that cannot be translated into the language of experimental progress without distortion.</p><p>This study therefore refuses to read Agrippa developmentally, whether as an immature thinker progressing toward skepticism or as a failed precursor of modernity. His skepticism is not the abandonment of magic; it is the consequence of taking mediation, language, and divine transcendence seriously.</p><p><h3>II. Against Salvational Hermeticism: Yates and the Myth of Coherence</h3></p><p>Frances Yates’ influential reconstruction of Renaissance Hermeticism rightly restored Agrippa to the intellectual seriousness denied him by positivist historiography. Yet the Yatesian framework introduces a different distortion: the tendency to read Agrippa’s occult philosophy as a coherent, quasi-systematic worldview whose significance lies in its contribution to the rise of modern science or modern subjectivity.</p><p>Within this narrative, Agrippa’s later skeptical writings appear as a retraction that must be either minimized, psychologized, or dismissed as rhetorical excess. The result is an implicit hierarchy of texts, in which <em>De occulta philosophia</em> is taken as Agrippa’s “true” work, and <em>De vanitate</em> as an aberration.</p><p>This study rejects that hierarchy. It treats Agrippa’s skepticism not as an interruption but as an <strong>internal pressure generated by his own theory of mediation</strong>. The same commitments that make occult philosophy intelligible—symbolic language, analogical reasoning, dependence on revelation—also render all human knowledge unstable and morally dangerous. The tension is not accidental; it is structural.</p><p>Rather than seeking coherence in the form of a stable doctrine, this book reads Agrippa as developing a <strong>coherent problem-space</strong>: how finite language, finite institutions, and finite knowers can relate to infinite truth without idolatry.</p><p><h3>III. Against Mythic Psychologization: Faust as a Category Mistake</h3></p><p>The persistent comparison of Agrippa to Faust—whether in Marlowe, Goethe, or later criticism—has done more to fix his cultural image than any scholarly argument. Yet this comparison operates at the level of literary archetype rather than intellectual history. Faust seeks mastery; Agrippa fears it. Faust transgresses divine limits; Agrippa insists upon them. Faust’s tragedy is hubris; Agrippa’s is epistemic humility pushed to its breaking point.</p><p>To read Agrippa as a Faust figure is therefore to replace historical analysis with symbolic condensation. It turns a sustained engagement with theology, rhetoric, gender, law, and language into a morality tale about forbidden knowledge. This study treats such readings as <strong>hermeneutically inert</strong>: they explain Agrippa only by dissolving him into myth.</p><p><h3>IV. An Alternative Method: Tension, Mediation, and Authority</h3></p><p>In place of these narratives, this book adopts a methodological stance oriented around <strong>tension rather than resolution</strong>. Agrippa’s writings are read synchronically as well as diachronically, with particular attention to:</p><p><ul><li>the instability of language  </li><br>
+<li>the ethics of knowledge  </li><br>
+<li>the relationship between interpretation and authority  </li><br>
+<li>the theological limits of reason  </li><br>
+<li>the social consequences of epistemic claims  </li><br>
+</ul><br>
+Rather than asking which Agrippa is “real,” this study asks <strong>what problems his texts refuse to solve</strong>. Feminist exegesis, occult philosophy, skepticism, and alchemy are treated not as stages but as <strong>sites where the same conflict reappears under different pressures</strong>.</p><p>This approach aligns Agrippa less with the history of science than with the history of <strong>epistemic critique</strong>—a tradition that runs from late medieval theology through early modern skepticism and into modern concerns about discourse, power, and legitimacy.</p><p><h3>V. What Is Gained</h3></p><p>By refusing conversion narratives, this method recovers:</p><p><ul><li>Agrippa’s feminism as a serious hermeneutic intervention, not a curiosity  </li><br>
+<li>his skepticism as theological protest, not disillusionment  </li><br>
+<li>his magic as a theory of mediation, not primitive causality  </li><br>
+<li>his retractions as rhetorical strategy, not capitulation  </li><br>
+</ul><br>
+Most importantly, it allows Agrippa to remain <strong>unsettling</strong>—a thinker who does not point forward to modernity or backward to superstition, but sideways, toward the unresolved problem of how humans speak truth without claiming to own it.</p><p><hr></p><p>If you want next, I can:<br>
+<ul><li>tighten this into <strong>8–10 pages of book-ready prose</strong>,  </li><br>
+<li>add <strong>footnote-level historiographic positioning</strong> (Thorndike, Yates, Nauert, Lehrich, Hanegraaff, Newman),  </li><br>
+<li>or write a <strong>one-paragraph “intervention statement”</strong> for grant proposals or presses.</li></ul></p>
+  </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New picture of Abulafia</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>New picture of Abulafia</h1>
+  <div class="meta">October 12, 2025 12:40 PM &middot; Model: gpt-5 &middot; 4 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>what is new about the picture of abulafia that emerges from this book</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include <code>【message_idx†source】</code> markers to provide citations based on this file, where [message_idx] is provided at the beginning of this message</p><p>Abraham Abulafia -  Kabbalist and Prophet <br>
+Hermeneutics, Theosophy, and Theurgy</p><p>Sources and Studies in the Literature o f Jewish Mysticism </p><p>edited by Daniel Abrams</p><p>7</p><p>Abraham Abulafia -  Kabbalist and Prophet <br>
+Hermeneutics, Theosophy, and Theurgy</p><p>Elliot R. Wolfson</p><p>Cherub Press</p><p>Los Angeles 2000</p><p>Abraham Abulafia -  Kabbalist and Prophet <br>
+Hermeneutics, Theosophy, and Theurgy</p><p>©  Copyright 2000 by Cherub Press</p><p>All rights reserved.<br>
+No part o f this book may be used ör reproduced in any manner </p><p>whatsoever without the written permission o f Cherub Press, except in <br>
+the case o f brief quotations embodied in critical articles and reviews.</p><p>This book may be purchased directly from the publisher. <br>
+For information and price lists write to Cherub Press, </p><p>9323 Venice Boulevard, Los Angeles, California, 90232, USA.</p><p>ISBN 0-9640972-7-3</p><p>To Peter</p><p>For helping me see <br>
+the glimmer underground</p><p>“Erkenntis als eine in Gott gegründete Frage, <br>
+die keiner Antwort entspricht.”</p><p>G. Scholem</p><p>Introduction</p><p>Contents</p><p>I. Abraham Abulafia’s Hermeneutic: Secrecy and the <br>
+Disclosure of Withholding</p><p>Preservation Of The Secret Through Its Disclosure 9 <br>
+Philosophical Esotericism: The Secret That There Is No Secret 38 <br>
+Esotericism In The Prophetic Kabbalah: The Secret That Cannot Be </p><p>Kept 52</p><p>II. The Doctrine of Sefirot in the Prophetic Kabbalah of <br>
+Abraham Abulafia</p><p>Typological Classification Of Theosophic And Ecstatic Kabbalah In <br>
+Modem Scholarship 94 </p><p>Typological Classification Of Two Kinds Of Kabbalah In Abulafia’s <br>
+Writings 99</p><p>Abulafia’s Appropriation Of Symbols, Concepts And Terms From Works <br>
+Of Theosophic Kabbalah 114 </p><p>The Doctrine Of Sefirot In Abulafia’s Writings 134 <br>
+Abulafia’s Interpretation Of Sefirot And The Maimonidean Doctrine Of </p><p>Separate Intellects 152</p><p>III. Mystical Rationalization of the Commandments in the <br>
+Prophetic Kabbalah of Abraham Abulafia</p><p>Exoteric And Esoteric Approaches To The Commandments 186 <br>
+Letter-Combination And The Mystique Of The Miswot 197 <br>
+Hypemomianism And The Prophetic Kabbalah 204</p><p>Bibliography 229 </p><p>Index 242</p><p>Abbreviations</p><p>MS London-BM: London, British Museum<br>
+MS Milan-BA: Milan, Biblioteca Ambrosiana<br>
+MS Moscow, Russain State Library: MS Moscow-RSL<br>
+MS Munich-BS: Munich, Bayerische Staatsbibliothek<br>
+MS NY-JTSA: New York, Jewish Theological Seminary of America<br>
+MS Oxford-BL: Oxford, Bodleian Library (Neubauer)<br>
+MS Paris-BN: Paris, Bibliothèque Nationale <br>
+MS Vatican-BA : Vatican, Biblioteca Apostolica</p><p>Introduction</p><p>There is little doubt that one of the most colorful figures in the landscape of <br>
+Jewish mysticism was Abraham Abulafia, the self-proclaimed prophet with <br>
+messianic pretenses who was active in the second half of the thirteenth <br>
+century, the precise moment in medieval Jewish history that witnessed an <br>
+impressive proliferation of mystical activity in several geographical settings <br>
+both within the land of Israel and the Diaspora communities, especially on <br>
+the European continent. In contrast to most other kabbalists from this <br>
+period, about whom we know more of their literary productions than their <br>
+biographies, in the case of Abulafia, we have a relative wealth of <br>
+information concerning his personal life, largely due to the meticulous <br>
+fashion that he demonstrated in his compositions. There is an intricate <br>
+connection between Abulafia’s writings and his peregrinations in the world. <br>
+Although it is probably wise to exercise a measure of doubt regarding the <br>
+veracity of some of Abulafia’s claims, given his fanciful imagination, there <br>
+is much of historical validity that we can glean from his works.</p><p>As the information we have about his personal life attests, Abulafia was <br>
+a man of contradictions, an impression that is corroborated by the style of <br>
+thinking and argumentation employed in his voluminous corpus. Although <br>
+he seems to have been a dedicated and charismatic teacher who sought the <br>
+company of others and desired to have an impact in the socio-political arena <br>
+(attested most emphatically by his defiant attempt to see Pope Nicholas in <br>
+in 1280), he also advocated a path of meditation based on solitude and <br>
+withdrawal. His biography suggests that he was an unusually restless man, <br>
+yet the goal of his teaching was the attainment of a state of equanimity and <br>
+detachment. Abulafia’s kabbalah provides the means for one to attain the <br>
+spiritual state of the world-to-come, which for him is the untying of the <br>
+knots that chain the rational soul to the body. The pursuits of the physical <br>
+world are obstacles on the path towards mystical enlightenment that need to <br>
+be removed by an ascetic discipline before one engages in the meditational <br>
+practice that leads to the union with the divine. Nevertheless, Abulafia does <br>
+not preach the absolute nullification of the body. He recognizes not only <br>
+that the psychological well-being of the individual depends upon the</p><p>2 Abraham Abulafia</p><p>reintegration into the physical world, but that the mystical union itself is <br>
+experienced in somatic, even erotic, terms.</p><p>The equally puzzling and contradictory nature of his intellectual profile <br>
+is perhaps best exemplified by the synthesis he sought between the <br>
+philosophical ideas of Maimonides and the doctrines of ancient Jewish <br>
+esotericism, especially as they were filtered through the prism of the <br>
+German Pietists. Abulafia had no reservations about accepting the ideal of <br>
+conjunction with the Active Intellection the one hand, and the techniques <br>
+of letter-permutation and combination of the letters of the divine names, on <br>
+the other. Indeed, the latter, in his opinion, was a superior means to achieve <br>
+the former than the philosophical path of cognition. Here is a man who <br>
+could constantly extol the superiority of Hebrew as the natural language by <br>
+means of which God created the world, and yet affirm that one could <br>
+practice the letter-permutations in any language since all the languages are <br>
+contained in Hebrew even though they are conventional. In response to the <br>
+attack against him led by Solomon ben Abraham ibn Adret in the 1280’s, <br>
+Abulafia created a typological distinction between his own form of <br>
+prophetic kabbalah and the kabbalah based on a theosophic understanding <br>
+of the sefirot. Yet, as I suggest in the essays included in this volume, <br>
+Abulafia was deeply influenced by the language and symbolism of what is <br>
+today called the theosophic kabbalah. Just as he both appropriated and <br>
+rejected the philosophical orientation of Maimonides, so, too, he <br>
+appropriated and rejected the theosophic perspective of the kabbalists. The <br>
+ability to appropriate and reject does not bespeak an inconsistency or <br>
+instability in Abulafia’s cognitive abilities. On the contrary, it indicates a <br>
+mind that could assimilate complex and conflicting conceptual schemes. <br>
+Where we see clashing polarities, Abulafia saw truth doubling itself in <br>
+ambiguity.</p><p>The power of Abulafia’s intellect is evident in the manner that he <br>
+anchors difficult theological ideas through the exegetical techniques of <br>
+numerology (gematriyyah), letter-transposition (temurah), and acrostics <br>
+(notariqori). Anyone who has tried to read Abulafia knows it is impossible <br>
+to get through one page without a pen and pad ready at hand to decode the <br>
+many mathematical and linguistic associations that he establishes in an <br>
+effort to link together disparate expressions and concepts. If logical <br>
+consistency is the mark of brilliance, then Abulafia may prove to be a <br>
+disappointment. In order to appreciate his genius, it is necessary to adopt an <br>
+approach that sees beyond polar dichotomies. Abulafia’s mind constantly</p><p>Introduction 3</p><p>pushes at the limits of reason’s reach, taking away with one hand what he <br>
+has given with the other. One of the greatest indications of Abulafia’s <br>
+deviation from Maimonides is his acceptance of a logic that is illogical, <br>
+which is expressed in the concurrent affirmation of opposites. This <br>
+coincidence is a repeated emphasis in Abulafia’s writings, but it is perhaps <br>
+best captured in his notion of the inversion of opposites by means of which <br>
+the contrasting qualities are identified. Thus, for Abulafia, the head is the <br>
+tail, right is left, the merciful one is the judge, the angel is Satan, and so on. <br>
+There is never a point of stasis in his thinking inasmuch as the thing can <br>
+become its contrary. Every thought is thus a waystation on the path that will <br>
+carry us further on the journey after a temporary respite.</p><p>It has been commonplace in modem scholarship to distinguish sharply <br>
+between two kinds of kabbalah, the theosophic and the ecstatic. Whereas <br>
+Gershom Scholem limited these types to thirteenth-century Spain, Moshe <br>
+Idel has expanded the historical categories and argued that these are the two <br>
+phenomenological trends in Jewish mysticism more generally. As I <br>
+remarked above, Abulafia himself is the kabbalist most responsible for this <br>
+typological classification. While it is helpful to use this typology in the <br>
+study of Jewish mysticism, and Idel’s critique of a relatively monolithic <br>
+presentation of the history of kabbalah that has ensued from a neglect of the <br>
+writings of Abulafia and his disciples is certainly justified, it is also <br>
+necessary to avoid a rigid reification of these divisions. The studies that <br>
+have been assembled in this volume illustrate a somewhat more fluid and <br>
+elastic exposition of Abulafia’s prophetic kabbalah in relation to the <br>
+theosophic kabbalah of his generation. Indeed, even though Abulafia is to <br>
+be credited with formulating the typological distinction, he is constantly <br>
+transgressing the boundaries he set out to establish. These essays attempt to <br>
+articulate this transgression of boundaries, and thus they have been written <br>
+(as all writing inevitably must) from the space of rupture, the place where <br>
+the word is fractured and the ray of reason is bent by the shimmer of <br>
+mystical insight.</p><p>In the first essay, “Abraham Abulafia’s Hermeneutic: Secrecy and the <br>
+Disclosure of Withholding,” I argue that the hermeneutics of esotericism in <br>
+Abulafia’s prophetic kabbalah is in an essential way similar to what one <br>
+finds in the theosophic kabbalah. Abulafia is surely influenced by <br>
+Maimoinides’ notion of secrecy. Indeed, the Maimonidean resolution to the <br>
+tension between the mandate to conceal secrets, on the one hand, and the <br>
+need to reveal them, on the other, was widely held by kabbalists of the</p><p>4 Abraham Abulafia</p><p>various schools in the thirteenth century. With respect to this critical issue, <br>
+it would be prudent on the part of intellectual historians of this period to <br>
+recognize the shared assumptions of the philosophical and mystical <br>
+traditions. Maimonides was not simply a negative catalyst in the evolution <br>
+of Jewish esotericism. Yet, in the end, Abulafia’s concept of language and <br>
+the understanding of mystical experience based thereon necessitates that his <br>
+formulation of the esoteric departs from Maimonides and is closer in <br>
+orientation to the theosophic kabbalists. That is, the secret is not only a <br>
+potentially problematic theological idea that must be concealed from the <br>
+ignorant masses even as it is revealed to the intellectual elite; the secret is a <br>
+secret because it relates to the divine name, which is the mystical essence of <br>
+the Torah, and thus comprises the convergence of the hidden and the <br>
+revealed. The disclosure of the secret is predicated on its concealment even <br>
+from the one to whom it has been disclosed. Orality is the only valid form <br>
+of transmission of this secret; in writing one can only allude to this secret in <br>
+such a way that the enlightened individual will apply his own power of <br>
+supposition to discern the allusions. With respect to this interplay of <br>
+passive reception and creative exegesis as well there is a common element <br>
+in the theosophic and the prophetic trends of kabbalah, although there were <br>
+some kabbalists (Nahmanides comes to mind) who ostensibly denied the <br>
+efficacy of human reason altogether as a means to comprehend the secrets <br>
+of the kabbalah. In some passages, Abulafia expresses a position similar to <br>
+that of Nahmanides, for in his mind the truth of the kabbalah exceeds the <br>
+categories of human reason even though in the very same passages he <br>
+depicts the mystical experience in terms that resonate with the <br>
+philosophical ideal of conjunction.</p><p>The analysis of Abulafia’s hermeneutics and the notion of secrecy yields <br>
+the conclusion that he cannot be described as exclusively conservative or <br>
+innovative. He occupies a site between these two poles; indeed, the constant <br>
+movement from one pole to the other suggests that for Abulafia, as for other <br>
+kabbalists of his generation, there is no contradiction in the view that what <br>
+is innovatively proposed is the ancient tradition that has been transmitted <br>
+through the ages. Kabbalists would see no logical problem with the claim <br>
+that revelation is an uncovering of the older truth. The very same kabbalist <br>
+who insists on the restricted dissemination of limited secrets from master to <br>
+disciple (which is often linked as well to the preference for orality over <br>
+writing) expands the boundaries of the tradition by creatively explicating <br>
+(through oral and written channels) secrets and reinterpreting earlier texts</p><p>Introduction 5</p><p>in a new way. Instead of positing the conservative and innovative <br>
+dispositions in oppositional terms, therefore, it is necessary to look upon <br>
+them as two tendencies that converge in the mind of one person. The <br>
+propensity to maintain orientations that appear to be antithetical bespeaks <br>
+the complex nature of the effort on the part of the human spirit in the <br>
+Middle Ages to grasp the ultimate truth both in terms of what has been <br>
+received and what can be innovated.</p><p>The stance I am taking with respect to the notion of tradition in mystical <br>
+texts resonates with the idea of tradition more generally in the history of <br>
+Judaism. As a number of scholars have noted, tradition in Judaism <br>
+embraces the paradox of presenting the novel as ancient. What becomes <br>
+traditional is constructed on the basis of textual expansion by way of <br>
+creative hermeneutics, which in many occasions entails the misreading of <br>
+previous sources. Millin hadetin &#x27;atiqin, “new ancient words,” according to <br>
+the locution of the zoharic authorship (Zohar 3:166b), succinctly captures <br>
+the paradox of esotericism affirmed by the kabbalists, which is predicated <br>
+on the confluence of ostensible antinomies. One would be inclined to argue <br>
+that if the matter is new, then it cannot be old, and if it is old, then it cannot <br>
+be new. However, the kabbalists push the mind to its limit by using <br>
+language that points beyond itself: What is new is new because it is old, but <br>
+it is old because it is new. An appreciation of this insight is basic to <br>
+undertsanding the kabbalistic approach to the transmission of secrets that <br>
+by nature must be withheld, an attitude adopted by Abulafia as well.</p><p>In the second essay, “The Doctrine of Sefirot in the Prophetic Kabbalah <br>
+of Abraham Abulafia,” I explore the role accorded the sefirot in Abulafia’s <br>
+prophetic kabbalah. As I briefly noted above, Abulafia is to be credited with <br>
+presenting the typological distinction between what is called in <br>
+contemporary scholarship the theosophic and the ecstatic trends of <br>
+kabbalah. This taxonomy, however, must be seen in its proper historical and <br>
+literary context. When viewed in this light it is apparent that Abulafia <br>
+articulated matters in this way as part of his response to the criticism <br>
+directed towards him by one of the most powerful rabbinic leaders of the <br>
+Spanish Jewish community, Solomon ibn Adret, who was himself a master <br>
+of the kabbalistic lore. A closer examination of his writings, including the <br>
+epistle he wrote to Judah Salomon in which he specifically mentions the <br>
+“two types of kabbalah,” reveals that he was influenced by theosophic <br>
+terms and symbols in more than just a peripheral manner. I have argued, <br>
+moreover, that the term “theosophy” may even be applied to Abulafia’s</p><p>6 Abraham Abulafia</p><p>own conception of hokhmat ha- ’elohut, which denotes divine wisdom that <br>
+stands in contrast to divine science as understood by Maimonides. The <br>
+divine wisdom consists of the esoteric gnosis of the name, which cannot be <br>
+attained by the discursive metaphysics of the philosophers. Indeed, on <br>
+numerous occasions in his writings, Abulafia emphasizes that the <br>
+knowledge of the name cannot be apprehended by the philosophers; it is <br>
+unique to the prophets of Israel who have received and transmitted this <br>
+knowledge as an oral tradition.</p><p>By suggesting that the term “theosophy” can be applied to Abulafia’s <br>
+own kabbalah, I do not intend to deny the obvious distinction that he makes <br>
+between the kabbalists who place primary emphasis on the sefirot as the <br>
+potencies of God and those who focus on the divine names. My point is <br>
+rather that, for Abulafia himself, the kabbalah embraces both the knowledge <br>
+of the sefirot and the knowledge of the letters, an idea that he traces back to <br>
+thirty-two paths of wisdom mentioned in Sefer Yeçirah, which consists of <br>
+the ten sefirot and twenty-two letters. Both branches of the kabbalah are <br>
+related to the names of God, which are contained in the one unique name, <br>
+YHWH. Cleaving to the latter, which is presented in terms of the <br>
+philosophical ideal of intellectual conjunction, is the ultimate focus of <br>
+Abulafia’s kabbalah. Insofar as the self is unified with the Active Intellect <br>
+in the experience of conjunction, and the latter comprises the ten separate <br>
+intellects, which are identified as the ten sefirot of the Jewish esoteric <br>
+tradition, it follows that, for Abulafia, the sefirotic entities play an <br>
+instrumental role in the mystical experience of union. In that experience, <br>
+the ontological distinction between self and other is erased, for the <br>
+realization of the former depends on merging with the last of the separate <br>
+intellects, which is identified with the first of the intellects, a confluence <br>
+symbolically portrayed by the figure of Metatron, the angel who is both an <br>
+elder (zaqen) and a youth (na&#x27;ar), Israel and Jacob. To the degree that the <br>
+self and the intellect are unified in the moment of conjunction, it is <br>
+possible, even necessary, to speak of the sefirot as internal states of <br>
+consciousness. But the psychological cannot be separated from the <br>
+ontological, which is to say, these internal states correspond to the external <br>
+intelligences that govern the movement of the celestial spheres.</p><p>The sefirot, which Abulafia also identifies as the attributes {middot) of <br>
+God, are the channels by means of which the intellectual overflow is drawn <br>
+upon the mystic and thereby facilitate his cleaving to the divine name. <br>
+According to Abulafia, the ideal intelligible forms of the sefirot are distinct</p><p>Introduction 7</p><p>from God, yet they are not found apart from him as they are expressive of <br>
+his power. Abulafia describes the containment of the ten sefirot within the <br>
+divine as a great secret. In language that he borrows from Eleazar of <br>
+Worms, he links the ten sefirot to the ineffable name, decoding YHWH as <br>
+yod hawwayot, the ten essences that are the separate intellects. The name is <br>
+thus intrinsically connected to the sefirotic gradations. Abulafia’s <br>
+psychological interpretation of the sefirot as internal states of mind is <br>
+predicated on this ontological assumption.</p><p>In the third essay, “Mystical Rationalization of the Commandments in <br>
+the Prophetic Kabbalah of Abraham Abulafia,” I argue that ritual <br>
+observance was imbued with new significance in Abulafia’s writings by its <br>
+being transformed into a means to occasion a mystical experience, the <br>
+contours of which in great measure were shaped by philosophical concepts <br>
+and modes of discourse. The reasons for the commandments have both an <br>
+exoteric and an esoteric sense. The latter relates to the mysteries of the <br>
+Torah, which consist of the divine names that are disclosed to the <br>
+enlightened kabbalists. A similar structuring of experience is attested in <br>
+theosophic kabbalah, and thus we are justified in speaking of a shared <br>
+phenomenological element in these two kabbalistic trends with respect to <br>
+the specific issue of the mystical valorization of ritual. The gap dividing the <br>
+theosophic and the ecstatic streams of kabbalah should be narrowed insofar <br>
+as in both there is a mystical spiritualization of traditional ritual. Moreover, <br>
+in both streams, this spiritualization involves the experience of union (or <br>
+conjunction) with the divine, an experience that was shaped by <br>
+philosophical assumptions. The transfiguration of ritual into a sacrament <br>
+that facilitates psychic ascent and the ontic reintegration into the divine is <br>
+an experience that theosophic and ecstatic kabbalists alike considered to be <br>
+on a par with prophecy. From this vantage point it is somewhat misleading <br>
+to call Abulafia’s kabbalah “prophetic” in contradistinction to the other <br>
+form of kabbalah. The term “prophetic” applies equally well to the <br>
+theosophic kabbalah as is attested by the fact that several of the theosophic <br>
+kabbalists explicitly identified themselves as prophets, a point that is made <br>
+emphatically by Abulafia himself. To be sure, Abulafia would have <br>
+contrasted his own understanding of prophecy from that of the theosophic <br>
+kabbalists. In my judgment, this contrast is valid only up to a certain point, <br>
+for there is much that is shared by the two streams of kabbalah with respect <br>
+to the understanding of prophecy as the mystical conjunction of the soul</p><p>8 Abraham Abulafia</p><p>with the divine name, which is understood as the inner essence of the <br>
+Torah.</p><p>There seems to me sufficient reason to call into question the designation <br>
+of theosophic kabbalah as theurgic in contradistinction to the prophetic <br>
+kabbalah of Abulafia. While it is certainly true that Abulafia rejects the <br>
+theurgical understanding of the theosophic kabbalists, and even when he <br>
+appropriates their language (as in his discussion of the mystical intent of the <br>
+sacrifices) he tends to emphasize the mystical over the theurgical valence, it <br>
+is nevertheless the case that he does affirm a type of theurgy related to the <br>
+unification of the divine attributes. As I have already noted, Abulafia <br>
+categorically rejects the theosophic understanding of the sefirot as <br>
+hypostatic potencies, but he does insist that the divine unity is expressed <br>
+within and through the ten sefirot, which he identifies as the ten separate <br>
+intellects. His frequent warning against the danger of separating the sefirot, <br>
+an act that he calls (in a manner analogous to the theosophic kabbalists) by <br>
+the rabbinic idiom for heresy, “cutting the shoots,” must not be seen as <br>
+mere rhetoric. On the contrary, according to Abulafia, the human intellect <br>
+plays an active role in unifying God through the ten separate intellects as a <br>
+consequence of the intellectual conjunction, which is presented as the <br>
+paramount mystical rationale for the commandments.</p><p>Collectively, then, these studies set out to cast Abulafia in a somewhat <br>
+different light. It is the hope of the author that the vision that will appear <br>
+within this light will not be viewed as a seeing against previous scholarship, <br>
+but a seeing beyond where we have been hithertofore, a vision that may <br>
+help others see beyond my own necessarily limited perspective.</p><p>Abraham Abulafia’s Hermeneutic: <br>
+Secrecy and the Disclosure of Withholding</p><p>P r e s e r v a t io n  O f T h e  Se c r e t  T h r o u g h  Its  D isc l o s u r e</p><p>Perhaps the most appropriate term to characterize the body of literature that <br>
+scholars have heuristically referred to as medieval Jewish mysticism is <br>
+esotericism, hokhmat ha-nistar, a gnosis (encompassing both doctrine and <br>
+practice, belief and ritual) that is deemed secretive and that must therefore <br>
+be transmitted only to a small circle of initiates.1 In his essay “Das <br>
+Verhältnis Maimunis zur jüdischen Mystik,” published in 1936, Alexander <br>
+Altmann noted that the “esoteric nature of mystical teachings in Judaism is <br>
+expressed by the terms sod (‘secret’), sithrey Torah (‘mysteries of the <br>
+Law’), and their equivalents. Obscure though the historical origins of <br>
+Jewish mysticism are, and especially its connections with the various <br>
+schools of prophecy, apocalyptic literature, and Gnosis, a definite esoteric <br>
+posture, setting down a precise form of transmission, had evolved as early <br>
+as the tannaitic period.”2 Altmann went so far as to suggest that the <br>
+exclusive transmission of mystical knowledge from master to disciple <br>
+attested already in rabbinic sources may have been due to the influence of <br>
+Hellenistic mystery religions. Bracketing the historical veracity of</p><p>1 The extreme form of secrecy affirmed by Jewish mystics when compared to other <br>
+religious traditions has been noted by W. Stace, Mysticism and Philosophy (London, <br>
+1960), p. 57. Helpful surveys on the nature of esotericism may be found in A. Faivre, <br>
+“Ancient and Medieval Sources of Modem Esoteric Movements,” in Modem Esoteric <br>
+Spirituality, edited by A. Faivre and J. Needleman (New York, 1992), pp. 1-70, and <br>
+idem. Access to Western Esotericism (Albany, 1994), pp. 3-110; A. Faivre and K.-C. <br>
+Voss, “Esotericism and the Science of Religion,” Numen 42 (1995): 48-77; and A. <br>
+Faivre, “Renaissance Hermeticism and the Concept of Western Esotericism,” in Gnosis <br>
+and Hermeticism From Antiquity to Modern Times, edited by R. van der Broek and W. <br>
+J. Hanegraaff (Albany, 1998), pp. 109-123.</p><p>2 A. Altmann, “Maimonides’ Attitude Toward Jewish Mysticism,” in Studies in <br>
+Jewish Thought, edited by A. Jospe (Detroit, 1981), pp. 201-202.</p><p>10 Abraham Abulafia</p><p>Altmann’s surmise, it is noteworthy that he discerned that in Jewish <br>
+mysticism, beginning in its early stages, the notion of secrecy is essential. <br>
+Indeed, Altmann’s remarks suggest that in his opinion the mystical <br>
+phenomenon must be circumscribed within the framework of esotericism, a <br>
+perspective to which I readily assent when the focus is set in a more limited <br>
+way upon the mystical trends of Jewish thought and practice that converged <br>
+in the High Middle Ages, especially in the thirteenth and fourteenth <br>
+centuries, which witnessed an intense proliferation of literary activity in <br>
+various occult fraternities spread throughout the Jewish Diaspora.</p><p>Gershom Scholem, as we may surmise from certain passages in his <br>
+scholarly oeuvre, distinguished sharply between mysticism and esotericism. <br>
+It is evident from other passages that he also appreciated the singular <br>
+importance of the notion of the secret in the kabbalistic orientation, and on <br>
+occasion he was even prepared to identify esotericism and mysticism when <br>
+the terms were applied specifically to the history of kabbalah. As an <br>
+example of the former tendency, I note that in one publication Scholem <br>
+maintained that mysticism “means a kind of knowledge which is by its very <br>
+nature incommunicable,” insofar as the object of mystical experience is <br>
+inexpressible id human language, whereas esotericism involves a “kind of <br>
+knowledge that may be communicable and might be communicated, but <br>
+whose communication is forbidden.”3 In another work, Scholem readily <br>
+acknowledged that kabbalah “became to a large extent an esoteric <br>
+doctrine,” but even in that context he reiterated the distinction between the <br>
+mystical and the esoteric elements in the kabbalah on the epistemological <br>
+basis that the former, unlike the latter, embraces a knowledge that lies <br>
+beyond communication:</p><p>By its very nature, mysticism is knowledge that cannot be communicated <br>
+directly but may be expressed only through symbol and metaphor. Esoteric <br>
+knowledge, however, in theory can be transmitted, but those who possess it <br>
+are either forbidden to pass it on or do not wish to do so. The kabbalists</p><p>3 G. Scholem, “Jewish Mysticism in the Middle Ages,” The 1964 Allan Bronfman <br>
+Lecture (New York, 1964), pp. 3-4. Compare the characterization of A. Faivre, in The <br>
+Encyclopedia o f Religion, edited by M. Eliade (New York, 1987), 5: 158, s.v., <br>
+Esotericism: “Strictly speaking, gnosis should be distinguished from mysticism, even <br>
+though they are usually found together. Mysticism, which is more ‘feminine,’ more <br>
+nocturnal, voluntarily cultivates renunciation, although this does not exclude a taste for <br>
+symbolism. Gnosis, more ‘masculine,’ more solar, cultivates detachment and is more <br>
+attentive to structures.”</p><p>Abraham Abulafia’s Hermeneutic 11</p><p>stressed this esoteric aspect by imposing all kinds of limitations on the <br>
+propagation of their teachings, either with regard to the age of the initiates, <br>
+the ethical qualities required of them, or the number of students before <br>
+whom these teachings could be expounded.4</p><p>Scholem’s attempt to contrast esotericism and mysticism on the grounds <br>
+that the former involves a knowledge that is communicable by nature <br>
+whereas the latter is characterized as knowledge that is incommunicable is <br>
+questionable. The conception of secrecy operative in this distinction is <br>
+more appropriate for medieval Jewish philosophical sources, epitomized by <br>
+the great figure of Maimonides, than it is for the corresponding medieval <br>
+kabbalistic texts. Subsequently, I shall explore in more detail the <br>
+philosophical esotericism espoused by Maimonides, which doubtless <br>
+exerted a major influence on the notion of secrecy operative in the <br>
+prophetic kabbalah of Abraham Abulafia and his disciples.5 What is <br>
+essential to repeat at this juncture is that Scholem’s depiction of esoteric <br>
+knowledge is far closer in spirit to the viewpoint articulated in medieval <br>
+Jewish philosophy, which is centered on the notion of a secret that <br>
+potentially can be communicated but whose communication is withheld <br>
+from those who do not possess the requisite intellectual and moral <br>
+perfection to comprehend it.</p><p>Consider Scholem’s observation that Jewish mysticism is a “secret <br>
+doctrine” in a “double sense”, for, on the one hand, “it treats of the most <br>
+deeply hidden and fundamental matters of human life” and, on the other, “it <br>
+is confined to a small élite of the chosen who impart the knowledge to their <br>
+disciples”.6 Scholem clearly recognized that the secrets expounded by the <br>
+Kabbalists involved the deepest mysteries of our existence, but one gets the <br>
+impression that what is really secretive about those secrets from Scholem’s <br>
+vantage point is the fact that their dissemination is restricted. Scholem is <br>
+quick to note that in certain historical periods one finds an orientation in <br>
+kabbalistic literature to have a manifest impact on Jewish society. Still, this <br>
+impact rarely impinged upon the fact that the innermost gnosis was limited <br>
+to the initiates who are always few in number. The double sense of the term <br>
+collapses into a single sense, for the understanding of the “most deeply</p><p>4 G. Scholem, Kabbalah (Jerusalem, 1974), p. 4.<br>
+5 Altmann, “Maimonides’ Attitude,” pp. 201, 203, 207-209. For other references, </p><p>see below, n. 239.<br>
+6 G. Scholem, Major Trends in Jewish Mysticism (New York, 1954), p. 21.</p><p>12 Abraham Abulafia</p><p>hidden and fundamental matters of human life” is limited to the “small élite <br>
+of the chosen who impart the knowledge to their disciples”.</p><p>The issue of secrecy as delineated in this manner resonates, moreover, <br>
+with the understanding of esotericism proffered in the formative rabbinic <br>
+literature, which is also invariably related to the limits imposed on publicly <br>
+disseminating knowledge of certain subjects that were deemed best <br>
+restricted to a limited audience.7 The very notion of “mysteries of Torah” <br>
+(sitrei torah or razei torah), a highly significant albeit infrequently <br>
+mentioned motif in classical rabbinic sources,8 appears to be linked to the</p><p>7 See M. N. A. Bockmuehl, Revelation and Mystery in Ancient Judaism and <br>
+Pauline Christianity (Tübingen, 1990), p. 122. Regarding the adoption on the part of <br>
+Maimonides of the rabbinic elitist principle of select transmission of nonmystical <br>
+secrets, see Altmann, “Maimonides’ Attitude,” pp. 203-204. On the influence of both <br>
+philosophical esotericism (indebted to Greek and Arabic sources) and rabbinic <br>
+esotericism on Maimonides, see S. Klein-Braslavy, King Solomon and the <br>
+Philosophical Esotericism in the Thought o f Maimonides (Jerusalem, 1996), pp. 15-105 <br>
+(in Hebrew).</p><p>8 Mishnah, ’Avot 6:1; Midrash Wayyikra&#x27; Rabbah, edited by M. Margulies (New <br>
+York and Jerusalem, 1993), 3:7, p. 74; Babylonian Talmud, Pesahim 119a; Qiddushin <br>
+10b (in that context the reading is hadrei torah, “chambers of Torah,” rather than sitrei <br>
+torah, “secrets of Torah;” on the use of this expression, cf. Palestinian Talmud, Ketubot <br>
+5:4 [ed. Venice, 29d]; Tosefta, Ketubot 5:1; Siphre ad Numeros, edited by H. S. <br>
+Horovitz [Leipzig, 1917], 117, p. 137); Hagigah 13a; Shir ha-Shirim Rabbah 1:2. <br>
+Mention should also be made of the expression sodah shel torah, the “secret of Torah,” <br>
+in Shir ha-Shirim Rabbah 1:8, where it is employed to refer to the figurative or <br>
+non-literal sense of Scripture derived through an apparently non-mystical, exoteric <br>
+method of exegesis. For a comprehensive philological analysis of the relevant rabbinic <br>
+texts that espouse a form of secrecy, see G. A. Wewers, Geheimnis und Geheimhaitug <br>
+im rabbinischen Judentum (Berlin and New York, 1975); and the briefer but equally <br>
+insightful discussion in Bockmuehl, Revelation and Mystery, pp. 115-123. On the <br>
+rabbinic notion of transmitting a secretive matter through a whisper, see Midrash <br>
+Bere&#x27;shit Rabba’, edited by J. Theodor and Ch. Albeck (Jerusalem, 1965), pp. 19-20, <br>
+and the many parallel sources mentioned on p. 19 n. 10; Midrash Wayyikra’ Rabbah, <br>
+31:7, p. 726; Midrash Tehillim, edited by S. Buber (Vilna, 1891), 104:4, p. 440; <br>
+Midrash Tanhuma’, edited by S. Buber (Vilna, 1885), Bere’shit, 10, p. 6; Pesikta’ <br>
+de-Rav Kahana’, edited by B. Mandelbaum (New York, 1962), 21:5, p. 324; <br>
+Babylonian Talmud, Hagigah 14a. See G. Scholem, Jewish Gnosticism, Merkabah <br>
+Mysticism, and Talmudic Tradition (New York, 1965), p. 58; A. Altmann, Studies in <br>
+Religious Philosophy and Mysticism (Ithaca, 1969), pp. 128-139. See the interesting <br>
+comment on this rabbinic theme in Nathan ben Yehiel, Aruch Completum, edited by A. <br>
+Kohut, 5:34, s.v. lahash: “The Torah was given in secrecy because of Satan.” In</p><p>Abraham Abulafia’s Hermeneutic 13</p><p>intentional hiding of information, which clearly sets apart those who know <br>
+the secret from those who do not; the power that ensues from knowing the <br>
+secret or the concomitant weakness that derives from the lack of such <br>
+knowledge are thus factors in establishing social boundaries.9 One talmudic <br>
+passage is particularly noteworthy: The words we-limekhaseh ‘atiq in Isa. <br>
+23:18 are interpreted as a reference to one who conceals the secrets of <br>
+Torah that the Ancient of Days ( ‘atiqyomin) concealed.10 * Hiding the secret, <br>
+therefore, is a form of imitatio dei, a notion that is confirmed by the <br>
+appellation hakham ha-razim, the one “wise in the secrets,” applied to God, <br>
+which is preserved in a liturgical formula in rabbinic literature.&quot; To hide <br>
+the secrets from those unworthy to receive them is a noble form of behavior <br>
+that bestows upon the individual a divine quality.12 With respect to this <br>
+matter, then, rabbinic and philosophic esotericism converge even if in <br>
+content there is a substantial difference between the two modes of thinking: <br>
+The secret potentially can be articulated, but it is not due to either the <br>
+intellectual or the moral limitations of the recipients.</p><p>It is surely no small irony that Scholem’s own taxonomy of esotericism <br>
+in the history of kabbalah is indebted to this rabbinic conception, which was <br>
+reinscribed in the medieval philosophical literature. With all of his efforts, <br>
+on the one hand, to contrast kabbalistic spirituality and rabbinic piety on the</p><p>emulation of the Sinaitic event, words of Torah in general (and not only secrets) must be <br>
+given in a whisper.</p><p>9 The point is well made in S. Bok, Secrets: On the Ethics o f Concealment and <br>
+Revelation (New York, 1983), pp. 5-7, 19-20, 34, 105-107, 281-282. For a recent <br>
+analysis o f esotericism from the vantage point of discursive strategy, which involves the <br>
+issue of social power and authority, rather than that of symbolic content, see H. Urban, <br>
+“The Torment of Secrecy: Ethical and Epistemological Problems in the Study of <br>
+Esoteric Traditions,” History o f Religions 37 (1998): 209-248.</p><p>10 Babylonian Talmud, Pesahim 119a.<br>
+&quot; Tosefta &#x27;, Berakhot 7:2; Palestinian Talmud, Berakhot 9:1 (12c); Babylonian </p><p>Talmud, Berakhot 58a; Bemidbar Rabbah 21.2. The expression hakham ha-razim is <br>
+applied to God as well in some of the Hekhalot texts. See Synopse zur <br>
+Hekhalot-Literatur, edited by P. Schäfer with M. Schlüter and H. G. von Mutius <br>
+(Tübingen, 1981), §§ 237, 268, 277, 310, 321, 336, 512, 676, 687, 820. For a <br>
+comprehensive analysis of these passages, see M. Schlüter, “The Eulogy Hakham <br>
+ha-Razim we- &#x27;Adon ha-Setarim in Hekhalot Literature,” Jerusalem Studies in Jewish <br>
+Thought 6:1-2 (1987): 95-115 (English section).</p><p>12 The rabbinic association of God and secrecy has its biblical precedent. Perhaps <br>
+the most important verse with respect to this matter is Prov. 25:1 where the glory of <br>
+God, in contrast to the glory of mortal kings, is to keep things hidden.</p><p>14 Abraham Abulafia</p><p>basis that the former represents a mythical reconfiguration of the <br>
+emotionless and demythicized legalism of the latter,13 and, on the other, to <br>
+distinguish between the allegorical approach to mysteries of the Torah in <br>
+the medieval Jewish philosophical literature and the symbolic approach in <br>
+the corresponding kabbalistic material,14 his own understanding of <br>
+esotericism in the history of kabbalah as it was expressed in the aforecited <br>
+passages is informed in great measure by the rabbinic-philosophic <br>
+standpoint.151 would argue, by contrast, that the distinctive view of secrecy <br>
+that emerges from kabbalistic sources is that the inability to communicate</p><p>13 Scholem’s presentation of rabbinic material and its relationship to Jewish <br>
+mysticism, in general, and to kabbalah, in particular, is a very complex issue that cannot <br>
+be dealt with adequately in this footnote. Let me simply state that Scholem equivocates <br>
+on this question, sometimes speaking of a very sharp contrast between the two and other <br>
+times presenting a more fluid and ambivalent picture even entertaining the idea that <br>
+preserved in rabbinic texts are fragments of a “theosophic aggadah” of a gnostic-mythic <br>
+nature. See Scholem, Major Trends, pp. 22-23, 29-32, 35; idem, On the Kabbalah and <br>
+Its Symbolism, translated by R. Manheim (New York, 1965), pp. 94-95, 104-105, <br>
+120-121, 132-133; idem, Origins o f the Kabbalah, translated by A. Arkush and edited <br>
+by R. J. Zwi Werblowsky (Princeton, 1987), pp. 82, 86-97, 123, 197, 234, 238; idem, <br>
+On the Mystical Shape o f the Godhead: Basic Concepts in the Kabbalah, translated by <br>
+J. Neugroschel and edited by J. Chipman (New York, 1991), pp. 158, 170-171; idem, <br>
+On the Possibility o f  Jewish Mysticism in Our Time and Other Essays, edited with an <br>
+introduction by A. Shapira, translated by J. Chipman (Philadelphia and Jerusalem, <br>
+1997), pp. 122-123, 138-139. For a different presentation of Scholem, see M. Idel, <br>
+Kabbalah: New Perspectives (New Haven and London, 1988), pp. 156-157; idem, <br>
+“Rabbinism Versus Kabbalism: On G. Scholem’s Phenomenology of Judaism,” Modern <br>
+Judaism 11 (1991): 281-296; idem, “Subversive Katalysatoren: Gnosis und <br>
+Messianismus in Gershom Scholems Verständnis der jüdischen Mystik,” Gershom <br>
+Scholem: Zwischen den Disziplinen, edited by P. Schäfer and G. Smith (Frankfurt am <br>
+Main, 1995), pp. 80-121, esp. 86-90. Idel and a number o f other scholars have <br>
+independently emphasized the mythical component of rabbinic sources in a manner that <br>
+narrows the conceptual and semiotic gap separating classical rabbinism and medieval <br>
+kabbalism. For some of the pertinent references, see J. L. Rubenstein, “From Mythic <br>
+Motifs to Sustained Myth: The Revision of Rabbinic Traditions in Medieval <br>
+Midrashim,” Harvard Theological Review 89 (1996): 132 n. 4.</p><p>14 Major Trends, pp. 25-28.<br>
+15 The linkage of the rabbinic approach and that of medieval philosophy is not </p><p>uncommon in Scholem’s thinking. See, for instance, On the Kabbalah, p. 88, where <br>
+Scholem argues that the tendency of the “classical Jewish tradition,“ which is traced <br>
+back to the “ethical monotheism” of the Prophets, to “liquidate myth as a central <br>
+spiritual power” is “accentuated by the rationalist thinking of medieval Rabbinical <br>
+Judaism.”</p><p>Abraham Abulafia’s Hermeneutic 15</p><p>the secret is not due simply to the unworthiness of a particular recipient, but <br>
+it is associated rather with the inherent ineffability of the truth that must be <br>
+kept secret. This is not to suggest that kabbalists through the ages have not <br>
+also embraced the rhetoric of rabbinic esotericism based on the <br>
+presumption that secrets must be withheld from those unworthy to receive <br>
+them. The hermeneutic of esotericism displayed in many kabbalistic <br>
+sources does indeed consistently attest to this elitist posture, but it certainly <br>
+goes beyond it as well. The concealment of the secret is dialectically related <br>
+to its disclosure. Simply put, the utterance of the mystery is possible <br>
+because of the inherent impossibility of its being uttered. Even for the <br>
+adept, who demonstrates unequivocally that he deserves to be a recipient of <br>
+the esoteric tradition, there is something of the secret that remains in the <br>
+very act of transmission. The secret has an ontological referent that is <br>
+separate from the phenomenal realm and thus transcends the limits of <br>
+human understanding and modes of conventional discourse.16 As an <br>
+illustration of the point let me mention a secret that many scholars have <br>
+signaled as one of the characteristic doctrines of medieval kabbalah, the sod <br>
+du-parsufin, the mystery of the androgyne in the Godhead. To receive the <br>
+secret about the androgynous nature of the divine is not to solve the <br>
+problem of the mystery; on the contrary, this gnosis is precisely what opens <br>
+the mystery to its deeper depths, for what is it to say that the oneness of the <br>
+God of Judaism is predicated on the comprehension of and experiential <br>
+participation in the sacred union between the King and the Matrona, the <br>
+bridegroom and the bride? From the one example we may generalize: In <br>
+kabbalistic texts, apprehension of the secret does not resolve the apparent <br>
+conflict between external and internal meaning, peshaf and sod, which <br>
+correspond respectively to the poles of revelation and reason, but it forges</p><p>16 The idea of separateness as essential to the nature of the secret is explored rather <br>
+deftly by P. Boutang, Ontologie du Secret (Paris, 1973). See also G. L. Bruns, <br>
+Inventions: Writing, Textuality, and Understanding in Literary History (New Haven and <br>
+London, 1982), pp. 17-43. The distinction I have made is expressed by K. W. Bolle, <br>
+“Secrecy in Religion,” in Secrecy in Religions, edited by K. W. Bolle (Leiden, 1987), <br>
+pp. 11-24, as the difference between actual mysteries and the social concealment of <br>
+information. In my analysis, the former depicts the kabbalistic understanding of secrecy <br>
+as opposed to the latter, which accounts for the philosophic approach, although I readily <br>
+admit that the latter is sometimes appropriated by kabbalists as well. The typological <br>
+distinction cannot be applied in an inflexible manner.</p><p>16 Abraham Abulafia</p><p>the paradoxical awareness that the external veil and the internal face are <br>
+identical because they are different.17 18</p><p>When this paradox is fully comprehended, then even the distinction <br>
+between speech and silence is transcended. That is, the esoteric nature of <br>
+the secret is predicated on the ultimate ineffability to which the secret <br>
+refers, but the ineffability itself is the measure of what is spoken. That the <br>
+kabbalists bestow a positive valence on language as the medium by which <br>
+the enlightened mystic can participate in the creative process (especially <br>
+through scriptural exegesis) does not mean that they oppose in principle the <br>
+restraint on speech that is often associated with the strict code of <br>
+esotericism.&#x27;* On the contrary, it is precisely the affirmation of language as <br>
+inherently symbolic that facilitates their acceptance of that which inevitably <br>
+exceeds the boundary of language. The phenomenon to which I refer has <br>
+been expressed by Michel de Certeau in his telling reference to the “split <br>
+structure” of mystical language by which he intends that the “only way to <br>
+establish a ‘symbolic’ expression is to separate two terms that are <br>
+necessary, but contrary to each other.” From that perspective mystical <br>
+speech is always a “manifestation of a cut,” and consequently the ineffable <br>
+is “not so much an object of discourse as a marker of the status of <br>
+language.”19</p><p>I am prepared, therefore, to grant Scholem’s identification of <br>
+incommunicability as a distinguishing feature of the mystical phenomenon, <br>
+a quality that a host of other scholars have marked as typical of mysticism,20</p><p>17 See E. R. Wolfson, “Beautiful Maiden Without Eyes: Peshat and Sod in Zoharic <br>
+Hermeneutics,” in The Midrashic Imagination: Jewish Exegesis, Thought and History, <br>
+edited by M. Fishbane (Albany, 1993), pp. 155-203; D. Matt, ‘“New-Ancient Words’: <br>
+The Aura of Secrecy in the Zohar,” in Gershom Scholem &#x27;s Major Trends in Jewish <br>
+Mysticism, 50 Years After: Proceedings o f the Sixth International Conference on the <br>
+History o f Jewish Mysticism, edited by J. Dan and P. Schäfer (Tübingen, 1993), pp. <br>
+200-206.</p><p>18 Such an argument is made by Y. Liebes, “Zohar and Eros,” Alpayyim 9 (1994): <br>
+71-72 (in Hebrew).</p><p>19 M. de Certeau, “History and Mysticism,” translated by A. Goldhammer, in <br>
+Histories: French Constructions o f the Past, edited by J. Revel and L. Hunt (New York, <br>
+1995), p. 443.</p><p>20 In many of the classical treatments of mysticism, the criterion of ineffability has <br>
+been singled out as one of the distinguishing phenomenological marks. For example, see <br>
+W. James, The Varieties o f Religious Experience: A Study in Human Nature (New <br>
+York, 1902), p. 371; E. Underhill, Mysticism: The Development o f Humankind’s <br>
+Spiritual Consciousness (London, 1911), pp. 79-80. For some more recent analyses of</p><p>Abraham Abulafia’s Hermeneutic 17</p><p>but I cannot accept his distinction between mysticism and esotericism as <br>
+these terms apply specifically to the kabbalistio material, for in this case <br>
+esotericism, too, is based on the notion of truth that can only be articulated <br>
+in its utter ineffability. The secret cannot be fully disclosed because it is in <br>
+the nature of the secret to express that which cannot be expressed (indeed, <br>
+even my expressipn of the inexpressibility of the secret is not adequately <br>
+expressed). The distinguishing characteristic that Scholem applied to <br>
+mysticism applies equally well to esotericism.</p><p>As it happens, on occasion Scholem himself acknowledged this fact and <br>
+thus he merged the two together into a singular entity. For instance, in the <br>
+essay he wrote for a volume honoring Mircea Eliade,21 he spoke of the <br>
+“Judaic esoteric teachings or secret doctrine, regardless of whether we want <br>
+to call it Jewish Gnosis or Mysticism, as it is expressed in the literature of</p><p>this phenomenon, see S. T. Katz, “Mystical Speech and Mystical Meaning,” in <br>
+Mysticism and Language, edited by S. T. Katz (New York and Oxford, 1992), pp. 3-41; <br>
+B. Krishna, ’Mysticism and Ineffability: Some Issues of Logic and Language’, <br>
+Mysticism and Language, pp. 143-157; B.-A. Scharfstein, Ineffability: The Failure o f  <br>
+Words in Philosophy and Religion (Albany, 1993); M. A. Sells, Mystical Languages o f  <br>
+Unsaying (Chicago and London, 1994); G. Kalamaras, Reclaiming the Tacit Dimension: <br>
+Symbolic Form in the Rhetoric o f Silence (Albany, 1994).</p><p>21 It is hardly coincidental that in a collection of studies honoring Eliade Scholem <br>
+decided to articulate his position in this manner, for Eliade himself placed great <br>
+emphasis on the notion of secrecy in his understanding of the religious phenomenon in <br>
+general. For example, see M. Eliade, Journal 11, 1957-1969, translated by F. H. <br>
+Johnson, Jr. (Chicago and London, 1989), p. 268 (entry of 1 October 1965): “When <br>
+something manifests itself (hierophany), at the same time something ’occults’ itself, <br>
+becomes cryptic. Therein is the true dialectic of the sacred: by the mere fact of showing <br>
+itself, the sacred hides itself We can never claim that we definitively understand a <br>
+religious phenomenon: something -  perhaps even the essential -  will be understood by <br>
+us later, or by others immediately” (author’s emphasis). On the distinction between a <br>
+“cryptic” and “clear” hierophany, see M. Eliade, Patterns in Comparative Religion, <br>
+translated by R. Sheed (New York, 1958), pp. 8-9. On the paradoxical coming-together <br>
+of the sacred and the profane underlying each hierophany, which entails the <br>
+concealment of the former in the disclosure of the latter, see ibid., pp. 29-30. For an <br>
+explication and adaptation of Eliade’s view, see W. L. Brenneman, Jr. and S. O. Yarian, <br>
+in association with A. M. Olson, The Seeing Eye: Hermeneutical Phenomenology in the <br>
+Study o f Religion (University Park and London, 1982), pp. 8-9, 59-60,165-166; see also <br>
+B. S. Rennie, Reconstructing Eliade: Making Sense o f Religion, foreword by M. L. <br>
+Ricketts (Albany, 1996), pp. 7-40. Scholem similarly embraces the dialectic of <br>
+disclosure and concealment in his understanding of the religious phenomenon.</p><p>18 Abraham Abulafia</p><p>the Kabbalists.”22 With this formulation Scholem seems much closer to the <br>
+mark, for in the history of classical kabbalah, as we may ascertain from the <br>
+written record of teachings that may have been transmitted originally in an <br>
+oral manner, the aspect of mysticism must be contextualized in the <br>
+framework of secrecy, far the ultimate datum of mystical experience is the <br>
+secret.23 Philologically, the words for secret, primarily the Hebrew sod and <br>
+its Aramaic equivalent raza ’, are employed by kabbalists in an ontological <br>
+sense to refer to the hidden aspect of God’s being that is manifest in the <br>
+theosophic structure of the sefirotic emanations.24 Even the exegetical <br>
+application of these terms to the esoteric sense of a scriptural passage has as <br>
+its underpinning the ontological implication. That is, the inner meaning of <br>
+the verse relates to the unveiling of the potencies of the divine,25 but the</p><p>22 G. Scholem, “On Sin and Punishment: Some Remarks Concerning Biblical and <br>
+Rabbinical Ethics,” in Myths and Symbols: Studies in Honor o f Mircea Eliade, edited <br>
+by J. M. Kitagawa and Ch. H. Long, with the collaboration of J. C. Brauer and M. G. S. <br>
+Hodgson (Chicago and London, 1969), p. 163. This point has been expressed as well by <br>
+Idel, Kabbalah: New Perspectives, p. 253: “Kabbalah is by definition an esoteric body <br>
+of speculation; whether in its theosophical-theurgical explanation of the rationales for <br>
+the commandments, or in the ecstatic trend dealing with techniques o f using divine <br>
+names, esotericism is deeply built into this lore.”</p><p>23 The point was made by A. K. Coomaraswamy, Figures o f Speech and Figures o f  <br>
+Thought (London, 1946), p. 169: “This has too often been misinterpreted to mean that <br>
+something is deliberately withheld from those who ask for a sort of universal <br>
+compulsory education in the mysteries, supposing that the mystery is nothing but a <br>
+communicable, although hitherto uncommunicated, secret.... So far from this, it is of <br>
+the essence of a mystery ... that it cannot be communicated, but only realized; all that <br>
+can be communicated are its external supports or symbolic expressions.” The emphasis <br>
+on the realization of the mystery, as opposed to its mere symbolic expression, is helpful <br>
+for grasping the intent of the notion of the secret operative in kabbalistic thought, for the <br>
+secret relates to a form of ritual enactment reminiscent of the ancient mysteries.</p><p>24 The technical theosophic connotation of the word sod is already apparent in one <br>
+passage in Sefer ha-Bahir. See D. Abrams, The Book Bahir: An Edition Based on the <br>
+Earliest Manuscripts (Los Angeles, 1994), § 14, p. 125. Needless to say, in the literary <br>
+evolution of the medieval kabbalistic material, this usage is considerably augmented.</p><p>25 In Kabbalah, p. 4, Scholem notes that the kabbalah is characterized by two main <br>
+elements: the “dual and apparently contradictory experience o f the self-concealing and <br>
+self-revealing God,” which “determines the essential sphere of mysticism,” and <br>
+theosophy, “which seeks to reveal the mysteries of the hidden life of God and the <br>
+relationship between the divine life on the one hand and the life of man and creation on <br>
+the other.” From my vantage point both parts of Scholem’s remark are problematic. <br>
+Firstly, in the history of kabbalah, there is no justification to speak of the experience of</p><p>Abraham Abulafia’s Hermeneutic 19</p><p>infinite Godhead remains concealed in the very act of self-manifestation. <br>
+The secret, therefore, is not merely cognitive or epistemological in nature; it <br>
+is decidedly ontological insofar as it signifies an aspect of the divine that is <br>
+most appropriately referred to in paradoxical terms as the disclosed <br>
+concealment. Ontological, in my understanding, implies an experiential <br>
+component, for access to being comes by way of intimate experience, which <br>
+in the case of the medieval kabbalist involved primarily contemplative <br>
+study, prayer, and fulfillment of traditional rituals. These are the major <br>
+paths that lead the kabbalist to the goal of devequt, communion with the <br>
+sefirotic potencies of the divine.26</p><p>The secretive nature of that which is deemed a secret is thus allied with <br>
+the potential experience of that grade of being to which the secret is related. <br>
+Such a conclusion is inevitable if one begins, as one must, from the premise <br>
+that God and the Torah are ontologically equivalent, a principle that is often <br>
+expressed as well in terms of the mystical identification of the Torah as the <br>
+Tetragrammaton.27 To gain knowledge of the mystery is an act of ultimate</p><p>the self-concealing and self-revealing God as contradictory; on the contrary, the <br>
+distinctive phenomenological pattern of the experience entails a paradoxical <br>
+coincidence of opposites, for the very God who is revealed is the concealed God; <br>
+indeed, the full force of the dialectic is that the manifestation preserves the concealment. * <br>
+The recognition of this point underlies much of my previous work on the nature of <br>
+mystical experience in the kabbalistic sources, including, most especially, my <br>
+monographic study Through a Speculum That Shines: Vision and Imagination in <br>
+Medieval Jewish Mysticism (Princeton, 1994); see also studies referred to below in n. <br>
+29. Secondly, I see no justification to separate the mystical and the theosophical <br>
+elements in the manner that Scholem has done. For a more extensive discussion of this <br>
+aspect of Scholem’s interpretative stance, see Through a Speculum That Shines, pp. <br>
+278-280.</p><p>26 See G. Scholem, The Messianic Idea in Judaism and Other Essays on Jewish <br>
+Spirituality (New York, 1971), pp. 203-227; Idel, Kabbalah: New Perspectives, pp. <br>
+35-58.</p><p>27 Regarding this foundational concept in kabbalistic thinking, see Scholem, On the <br>
+Kabbalah, pp. 37-44; idem, Messianic Idea, pp. 293-294; idem, “The Name of God and <br>
+the Linguistic Theory of the Kabbala,” Diogenes 79 (1972): 77-80, and Diogenes 80 <br>
+(1972): 178-179; I. Tishby, The Wisdom o f the Zohar, translated by D. Goldstein <br>
+(Oxford, 1989), pp. 283-284,292-295, 1079-1082; and M. Idel, “The Concept of Torah <br>
+in Hekhalot Literature and Its Metamorphosis in Kabbalah,” Jerusalem Studies in <br>
+Jewish Thought 1 (1981): 23-84, esp. 49-58 (in Hebrew). On a possible source for this <br>
+motif in Ashkenazi esotericism, see E. R. Wolfson, “The Mystical Significance of Torah <br>
+Study in German Pietism,” Jewish Quarterly Review 84 (1993): 43-77, esp. 50-62.</p><p>20 Abraham Abulafia</p><p>empowerment, for through such an acquisition one contemplatively <br>
+visualizes the imaginai form of God, which is rendered possible on the <br>
+basis of the assimilation of the soul into the divine nature through the <br>
+hermeneutical penetration to the sign that is hid beneath the veil of the <br>
+text.2* The sefirot are the luminous emanations that constitute the multiple <br>
+faces of the singular and unique faceless Godhead, which are disclosed in <br>
+the letters of the Torah contemplated by the enlightened mystic (maskit) <br>
+through the imaginative faculty. From this vantage point the interpretation <br>
+of the hidden secret is a revelatory moment in which the ancient word is <br>
+heard and seen anew.28 29 Nothing is more important for understanding the <br>
+mentality of the kabbalist than the emphasis on esotericism cast in this way. <br>
+Theosophical symbols and mystical rituals together (any effort to treat them <br>
+separately bespeaks a fundamental lack of understanding of the kabbalistic <br>
+orientation) lend expression to this inexpressible secret that reflects the <br>
+dialectical manifestation of the concealed aspect of the divine. In the final <br>
+analysis, such a conception underlies Scholem’s understanding of the <br>
+symbol as that which “signifies nothing and communicates nothing, but</p><p>28 On the correlation of interpretation and the notion of the secretive meaning latent <br>
+in the text, see F. Kermode, The Genesis o f Secrecy: On the Interpretation o f Narrative <br>
+(Cambridge, Mass, and London, 1979). I am not convinced, however, that this is the <br>
+implicit sense of the rabbinic midrashic approach, as Kermode suggests (p. x). See also <br>
+the reservation regarding this interpretation in D. Stem, Parables in Midrash: Narrative <br>
+and Exegesis in Rabbinic Literature (Cambridge, Mass, and London, 1991), pp. 49-50.</p><p>29 See E. R. Wolfson, “The Hermeneutics of Visionary Experience: Revelation and <br>
+Interpretation in the Zohar,” Religion 18 (1988): 311-345, and the greatly expanded <br>
+version of that essay in Through a Speculum That Shines, pp. 326-392; idem, “Forms of <br>
+Visionary Ascent as Ecstatic Experience in Zoharic Literature,” in Gershom Scholem ’s <br>
+Major Trends in Jewish Mysticism, 50 Years After, edited by J. Dan and P. Schäfer <br>
+(Tübingen, 1993), pp. 209-235. On the revelatory nature of kabbalistic exegesis, see <br>
+also M. Idel, “Infinities of Torah in Kabbalah,” in Midrash and Literature, edited by G. <br>
+H. Hartman and S. Budick (New Haven and London, 1986), p. 144; idem. Kabbalah: <br>
+New Perspectives, pp. 234-249; Matt, ‘“New-Ancient Words;” M. Hellner-Eshed, ‘“ A <br>
+River Issues Forth From Eden’: The Language of Mystical Invocation in the Zohar,&quot; <br>
+Kabbalah: Journal fo r  the Study o f Jewish Mystical Texts 2 (1997): 287-310 (in <br>
+Hebrew). On the prophetic status of the zoharic circle, see the words of C. Mopsik in <br>
+the introduction to his critical edition of R. Moses de Leon ’s Sefer Sheqel ha-Qodesh <br>
+(Los Angeles, 1996), pp. 6-8 (in Hebrew); idem, “Moïse de Leôn, le Sheqel ha-Qodesh <br>
+et la rédaction du Zohar: Une réponse à Yehuda Liebes,” Kabbalah: Journal fo r  the <br>
+Study o f Jewish Mystical Texts 3 (1998): 216-217.</p><p>Abraham Abulafia’s Hermeneutic 21</p><p>makes something transparent which is beyond all expression.”30 Elsewhere <br>
+Scholem describes the “secret dimension of language” in the following <br>
+way: “The mystic discovers in language ... something pertaining to its <br>
+structure which is not adjusted to a communication of what is <br>
+communicable, but rather -  and all symbolism is founded on this paradox -  <br>
+to a communication of what is non-communicable, of that which exists <br>
+within it for which there is no expression; and even if it could be expressed, <br>
+it would in no way have any meaning, or any communicable ‘sense.’”31 The <br>
+“inexpressible mystery” of the Godhead becomes visible in the phenomenal <br>
+reality of creation as well as through the religious acts commanded by the <br>
+Torah.32 The transparency of the symbol to which Scholem consistently <br>
+refers in his work relates to the paradoxical necessity of expressing the <br>
+inexpressible by means of the self-disclosure of that which is concealed.33 <br>
+The display itself is an act of veiling, for the word is never sufficient to <br>
+express the mystical experience except as that which cannot be expressed.34</p><p>The very notion of an esoteric tradition understood in this manner <br>
+entails that one cannot truly understand, let alone communicate, the <br>
+conception of a tradition that is secretive. In the specific case of kabbalistic <br>
+fraternities, the esotericism cultivated by various groups of Jewish men in <br>
+diverse historical periods and geographical localities has not simply <br>
+involved the hiding of information from those who are outside the relevant <br>
+group. I would certainly acknowledge that an important aspect of secrecy in <br>
+the teaching of the kabbalists is the investiture of power to those who seek</p><p>30 Major Trends, p. 27.<br>
+31 Scholem, “Name of God,” p. 61.<br>
+32 Scholem, op. cit., pp. 62-63, expresses this matter by stating that creation and </p><p>revelation “are both principally and essentially auto-representations of God himself, in <br>
+which, as a consequence and in accordance with the infinite nature of the divinity, <br>
+certain instants of the divine are introduced, which can only be communicated in terms <br>
+of symbols in the finite and determined realm of all that is created. A directly associated <br>
+factor with this is the further conception that language is the essence of the universe.”</p><p>33 See, for example, Scholem, “Name of God,” p. 165: “Everything is transparent, <br>
+and in this state of transparency everything takes on a symbolic character.” See D. Biale, <br>
+Gershom Scholem: Kabbalah and Counter-History (Cambridge, Mass, and London, <br>
+1979), pp. 90-92.</p><p>34 A similar paradox is prominent in medieval Sufism, expressed particularly by the <br>
+identity of the face and the veil, the act of concealing and that of self-disclosure. See A. <br>
+Schimmel, “Secrecy in Sufism,” in Secrecy in Religions, pp. 81-102; W. C. Chittick, <br>
+The Self-Disclosure o f God: Principles o f Ibn al-&#x27;Arabi&#x27;s Cosmology (Albany, 1998), <br>
+pp. 104-108, 120-121, 128-132.</p><p>22 Abraham Abulafia</p><p>to disseminate the secrets they possess, but the dissemination invariably <br>
+occurs in such a way that the hidden nature of the secret is preserved. To <br>
+state the obvious, a secret presupposes the concomitant transmission and <br>
+withholding on the part of the one in possession of the secret. If I possess a <br>
+secret and transmit it to no one, the secret has no relevance.35 By the same <br>
+token, if I readily divulge that secret without discretion, the secrecy of that <br>
+secret is rendered ineffectual. What empowers me as keeper of a secret is <br>
+not only that I transmit it to some and* hot to others, but that in the very <br>
+transmission I maintain the secret, holding back in the advancing forward. <br>
+From that vantage point the secret is a secret only to the extent that it is <br>
+concealed in its disclosure, but it may be concealed in its disclosure only if <br>
+it is disclosed in its concealment.36</p><p>The secret as such cannot be transmitted, for in the act of transmission it <br>
+is betrayed. To be itself the secret must be withheld; it is precisely in the <br>
+holding back that the power of disclosure lies. The more one attempts to <br>
+express the secret the further one is from it. Something of the secret endures <br>
+even as the secret is disclosed, and thus in the most exact sense there can be <br>
+no tradition of secrecy. The secret that the secret cannot be transmitted, <br>
+which may be referred to as the apophatic secret, plays a part in securing <br>
+hope in the expectation of a genuinely open future, a hope that indeed may <br>
+lie at the core of the apocalyptic messianism that has informed both <br>
+Judaism and Christianity in varying degrees.37 If, however, the secret that</p><p>35 This obvious point is made by J.-F. Lyotard, The Inhuman: Reflections on Time, <br>
+translated by G. Bennington and R. Bowlby (Stanford, 1991), p. 27: “A secret would <br>
+not be a ‘real’ secret if no-one knew it was a secret.” See ibid., p. 2 0 1 .1 am grateful to <br>
+Guy Matalon, presently a graduate student in the Department of Hebrew and Judaic <br>
+Studies, New York University, for drawing my attention to the remark of Lyotard.</p><p>36 Consider George Simmel’s notion of the triadic structure of secrecy discussed by <br>
+H. G. Kippenberg and G. G. Stroumsa, “Introduction: Secrecy and Its Benefits,” in <br>
+Secrecy and Concealment: Studies in the History o f Mediterranean and Near Eastern <br>
+Religions, edited by H. G. Kippenberg and G. G. Stroumsa (Leiden, 1995), pp. xiii-xiv.</p><p>37 J. D. Caputo, The Prayers and Tears o f Jacques Derrida: Religion without <br>
+Religion (Bloomington and Indianapolis, 1997), pp. 101-112, has argued rather <br>
+persuasively that this sense of a secret is an integral aspect of the deconstructionist <br>
+belief in the future as the tout autre, which may be considered a form of secular <br>
+messianic hope. E. Levinas, Totality and Infinity: An Essay on Exteriority, translated by <br>
+A. Lingis (Pittsburgh, 1969), p. 257, also speaks of the secret appearing without <br>
+appearing, a motif that he connects to the phenomenon of profanation, which is <br>
+characterized by the simultaneity of the clandestine and the exposed. The play of <br>
+concealment and exposure is related, moreover, to the nature of femininity, for the</p><p>Abraham Abulafia’s Hermeneutic 23</p><p>there is no secret were to be revealed, then there would be no secret to <br>
+reveal since there would be nothing to conceal. The logic of esotericism is <br>
+predicated on the dialectical relation that pertains between the secret that is <br>
+disclosed and the secret that is withheld. For a secret to be genuinely <br>
+secretive it cannot be divulged, but if it is not divulged in any manner it is <br>
+hardly a secret.</p><p>The texture of secrecy, which is exemplified in this interweaving pattern <br>
+of revelation and concealment, is poetically captured in the words attributed <br>
+to Simeon ben Yohai in the preamble to the great assembly, ’Idra’ Rabba’, <br>
+the part of the zoharic corpus that sets a dramatic stage for the disclosure of <br>
+the most perplexing mysteries about the Godhead, which have been <br>
+understood by both traditional and contemporary scholars as having an <br>
+implicit messianic dimension.31 <em> </em> <em> </em> <em> </em> * After the members of the fraternity are <br>
+adorned in their proper attire and have entered the place to thresh out the <br>
+mysteries to be revealed by R. Simeon, the master sits down, weeps, and <br>
+utters the words, “Woe if I reveal, and woe if I do not reveal.”39 <br>
+Analogously, in another z<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Please remember to search the user&#x27;s documents if an answer to their question is not contained in the above snippets. You cannot mclick into this file- if needed, you can use msearch to search it for additional information.<br>
+</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Elliot R. Wolfson’s <em>Abraham Abulafia: Kabbalist and Prophet</em> presents a distinctly new picture of Abulafia—one that overturns older stereotypes of him as a purely “ecstatic” or “philosophical” mystic and re-embeds him in the full complexity of thirteenth-century Kabbalah.  Wolfson’s reinterpretation unfolds on several levels:</p><p><hr></p><p><h3><strong>1. A dialectical and paradoxical thinker rather than an “ecstatic rationalist”</strong></h3></p><p>Wolfson portrays Abulafia as <em>a mind that thrives on contradiction</em>—simultaneously rational and antirational, philosophical and mystical.  Instead of reading his inconsistencies as confusion, Wolfson treats them as deliberate:  <br>
+<blockquote>“Where we see clashing polarities, Abulafia saw truth doubling itself in ambiguity … the head is the tail, right is left, the merciful one is the judge”【7†Abraham Abulafia†L2-L3】.  </blockquote></p><p>Abulafia’s mystical logic <em>inverts opposites</em>; his intellect “anchors difficult theological ideas through numerology, letter-transposition, and acrostics.”  This picture diverges sharply from Gershom Scholem’s rational-vs-ecstatic dichotomy.</p><p><hr></p><p><h3><strong>2. Integration of philosophy, theosophy, and prophetic experience</strong></h3></p><p>Wolfson argues that Abulafia’s “prophetic Kabbalah” both <em>appropriates and rejects</em> Maimonidean philosophy and theosophic Kabbalah.  The book stresses his ability to <em>synthesize</em> incompatible systems:  <br>
+<blockquote>“He had no reservations about accepting the ideal of conjunction with the Active Intellect … and yet he affirmed the letter-permutations as a superior means to achieve it.”【7†Abraham Abulafia†L2-L3】</blockquote></p><p>Thus Abulafia becomes a <em>bridge figure</em> who fuses rational speculation, linguistic mysticism, and ecstatic experience rather than a rebel against either camp.</p><p><hr></p><p><h3><strong>3. A hermeneutic of secrecy and disclosure</strong></h3></p><p>In Wolfson’s first essay, secrecy is not merely social restriction but <em>ontological paradox</em>:  <br>
+<blockquote>“The secret is a secret because it relates to the divine name … the disclosure of the secret is predicated on its concealment even from the one to whom it has been disclosed.”【7†Abraham Abulafia†L4-L5】</blockquote></p><p>Abulafia’s esotericism, therefore, differs from Maimonides’ pedagogical secrecy and aligns with the <em>theosophic kabbalists’</em> sense of divine concealment-through-revelation.  This reframes Abulafia’s hermeneutics as a <em>mystical philosophy of language</em>, where revelation and withholding coincide.</p><p><hr></p><p><h3><strong>4. Re-evaluation of his relation to the sefirot</strong></h3></p><p>Wolfson disputes the rigid separation of “ecstatic” from “theosophic” Kabbalah.  He shows that Abulafia uses sefirotic symbolism extensively and interprets the sefirot as <em>states of consciousness corresponding to cosmic intellects</em>:  <br>
+<blockquote>“The sefirot … are the channels by means of which the intellectual overflow is drawn upon the mystic.”【7†Abraham Abulafia†L6-L7】</blockquote></p><p>Abulafia’s “divine wisdom” (<em>hokhmat ha-elohut</em>) thus deserves to be called <em>theosophy</em> as much as prophecy.</p><p><hr></p><p><h3><strong>5. Mystical rationalization and inner theurgy</strong></h3></p><p>In the third essay, Wolfson shows that Abulafia spiritualizes ritual: the commandments become <em>techniques of unification</em> rather than mechanical observances.  Even while rejecting external theurgy, Abulafia proposes an <em>intellectual-psychological theurgy</em>:  <br>
+<blockquote>“The human intellect plays an active role in unifying God through the ten separate intellects as a consequence of the intellectual conjunction.”【7†Abraham Abulafia†L8-L8】</blockquote></p><p>Hence, his “prophetic” Kabbalah is still profoundly <em>theurgic</em>, though internalized.</p><p><hr></p><p><h3><strong>6. Tradition as creative paradox</strong></h3></p><p>Wolfson’s Abulafia exemplifies the Jewish paradox of <em>“new ancient words”</em>—innovation presented as recovered revelation:  <br>
+<blockquote>“What is new is new because it is old, but it is old because it is new.”【7†Abraham Abulafia†L5-L5】</blockquote></p><p>Abulafia thus stands between conservatism and innovation, embodying tradition as continual reinterpretation.</p><p><hr></p><p><h3><strong>In sum</strong></h3></p><p>Wolfson’s <em>new picture</em> transforms Abulafia from a marginal ecstatic into a central <em>hermeneutical mystic</em> whose practice of letter-meditation is a theology of language, embodiment, and paradox.  He becomes:</p><p><ul><li><strong>Philosophically rigorous yet visionary</strong>, not anti-intellectual;  </li><br>
+<li><strong>Deeply indebted to theosophic imagery</strong> rather than opposed to it;  </li><br>
+<li><strong>A theorist of secrecy, language, and embodiment</strong>, anticipating later phenomenological and deconstructive insights;  </li><br>
+<li><strong>A figure of creative synthesis</strong>, uniting prophecy, philosophy, and Kabbalah.</li><br>
+</ul><br>
+Wolfson’s closing wish encapsulates the novelty of this portrayal:  <br>
+<blockquote>“The vision that will appear within this light will not be viewed as a seeing <em>against</em> previous scholarship, but a seeing <em>beyond</em> where we have been hithertofore.”【7†Abraham Abulafia†L8-L8】</blockquote></p>
+  </div>
+</div>
+</div>
+</body>
+</html>

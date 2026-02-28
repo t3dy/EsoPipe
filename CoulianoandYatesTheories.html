@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couliano and Yates&#x27; Theories</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Couliano and Yates&#x27; Theories</h1>
+  <div class="meta">July 15, 2025 07:43 PM &middot; Model: auto &middot; 9 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>summarize the author&#x27;s engagement with the theories of frances yates and his discussion of hypnerotomachia polyphili</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Please remember to search the user&#x27;s documents if an answer to their question is not contained in the above snippets. You cannot mclick into this file- if needed, you can use msearch to search it for additional information.<br>
+</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{<br>
+  &quot;queries&quot;: [<br>
+    &quot;Frances Yates&quot;,<br>
+    &quot;Yates&quot;,<br>
+    &quot;Hypnerotomachia Poliphili&quot;,<br>
+    &quot;discussion of Hypnerotomachia&quot;,<br>
+    &quot;Couliano on Hypnerotomachia Poliphili&quot;<br>
+  ]<br>
+}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+This w i l l to <br>
+distort, first brought to bear on medical matters of the period, subse-<br>
+quently provoked much ribaldry directed against believers i n mystical <br>
+love whose ideas, bereft of sense, are to become synonymous w i t h an <br>
+erotic strategy in wh ich the purely verbal idealization of woman is mere-<br>
+ly an expedient to silence her resistance as quickly as possible. </p><p>The conflict between those two impor tant tradit ions also signifies the <br>
+relative dependence of the one on the other. Erotic myst ic ism becomes <br>
+distinct by contrast to the naturalistic trend, whereas the latter defines <br>
+its positions in controversy, explicit or impl ic i t , w i t h the idealism and <br>
+the intellectualism of the fai thful . </p><p>A th i rd trend, as meek and obscure as the others were famous and <br>
+persistent, almost passed unobserved or was close to being assimilated <br>
+by the two others. Indeed, there can exist phantasms unrelated to a real <br>
+object, but, thanks to the qual i ty of their images, there can be no phan-</p><p>Phantasms at Work 40 </p><p>FIGURE 2. Bacchanalian revels. From Francesco Colonna, Discours du Songe de <br>
+Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, The <br>
+Newberry Library, Chicago. </p><p>tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events. </p><p>Unfortunately, although there are many theoreticians of phantasmic <br>
+Eros, the number of writers who have tried to describe phantasms at <br>
+work is very limited. One of them surely is the respectable monk from <br>
+Treviso, Francesco Colonna, who, having become sacristan of the mon-<br>
+astery of St. John and St. Paul in Padua, died in 1527 at the age of ninety-<br>
+four.39 He is the author of a work almost unique of its kind, the Hyp-<br>
+nerotomachia Poliphili, which, as the author points out in the book&#x27;s ex-<br>
+plicit, had been finished May 1, 1467, but was not published until 1499 <br>
+by Aldo Manuzio; it was paid for by a magistrate of Verona, called <br>
+Leonardo Crasso.40 </p><p>The contents of the Hypnerotomachia tally with the date 1467. Indeed, <br>
+the work is external to the current of ideas circulated by Marsilio Ficino </p><p>41 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 3. ״Two wretched damsels, naked and disheveled.״ From Francesco <br>
+Colonna, Discours du Songe de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy <br>
+of the Wing Foundation, The Newberry Library, Chicago.<br>
+<h1>【1†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events. </p><p>Unfortunately, although there are many theoreticians of phantasmic <br>
+Eros, the number of writers who have tried to describe phantasms at <br>
+work is very limited. One of them surely is the respectable monk from <br>
+Treviso, Francesco Colonna, who, having become sacristan of the mon-<br>
+astery of St. John and St. Paul in Padua, died in 1527 at the age of ninety-<br>
+four.39 He is the author of a work almost unique of its kind, the Hyp-<br>
+nerotomachia Poliphili, which, as the author points out in the book&#x27;s ex-<br>
+plicit, had been finished May 1, 1467, but was not published until 1499 <br>
+by Aldo Manuzio; it was paid for by a magistrate of Verona, called <br>
+Leonardo Crasso.40 </p><p>The contents of the Hypnerotomachia tally with the date 1467. Indeed, <br>
+the work is external to the current of ideas circulated by Marsilio Ficino </p><p>41 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 3. ״Two wretched damsels, naked and disheveled.״ From Francesco <br>
+Colonna, Discours du Songe de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy <br>
+of the Wing Foundation, The Newberry Library, Chicago. </p><p>beginning more or less in 1463.41 From our point of v iew, the fact that i t <br>
+escapes Ficino&#x27;s influence is invaluable. Even when expressing a person-<br>
+al point of v iew on love, wh ich rarely happens, Pico della Mirandola, <br>
+Pietro Bembo, Baldesar Castiglione, Leo the Hebrew, and Melanchthon <br>
+bear the indelible mark of Ficino&#x27;s thought. O n the contrary, Colonna <br>
+(though he, too, treats of the phantasmic Eros) is original and inimitable, <br>
+less in his ideas—a common heritage of the period, of wh ich Ficino is to <br>
+become the systematic organizer—than in the l i terary and didactic quali-<br>
+ty of his work. </p><p>(iv) Phantasms at Work </p><p>Let us make the acquaintance of phantasms. <br>
+Taken literally, the title Hypnerotomachia means a ״ love f ight dur ing </p><p>sleep.״ This leads us to expect that a person dreams of phantasms in-<br>
+volved in an erotic f ight, perhaps his o w n erotic phantasm. That is pre-<br>
+cisely what happens: two phantasms, that of the dreamer—Pol iphi lus— <br>
+and that of the gir l he loves—Polia—are at the center of the scenario. </p><p>The tale is not constructed so as to be easily understood. It is an enigma </p><p>Phantasms at Work 42 </p><p>whose solution is given only at the end. The reader is informed that <br>
+Poliphilus seeks Polia, but does not know w h y or how. Of the 311 pages <br>
+of the Guegan-Kerver edition, the first part takes up 250 whereas the <br>
+second, which provides indispensable explanations, takes up only 60.<br>
+<h1>【2†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Yates&#x27;s undeniable merit is to have integrated Bruno&#x27;s oeuvre into its <br>
+cultural context; for the first time in the history of modern philosophy, Bruno <br>
+was not envisaged as the clumsy, grotesque, and &quot;bacchanalian&quot; precursor of <br>
+modern thinking but as one of the most impressive representatives of Renais-<br>
+sance thought. It is, fundamentally, a question of applying different categories </p><p>Notes to Pages 91-113 236 236 </p><p>and of measuring h im by the standards of another era, and historians of ideas <br>
+can never be sufficiently grateful to Yates for having patiently explained the <br>
+difference. That does not prevent her f rom labeling as ״Hermeticism״ all sorts of <br>
+doctrines of Late Ant iqu i ty of which Hermeticism d id indeed make use but <br>
+wh ich d id not have a ״Hermet ic״ origin. The quotations in the text and in the <br>
+footnotes conform to the editions of Bruno&#x27;s works mentioned at the beginning <br>
+of this footnote. The passage concerning the interrogation of May 30, 1592, is <br>
+reproduced by Gentile, I I , p. 211, no. 1. </p><p>33. These biographical data are indisputable. They are to be found in nearly <br>
+all the works cited in n. 32 above. </p><p>34. J.-R. Charbonnel, L&#x27;Ethique de Giordano Bruno et le deuxième dialogue du Spac-<br>
+cio . . . Contribution à l&#x27;étude des conceptions morales de la Renaissance (Paris, 1919), <br>
+p. 35. </p><p>35. Ibid., p. 276. <br>
+36. Henninger, p. 44. <br>
+37. See Keller&#x27;s observation in Le Soleil à la Renaissance, pp. 63-64. On Digges&#x27;s </p><p>infinite empyrean heaven—an idea that was, at bottom, merely traditional—see <br>
+also Debus, pp. 87-88. </p><p>38. Cf. Keith Thomas, Religion and the Decline of Magic, (Harmondsworth <br>
+[1971], 1978), p. 412. On John Dee in general, see Peter J. French, John Dee: The <br>
+World of an Elizabethan Magus (London, 1972). </p><p>39. Op. it., I, p. 21. <br>
+40. Ibid.; cf. De docta ignorantia, II, pp. 11-12. <br>
+41. Op. cit., I, p. 92. <br>
+42. P. Ramus, De religione Christiana, Frankfurt ed., (1577), pp. 114-15, cited </p><p>by Yates, The Art of Memory, p. 237. <br>
+43. Yates, ibid., pp. 234-35. <br>
+44. Ibid., p. 237. <br>
+45. Ibid., p. 261. <br>
+46. See n. 38 above. <br>
+47. Yates, The Art of Memory, pp. 266 sq. <br>
+48. Quoted by Yates, ibid., p. 278. <br>
+49. G. Perkins Cantabrigensis, Antidicsonus (London, 1584), p. 45, quoted by </p><p>Yates, pp. 274-75. Fundamentally, Perkins was more correct than Yates thinks; <br>
+it is true that with respect to Peter of Ravenna an absolutely inoffensive practice <br>
+is at issue (he believes the image of an old love is particularly suited to being <br>
+recorded by the memory, due to its emotional charge).<br>
+<h1>【3†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+(iv) Phantasms at Work </p><p>Let us make the acquaintance of phantasms. <br>
+Taken literally, the title Hypnerotomachia means a ״ love f ight dur ing </p><p>sleep.״ This leads us to expect that a person dreams of phantasms in-<br>
+volved in an erotic f ight, perhaps his o w n erotic phantasm. That is pre-<br>
+cisely what happens: two phantasms, that of the dreamer—Pol iphi lus— <br>
+and that of the gir l he loves—Polia—are at the center of the scenario. </p><p>The tale is not constructed so as to be easily understood. It is an enigma </p><p>Phantasms at Work 42 </p><p>whose solution is given only at the end. The reader is informed that <br>
+Poliphilus seeks Polia, but does not know w h y or how. Of the 311 pages <br>
+of the Guegan-Kerver edition, the first part takes up 250 whereas the <br>
+second, which provides indispensable explanations, takes up only 60. <br>
+The first part tells of the endless roaming of Poliphilus amid the ruins of <br>
+antiquity, of tr iumphs, emblems and impresae, each w i th its own secret <br>
+meaning. As Yates observed, it could be a matter of mnemotechnics <br>
+escaped f״ rom control and degenerated into w i l d imaginings.42״ In any <br>
+case, such oneirico-archeologico-mnemotechnics, however fascinating, <br>
+w i l l not preoccupy us here. In the end, Poliphilus finds Polia, and the <br>
+lovers plead their case before the heavenly tr ibunal of Venus. The sec-<br>
+ond part, wh ich contains two monologues, is therefore a tale within a tale, <br>
+and the end is destined to complicate the enigma still more: we learn <br>
+that everything that happened was only Poliphilus&#x27;s dream, so that the <br>
+search for Polia and the appeasement of desire were but adventures in <br>
+phantasy.43 </p><p>Neither mystical love nor vulgar love, Poliphilus&#x27;s dream represents <br>
+the trite story of phantasmic desire that finds fulf i l lment. </p><p>The tale is saved f rom platitude and indecency by its phantasmic quali-<br>
+ty: desire, provoked by a phantasm, is appeased by the phantasm, after <br>
+a period of erotico-mnemotechnic tribulations. </p><p>(v) The Depth Psychology of Ficino <br>
+D E S C E N T OF T H E SOUL </p><p>Souls descend into the bodies of the Mi lky Way through the <br>
+constellation of Cancer, enveloping themselves in a celestial <br>
+and luminous veil which they put on to enter terrestrial <br>
+bodies. For nature demands that the very pure soul be united <br>
+w i th the very impure body only through the intermediary of a <br>
+pure veil, which, being less pure than the soul and purer than <br>
+the body, is considered by the Platonists to be a very conve-<br>
+nient means of uni t ing the soul w i th the terrestrial body. It is <br>
+due to that descent that the souls and bodies of the Planets <br>
+confirm and reinforce, i n our Souls and our bodies respec-<br>
+tively, the seven original gifts bestowed upon us by God. The <br>
+same function is performed by the [seven] categories of de-<br>
+mons, intermediaries between the celestial gods and men. The <br>
+gift of contemplation is strengthened by Saturn by means of <br>
+the Saturnian Demons.<br>
+<h1>【4†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+For all parties, the prel iminaries of <br>
+desire consist i n setting u p a phantasm w i t h i n the subject. For some, <br>
+this phantasm w i l l have the capacity to awaken their allayed desire, to <br>
+propel and accompany them on their t r ip th rough the intel l igential cos-<br>
+mos. This w i l l become a heroic passion ending in an ecstatic fusion of <br>
+the hunter and the object of his hunt—accord ing to an image employed <br>
+by Ficino and later revived by Giordano Bruno. For others, the phan-<br>
+tasm w i l l only point to a painfu l and urgent need for a physical release <br>
+which increases in propor t ion as its fu l f i l lment is postponed. </p><p>In this case there w i l l be a fundamental contradict ion between the <br>
+medical concept of a phantasmic Eros that disturbs the equi l ibr ium of <br>
+the organism and demands p rompt assuagement to restore this equi-<br>
+l ibr ium, and the concept of the ״ fa i th fu l , -a complete denial of the for ״<br>
+mer, f ind ing expression through a semantic inversion valor iz ing the <br>
+disequil ibr ium in terms of a plenary spir i tual experience. This w i l l to <br>
+distort, first brought to bear on medical matters of the period, subse-<br>
+quently provoked much ribaldry directed against believers i n mystical <br>
+love whose ideas, bereft of sense, are to become synonymous w i t h an <br>
+erotic strategy in wh ich the purely verbal idealization of woman is mere-<br>
+ly an expedient to silence her resistance as quickly as possible. </p><p>The conflict between those two impor tant tradit ions also signifies the <br>
+relative dependence of the one on the other. Erotic myst ic ism becomes <br>
+distinct by contrast to the naturalistic trend, whereas the latter defines <br>
+its positions in controversy, explicit or impl ic i t , w i t h the idealism and <br>
+the intellectualism of the fai thful . </p><p>A th i rd trend, as meek and obscure as the others were famous and <br>
+persistent, almost passed unobserved or was close to being assimilated <br>
+by the two others. Indeed, there can exist phantasms unrelated to a real <br>
+object, but, thanks to the qual i ty of their images, there can be no phan-</p><p>Phantasms at Work 40 </p><p>FIGURE 2. Bacchanalian revels. From Francesco Colonna, Discours du Songe de <br>
+Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, The <br>
+Newberry Library, Chicago. </p><p>tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events.<br>
+<h1>【5†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+35. Wind attributes them to Nicholas of Cusa&#x27;s disciple John Andreas of <br>
+Bussi. </p><p>36. On the Orphic myth, see W. K. C. Guthrie, Orphaeus and Greek Religion, 2d <br>
+ed. (London, 1952); H. Jeanmaire, Dionysos: Histoire du culte de Bacchus (Paris, <br>
+Payot, 1950). </p><p>37. Heraclitus, fr. 52. On the ״Orphic״ interpretation of this fragment, see V. <br>
+Macchioro, Eraclito, nuovi studi sull&#x27; Orßsmo (Bari, 1922). On the interpretation <br>
+pertaining to ״ ini t iat ion״ in the game of Dionysus, see Andrew Lang, Custom <br>
+and Myth (1885; reprint Ooserhout, 1970), pp. 29-44, esp. pp. 39-41; and R. <br>
+Pettazzoni, I misteri: Saggio di una teoria storico-religiosa (Bologna, 1924). On the <br>
+ludus mundi, by Karl Jaspers in particular, see D. L. Mil ler, Gods and Games (New <br>
+York, 1973), pp. 163-64. O n interpretation of fragment 52 by Heraclitus from <br>
+Nietzsche to Heidegger, see G. Penzo, II nichilismo da Nietzsche a Sartre (Rome, <br>
+1976). </p><p>38. La Forme et l&#x27;Intelligible, pp. 31-64. <br>
+39. On the biography of Brother F. Colonna, see M. T. Casella and G. Pozzi, </p><p>Francesco Colonna: Biografia e Opere, (Padua, 1959). <br>
+40. See the edition by G. Pozzi and L. A. Ciapponi, Hypnerotomachia Polifili </p><p>(Padua, 1964). <br>
+41. In 1463, Ficino, at thir ty, translated the Pimander attributed to Hermes </p><p>Trismegistus. Despite his precocity, his reputation d id not reach Treviso f rom <br>
+Florence before 1467. </p><p>42. Yates, pp. 123-24. <br>
+43. See Hypnérotomachie, ed. Guégan-Kerver, p. 309. </p><p>Notes to Pages 91-113 232 232 </p><p>44. See my discussion of J. Flamant׳ s thesis, Macrobe et le néo-platonisme latin, à <br>
+la fin du IVe siècle (Leiden, 1977) in &quot;Ordine e disordine delle sfere&quot; (cf. also my <br>
+review of Flamands book in Aevum, 1979). Two other passages from Ficino&#x27;s <br>
+work relate to the doctrine of the descent of the soul among the planetary <br>
+spheres and the acquisition of vehicles. In his Theologia platónica (XVIII, 4-5), <br>
+Ficino mentions three vehicles of the soul (celestial, aerial, and material), which <br>
+seems to refer to Synesius of Cyrene&#x27;s distinction between a vehiculum divinioris <br>
+animae, which is ethereal, and a material vehicle, common to animals and to man <br>
+(cf. my Magia spirituale, note 103). Proclus also makes this distinction (see my <br>
+ ,Ordine e disordine delle sfere&quot;).<br>
+<h1>【6†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Neither mystical love nor vulgar love, Poliphilus&#x27;s dream represents <br>
+the trite story of phantasmic desire that finds fulf i l lment. </p><p>The tale is saved f rom platitude and indecency by its phantasmic quali-<br>
+ty: desire, provoked by a phantasm, is appeased by the phantasm, after <br>
+a period of erotico-mnemotechnic tribulations. </p><p>(v) The Depth Psychology of Ficino <br>
+D E S C E N T OF T H E SOUL </p><p>Souls descend into the bodies of the Mi lky Way through the <br>
+constellation of Cancer, enveloping themselves in a celestial <br>
+and luminous veil which they put on to enter terrestrial <br>
+bodies. For nature demands that the very pure soul be united <br>
+w i th the very impure body only through the intermediary of a <br>
+pure veil, which, being less pure than the soul and purer than <br>
+the body, is considered by the Platonists to be a very conve-<br>
+nient means of uni t ing the soul w i th the terrestrial body. It is <br>
+due to that descent that the souls and bodies of the Planets <br>
+confirm and reinforce, i n our Souls and our bodies respec-<br>
+tively, the seven original gifts bestowed upon us by God. The <br>
+same function is performed by the [seven] categories of de-<br>
+mons, intermediaries between the celestial gods and men. The <br>
+gift of contemplation is strengthened by Saturn by means of <br>
+the Saturnian Demons. The power of the government and <br>
+empire is strengthened by Jupiter through the ministry of the <br>
+Jovian Demons; similarly, Mars through the Martians fosters <br>
+the soul&#x27;s courage. The Sun, w i th the help of the Solar De-</p><p>43 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 4. The ithyphallic god Pan. From Francesco Colonna, Discours du Songe <br>
+de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, <br>
+The Newberry Library, Chicago. </p><p>Phantasms at Work 44 </p><p>mons, fosters the clarity of the senses and opinions that makes <br>
+divination possible; Venus, through the Venereans, incites <br>
+Love. Mercury, through the Mercurials, awakens the capacity <br>
+for interpretation and expression. Finally, the Moon, through <br>
+the lunar demons, increases procreation. (Amore, VI, 4) </p><p>Except for the idea that the planets exert their respective influences on <br>
+the soul and the human body through the intermediacy of demons, this <br>
+passage f rom Ficino is inspired by the Commentary on the Dream of Scipio <br>
+by the Latin Neoplatonist Macrobius, who must have had as his source a <br>
+treatise by Porphyry.4 4 Macrobius׳s work had been circulated in the <br>
+Middle Ages, and it is possible that Ficino was acquainted w i th a com-<br>
+mentary attributed to Wil l iam of Conches, one of whose fourteenth-cen-<br>
+tury manuscripts is in the National Library in Florence.45 The author of <br>
+Philosophia mundi, in dealing w i t h procreation, divided the womb into <br>
+seven compartments retaining sperm in which ״the human form is im-<br>
+printed like a coin.4 -It is very likely that the seven divisions corre ״6<br>
+spond to the planets, whose influence on the development of the <br>
+embryo wou ld thus have been prepared in advance through divine <br>
+wisdom permeating nature.<br>
+<h1>【7†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Francesco Colonna: Biografia e Opere, (Padua, 1959). <br>
+40. See the edition by G. Pozzi and L. A. Ciapponi, Hypnerotomachia Polifili </p><p>(Padua, 1964). <br>
+41. In 1463, Ficino, at thir ty, translated the Pimander attributed to Hermes </p><p>Trismegistus. Despite his precocity, his reputation d id not reach Treviso f rom <br>
+Florence before 1467. </p><p>42. Yates, pp. 123-24. <br>
+43. See Hypnérotomachie, ed. Guégan-Kerver, p. 309. </p><p>Notes to Pages 91-113 232 232 </p><p>44. See my discussion of J. Flamant׳ s thesis, Macrobe et le néo-platonisme latin, à <br>
+la fin du IVe siècle (Leiden, 1977) in &quot;Ordine e disordine delle sfere&quot; (cf. also my <br>
+review of Flamands book in Aevum, 1979). Two other passages from Ficino&#x27;s <br>
+work relate to the doctrine of the descent of the soul among the planetary <br>
+spheres and the acquisition of vehicles. In his Theologia platónica (XVIII, 4-5), <br>
+Ficino mentions three vehicles of the soul (celestial, aerial, and material), which <br>
+seems to refer to Synesius of Cyrene&#x27;s distinction between a vehiculum divinioris <br>
+animae, which is ethereal, and a material vehicle, common to animals and to man <br>
+(cf. my Magia spirituale, note 103). Proclus also makes this distinction (see my <br>
+ ,Ordine e disordine delle sfere&quot;). Ficino does not hold this position invariably״<br>
+since in his commentary on Plotinus&#x27;s Enneads (II, 6) we find this passage, akin <br>
+to Proclus, Macrobius and Servius: Ex eorum iterum animabus in nostris animis a <br>
+Saturno contemplatio cautioque et conservatio diligens augetur, ab Jove civilis et prudens <br>
+potissimum gubernatio, a Marte magnanimitas malorum iniuriarumque expultrix, a <br>
+Mercurio inquisitio quaelibet et expressio, a Venere charitas et humanitas, a Sole hon-<br>
+estatis cura pudorque et gloriae studium verioris, a Luna denique rerum vitae necessariam <br>
+cura et providentia diligens (Opera, II, p. 1619). The neo-Plotinian term ״vehicle״ <br>
+does not appear here, nor do the planetary demons who appear in the text of the <br>
+Commentary to the Symposium. It is very characteristic that, in the eighteenth book <br>
+of his Theologia platónica, Ficino says he does not believe in the doctrine of the <br>
+soul&#x27;s passage through the spheres, which he calls ״a phantasy of the Pla-<br>
+tonists.״ Since he sets it forth in his commentaries on Enneads and Symposium, <br>
+however, it is very likely he does subscribe to this theory. Stranger yet, he does <br>
+not even mention it where it deserves a place of honor, that is, in the book De <br>
+vita coelitus comparanda. Actually, no theoretical justification for astrological mag-<br>
+ic is as simple as the idea that, in the course of its descent, the soul is enveloped <br>
+in astral tunics that respond to the momentary influences of the planets.<br>
+<h1>【8†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+sity Press, 1980. <br>
+Yates, Frances Amelia. The Art of Memory. Chicago: University of Chicago Press, </p><p>1966. <br>
+. Astraea: The Imperial Theme in the Sixteenth Century. London: Routledge &amp; </p><p>Kegan Paul, 1975. <br>
+. The Occult Philosophy in the Elizabethan Age. London: Routledge &amp; Kegan </p><p>Paul, 1979. <br>
+. The Rosicrucian Enlightenment. London, 1972. </p><p>Index of Names </p><p>Arnold, Klaus, 165, 168, 169, 171-72 <br>
+Asclepius, 65 <br>
+Astruc, Jean, 189 <br>
+Athenaeus, 9 <br>
+Augustine, St., 152 <br>
+Aulnoy, Countess of, 212-13 <br>
+Averroës, 22 <br>
+Avicebron, 14 <br>
+Avicenna, 11, 19, 21-22 </p><p>Bacon, Francis, xix, 183, 197 <br>
+Bacon, Roger, 11, 117-19, 185, 186 <br>
+Barbaro, Ermolao, 149 <br>
+Baronius, 215 <br>
+Bartholomaeus Anglicus, 10-11 <br>
+Baschwitz, Kurt, 163 <br>
+Bashshâr ibn Burd, 16 <br>
+Basilides, 25-27 <br>
+Baudelaire, Charles-Pierre, 52 <br>
+Beauvais, Vincent de, 216 <br>
+Bellay, Joachim du, 81 <br>
+Bellerophon, 51 <br>
+Bembo, Pietro, 41 <br>
+Benivieni, Girolamo, 12-13, 54 <br>
+Berbiguer de Terreneuve de Thym, Alexis </p><p>Vincent Charles, 124, 126, 154-56 <br>
+Bergamo, Jordanes de, 149, 153 <br>
+Bernard of Gordon, 20-21 <br>
+Bérulle, Pierre, Cardinal de, 61, 205-7 <br>
+Betz, Hans Dieter, 117 <br>
+Binswanger, Ludwig, 46 <br>
+Boase, R., 16 <br>
+Boccaccio, Giovanni, 39, 211 <br>
+Boderie, Guy Lefèvre de la, 129 <br>
+Bodin, Jean, 149 <br>
+Bogomil, 14-15 <br>
+Bostius, Arnoldus, 168 <br>
+Botticelli, Sandro, 211-12 <br>
+Bouchet, Guillaume, 72-74 <br>
+Bouelles, Picard Charles, 168-69 <br>
+Brahe, Tycho, 23 <br>
+Brant, Sebastian, 168 <br>
+Brantôme, Seigneur de, 81 <br>
+Bresson, Robert, 198 </p><p>Abano, Pietro d 1 6  ׳, 7<br>
+Abu Yahya al Sinhachi, 22 <br>
+Agamben, Giorgio, 21-22, 48-49 <br>
+Agrippa of Nettesheim, Henricus Corn-</p><p>elius, 125, 128, 136, 169, 181, 202, 218; <br>
+and Bruno, 159, 160; on evil eye, 30; on <br>
+melancholy, 49; and Renaissance sci-<br>
+ences, 195, 197-200; and Trithemius, <br>
+method of, 172, 174-75<br>
+<h1>【9†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+real truths, which are engraved in the soul in order that discursive rea-<br>
+soning—an objective though impotent process—may have the means to <br>
+grasp and monopolize them. </p><p>Ficino&#x27;s hieroglyphics, which we shall take up later, are symbols of in-<br>
+telligential awareness. But Ficino&#x27;s successors go much farther: they <br>
+even assert that the rules of the phantasmic language that translates <br>
+intelligential relationships can be represented in the form of theater, to be <br>
+meditated upon and learned by anyone who so wishes. The idea of the-<br>
+ater came from the Friulan Giulio Camillo Delminio, born around 1480, <br>
+who spared no pains to see it realized. A professor at Bologna, Giulio <br>
+Camillo was not a charlatan. He managed to interest Francis I in his <br>
+theater and, subsidized by the king, settled in Paris in 1530. In 1532 he <br>
+was in Venice where Viglius Zuichemus, who corresponded with Eras-<br>
+mus, came to see him. His letter to Erasmus mockingly describes the <br>
+theater of our artist with the heavenly memory, which the humanist of <br>
+Rotterdam could neither appreciate nor understand. The year 1534 <br>
+found Giulio Camillo again in Paris but never able to perfect his con-<br>
+struction, a wooden structure which, according to a letter of Gilbert <br>
+Cousin, Erasmus&#x27;s secretary, was still at the French court in 1558. Mean-<br>
+while, he was invited in 1543 to the court of Alfonso Davalas, marquis of <br>
+Vastos, the Spanish governor of Milan. Giulio Camillo lived just long <br>
+enough to arrive there, for he died in 1544.15 </p><p>Giulio Camillo, a modest and unassuming man whose Latin made <br>
+him the butt of Zuichemus&#x27;s jokes, left us few writings. He worked on <br>
+rhetoric and translated Le Idee, overo Forme della Oratione, attributed to <br>
+Hermogenes of Tarsus,16 but it seems he had also studied the work of <br>
+Pico della Mirandola17 and perhaps also that of the Venetian Brother <br>
+Francesco Giorgi,18 which is based on Ficino. His main preoccupation <br>
+was adequately to depict a cosmic model. This cosmic model certainly <br>
+stems from Florentine Platonism. </p><p>Camillo set forth his schema in an obscure little treatise published in <br>
+Florence in 1550, L&#x27;ldea del Teatro. His construction, which had the form <br>
+of an amphitheater of seven sections, aspired to be an imago mundi in <br>
+which all ideas and objects might find their appropriate place by virtue <br>
+of their planetary classification. Like any artificial system, this was <br>
+doomed to be no longer understood as soon as the sets linking terrestrial <br>
+phenomena to corresponding planets fell into disuse. We shall see later <br>
+that they were constructed according to correlations between a planet <br>
+and certain animals, plants and stones and were transmitted by tradition <br>
+with inevitable changes from the very beginnings of Hellenistic astrolo-<br>
+gy. For the Renaissance mind there existed still a kind of internal evi-</p><p>Phantasms at Work 36 </p><p>dence inherent in the fact that the lion, gold, and the heliotrope be-<br>
+longed to the solar set, but this was only evidence of a cultural kind, <br>
+becoming invalid as soon as astrology began to lose credibility. Giulio <br>
+Camillo&#x27;s schema, as Frances Yates discerned,19 was magical.<br>
+<h1>【10†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+head-heart distinction in, 114, 135-36; <br>
+homology of humans and universe in, <br>
+111-12; on love and the soul, 3 -4 , 7-8; <br>
+optics of, 8, 29 </p><p>Pliny, 219 <br>
+Plotinus, 36, 51, 55 <br>
+Pluche, 66-67 <br>
+Plutarch of Chaerona, 29, 30, 80-81, 112, </p><p>114, 145 <br>
+Pollaiuolo, Antonio, 211-12 <br>
+Pomponazzi, Pietro, 129 <br>
+Pontormo, Jacopo da, 52 <br>
+Porphyry, 27, 44, 51, 145, 146 <br>
+Porta, Giambattista della, 30, 156 <br>
+Pott, Johannes Henricus, 149 <br>
+Preisendanz, Karl, 117 <br>
+Prieur, Etienne, 155 <br>
+Proclus, 27, 48, 128, 144-47, 232 n.44 <br>
+Proste, Auguste, 198 <br>
+Protagoras of Cos, 7 <br>
+Psellus, Michael, 117, 132, 145, 146, 148, </p><p>160 <br>
+Pseudo-Madjritï, 118-19 <br>
+Ptolemy, 23, 25, 60, 61, 142, 167, 205, 207 </p><p>Quercia, Jacopo della, 211 <br>
+Quintilian, 33 <br>
+Quispel, Gilles, 215 </p><p>Rabelais, François, 211 <br>
+Raleigh, Sir Walter, 82 <br>
+Ramée, Pierre de la, 201 <br>
+Ramnoux, Clémence, 205 <br>
+Ramus, Petrus, 6 2 - 6 4 <br>
+Ranfaing, Elizabeth, 249 n.13 <br>
+Raphael, 211 </p><p>Index of Names 264 </p><p>Walker, D. P., 108-10, 171-72 <br>
+Warburg, Aby, 6 <br>
+Weber, Max, xxii <br>
+Weyer, Johannes. See Wier, Johannes <br>
+Wier, Johannes, 30, 163, 169, 203, 214 <br>
+William of Auvergne, 51, 52 <br>
+William of Conches, 44 <br>
+Willin, Georg, 163 <br>
+Wind, E., 48 </p><p>Wolfram of Eschenbach, 210 </p><p>Xenophon, 38 Ximenez de Rada, Rodriguez, 14 </p><p>Yates, Frances A., 32, 33, 36, 42, 63, 186, <br>
+235 n.32 </p><p>Tansillo of Venosa, 65 <br>
+Tassis y Villarroel, J. de Vera, 216-17 <br>
+Tedeschi, John, 190 <br>
+Temple, Sir William, 63 <br>
+Theophrastus, 47 <br>
+Thomas, St. (apostle), 217 <br>
+Titian, 211 <br>
+Todi, Jacopone da, 210 <br>
+Toulmin, Stephen, xxiii <br>
+Tour, Frédéric-Maurice de la, 202 <br>
+Tour, Henri de la, 202 <br>
+Tozgrec, 167 <br>
+Trithemius of Würzburg, 125, 136, 159-</p><p>60, 186, 199, 214; demonomagic of, 128, <br>
+156, 162-75 </p><p>Tyard, Pontus de, 81, 129<br>
+<h1>【11†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+For the Renaissance mind there existed still a kind of internal evi-</p><p>Phantasms at Work 36 </p><p>dence inherent in the fact that the lion, gold, and the heliotrope be-<br>
+longed to the solar set, but this was only evidence of a cultural kind, <br>
+becoming invalid as soon as astrology began to lose credibility. Giulio <br>
+Camillo&#x27;s schema, as Frances Yates discerned,19 was magical. He was <br>
+inspired less by Pico della Mirandola&#x27;s speculations20 than by Ficino&#x27;s <br>
+treatise De vita coelitus comparanda (see below, chap. 4, sec. 3). The sub-<br>
+ject matter symbolized by the dramatic figures also came from Florentine <br>
+Platonism. For example, the idea of the incorporation of the soul was <br>
+represented by the image of Pasiphae and the Bull on the door of the <br>
+fifth level. Pasiphae symbolized the soul attracted by the body (the Bull), <br>
+a theme associated with black magic, goeteia,21 by Plotinus and also by <br>
+the Church Fathers. In its descent among the planetary spheres, the soul <br>
+was supposed to invest itself with an aerial quality (the pneuma) ena-<br>
+bling it to become incarnated in the material body.22 We can readily <br>
+understand that working out all the details of that plan, including not <br>
+only images but also cryptic formulas, was too much for one man. Once <br>
+he vanished, no one else could take his place to continue his work. At <br>
+bottom, Giulio Camillo&#x27;s ambition amounted to no less than to forge a <br>
+figura universi,23 a cosmic form ex qua tamen beneficium ab universo sperare <br>
+videntur, through which it was hoped some profit might be obtained <br>
+from the universe. </p><p>Ficino himself, who describes in detail the realization of an universi <br>
+figura, was not one of those who, like Giulio Camillo, cultivated the art <br>
+of oratory. This is probably why it never occurred to him that the imago <br>
+mundi could have the aspect of a theater. For him, the phantasmic ex-<br>
+pression of the intelligential world did not assume forms as concrete as <br>
+Camillo&#x27;s dolls. On the contrary, it ought to be something mysterious, <br>
+unreachable by the profane. </p><p>Egyptian hieroglyphics fulfilled those requirements wonderfully. In <br>
+the first place, they had the prestige of tradition: Plato himself had spo-<br>
+ken of them (Phaedo, 274c-75b) and Plotinus too, in his Enneads (5.8): </p><p>The Egyptian priests, in symbolizing divine mysteries, did <br>
+not use small characters but whole forms of plants, trees, and <br>
+animals, for it is clear that God&#x27;s system of knowledge of <br>
+things does not take the form of multiple fancies [excogitatio-<br>
+nem multiplicem] about the thing but sees the thing itself in its <br>
+simple, stable essence.24 </p><p>Ficino does not end his commentary on Plotinus with this; he continues <br>
+with a reference—arbitrary, moreover—to one of the hieroglyphics of <br>
+Horapollon.25 </p><p>37 Empirical Psychology and the Deep Psychology of Eros </p><p>The treatise, Hieroglyphica, attributed to Horapol lon and ״translated״ <br>
+into Greek by an unknown writer called Phil ip, was an attraction in Flor-<br>
+ence of rather recent appearance. The codex had been discovered by <br>
+Cristoforo Buondelmonti on the island of Andros and taken to Florence.<br>
+<h1>【12†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+239 Notes to Pages 91-113 </p><p>corresponds to transcendental reality. Two pages later, however (p. 193), Bruno <br>
+seems to refer to himself when he writes: Ego eum, qui timet a corporeis, numquam <br>
+divinis fuisse coniunctum facile crediderim; vere enim sapiens et virtuosus, cum dolorem <br>
+non sentiat, est perfecte (ut praesentis vitae conditio ferre potest) beatus, si rem rationis <br>
+oculto velis aspicere. That probably explains his indifference when confronted by <br>
+the death sentence. </p><p>70. Cf. S. Lunais, Recherches sur la Lune, I (Leiden, 1978), pp. 122 sq. <br>
+71. Cf. F. A. Yates, Astraea: The Imperial Theme in the Sixteenth Century (London </p><p>and Boston, 1975), p. 85. <br>
+72. See my article &quot;Inter lunam terrasque . . . Incubazione, catalessi ed estasi in </p><p>Plutarcoin G. Piccaluga (ed.), Perennitas: Studi in onore di A. Brelich (Rome, <br>
+1980), now in the volume Iter in silvis, I, pp. 53-76; Expériences de l&#x27;extase, pp. <br>
+103-17. </p><p>73. See J. Festugière, La Philosophie de l&#x27;amour de Marsile Ficin et son influence sur <br>
+la littérature française au XVIe siècle (Paris, 1941). </p><p>74. See Magendie, La Politesse mondaine et les théories de l&#x27;honnêteté en France au <br>
+XVIIe siècle (Paris, 1925), s.a., vol. 1, p. 271; Emile Picot, Les Français italianisants <br>
+au XVe siècle (Paris, 1906-7); E. Bourciez, Les Moeurs polies et la littérature de cour <br>
+sous Henri II (Paris, 1886). </p><p>75. Cf. G. Weise, Videale eroico del Rinascimento e le sue premesse umanistiche <br>
+(Naples, 1961), II, p. 104. </p><p>76. Ibid., pp. 52-103. <br>
+77. Ibid., p. 105. <br>
+78. Ibid., p. 49. <br>
+79. Ibid., pp. 76-77. <br>
+80. Cf. H. Champion, Histoire poétique du XVIe siècle (Paris, 1923), I, p. 167, </p><p>quoted by G. Weise, II, p. 45. J. Festugière attributes this phenomenon to the <br>
+translations of courtly medieval romances: ״They were so popular that, once <br>
+again, the Cours d&#x27;amour were established among the entourage of François I and <br>
+Henri II, with the code of fine manners and the whole amorous jurisprudence so <br>
+dear to the ladies of the Middle Ages״ (p. 3). As to G. Weise, he fails to establish <br>
+the genetic connection, though an obvious one, between Ficino&#x27;s Platonism and <br>
+French love poetry in the sixteenth century. </p><p>81. Yates, Astraea, p. 52. <br>
+82. Ibid., p. 77. About a similar symbolism at the French court, see now Sheila<br>
+<h1>【13†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+infinite empyrean heaven—an idea that was, at bottom, merely traditional—see <br>
+also Debus, pp. 87-88. </p><p>38. Cf. Keith Thomas, Religion and the Decline of Magic, (Harmondsworth <br>
+[1971], 1978), p. 412. On John Dee in general, see Peter J. French, John Dee: The <br>
+World of an Elizabethan Magus (London, 1972). </p><p>39. Op. it., I, p. 21. <br>
+40. Ibid.; cf. De docta ignorantia, II, pp. 11-12. <br>
+41. Op. cit., I, p. 92. <br>
+42. P. Ramus, De religione Christiana, Frankfurt ed., (1577), pp. 114-15, cited </p><p>by Yates, The Art of Memory, p. 237. <br>
+43. Yates, ibid., pp. 234-35. <br>
+44. Ibid., p. 237. <br>
+45. Ibid., p. 261. <br>
+46. See n. 38 above. <br>
+47. Yates, The Art of Memory, pp. 266 sq. <br>
+48. Quoted by Yates, ibid., p. 278. <br>
+49. G. Perkins Cantabrigensis, Antidicsonus (London, 1584), p. 45, quoted by </p><p>Yates, pp. 274-75. Fundamentally, Perkins was more correct than Yates thinks; <br>
+it is true that with respect to Peter of Ravenna an absolutely inoffensive practice <br>
+is at issue (he believes the image of an old love is particularly suited to being <br>
+recorded by the memory, due to its emotional charge). However, in Bruno&#x27;s case <br>
+the technique assumes a systematic character, as evidenced by this very interest-<br>
+ing passage from the Sigillus sigillorum (Op. lat., II, 2, p. 166): Excitent ergo, quae <br>
+comitante discursu, cogitatione fortique phantasia movent affectum, quibusque zelantes, <br>
+contemnentes, amantes, odientes, maerentes, gaudentes, admirantes, et ad sensuum tru-<br>
+tinam referentes, cum zeli, contemptus, amoris, odii, maeroris, gaudii, admirationis et <br>
+scrutinii speciebus, cum memorandae rei forma efficimur. Porro fortiores atque vehemen-<br>
+tiores fortius consequentia quadam atque vehementius imprimunt (21). Has autem si vel <br>
+tua vel rei concipiendae natura non adferat, industria citet affectus. In istis enim exer-<br>
+citatio nedum ad optimos pessimosque mores viam aperit, sed et ad intelligentiam et <br>
+(quantum per hominem fieri potest) omnium pro viribus eiusdem activitatem. Confxr-<br>
+matur hoc, quod populi et gentes, quibus promptior est libido et ira, sunt activiores; et ex <br>
+iisdem intense odientes et amantes apprime impios, aut si se se vertant quo divinus eos <br>
+agat amor atque zelus, apprime religiosos habes, ubi idem materiale principium summam <br>
+ad virtutem pariter proximum esse atque ad vitium potes agnoscere (22).<br>
+<h1>【14†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Giulio Camillo, a modest and unassuming man whose Latin made <br>
+him the butt of Zuichemus&#x27;s jokes, left us few writings. He worked on <br>
+rhetoric and translated Le Idee, overo Forme della Oratione, attributed to <br>
+Hermogenes of Tarsus,16 but it seems he had also studied the work of <br>
+Pico della Mirandola17 and perhaps also that of the Venetian Brother <br>
+Francesco Giorgi,18 which is based on Ficino. His main preoccupation <br>
+was adequately to depict a cosmic model. This cosmic model certainly <br>
+stems from Florentine Platonism. </p><p>Camillo set forth his schema in an obscure little treatise published in <br>
+Florence in 1550, L&#x27;ldea del Teatro. His construction, which had the form <br>
+of an amphitheater of seven sections, aspired to be an imago mundi in <br>
+which all ideas and objects might find their appropriate place by virtue <br>
+of their planetary classification. Like any artificial system, this was <br>
+doomed to be no longer understood as soon as the sets linking terrestrial <br>
+phenomena to corresponding planets fell into disuse. We shall see later <br>
+that they were constructed according to correlations between a planet <br>
+and certain animals, plants and stones and were transmitted by tradition <br>
+with inevitable changes from the very beginnings of Hellenistic astrolo-<br>
+gy. For the Renaissance mind there existed still a kind of internal evi-</p><p>Phantasms at Work 36 </p><p>dence inherent in the fact that the lion, gold, and the heliotrope be-<br>
+longed to the solar set, but this was only evidence of a cultural kind, <br>
+becoming invalid as soon as astrology began to lose credibility. Giulio <br>
+Camillo&#x27;s schema, as Frances Yates discerned,19 was magical. He was <br>
+inspired less by Pico della Mirandola&#x27;s speculations20 than by Ficino&#x27;s <br>
+treatise De vita coelitus comparanda (see below, chap. 4, sec. 3). The sub-<br>
+ject matter symbolized by the dramatic figures also came from Florentine <br>
+Platonism. For example, the idea of the incorporation of the soul was <br>
+represented by the image of Pasiphae and the Bull on the door of the <br>
+fifth level. Pasiphae symbolized the soul attracted by the body (the Bull), <br>
+a theme associated with black magic, goeteia,21 by Plotinus and also by <br>
+the Church Fathers. In its descent among the planetary spheres, the soul <br>
+was supposed to invest itself with an aerial quality (the pneuma) ena-<br>
+bling it to become incarnated in the material body.22 We can readily <br>
+understand that working out all the details of that plan, including not <br>
+only images but also cryptic formulas, was too much for one man. Once <br>
+he vanished, no one else could take his place to continue his work. At <br>
+bottom, Giulio Camillo&#x27;s ambition amounted to no less than to forge a <br>
+figura universi,23 a cosmic form ex qua tamen beneficium ab universo sperare <br>
+videntur, through which it was hoped some profit might be obtained <br>
+from the universe.<br>
+<h1>【15†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+However, in Bruno&#x27;s case <br>
+the technique assumes a systematic character, as evidenced by this very interest-<br>
+ing passage from the Sigillus sigillorum (Op. lat., II, 2, p. 166): Excitent ergo, quae <br>
+comitante discursu, cogitatione fortique phantasia movent affectum, quibusque zelantes, <br>
+contemnentes, amantes, odientes, maerentes, gaudentes, admirantes, et ad sensuum tru-<br>
+tinam referentes, cum zeli, contemptus, amoris, odii, maeroris, gaudii, admirationis et <br>
+scrutinii speciebus, cum memorandae rei forma efficimur. Porro fortiores atque vehemen-<br>
+tiores fortius consequentia quadam atque vehementius imprimunt (21). Has autem si vel <br>
+tua vel rei concipiendae natura non adferat, industria citet affectus. In istis enim exer-<br>
+citatio nedum ad optimos pessimosque mores viam aperit, sed et ad intelligentiam et <br>
+(quantum per hominem fieri potest) omnium pro viribus eiusdem activitatem. Confxr-<br>
+matur hoc, quod populi et gentes, quibus promptior est libido et ira, sunt activiores; et ex <br>
+iisdem intense odientes et amantes apprime impios, aut si se se vertant quo divinus eos <br>
+agat amor atque zelus, apprime religiosos habes, ubi idem materiale principium summam <br>
+ad virtutem pariter proximum esse atque ad vitium potes agnoscere (22). Hunc amorem <br>
+omnium affectuum, studiorum et affectuum parentem (qui proxime allata causa geminus <br>
+est) daemonem magnum appellavit antiquitas, quem si tibi affabre consiliaveris, omni </p><p>237 Notes to Pages 91-113 </p><p>procul dubio nil tibi supererit difficile. Itaque, prout expedit, explicavimus, unde quasi <br>
+per artem non solum rerum memoriam, sed et veritatem atque sapientiam per universum <br>
+humanam possis assequi (23). Bruno does not deny that emotions open the way <br>
+toward the noblest as well as the most perverse customs; nevertheless, he is of <br>
+the opinion that all emotions—including those which might be considered nega-<br>
+tive or immoral—are favorable to mnemotechnics. </p><p>50. P.-H. Michel, quoting Sellers, is certain that John Charlewood was the <br>
+printer. See the foreword to Giordano Bruno, Des fureurs héroïques (Paris, 1954), <br>
+p. 8. </p><p>51. Yates, The Art of Memory, p. 284. <br>
+52. Ascl., IX; cf. Ficino, Op., II, p. 1865; Bruno, Op. it., II, p. 180. <br>
+53. Op. lat., II, 2, p. 133; in its entirety, the passage reads: Primus praecipuusque<br>
+<h1>【16†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+70-84. A scholar unequaled in the field of German occultism, Peuckert is the <br>
+most valuable source of a list of references on Trithemius; but he does not seem <br>
+to have closely studied interpretations of the Steganography. N. L. Brann&#x27;s book, <br>
+The Abbot Trithemius, 1462-1516 (Leiden, 1981), only deals w i th the monk&#x27;s <br>
+career. </p><p>45. Peuckert, Pansophie, pp. 72-73. <br>
+46. Georg Wil l in, Dissertatio historico-literaria de arte Trithemiana scribendi per </p><p>ignem (Uppsala, 1728), p. 33, quoted by Klaus Arnold, Johannes Trithemius, p. <br>
+180. </p><p>47. Kur t Baschwitz, Hexen und Hexenprozesse: Die Geschichte eines Massenwahns <br>
+und seiner Bekämpfung (Munich, 1963), pp. 17 sq. </p><p>48. See Peuckert, pp. 72-73. </p><p>247 Notes to Pages 131-142 </p><p>49. Ibid., p. 77. <br>
+50. Fama confraternitatis, in Yates, The Rosicrucian Enlightenment. <br>
+51. Primo Poeta celeberrimus . . . Secundo . . . Orator facundissimus . . . Ter-</p><p>tio . . . subtilissimus Philosophus . . . Quarto . . . Mathematicus . . . ingeniosis-<br>
+simus . . . Quinto . . . Historicus perfectus . . . Sexto . . . Theologus insignis <br>
+(Heidel, Vita Johannes Trithemius Abb., pp. 34-35). </p><p>52. The city of Würzburg, where tradition concerning Trithemius lasted about <br>
+two centuries, and the monastery of Sponheim are located near Heidelberg in <br>
+the Palatinate, where the ״farce״ (ludibrium) of the Rosicrucians took place at the <br>
+beginning of the seventeenth century. With respect to the ״inextinguishable <br>
+lamps״ found in the tomb of Father Christian Rosenkreuz, it is probable that the <br>
+authors of the Fama confraternitatis made use of an element of Trithemius׳ s leg-<br>
+end, according to information given by Bartholomeus Korndorff derived from <br>
+Servatius Hochel. </p><p>53. Trithemius&#x27;s complete bibliography is recorded by Klaus Arnold, pp. 228 <br>
+sq. </p><p>54. Peuckert, p. 75. <br>
+55. Heidel, Vita Johan. Trith. Abb., p. 1. <br>
+56. Arnold, p. 7. <br>
+57. Hans Ankwicz-Kleehoven, Der wiener Humanist Johannes Cuspinian, Graz-</p><p>Köln, 1959, p. 16, quoted by Arnold, p. 56. <br>
+58. Arnold, p. 62. <br>
+59. Cited by Arnold, p. 61. <br>
+60. Ibid., m&lt;58. <br>
+61. Antipmus, I, 3; Peuckert furnishes a list which is almost complete, Pan-</p><p>sophie, pp. 47-55. <br>
+62. The text of this letter is reproduced by Heidel, pp. 50-51; it is partially<br>
+<h1>【17†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+(ii) The Art of Memory </p><p>The Ar t of Memory, also a phantasmic process whose principles and <br>
+history Paolo Rossi and Frances Yates have dealt w i th in their excellent <br>
+books, forms an intermediary l ink between Eros and magic. It concerns <br>
+us here only to the extent that, wi thout a general idea of it, we would be <br>
+at a loss to understand the ideological scope of Ficino and other theoreti-<br>
+cians of phantasmic love such as Francesco Colonna and Giordano <br>
+Bruno.8 </p><p>The Ar t of Memory is a technique for the manipulat ion of phantasms, <br>
+which rests on the Aristotelian principle of the absolute precedence of <br>
+the phantasm over speech and of the phantasmic essence of the intellect <br>
+(see above, chap. 1, sec. 1). The precise inference drawn from it, ex-</p><p>33 Empirical Psychology and the Deep Psychology of Eros </p><p>pounded by St. Thomas in his commentary on Aristotle&#x27;s De memoria et <br>
+reminiscentia, is that whatever is seen, thanks to its intrinsic quality of <br>
+image, is easy to remember, whereas abstract concepts or linguistic se-<br>
+quences require some phantasmic support or other to charge the memo-<br>
+ry.9 This is why St. Thomas recommends recourse to the mnemotechni-<br>
+cal rules contained in Ad Herennium, wrongly attributed to Cicero and <br>
+also called Rhetorica secunda. </p><p>It is certain that the Art of Memory had been utilized in the Middle <br>
+Ages in cloisters to foster teaching of abstract concepts but also as a very <br>
+important element of the monk&#x27;s inner discipline. In the fourteenth cen-<br>
+tury, two treatises in Vulgar Italian deal with it, and even Petrarch was <br>
+acquainted with its rules.10 </p><p>But times change, and, with the discovery in 1416 of Quintilian&#x27;s In-<br>
+stitute oratoria (which, by the way, does not endorse mnemotechnics), <br>
+the humanists place the arts and virtues of the ancients on a pedestal. <br>
+Whereas the Middle Ages utilized the pseudo-Ciceronian treatise ad <br>
+maiorem gloriam Dei, the better to bring to mind the majestic structure of <br>
+theological concepts, humanism sees in the Ars memoriae an important <br>
+weapon for social success, to ensure, by means of an infallible memory, <br>
+advantage over others.11 It is along these lines that the jurist Peter of <br>
+Ravenna&#x27;s treatise Phoenix, sive artificiosa memoria (Venice, 1491) was <br>
+written. </p><p>The reader of Rossi&#x27;s or Yates&#x27;s books doubtless recalls the function of <br>
+Art, which we shall try to reconstruct freely here without going into <br>
+detail. Owing to the fact that perceptions have an intrinsically phan-<br>
+tasmic character, and are thus readily committed to memory, the task is <br>
+to superimpose any contents linguistic or conceptual—for instance a <br>
+poem or classification of virtues—onto a succession of images. Now, <br>
+those images can come from some place, but this does not prevent them <br>
+from being, as well, phantasms produced for the circumstances by the <br>
+imaginative faculty. In the first instance, the place must be chosen with <br>
+care: truly, this Art demands a total concentration only possible in soli-<br>
+tude. It follows that mnemonic activity can only be pursued in a church, <br>
+a cemetery, a deserted palace, or at home, avoiding all company and <br>
+diversion. The parts of the place must be memorized in a certain order.<br>
+<h1>【18†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+ing to Yates, p. 119. <br>
+15. Yates, pp. 130 sq. <br>
+16. Published at Udine in 1594; cf. D. P. Walker, Spiritual and Demonic Magic </p><p>from Ficino to Campanella (London, 1958), p. 141. <br>
+17. That is Yates&#x27;s opinion, p. 136. <br>
+18. Francisci Georgii Veneti Minoritae Familiae, De Harmonia Mundi Totius </p><p>Cantica Tria (Venice, 1525). </p><p>231 Notes to Pages 91-113 </p><p>19. Yates, p. 155. <br>
+20. Ibid., p. 136. <br>
+21. Cf. J. Flamant, Macrobe (Leiden, 1977), pp. 544 sq. <br>
+22. Giulio Camillo, ״LTdea del Teatro,״ in lutte le opere (Florence, 1550), p. </p><p>67; cf. Yates, p. 140. <br>
+23. Ficino, Vita coeL, chap. 19. <br>
+24. Opera, II, p. 1768. <br>
+25. Cf. E. Gombrich, ״Icônes Symbolicae,״ in Symbolic Images: Studies in the </p><p>Art of the Renaissance II (Oxford, 1978), p. 222, no. 82, and pp. 158-59. <br>
+26. Cf. E. Iversen, The Myth of Egypt and its Hieroglyphs in European Tradition </p><p>(Copenhagen, 1961). <br>
+27. E. Garin, Storia della filosofia italiana, vol. 1 (Turin, 1966), p. 383. <br>
+28. Comp, in Timeaum, p. 27, in A. Chastel, Marsile Ficin et l&#x27;Art (Geneva, </p><p>1954), p. 105, no. 5. <br>
+29. Theol. Plat., XV, 13; see also Garin, pp. 401-2. The tradit ion of this ״ inner </p><p>eye״ comes from Plotinus, Enneads, I, 6, 9. For Ficino, this is a phantasmic organ <br>
+directed toward the summit (the intelligible world). </p><p>30. P. O. Kristeller, Il pensiero filosofico di Marsilio Ficino, Italian translation <br>
+revised and augmented (Florence, 1953), pp. 218 sq. </p><p>31. See Verbeke, pp. 498-507. <br>
+32. For the history of the oculus spiritalis, see H. Lewy, Chaldaean Oracles and </p><p>Theurgy: Mysticism, Magic and Platonism in the Later Roman Empire (Cairo, 1956; <br>
+repr. Paris, 1978, through the good offices of M. Tardieu), pp. 370 sq. </p><p>33. Chastel, Marcile Ficin et l&#x27;Art, p. 147. <br>
+34. Prooem. in Platonis Parmenidem (Opera, II, p. 1137). This is simply the Lat in </p><p>translation of an expression Xenophon had used to designate the Socratic meth-<br>
+od (paizein spoude). O n the custom of the ״serious games״ of Ficino and his <br>
+contemporaries, see Edgar Wind, Pagan Mysteries in the Renaissance 3d ed. (Ox-<br>
+ford, 1980), pp. 236-38.<br>
+<h1>【19†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Harper and Row, 1970. <br>
+Russell, Jeffrey Burton. Witchcraft in the Middle Ages. Ithaca: Cornell University </p><p>Press, 1972. <br>
+Shumaker, Wayne. The Occult Sciences in the Renaissance: A Study in Intellectual </p><p>Patterns. Berkeley and Los Angeles: University of California Press, 1972. <br>
+Soleil. Le Soleil à la Renaissance: Sciences et mythes. Brussels and Paris: Presses </p><p>Universitaires, 1965. <br>
+Spence, Jonathan D. The Memory Palace of Matteo Ricci. New York: Sifton/Pen-</p><p>guin, 1983. <br>
+Tedeschi, John. ״The Roman Inquisition and Witchcraft.״ Revue de l&#x27;Histoire des </p><p>Religions 200 (1983): 163-88. <br>
+Teirlinck, Isidore. Flora Magica: De plant in de Tooverwereld. Anvers: De Sikkel, </p><p>1930. <br>
+Le Temps chrétien de la fin de L&#x27;Antiquité au Moyen Age, IIIe-XIIIe siècles. Paris: </p><p>Editions du CNRS, 1984. <br>
+Thorndike, Lynn. A History of Magic and Experimental Science. Vols. 3-4, Four-</p><p>teenth and Fifteenth Centuries; vols. 5-6, The Sixteenth Century. New York: Co-<br>
+lumbia University Press, 1934-41. </p><p>Toulmin, Stephen. The Return to Cosmology: Postmodern Science and the Theology of <br>
+Nature. Berkeley and Los Angeles: University of California Press, 1982. </p><p>Trithemius, Johannes. Johannis Trithemii. . . Steganographia. . . . Edited by W. E. <br>
+Heidel. Moguntiae, Sumptibus Joannis Petri Zubrodt, 1676. </p><p>Verbeke, Gérard. L&#x27;Evolution de la doctrine du pneuma du stoïcisme à S. Augustin: <br>
+Etude philosophique. Paris and Louvain: D. De Brouwer, Editions Inst. Sup., <br>
+1945. </p><p>Walker, Daniel Pickering. Spiritual and Demonic Magic from Ficino to Campanella. <br>
+London: The Warburg Institute, 1958. </p><p>. Unclean Spirits: Possession and Exorcism in France and England in the Late <br>
+Sixteenth and Early Seventeenth Centuries. London: Scolar Press, 1981. </p><p>Webster, Charles, ed. Health, Medicine and Mortality in the Sixteenth Century. <br>
+Cambridge: Cambridge University Press. </p><p>Weise, Georg. L&#x27;ideale eroïco del Rinascimento e le sue premesse umanistiche. Naples: <br>
+Edizioni Scientifiche Italiane, 1961. </p><p>Weisheipl, James A., ed. See Albertus Magnus and the Sciences. <br>
+Wier, Johannes. Joannis Wieri . . . Opera omnia. . . . Amsterdam: Apud Petrum </p><p>van den Berge, 1660. <br>
+Wightman, W. D. P. Science in a Renaissance Society. London: Hutchinson Univer-</p><p>sity Library, 1972. <br>
+Wind, Edgar. Pagan Mysteries in the Renaissance. 3d ed. Oxford: Oxford Univer-</p><p>sity Press, 1980. <br>
+Yates, Frances Amelia. The Art of Memory. Chicago: University of Chicago Press, </p><p>1966. <br>
+. Astraea: The Imperial Theme in the Sixteenth Century. London: Routledge &amp;<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Ioan P. Couliano engages with <strong>Frances Yates&#x27;s theories</strong> mainly in relation to her work on memory, Renaissance magic, and her interpretations of figures like Giordano Bruno and Giulio Camillo. He acknowledges Yates&#x27;s &quot;undeniable merit&quot; in placing thinkers like Bruno within their intellectual contexts, rehabilitating them from caricature as merely eccentric precursors of modernity【8:2†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】. However, Couliano is critical of her tendency to lump diverse Late Antique doctrines under the umbrella of &quot;Hermeticism&quot; indiscriminately【8:2†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】.</p><p>Couliano also comments on <strong>Yates’s interpretation of Giulio Camillo</strong>, noting her insight that Camillo’s memory theater was &quot;magical&quot; rather than purely mnemonic. Couliano nuances this by tracing Camillo’s system more directly to <strong>Ficino&#x27;s</strong> influence rather than Pico&#x27;s, emphasizing its Florentine Platonic roots【8:11†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】. He also agrees with Yates that Camillo&#x27;s endeavor to create an imago mundi through a theater of memory was inherently unstable once the cultural connections to astrology and planetary correspondences faded【8:11†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】.</p><p>On <strong>Hypnerotomachia Poliphili</strong>, Couliano presents it as a unique literary case of &quot;phantasmic Eros.&quot; He distinguishes Colonna&#x27;s work from the Ficinian tradition, emphasizing its independence from Ficino’s influence despite its alignment with broader Renaissance concerns about images, desire, and allegory【8:1†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】. Couliano reads the <em>Hypnerotomachia</em> as a narrative about phantasms that blends allegory and empirical psychology—a story where erotic desire is both provoked and satisfied by phantasmic images. He finds its labyrinthine structure notable, with a first part dense with allegorical imagery and a second part that explains the dreamlike plot, underscoring its exploration of the interplay between erotic desire and memory【8:3†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】.</p><p>Finally, Couliano echoes <strong>Yates&#x27;s suggestion</strong> that the imagery in the <em>Hypnerotomachia</em> might be a case of mnemonic technique spun out into fantastical elaboration, though he distances his own analysis from dwelling on that dimension【8:3†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf】.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>give me a more detailed discussion of everything he has to say about HP</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{<br>
+  &quot;queries&quot;: [<br>
+    &quot;Hypnerotomachia Poliphili&quot;,<br>
+    &quot;Colonna Hypnerotomachia&quot;,<br>
+    &quot;phantasmic eros Hypnerotomachia&quot;,<br>
+    &quot;Couliano on Hypnerotomachia&quot;,<br>
+    &quot;interpretation of Hypnerotomachia Poliphili&quot;<br>
+  ]<br>
+}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events. </p><p>Unfortunately, although there are many theoreticians of phantasmic <br>
+Eros, the number of writers who have tried to describe phantasms at <br>
+work is very limited. One of them surely is the respectable monk from <br>
+Treviso, Francesco Colonna, who, having become sacristan of the mon-<br>
+astery of St. John and St. Paul in Padua, died in 1527 at the age of ninety-<br>
+four.39 He is the author of a work almost unique of its kind, the Hyp-<br>
+nerotomachia Poliphili, which, as the author points out in the book&#x27;s ex-<br>
+plicit, had been finished May 1, 1467, but was not published until 1499 <br>
+by Aldo Manuzio; it was paid for by a magistrate of Verona, called <br>
+Leonardo Crasso.40 </p><p>The contents of the Hypnerotomachia tally with the date 1467. Indeed, <br>
+the work is external to the current of ideas circulated by Marsilio Ficino </p><p>41 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 3. ״Two wretched damsels, naked and disheveled.״ From Francesco <br>
+Colonna, Discours du Songe de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy <br>
+of the Wing Foundation, The Newberry Library, Chicago. </p><p>beginning more or less in 1463.41 From our point of v iew, the fact that i t <br>
+escapes Ficino&#x27;s influence is invaluable. Even when expressing a person-<br>
+al point of v iew on love, wh ich rarely happens, Pico della Mirandola, <br>
+Pietro Bembo, Baldesar Castiglione, Leo the Hebrew, and Melanchthon <br>
+bear the indelible mark of Ficino&#x27;s thought. O n the contrary, Colonna <br>
+(though he, too, treats of the phantasmic Eros) is original and inimitable, <br>
+less in his ideas—a common heritage of the period, of wh ich Ficino is to <br>
+become the systematic organizer—than in the l i terary and didactic quali-<br>
+ty of his work. </p><p>(iv) Phantasms at Work </p><p>Let us make the acquaintance of phantasms. <br>
+Taken literally, the title Hypnerotomachia means a ״ love f ight dur ing </p><p>sleep.״ This leads us to expect that a person dreams of phantasms in-<br>
+volved in an erotic f ight, perhaps his o w n erotic phantasm. That is pre-<br>
+cisely what happens: two phantasms, that of the dreamer—Pol iphi lus— <br>
+and that of the gir l he loves—Polia—are at the center of the scenario. </p><p>The tale is not constructed so as to be easily understood. It is an enigma </p><p>Phantasms at Work 42 </p><p>whose solution is given only at the end. The reader is informed that <br>
+Poliphilus seeks Polia, but does not know w h y or how. Of the 311 pages <br>
+of the Guegan-Kerver edition, the first part takes up 250 whereas the <br>
+second, which provides indispensable explanations, takes up only 60.<br>
+<h1>【1†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+This w i l l to <br>
+distort, first brought to bear on medical matters of the period, subse-<br>
+quently provoked much ribaldry directed against believers i n mystical <br>
+love whose ideas, bereft of sense, are to become synonymous w i t h an <br>
+erotic strategy in wh ich the purely verbal idealization of woman is mere-<br>
+ly an expedient to silence her resistance as quickly as possible. </p><p>The conflict between those two impor tant tradit ions also signifies the <br>
+relative dependence of the one on the other. Erotic myst ic ism becomes <br>
+distinct by contrast to the naturalistic trend, whereas the latter defines <br>
+its positions in controversy, explicit or impl ic i t , w i t h the idealism and <br>
+the intellectualism of the fai thful . </p><p>A th i rd trend, as meek and obscure as the others were famous and <br>
+persistent, almost passed unobserved or was close to being assimilated <br>
+by the two others. Indeed, there can exist phantasms unrelated to a real <br>
+object, but, thanks to the qual i ty of their images, there can be no phan-</p><p>Phantasms at Work 40 </p><p>FIGURE 2. Bacchanalian revels. From Francesco Colonna, Discours du Songe de <br>
+Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, The <br>
+Newberry Library, Chicago. </p><p>tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events. </p><p>Unfortunately, although there are many theoreticians of phantasmic <br>
+Eros, the number of writers who have tried to describe phantasms at <br>
+work is very limited. One of them surely is the respectable monk from <br>
+Treviso, Francesco Colonna, who, having become sacristan of the mon-<br>
+astery of St. John and St. Paul in Padua, died in 1527 at the age of ninety-<br>
+four.39 He is the author of a work almost unique of its kind, the Hyp-<br>
+nerotomachia Poliphili, which, as the author points out in the book&#x27;s ex-<br>
+plicit, had been finished May 1, 1467, but was not published until 1499 <br>
+by Aldo Manuzio; it was paid for by a magistrate of Verona, called <br>
+Leonardo Crasso.40 </p><p>The contents of the Hypnerotomachia tally with the date 1467. Indeed, <br>
+the work is external to the current of ideas circulated by Marsilio Ficino </p><p>41 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 3. ״Two wretched damsels, naked and disheveled.״ From Francesco <br>
+Colonna, Discours du Songe de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy <br>
+of the Wing Foundation, The Newberry Library, Chicago.<br>
+<h1>【2†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+35. Wind attributes them to Nicholas of Cusa&#x27;s disciple John Andreas of <br>
+Bussi. </p><p>36. On the Orphic myth, see W. K. C. Guthrie, Orphaeus and Greek Religion, 2d <br>
+ed. (London, 1952); H. Jeanmaire, Dionysos: Histoire du culte de Bacchus (Paris, <br>
+Payot, 1950). </p><p>37. Heraclitus, fr. 52. On the ״Orphic״ interpretation of this fragment, see V. <br>
+Macchioro, Eraclito, nuovi studi sull&#x27; Orßsmo (Bari, 1922). On the interpretation <br>
+pertaining to ״ ini t iat ion״ in the game of Dionysus, see Andrew Lang, Custom <br>
+and Myth (1885; reprint Ooserhout, 1970), pp. 29-44, esp. pp. 39-41; and R. <br>
+Pettazzoni, I misteri: Saggio di una teoria storico-religiosa (Bologna, 1924). On the <br>
+ludus mundi, by Karl Jaspers in particular, see D. L. Mil ler, Gods and Games (New <br>
+York, 1973), pp. 163-64. O n interpretation of fragment 52 by Heraclitus from <br>
+Nietzsche to Heidegger, see G. Penzo, II nichilismo da Nietzsche a Sartre (Rome, <br>
+1976). </p><p>38. La Forme et l&#x27;Intelligible, pp. 31-64. <br>
+39. On the biography of Brother F. Colonna, see M. T. Casella and G. Pozzi, </p><p>Francesco Colonna: Biografia e Opere, (Padua, 1959). <br>
+40. See the edition by G. Pozzi and L. A. Ciapponi, Hypnerotomachia Polifili </p><p>(Padua, 1964). <br>
+41. In 1463, Ficino, at thir ty, translated the Pimander attributed to Hermes </p><p>Trismegistus. Despite his precocity, his reputation d id not reach Treviso f rom <br>
+Florence before 1467. </p><p>42. Yates, pp. 123-24. <br>
+43. See Hypnérotomachie, ed. Guégan-Kerver, p. 309. </p><p>Notes to Pages 91-113 232 232 </p><p>44. See my discussion of J. Flamant׳ s thesis, Macrobe et le néo-platonisme latin, à <br>
+la fin du IVe siècle (Leiden, 1977) in &quot;Ordine e disordine delle sfere&quot; (cf. also my <br>
+review of Flamands book in Aevum, 1979). Two other passages from Ficino&#x27;s <br>
+work relate to the doctrine of the descent of the soul among the planetary <br>
+spheres and the acquisition of vehicles. In his Theologia platónica (XVIII, 4-5), <br>
+Ficino mentions three vehicles of the soul (celestial, aerial, and material), which <br>
+seems to refer to Synesius of Cyrene&#x27;s distinction between a vehiculum divinioris <br>
+animae, which is ethereal, and a material vehicle, common to animals and to man <br>
+(cf. my Magia spirituale, note 103). Proclus also makes this distinction (see my <br>
+ ,Ordine e disordine delle sfere&quot;).<br>
+<h1>【3†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+(iv) Phantasms at Work </p><p>Let us make the acquaintance of phantasms. <br>
+Taken literally, the title Hypnerotomachia means a ״ love f ight dur ing </p><p>sleep.״ This leads us to expect that a person dreams of phantasms in-<br>
+volved in an erotic f ight, perhaps his o w n erotic phantasm. That is pre-<br>
+cisely what happens: two phantasms, that of the dreamer—Pol iphi lus— <br>
+and that of the gir l he loves—Polia—are at the center of the scenario. </p><p>The tale is not constructed so as to be easily understood. It is an enigma </p><p>Phantasms at Work 42 </p><p>whose solution is given only at the end. The reader is informed that <br>
+Poliphilus seeks Polia, but does not know w h y or how. Of the 311 pages <br>
+of the Guegan-Kerver edition, the first part takes up 250 whereas the <br>
+second, which provides indispensable explanations, takes up only 60. <br>
+The first part tells of the endless roaming of Poliphilus amid the ruins of <br>
+antiquity, of tr iumphs, emblems and impresae, each w i th its own secret <br>
+meaning. As Yates observed, it could be a matter of mnemotechnics <br>
+escaped f״ rom control and degenerated into w i l d imaginings.42״ In any <br>
+case, such oneirico-archeologico-mnemotechnics, however fascinating, <br>
+w i l l not preoccupy us here. In the end, Poliphilus finds Polia, and the <br>
+lovers plead their case before the heavenly tr ibunal of Venus. The sec-<br>
+ond part, wh ich contains two monologues, is therefore a tale within a tale, <br>
+and the end is destined to complicate the enigma still more: we learn <br>
+that everything that happened was only Poliphilus&#x27;s dream, so that the <br>
+search for Polia and the appeasement of desire were but adventures in <br>
+phantasy.43 </p><p>Neither mystical love nor vulgar love, Poliphilus&#x27;s dream represents <br>
+the trite story of phantasmic desire that finds fulf i l lment. </p><p>The tale is saved f rom platitude and indecency by its phantasmic quali-<br>
+ty: desire, provoked by a phantasm, is appeased by the phantasm, after <br>
+a period of erotico-mnemotechnic tribulations. </p><p>(v) The Depth Psychology of Ficino <br>
+D E S C E N T OF T H E SOUL </p><p>Souls descend into the bodies of the Mi lky Way through the <br>
+constellation of Cancer, enveloping themselves in a celestial <br>
+and luminous veil which they put on to enter terrestrial <br>
+bodies. For nature demands that the very pure soul be united <br>
+w i th the very impure body only through the intermediary of a <br>
+pure veil, which, being less pure than the soul and purer than <br>
+the body, is considered by the Platonists to be a very conve-<br>
+nient means of uni t ing the soul w i th the terrestrial body. It is <br>
+due to that descent that the souls and bodies of the Planets <br>
+confirm and reinforce, i n our Souls and our bodies respec-<br>
+tively, the seven original gifts bestowed upon us by God. The <br>
+same function is performed by the [seven] categories of de-<br>
+mons, intermediaries between the celestial gods and men. The <br>
+gift of contemplation is strengthened by Saturn by means of <br>
+the Saturnian Demons.<br>
+<h1>【4†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+For all parties, the prel iminaries of <br>
+desire consist i n setting u p a phantasm w i t h i n the subject. For some, <br>
+this phantasm w i l l have the capacity to awaken their allayed desire, to <br>
+propel and accompany them on their t r ip th rough the intel l igential cos-<br>
+mos. This w i l l become a heroic passion ending in an ecstatic fusion of <br>
+the hunter and the object of his hunt—accord ing to an image employed <br>
+by Ficino and later revived by Giordano Bruno. For others, the phan-<br>
+tasm w i l l only point to a painfu l and urgent need for a physical release <br>
+which increases in propor t ion as its fu l f i l lment is postponed. </p><p>In this case there w i l l be a fundamental contradict ion between the <br>
+medical concept of a phantasmic Eros that disturbs the equi l ibr ium of <br>
+the organism and demands p rompt assuagement to restore this equi-<br>
+l ibr ium, and the concept of the ״ fa i th fu l , -a complete denial of the for ״<br>
+mer, f ind ing expression through a semantic inversion valor iz ing the <br>
+disequil ibr ium in terms of a plenary spir i tual experience. This w i l l to <br>
+distort, first brought to bear on medical matters of the period, subse-<br>
+quently provoked much ribaldry directed against believers i n mystical <br>
+love whose ideas, bereft of sense, are to become synonymous w i t h an <br>
+erotic strategy in wh ich the purely verbal idealization of woman is mere-<br>
+ly an expedient to silence her resistance as quickly as possible. </p><p>The conflict between those two impor tant tradit ions also signifies the <br>
+relative dependence of the one on the other. Erotic myst ic ism becomes <br>
+distinct by contrast to the naturalistic trend, whereas the latter defines <br>
+its positions in controversy, explicit or impl ic i t , w i t h the idealism and <br>
+the intellectualism of the fai thful . </p><p>A th i rd trend, as meek and obscure as the others were famous and <br>
+persistent, almost passed unobserved or was close to being assimilated <br>
+by the two others. Indeed, there can exist phantasms unrelated to a real <br>
+object, but, thanks to the qual i ty of their images, there can be no phan-</p><p>Phantasms at Work 40 </p><p>FIGURE 2. Bacchanalian revels. From Francesco Colonna, Discours du Songe de <br>
+Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, The <br>
+Newberry Library, Chicago. </p><p>tasms without physical support of one kind or another. That is why a <br>
+story about phantasms is always interpretable: we can see it either as the <br>
+symbol of adventures in the intelligential cosmos or as the allegory of <br>
+actual events.<br>
+<h1>【5†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Neither mystical love nor vulgar love, Poliphilus&#x27;s dream represents <br>
+the trite story of phantasmic desire that finds fulf i l lment. </p><p>The tale is saved f rom platitude and indecency by its phantasmic quali-<br>
+ty: desire, provoked by a phantasm, is appeased by the phantasm, after <br>
+a period of erotico-mnemotechnic tribulations. </p><p>(v) The Depth Psychology of Ficino <br>
+D E S C E N T OF T H E SOUL </p><p>Souls descend into the bodies of the Mi lky Way through the <br>
+constellation of Cancer, enveloping themselves in a celestial <br>
+and luminous veil which they put on to enter terrestrial <br>
+bodies. For nature demands that the very pure soul be united <br>
+w i th the very impure body only through the intermediary of a <br>
+pure veil, which, being less pure than the soul and purer than <br>
+the body, is considered by the Platonists to be a very conve-<br>
+nient means of uni t ing the soul w i th the terrestrial body. It is <br>
+due to that descent that the souls and bodies of the Planets <br>
+confirm and reinforce, i n our Souls and our bodies respec-<br>
+tively, the seven original gifts bestowed upon us by God. The <br>
+same function is performed by the [seven] categories of de-<br>
+mons, intermediaries between the celestial gods and men. The <br>
+gift of contemplation is strengthened by Saturn by means of <br>
+the Saturnian Demons. The power of the government and <br>
+empire is strengthened by Jupiter through the ministry of the <br>
+Jovian Demons; similarly, Mars through the Martians fosters <br>
+the soul&#x27;s courage. The Sun, w i th the help of the Solar De-</p><p>43 Empirical Psychology and the Deep Psychology of Eros </p><p>FIGURE 4. The ithyphallic god Pan. From Francesco Colonna, Discours du Songe <br>
+de Poliphile [Hypnerotomachia] (Paris, 1554). Courtesy of the Wing Foundation, <br>
+The Newberry Library, Chicago. </p><p>Phantasms at Work 44 </p><p>mons, fosters the clarity of the senses and opinions that makes <br>
+divination possible; Venus, through the Venereans, incites <br>
+Love. Mercury, through the Mercurials, awakens the capacity <br>
+for interpretation and expression. Finally, the Moon, through <br>
+the lunar demons, increases procreation. (Amore, VI, 4) </p><p>Except for the idea that the planets exert their respective influences on <br>
+the soul and the human body through the intermediacy of demons, this <br>
+passage f rom Ficino is inspired by the Commentary on the Dream of Scipio <br>
+by the Latin Neoplatonist Macrobius, who must have had as his source a <br>
+treatise by Porphyry.4 4 Macrobius׳s work had been circulated in the <br>
+Middle Ages, and it is possible that Ficino was acquainted w i th a com-<br>
+mentary attributed to Wil l iam of Conches, one of whose fourteenth-cen-<br>
+tury manuscripts is in the National Library in Florence.45 The author of <br>
+Philosophia mundi, in dealing w i t h procreation, divided the womb into <br>
+seven compartments retaining sperm in which ״the human form is im-<br>
+printed like a coin.4 -It is very likely that the seven divisions corre ״6<br>
+spond to the planets, whose influence on the development of the <br>
+embryo wou ld thus have been prepared in advance through divine <br>
+wisdom permeating nature.<br>
+<h1>【6†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Francesco Colonna: Biografia e Opere, (Padua, 1959). <br>
+40. See the edition by G. Pozzi and L. A. Ciapponi, Hypnerotomachia Polifili </p><p>(Padua, 1964). <br>
+41. In 1463, Ficino, at thir ty, translated the Pimander attributed to Hermes </p><p>Trismegistus. Despite his precocity, his reputation d id not reach Treviso f rom <br>
+Florence before 1467. </p><p>42. Yates, pp. 123-24. <br>
+43. See Hypnérotomachie, ed. Guégan-Kerver, p. 309. </p><p>Notes to Pages 91-113 232 232 </p><p>44. See my discussion of J. Flamant׳ s thesis, Macrobe et le néo-platonisme latin, à <br>
+la fin du IVe siècle (Leiden, 1977) in &quot;Ordine e disordine delle sfere&quot; (cf. also my <br>
+review of Flamands book in Aevum, 1979). Two other passages from Ficino&#x27;s <br>
+work relate to the doctrine of the descent of the soul among the planetary <br>
+spheres and the acquisition of vehicles. In his Theologia platónica (XVIII, 4-5), <br>
+Ficino mentions three vehicles of the soul (celestial, aerial, and material), which <br>
+seems to refer to Synesius of Cyrene&#x27;s distinction between a vehiculum divinioris <br>
+animae, which is ethereal, and a material vehicle, common to animals and to man <br>
+(cf. my Magia spirituale, note 103). Proclus also makes this distinction (see my <br>
+ ,Ordine e disordine delle sfere&quot;). Ficino does not hold this position invariably״<br>
+since in his commentary on Plotinus&#x27;s Enneads (II, 6) we find this passage, akin <br>
+to Proclus, Macrobius and Servius: Ex eorum iterum animabus in nostris animis a <br>
+Saturno contemplatio cautioque et conservatio diligens augetur, ab Jove civilis et prudens <br>
+potissimum gubernatio, a Marte magnanimitas malorum iniuriarumque expultrix, a <br>
+Mercurio inquisitio quaelibet et expressio, a Venere charitas et humanitas, a Sole hon-<br>
+estatis cura pudorque et gloriae studium verioris, a Luna denique rerum vitae necessariam <br>
+cura et providentia diligens (Opera, II, p. 1619). The neo-Plotinian term ״vehicle״ <br>
+does not appear here, nor do the planetary demons who appear in the text of the <br>
+Commentary to the Symposium. It is very characteristic that, in the eighteenth book <br>
+of his Theologia platónica, Ficino says he does not believe in the doctrine of the <br>
+soul&#x27;s passage through the spheres, which he calls ״a phantasy of the Pla-<br>
+tonists.״ Since he sets it forth in his commentaries on Enneads and Symposium, <br>
+however, it is very likely he does subscribe to this theory. Stranger yet, he does <br>
+not even mention it where it deserves a place of honor, that is, in the book De <br>
+vita coelitus comparanda. Actually, no theoretical justification for astrological mag-<br>
+ic is as simple as the idea that, in the course of its descent, the soul is enveloped <br>
+in astral tunics that respond to the momentary influences of the planets.<br>
+<h1>【7†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+1954), p. 105, no. 5. <br>
+29. Theol. Plat., XV, 13; see also Garin, pp. 401-2. The tradit ion of this ״ inner </p><p>eye״ comes from Plotinus, Enneads, I, 6, 9. For Ficino, this is a phantasmic organ <br>
+directed toward the summit (the intelligible world). </p><p>30. P. O. Kristeller, Il pensiero filosofico di Marsilio Ficino, Italian translation <br>
+revised and augmented (Florence, 1953), pp. 218 sq. </p><p>31. See Verbeke, pp. 498-507. <br>
+32. For the history of the oculus spiritalis, see H. Lewy, Chaldaean Oracles and </p><p>Theurgy: Mysticism, Magic and Platonism in the Later Roman Empire (Cairo, 1956; <br>
+repr. Paris, 1978, through the good offices of M. Tardieu), pp. 370 sq. </p><p>33. Chastel, Marcile Ficin et l&#x27;Art, p. 147. <br>
+34. Prooem. in Platonis Parmenidem (Opera, II, p. 1137). This is simply the Lat in </p><p>translation of an expression Xenophon had used to designate the Socratic meth-<br>
+od (paizein spoude). O n the custom of the ״serious games״ of Ficino and his <br>
+contemporaries, see Edgar Wind, Pagan Mysteries in the Renaissance 3d ed. (Ox-<br>
+ford, 1980), pp. 236-38. </p><p>35. Wind attributes them to Nicholas of Cusa&#x27;s disciple John Andreas of <br>
+Bussi. </p><p>36. On the Orphic myth, see W. K. C. Guthrie, Orphaeus and Greek Religion, 2d <br>
+ed. (London, 1952); H. Jeanmaire, Dionysos: Histoire du culte de Bacchus (Paris, <br>
+Payot, 1950). </p><p>37. Heraclitus, fr. 52. On the ״Orphic״ interpretation of this fragment, see V. <br>
+Macchioro, Eraclito, nuovi studi sull&#x27; Orßsmo (Bari, 1922). On the interpretation <br>
+pertaining to ״ ini t iat ion״ in the game of Dionysus, see Andrew Lang, Custom <br>
+and Myth (1885; reprint Ooserhout, 1970), pp. 29-44, esp. pp. 39-41; and R. <br>
+Pettazzoni, I misteri: Saggio di una teoria storico-religiosa (Bologna, 1924). On the <br>
+ludus mundi, by Karl Jaspers in particular, see D. L. Mil ler, Gods and Games (New <br>
+York, 1973), pp. 163-64. O n interpretation of fragment 52 by Heraclitus from <br>
+Nietzsche to Heidegger, see G. Penzo, II nichilismo da Nietzsche a Sartre (Rome, <br>
+1976). </p><p>38. La Forme et l&#x27;Intelligible, pp. 31-64. <br>
+39. On the biography of Brother F. Colonna, see M. T. Casella and G. Pozzi,<br>
+<h1>【8†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+EROS AND MAGIC <br>
+I N T H E </p><p>RENAISSANCE </p><p>loan E Couliano </p><p>Translated by Margaret Cook <br>
+With a Foreword by </p><p>Mircea Eliade </p><p>EROS AND MAGIC <br>
+IN THE RENAISSANCE </p><p>loan P. Couliano </p><p>EROS AND M A G I C IN </p><p>THE RENAISSANCE </p><p>Translated by Margaret Cook </p><p>With a Foreword by Mircea Eliade </p><p>Chicago and London THE UNIVERSITY OF CHICAGO PRESS </p><p>THE UNIVERSITY OF CHICAGO PRESS, CHICAGO 60637 <br>
+THE UNIVERSITY OF CHICAGO PRESS, LTD., LONDON </p><p>© 1987 by The University of Chicago <br>
+All rights reserved. Published 1987 <br>
+Printed in the United States of America <br>
+07 06 05 04 03 02 01 6 </p><p>This book was originally published in France under the title Eros et <br>
+magie ä la Renaissance, 1484, © 1984, Flammarion, Paris. </p><p>LIBRARY OF CONGRESS CATALOGING־IN־PUBLICATION DATA </p><p>Culianu, loan P. <br>
+Eros and magic in the Renaissance. </p><p>Translation of: Eros et magie k la Renaissance, 1484. <br>
+Bibliography: p. <br>
+Includes index. <br>
+1. Renaissance—Psychological aspects. 2. Magic. </p><p>I. Title. </p><p>CB367.C6813 1987 1 3 3 . 4 8 7 - 1 0 8 8  ׳094 2</p><p>ISBN 0-226-12316-2 (pbk.) </p><p>© The paper used in this publication meets the minimum <br>
+requirements of the American National Standard for <br>
+Information Sciences—Permanence of Paper for Printed <br>
+Library Materials, ANSI Z39.48-1992. </p><p>Contents </p><p>Translator&#x27;s Note ix <br>
+Foreword, by Mircea Eliade xi <br>
+Acknowledgments xv <br>
+Introduction xvii </p><p>PHANTASMS AT WORK </p><p>1. History of Phantasy 3 <br>
+(i) On the Inner Sense 3 </p><p>Some Preliminary Considerations 3 <br>
+The Phantasmic Pneuma 6 </p><p>(ii) Flux and Reflux of Values in the Twelfth Century 11 <br>
+Acculturation of the West 13 <br>
+How a Woman . . . 21 </p><p>(iii) The Vehicle of the Soul and Prenatal Experience 23 </p><p>2. Empirical Psychology and the Deep Psychology of <br>
+Eros 28 </p><p>(i) The Empirical Psychology of Ficino and Its Sources 28 <br>
+(ii) The Art of Memory 32 </p><p>(iii) The Phantasmic Eros and the Appeasement of <br>
+Desire 38 </p><p>(iv) Phantasms at Work 41 <br>
+(v) The Depth Psychology of Ficino 42 </p><p>Descent of the Soul 42 <br>
+Melancholy and Saturn 46 </p><p>3. Dangerous Liaisons 53 <br>
+(i) Pico della Mirandola, Continuator of Ficino 53 </p><p>(ii) The Ambiguous Gods of Eros 58 <br>
+Giordano Bruno, a Man of the Phantasmic Past 58 <br>
+Scandal in London 60 </p><p>v </p><p>Contents v i </p><p>Mnemonic Phantasms 65 <br>
+Ambigui ty of Eros 67 <br>
+A t the Heart of Bruno&#x27;s Doctrine 70 <br>
+Actaeon 77 <br>
+Diana 79 <br>
+The Parable of the Nine Blind Men 83 <br>
+Circe 84<br>
+<h1>【9†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+(ii) The Art of Memory </p><p>The Ar t of Memory, also a phantasmic process whose principles and <br>
+history Paolo Rossi and Frances Yates have dealt w i th in their excellent <br>
+books, forms an intermediary l ink between Eros and magic. It concerns <br>
+us here only to the extent that, wi thout a general idea of it, we would be <br>
+at a loss to understand the ideological scope of Ficino and other theoreti-<br>
+cians of phantasmic love such as Francesco Colonna and Giordano <br>
+Bruno.8 </p><p>The Ar t of Memory is a technique for the manipulat ion of phantasms, <br>
+which rests on the Aristotelian principle of the absolute precedence of <br>
+the phantasm over speech and of the phantasmic essence of the intellect <br>
+(see above, chap. 1, sec. 1). The precise inference drawn from it, ex-</p><p>33 Empirical Psychology and the Deep Psychology of Eros </p><p>pounded by St. Thomas in his commentary on Aristotle&#x27;s De memoria et <br>
+reminiscentia, is that whatever is seen, thanks to its intrinsic quality of <br>
+image, is easy to remember, whereas abstract concepts or linguistic se-<br>
+quences require some phantasmic support or other to charge the memo-<br>
+ry.9 This is why St. Thomas recommends recourse to the mnemotechni-<br>
+cal rules contained in Ad Herennium, wrongly attributed to Cicero and <br>
+also called Rhetorica secunda. </p><p>It is certain that the Art of Memory had been utilized in the Middle <br>
+Ages in cloisters to foster teaching of abstract concepts but also as a very <br>
+important element of the monk&#x27;s inner discipline. In the fourteenth cen-<br>
+tury, two treatises in Vulgar Italian deal with it, and even Petrarch was <br>
+acquainted with its rules.10 </p><p>But times change, and, with the discovery in 1416 of Quintilian&#x27;s In-<br>
+stitute oratoria (which, by the way, does not endorse mnemotechnics), <br>
+the humanists place the arts and virtues of the ancients on a pedestal. <br>
+Whereas the Middle Ages utilized the pseudo-Ciceronian treatise ad <br>
+maiorem gloriam Dei, the better to bring to mind the majestic structure of <br>
+theological concepts, humanism sees in the Ars memoriae an important <br>
+weapon for social success, to ensure, by means of an infallible memory, <br>
+advantage over others.11 It is along these lines that the jurist Peter of <br>
+Ravenna&#x27;s treatise Phoenix, sive artificiosa memoria (Venice, 1491) was <br>
+written. </p><p>The reader of Rossi&#x27;s or Yates&#x27;s books doubtless recalls the function of <br>
+Art, which we shall try to reconstruct freely here without going into <br>
+detail. Owing to the fact that perceptions have an intrinsically phan-<br>
+tasmic character, and are thus readily committed to memory, the task is <br>
+to superimpose any contents linguistic or conceptual—for instance a <br>
+poem or classification of virtues—onto a succession of images. Now, <br>
+those images can come from some place, but this does not prevent them <br>
+from being, as well, phantasms produced for the circumstances by the <br>
+imaginative faculty. In the first instance, the place must be chosen with <br>
+care: truly, this Art demands a total concentration only possible in soli-<br>
+tude. It follows that mnemonic activity can only be pursued in a church, <br>
+a cemetery, a deserted palace, or at home, avoiding all company and <br>
+diversion. The parts of the place must be memorized in a certain order.<br>
+<h1>【10†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+״ <br>
+interpretable as a phantasmic process, a visio spiritalis in the August inian <br>
+sense.31 It is, in fact, a need to discover a means of communication be-<br>
+tween reason and intellect (the soul), and this means is provided by the <br>
+spiritual eye, the mysterious organ that permits us to look upward to-<br>
+ward the higher ontological levels.32 </p><p>André Chastel believes that the term hieroglypha, as used by Ficino, <br>
+does not refer to a form communicated by the soul to the faculty of <br>
+reason through the intermediary of the pneuma. Rather, it is a symbol of <br>
+meditation ״keeping the spirit in a state of tension propitious to a k ind <br>
+of meditation close to ecstasy, the talisman of the oculus mentis.33״ </p><p>Pseudo-Egyptian hieroglyphics, emblems, and impresae were wonder-<br>
+fully suited to the playful spirit of Florentine Platonism, to the myste-<br>
+rious and ״myst i fy ing״ quality Ficino believed it had. ״Pythagoras, </p><p>Phantasms at Work 38 </p><p>Socrates, and Plato had the habit of h id ing all divine mysteries behind <br>
+the veil of figurative language to protect their wisdom modestly from the <br>
+Sophists׳ boastfulness, of joking seriously and playing assiduously, <br>
+iocari serio et studiosissime ludere.&quot;34 That famous turn of phrase of <br>
+Ficino&#x27;s—translation of a remark by Xenophon concerning the Socratic <br>
+method—depicts, at bottom, the quintessence of every phantasmic pro-<br>
+cess, whether it be Eros, the Ar t of Memory, magic, or alchemy—the <br>
+ludus puerorum, preeminently a game for children. What, indeed, are we <br>
+doing in any of the above if not playing with phantasms, trying to keep up <br>
+with their game, which the benevolent unconscious sets up for us? Now, <br>
+it is not easy to play a game whose rules are not known ahead of time. <br>
+We must apply ourselves seriously, assiduously, to try to understand <br>
+and learn them so that the disclosures made to us may not remain un-<br>
+answered by us. </p><p>In the Ball Game (De ludo globi, 1463) by Nicholas of Cusa, these verses <br>
+have been inserted although they do not belong to the author:35 </p><p>Luditur hie ludus; sed non pueriliter, at sic <br>
+Lusit ut orbe novo sancta sophia deo . . . <br>
+Sic omnes lusere pii: Dionysus et qui <br>
+Increpuit magno mystica verba sono. </p><p>The ludus globi is the supreme mystical game, the game the Titans made <br>
+Dionysus play in order to seize h im and put h im to death.36 From the <br>
+ashes of the Titans struck down by the l ightning of Zeus, arose man-<br>
+k ind, a race guil ty wi thout having sinned because of the deicide of its <br>
+ancestors. But, since the Titans had incorporated part of the god, men <br>
+also inherited a spark f rom the murdered child, the divine child whose <br>
+game is the metaphor of the ages: ״A ion is a child who plays checkers: <br>
+the sovereignty of a chi ld!37״ </p><p>(iii) The Phantasmic Eros and the Appeasement of Desire </p><p>Wherever Eros is at issue, so is desire. Where desire is at issue, so is its <br>
+appeasement.<br>
+<h1>【11†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+The ״selective w i l l  of the Italian Renaissance pays a good deal of ״<br>
+attention to the often fastidious works of its thirteenth-century precur-<br>
+sors in order to f it them into its own system of interpretation. It is not <br>
+purely out of kindness that Marsil io Ficino, whose treatise on love was <br>
+wr i t ten for use by a descendant of Guido Cavalcanti,25 sets forth in de-<br>
+tail some of Cavalcanti׳ s erotic theories. As one of the principal repre-<br>
+sentatives of the fedeli d&#x27;amore, Guido Cavalcanti developed an empirical <br>
+psychology of Eros that does not differ essentially f rom that of Ficino. </p><p>The case of Pico della Mirandola, which we shall analyze in chapter 3, <br>
+is more complicated: it wou ld be called a striking example of the Oedi-<br>
+pus complex if that term had not fallen into disuse through repeated <br>
+abuse. Stimulated, or rather irritated, by Ficino׳s little masterpiece on <br>
+love, Pico abandons all courtesy and tries to refute it in toto. That is why <br>
+he attacks Guido Cavalcanti for lacking profundity and holds up as a <br>
+model for a love poem a canzona by his own fr iend Girolamo Benivieni <br>
+on which he undertakes a commentary. The example of Pico is highly <br>
+significant. The young man forgets what elsewhere he reveals he knows <br>
+only too well , in particular that a cultural era is not defined by the con-<br>
+tent of the ideas it conveys but by its interpretive filter. It demands of <br>
+Guido Cavalcanti that which Ficino, more subtle in this respect, would </p><p>13 History of Phantasy </p><p>never have asked: to wit, that he already use the Platonistic interpreta-<br>
+tion of the fifteenth century! Benivieni&#x27;s Canzona only differs from a can-<br>
+zona by Cavalcanti in that it furnishes directly to Pico della Mirandola the <br>
+interpretation he would have made even in the absence of the poem <br>
+because it was his own interpretation of Eros in general. The Platonistic <br>
+reading of Cavalcanti signified, to Ficino, a hermeneutic bias which also <br>
+allowed him to pay tribute to a precursor and to the ancestor of someone <br>
+he liked. Now, in rejecting a real object for interpretation—because the <br>
+difference between his commentary and the text commentated is only <br>
+prosodie, the former being in prose, the latter in verse—Pico peremp-<br>
+torily rejects all hermeneutics. For Ficino, Cavalcanti exists to the extent <br>
+he said something interpretable; for Pico, he does not exist since he does <br>
+not provide something already interpreted as was the case with his friend <br>
+Benivieni. As for the rest of it, there is no great fundamental difference <br>
+between Ficino&#x27;s and Pico&#x27;s theories, although Pico latter constantly cen-<br>
+sures Ficino for the vulgarity of his approach to questions of love.26 </p><p>Whether expressed in a polite or positive way, as by Ficino, or in the <br>
+contemptuous and negative manner of Pico, it is certain that the Floren-<br>
+tine Renaissance takes chronological precedence over the rediscovery of <br>
+the other Renaissance, that of the twelfth and thirteenth centuries.<br>
+<h1>【12†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Circulating through the same pneumatic passage in which contagion <br>
+of the blood is spread are images that, in the mirror of common sense, </p><p>31 Empirical Psychology and the Deep Psychology of Eros </p><p>are changed into phantasms. When Eros is at work, the phantasm of <br>
+the loved object leads its own existence, all the more disquieting be-<br>
+cause it exerts a k ind of vampir ism on the subject&#x27;s other phantasms <br>
+and thoughts. It is a morbid distension of its activity which, in its re-<br>
+sults, can be called both concentration and possession: concentration, <br>
+because the subject&#x27;s entire inner life is reduced to contemplation of <br>
+one phantasm only; possession, because this phantasmic monopoly is <br>
+involuntary and its collateral influence over the subject&#x27;s psychosomat-<br>
+ic condition is highly deleterious. </p><p>Interestingly, the love object plays a secondary role i n the process of <br>
+establishing the phantasm: it is only a pretext, not a real presence. The <br>
+true object, omnipresent, of Eros is the phantasm, which has taken per-<br>
+manent possession of the spiritual mirror. Now, this phantasm repre-<br>
+sents a perceived image that has gone beyond the threshold of conscious-<br>
+ness, but the reason it has assumed such obsessional dimensions lies in <br>
+the deepest part of the individual unconscious. We do not love another <br>
+object, a stranger to ourselves, Ficino thinks (Amore, VI, 6), thus antic-<br>
+ipating the analytic psychology of Carl Jung. We are enamored of an <br>
+unconscious image. </p><p> ,The lover carves into his soul the model of the beloved. In that way״<br>
+the soul of the lover becomes the mirror in which the image of the loved <br>
+one is reflected&quot;: Amans amati suofiguram sculpit in animo. Fit itaque aman-<br>
+tis animus speculum in quo amati relucet imago (ibid., II, 8). That entails <br>
+rather a complicated dialectic of love, in which the object is changed into <br>
+the subject ousting the subject who, tormented by the anxiety of pro-<br>
+spective annihilation due to being deprived of his state as subject, des-<br>
+perately claims the right to a form of existence. </p><p>The phantasm that monopolizes the soul is the image of an object. <br>
+Now, since man is soul, and since soul is totally occupied by a phan-<br>
+tasm, the phantasm is henceforth the soul. It fol lows that the subject, <br>
+bereft of his soul, is no longer a subject: the phantasmic vampire has <br>
+devoured it internally. But it also follows that the subject has now <br>
+grafted itself onto the phantasm which is the image of the other, of the <br>
+beloved. Metaphorically, therefore, it can be said that the subject has <br>
+been changed into the object of his love. </p><p>A strange situation wi thout a conclusion if it continues thus: a person <br>
+without a soul decays and dies (Ficino&#x27;s subtlety does not go so far as to <br>
+imagine what happens to that soul after death; he only avers that the <br>
+beloved exists in duplicate and the lover no longer in any form). A solu-<br>
+tion does exist, however: that the beloved accept, in his turn, the offer of <br>
+love. In this case he w i l l also allow the phantasm of the lover to enter </p><p>Phantasms at Work 32<br>
+<h1>【13†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+What, indeed, are we <br>
+doing in any of the above if not playing with phantasms, trying to keep up <br>
+with their game, which the benevolent unconscious sets up for us? Now, <br>
+it is not easy to play a game whose rules are not known ahead of time. <br>
+We must apply ourselves seriously, assiduously, to try to understand <br>
+and learn them so that the disclosures made to us may not remain un-<br>
+answered by us. </p><p>In the Ball Game (De ludo globi, 1463) by Nicholas of Cusa, these verses <br>
+have been inserted although they do not belong to the author:35 </p><p>Luditur hie ludus; sed non pueriliter, at sic <br>
+Lusit ut orbe novo sancta sophia deo . . . <br>
+Sic omnes lusere pii: Dionysus et qui <br>
+Increpuit magno mystica verba sono. </p><p>The ludus globi is the supreme mystical game, the game the Titans made <br>
+Dionysus play in order to seize h im and put h im to death.36 From the <br>
+ashes of the Titans struck down by the l ightning of Zeus, arose man-<br>
+k ind, a race guil ty wi thout having sinned because of the deicide of its <br>
+ancestors. But, since the Titans had incorporated part of the god, men <br>
+also inherited a spark f rom the murdered child, the divine child whose <br>
+game is the metaphor of the ages: ״A ion is a child who plays checkers: <br>
+the sovereignty of a chi ld!37״ </p><p>(iii) The Phantasmic Eros and the Appeasement of Desire </p><p>Wherever Eros is at issue, so is desire. Where desire is at issue, so is its <br>
+appeasement. </p><p>That applies to Dr. Freud as much as to the theoreticians of love in the <br>
+Middle Ages and the Renaissance, w i t h one exception: the latter, some-<br>
+times revealing amazing knowledge through their freedom and candor <br>
+w i t h regard to human sexuality, nevertheless grant the existence of <br>
+other forms of satisfaction of desire. Indeed, Eros, being by nature spir-<br>
+itual, hence located at an intermediate level between the soul and the <br>
+body, the intelligential wor ld and the sensory wor ld, it can lean toward <br>
+one or the other of those cosmic regions. But, given that desire is the </p><p>39 Empirical Psychology and the Deep Psychology of Eros </p><p>pursuit of a phantasm and that the phantasm itself belongs to a wor ld , <br>
+the imaginary wo r l d—the mundus imaginalis whose loftiness Henry Cor-<br>
+b in has so wel l described w i thou t dealing w i t h its penumbra—there is <br>
+also a th i rd possibil i ty, namely that Eros burns away altogether in a <br>
+phantasmic sphere. </p><p>The spir i tual Eros funct ion ing anagogically: that is what Dante pro-<br>
+pounds, as R. Kle in has so we l l demonstrated;38 the natural love that <br>
+descends to the body: that is the experience of many wri ters of the <br>
+school of Boccaccio, rediscovered in Freudian psychoanalysis w i t h the <br>
+stubborn intent of reducing to a single factor the mul t i tud inous man-<br>
+ifestations of Eros. I t goes w i thou t saying that those two tradit ions have <br>
+one point i n common: the recognit ion, i f not of the nature of Eros, at <br>
+least of its phantasmic techniques.<br>
+<h1>【14†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+It demands of <br>
+Guido Cavalcanti that which Ficino, more subtle in this respect, would </p><p>13 History of Phantasy </p><p>never have asked: to wit, that he already use the Platonistic interpreta-<br>
+tion of the fifteenth century! Benivieni&#x27;s Canzona only differs from a can-<br>
+zona by Cavalcanti in that it furnishes directly to Pico della Mirandola the <br>
+interpretation he would have made even in the absence of the poem <br>
+because it was his own interpretation of Eros in general. The Platonistic <br>
+reading of Cavalcanti signified, to Ficino, a hermeneutic bias which also <br>
+allowed him to pay tribute to a precursor and to the ancestor of someone <br>
+he liked. Now, in rejecting a real object for interpretation—because the <br>
+difference between his commentary and the text commentated is only <br>
+prosodie, the former being in prose, the latter in verse—Pico peremp-<br>
+torily rejects all hermeneutics. For Ficino, Cavalcanti exists to the extent <br>
+he said something interpretable; for Pico, he does not exist since he does <br>
+not provide something already interpreted as was the case with his friend <br>
+Benivieni. As for the rest of it, there is no great fundamental difference <br>
+between Ficino&#x27;s and Pico&#x27;s theories, although Pico latter constantly cen-<br>
+sures Ficino for the vulgarity of his approach to questions of love.26 </p><p>Whether expressed in a polite or positive way, as by Ficino, or in the <br>
+contemptuous and negative manner of Pico, it is certain that the Floren-<br>
+tine Renaissance takes chronological precedence over the rediscovery of <br>
+the other Renaissance, that of the twelfth and thirteenth centuries. </p><p>Modern scholars, who sometimes confuse the rediscovery with the <br>
+summarizing or literal resumption of the same ideas, accord such prece-<br>
+dence only to Mario Equicola, interpreter of Provençal poetry in his Libro <br>
+de natura de amore, of which the Latin original—on which the Italian <br>
+translation of 1509-11 (published in 1525) was based—dates back to the <br>
+years 1494-96,27 right after the death of Pico. Now, it is true that Mario <br>
+Equicola refers directly to the lyric style of the troubadours, whereas <br>
+Cavalcanti, in whom Ficino discovers a precursor, is only the later repre-<br>
+sentative of an Italian school, which, also profiting from the lessons of <br>
+the Sicilian school28 and in competition with the school of Bologna, re-<br>
+places the code of the troubadours with one that is more rigid and ״sci-<br>
+entific.&quot; Of course, the two examples are not superimposable, but <br>
+ stilnovism&quot; and Provençal poetry both stem from the same existential״<br>
+root of courtly love. </p><p>ACCULTURATION OF THE WEST </p><p>The observer of ideas and currents taking place on the twelfth-century <br>
+stage is frustrated by their variety. A quick foray into the wings, which <br>
+few have yet dared to attempt, shows us that many strings are held in <br>
+the same hand, the same ״selective w i l l , &quot; perhaps.29 </p><p>The phenomenon that characterizes the movements of ideas in the </p><p>Phantasms at Work 14<br>
+<h1>【15†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+That applies to Dr. Freud as much as to the theoreticians of love in the <br>
+Middle Ages and the Renaissance, w i t h one exception: the latter, some-<br>
+times revealing amazing knowledge through their freedom and candor <br>
+w i t h regard to human sexuality, nevertheless grant the existence of <br>
+other forms of satisfaction of desire. Indeed, Eros, being by nature spir-<br>
+itual, hence located at an intermediate level between the soul and the <br>
+body, the intelligential wor ld and the sensory wor ld, it can lean toward <br>
+one or the other of those cosmic regions. But, given that desire is the </p><p>39 Empirical Psychology and the Deep Psychology of Eros </p><p>pursuit of a phantasm and that the phantasm itself belongs to a wor ld , <br>
+the imaginary wo r l d—the mundus imaginalis whose loftiness Henry Cor-<br>
+b in has so wel l described w i thou t dealing w i t h its penumbra—there is <br>
+also a th i rd possibil i ty, namely that Eros burns away altogether in a <br>
+phantasmic sphere. </p><p>The spir i tual Eros funct ion ing anagogically: that is what Dante pro-<br>
+pounds, as R. Kle in has so we l l demonstrated;38 the natural love that <br>
+descends to the body: that is the experience of many wri ters of the <br>
+school of Boccaccio, rediscovered in Freudian psychoanalysis w i t h the <br>
+stubborn intent of reducing to a single factor the mul t i tud inous man-<br>
+ifestations of Eros. I t goes w i thou t saying that those two tradit ions have <br>
+one point i n common: the recognit ion, i f not of the nature of Eros, at <br>
+least of its phantasmic techniques. For all parties, the prel iminaries of <br>
+desire consist i n setting u p a phantasm w i t h i n the subject. For some, <br>
+this phantasm w i l l have the capacity to awaken their allayed desire, to <br>
+propel and accompany them on their t r ip th rough the intel l igential cos-<br>
+mos. This w i l l become a heroic passion ending in an ecstatic fusion of <br>
+the hunter and the object of his hunt—accord ing to an image employed <br>
+by Ficino and later revived by Giordano Bruno. For others, the phan-<br>
+tasm w i l l only point to a painfu l and urgent need for a physical release <br>
+which increases in propor t ion as its fu l f i l lment is postponed. </p><p>In this case there w i l l be a fundamental contradict ion between the <br>
+medical concept of a phantasmic Eros that disturbs the equi l ibr ium of <br>
+the organism and demands p rompt assuagement to restore this equi-<br>
+l ibr ium, and the concept of the ״ fa i th fu l , -a complete denial of the for ״<br>
+mer, f ind ing expression through a semantic inversion valor iz ing the <br>
+disequil ibr ium in terms of a plenary spir i tual experience. This w i l l to <br>
+distort, first brought to bear on medical matters of the period, subse-<br>
+quently provoked much ribaldry directed against believers i n mystical <br>
+love whose ideas, bereft of sense, are to become synonymous w i t h an <br>
+erotic strategy in wh ich the purely verbal idealization of woman is mere-<br>
+ly an expedient to silence her resistance as quickly as possible.<br>
+<h1>【16†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+That sickness is precisely the experience described by Guido Caval-<br>
+canti, continuing f rom the moment the visual spirit intercepts the wom-<br>
+an&#x27;s image and transmits it to the anterior cell of the brain, seat of the <br>
+imaginative faculty, unt i l the moment the feminine phantasm has in-<br>
+fested the whole pneuma and spreads f rom now on through the spir-<br>
+itual canals of the febrile organism. No one w i l l be astonished that the <br>
+poet Giacomo da Lentino should ask this seemingly childish question: <br>
+H o w can it be that so large a woman has been able to penetrate my eyes, <br>
+which are so small, and then enter my heart and my brain?64 The physi-<br>
+cians of antiquity, like Galen, were also fascinated by the same phe-<br>
+nomenon: Si ergo ad visum ex re videnda aliquid dirigitur . . . quomodo ilium <br>
+angustum foramen intrare poterit?65 Averroes answers the astonishment <br>
+(feigned) of both parties: it is not a corporeal impression but a phan־ <br>
+tasmic one. Common sense receives the phantasms on this side of the <br>
+retina and transmits them to the imaginative faculty.66 </p><p>Dante goes farther in his erotic pneumophantasmology. In sonnet 21 <br>
+of his Vita nova, he envisages the Lady as the recipient of spirit overflow-<br>
+ing through eyes and mouth, miracolo gentil.67 His experience does not <br>
+pine away in an interior pneumatic circle but represents, in a certain <br>
+way, a decanting of spirit which takes for granted, albeit involuntari ly, <br>
+some reciprocity of desire. Through a k ind of significatio passiva,68 what <br>
+was the object of covetous desire is transformed into a subject whence <br>
+Love emanates, but emanates wi thout being aware of it. Virginal inno-<br>
+cence that only increases the pangs of passion, the exquisite torment of <br>
+love&#x27;s faithful. </p><p>23 History of Phantasy </p><p>With his Vita nova, Dante also enters a mysterious realm that our rudi-<br>
+ments of medieval psychology are inadequate to explain: dream, vision. </p><p>(iii) The Vehicle of the Soul and Prenatal Experience </p><p>That empirical psychology regarding Eros which w i l l recur in Ficino was <br>
+inadequate to satisfy Renaissance demands for depth in thought. The <br>
+theory of phantasmic knowing merely represented the last l ink in a huge <br>
+body of dogma relating to the pneuma and the soul. </p><p>As we shall see, the connection between Eros and magic is so close <br>
+that differentiation between them is a matter of degree. A phantasmic <br>
+experience carried out through the spiritual channels w i th which we are <br>
+already acquainted, magic makes use of the continuity between the indi-<br>
+vidual pneuma and the cosmic one. It is this same universal pneumatic <br>
+ ,that justifies the depth psychology of Eros (see below ״combination״<br>
+chap. 4, sec. 2). </p><p>Through the doctrine of incorporation of the soul, not only is the con-<br>
+t inuity of the pneuma demonstrated but also the cosmic nature of all <br>
+spiritual activity. It is of course a rather refined form of speculation on <br>
+the relations between microcosm and macrocosm, along w i th a dual pro-<br>
+jection that leads to the cosmization of man and to the anthropomorph-<br>
+ization of the universe.<br>
+<h1>【17†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+Contents </p><p>Translator&#x27;s Note ix <br>
+Foreword, by Mircea Eliade xi <br>
+Acknowledgments xv <br>
+Introduction xvii </p><p>PHANTASMS AT WORK </p><p>1. History of Phantasy 3 <br>
+(i) On the Inner Sense 3 </p><p>Some Preliminary Considerations 3 <br>
+The Phantasmic Pneuma 6 </p><p>(ii) Flux and Reflux of Values in the Twelfth Century 11 <br>
+Acculturation of the West 13 <br>
+How a Woman . . . 21 </p><p>(iii) The Vehicle of the Soul and Prenatal Experience 23 </p><p>2. Empirical Psychology and the Deep Psychology of <br>
+Eros 28 </p><p>(i) The Empirical Psychology of Ficino and Its Sources 28 <br>
+(ii) The Art of Memory 32 </p><p>(iii) The Phantasmic Eros and the Appeasement of <br>
+Desire 38 </p><p>(iv) Phantasms at Work 41 <br>
+(v) The Depth Psychology of Ficino 42 </p><p>Descent of the Soul 42 <br>
+Melancholy and Saturn 46 </p><p>3. Dangerous Liaisons 53 <br>
+(i) Pico della Mirandola, Continuator of Ficino 53 </p><p>(ii) The Ambiguous Gods of Eros 58 <br>
+Giordano Bruno, a Man of the Phantasmic Past 58 <br>
+Scandal in London 60 </p><p>v </p><p>Contents v i </p><p>Mnemonic Phantasms 65 <br>
+Ambigui ty of Eros 67 <br>
+A t the Heart of Bruno&#x27;s Doctrine 70 <br>
+Actaeon 77 <br>
+Diana 79 <br>
+The Parable of the Nine Blind Men 83 <br>
+Circe 84 </p><p>I I T H E G R E A T M A N I P U L A T O R </p><p>4. Eros and Magic 87 <br>
+(i) Identi ty of Substance, Identity of Process 87 </p><p>(ii) Manipulat ion of Masses and of Individuals 89 <br>
+(iii) Vinculum Vinculorum 95 <br>
+(iv) Ejaculation and Retention of Semen 99 <br>
+(v) Of Magic as General Psychosociology 102 </p><p>5. Pneumatic Magic 107 <br>
+(i) The Starting Point of Magic 107 </p><p>(ii) ״Subjective״ Magic and ״Transitive״ Magic 108 <br>
+(iii) The Conspiracy of Things 111 <br>
+(iv) The Theory of Radiations 117 <br>
+(v) Pneumatic Magic 127 </p><p>6. In ter subjective Magic 130 <br>
+(i) Intrasubjective Magic 130 </p><p>(ii) Intersubjective Magic 137 <br>
+Higher Presences 138 <br>
+The Lures 141 <br>
+Propitious Times 142 </p><p>7. Demonomagic 144 <br>
+(i) Some Concepts of Demonology 144 </p><p>(ii) Demons and Eros 148 <br>
+(iii) Witches and Demoniacs 151 <br>
+(iv) Demonomagic f rom Ficino to Giordano Bruno 156 </p><p>Classifications of Magic 156 <br>
+Trithemius of Würzburg 162 </p><p>vii Contents </p><p>III END GAME </p><p>8. 1484 179 <br>
+(i) A Wingless Fly 179 </p><p>(ii) Why Was the Year 1484 so Formidable? 184 </p><p>9. Censoring Phantasy 192 <br>
+(i) Abolition of the Phantasmic 192 </p><p>(ii) Some Historic Paradoxes 195 <br>
+(iii) The Controversy about Asinity 197 <br>
+(iv) The Wiles of Giordano Bruno 200 <br>
+(v) A Single Reformation 202 </p><p>(vi) The Change in Ways of Envisaging the World 204<br>
+<h1>【18†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+is set forth as a systematic distortion or even a seman-<br>
+tic inversion of ideas which pass through the interpretive grille of the <br>
+era. </p><p>A l l of this means that the crowning wish of the historian of ideas is </p><p>Phantasms at Work 12 </p><p>not, or should not be, to define the ideological contents of a given peri-<br>
+od, which are fundamentally recursive in nature, but to glimpse its her-<br>
+meneutic filter, its ״selective w i l l ,  which is, at the same time, a will to ״<br>
+distort. </p><p>A n ideology can be described; a system of interpretation—the only <br>
+one that counts because it alone can show what the originality of one <br>
+cultural moment in time relative to every other is capable of—is imper-<br>
+ceptible. A n implicit if not a hidden presence but also an objective and <br>
+ineluctible one, it is revealed stealthily in all its complexity only to imme-<br>
+diately escape the observation of the investigator. In order for h im to <br>
+practice the history of ideas, he is called upon to see not only what is <br>
+preeminently revealed, the ideas themselves, but precisely that which is <br>
+not revealed, the hidden threads that l ink ideas to the invisible wi l l of <br>
+the time, their producer. Ideas are seen by everyone; the historian of <br>
+ideas is supposed to look in the wings, to contemplate another aspect of <br>
+the theater, the stage seen from wi th in. </p><p>It is impossible to observe the Renaissance of the fifteenth century <br>
+wi thout having first glanced at the Renaissance of the twelfth.24 Theo-<br>
+ries about phantasmic Eros were developed in the course of the latter to <br>
+reach their apogee, which soon degenerated into affectation, in the poet-<br>
+ry of the Dolce Stil Novo. </p><p>The ״selective w i l l  of the Italian Renaissance pays a good deal of ״<br>
+attention to the often fastidious works of its thirteenth-century precur-<br>
+sors in order to f it them into its own system of interpretation. It is not <br>
+purely out of kindness that Marsil io Ficino, whose treatise on love was <br>
+wr i t ten for use by a descendant of Guido Cavalcanti,25 sets forth in de-<br>
+tail some of Cavalcanti׳ s erotic theories. As one of the principal repre-<br>
+sentatives of the fedeli d&#x27;amore, Guido Cavalcanti developed an empirical <br>
+psychology of Eros that does not differ essentially f rom that of Ficino. </p><p>The case of Pico della Mirandola, which we shall analyze in chapter 3, <br>
+is more complicated: it wou ld be called a striking example of the Oedi-<br>
+pus complex if that term had not fallen into disuse through repeated <br>
+abuse. Stimulated, or rather irritated, by Ficino׳s little masterpiece on <br>
+love, Pico abandons all courtesy and tries to refute it in toto. That is why <br>
+he attacks Guido Cavalcanti for lacking profundity and holds up as a <br>
+model for a love poem a canzona by his own fr iend Girolamo Benivieni <br>
+on which he undertakes a commentary. The example of Pico is highly <br>
+significant. The young man forgets what elsewhere he reveals he knows <br>
+only too well , in particular that a cultural era is not defined by the con-<br>
+tent of the ideas it conveys but by its interpretive filter. It demands of <br>
+Guido Cavalcanti that which Ficino, more subtle in this respect, would </p><p>13 History of Phantasy<br>
+<h1>【19†Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf†file-Kv5KeCwDhZavNuqVkeQc92】</h1><br>
+Content source: Source.file<br>
+Title: Ioan P. Couliano Eros and Magic in the Renaissance Chicago Original Paperback.pdf<br>
+Content Snippet:<br>
+This time, the material used by Bruno is made up of phantasmic em-<br>
+blems whose prestige also derives f rom the hermetic statues. Are not <br>
+those spiritual constructions, in the final analysis, forms used by magic <br>
+itself? It is true that their use here comes down to memorizing the stages <br>
+of Eros, but is not Eros itself an anagogic force which produces the ec-<br>
+static union of the soul w i th God? </p><p>A t first glance, De gl&#x27;heroici furori is a series of sonnets w i th commen-<br>
+tary, of the type of Dante&#x27;s Vita nova. Like Pico della Mirandola, f rom <br>
+whom he borrowed many of the themes of the Commento, Bruno does <br>
+not hesitate to copy certain poems which, according to F. Fiorentino, <br>
+belong to Tansillo of Venosa, the main character and Bruno&#x27;s spokes-<br>
+man in the dialogue. But most of the sonnets are the creation of the <br>
+author himself, whether they be commentaries in verse on the represen-<br>
+tations of Eros or poetic expressions of the ״heroic furors.&quot; </p><p>In the Sigillus sigillorum, Bruno had already explained the deep reason <br>
+for ut pictura poesis, the equivalence between painting and poetry. Zeuxis <br>
+is the painter of internal images in the memory, who excels in phantastica </p><p>66 Phantasms at Work </p><p>virtus, imaginative power. In turn, the poet possesses powers of thought <br>
+out of the ordinary whose source is also spiritual. ״ I t follows that philos-<br>
+ophers are also painters and poets, poets are painters and philosophers, <br>
+and painters are philosophers and poets.53״ Indeed, since intellect is <br>
+phantasmic by nature, the philosopher must be able to manage phan-<br>
+tasms, to be a great painter of the spirit. D id not Aristotle say that ״to <br>
+comprehend means to observe phantasms?54״ The place where phan-<br>
+tasms are reflected, as we already know, is the mirror of the pneuma. </p><p>Philosophy, poetry, painting: these are the contents of De gl&#x27;heroici <br>
+furori. These three stages of phantasmic speculation are so inextricably <br>
+intertwined that it is impossible to separate them wi thout destroying the <br>
+uni ty of the subject. Unfortunately, being incapable, since the t r iumph <br>
+of rationalism, of understanding the phantasmagoric of the great artists <br>
+of Memory, we shall have to make a sharp dichotomy between what is <br>
+possible to grasp w i t h our mere logical, historical, and comparative <br>
+methods and that which, to avoid being drawn into the revived mne-<br>
+monics, we must leave aside after a concise description. </p><p>The f i f th dialogue in part 1 is a course in the Ar t of Memory applied to <br>
+intellectual processes, in fifteen chapters. The impresae symbolizing the <br>
+stages of love&#x27;s sophistry are explained in sonnets, which, in turn, are <br>
+the subject matter of the prose commentary. To give an idea of the pro-<br>
+cesses uti l ized by the painter Zeuxis, it is enough to mention the third <br>
+mnemonic image appearing on the escutcheon of the ״heroic furor&quot;:<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Couliano devotes a concentrated section of <em>Eros and Magic in the Renaissance</em> to Francesco</p>
+  </div>
+</div>
+</div>
+</body>
+</html>

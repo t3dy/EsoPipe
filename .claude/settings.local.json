@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash('/e/pdf/esoteric studies:*)",
+      "Bash(python3:*)",
+      "Bash(echo:*)",
+      "Bash(node --version:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(python mine_chats.py:*)",
+      "Bash(python:*)",
+      "Bash(Remove-Item \"E:/pdf/esoteric studies chats/esoteric_archive.db\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"DB cleared\")",
+      "Bash(start \"\" \"E:/pdf/esoteric studies chats/topic_catalog.html\")",
+      "Bash(git add:*)",
+      "Bash(where:*)"
+    ]
+  }
+}

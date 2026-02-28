@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magic Card Data Analysis</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0d0d0d; color: #e0e0e0; line-height: 1.6;
+    max-width: 820px; margin: 0 auto; padding: 24px 16px;
+}
+h1 { font-size: 1.4em; color: #fff; margin-bottom: 6px; }
+.meta { color: #888; font-size: 0.85em; margin-bottom: 28px; }
+.msg { padding: 16px 20px; margin-bottom: 12px; border-radius: 12px; white-space: pre-wrap; word-wrap: break-word; }
+.msg.user { background: #1a1a2e; border-left: 3px solid #7c6fe0; }
+.msg.assistant { background: #1a2e1a; border-left: 3px solid #4caf50; }
+.msg.system { background: #2e2a1a; border-left: 3px solid #ff9800; font-size: 0.85em; }
+.msg.tool { background: #1a2e2e; border-left: 3px solid #00bcd4; font-size: 0.85em; }
+.role { font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.role.user { color: #7c6fe0; }
+.role.assistant { color: #4caf50; }
+.role.system { color: #ff9800; }
+.role.tool { color: #00bcd4; }
+pre { background: #161616; padding: 12px; border-radius: 8px; overflow-x: auto; margin: 8px 0; font-size: 0.9em; }
+code { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+a { color: #7c9fe0; }
+</style></head><body>
+<h1>Magic Card Data Analysis</h1>
+<div class="meta">Created: September 18, 2024 12:38 AM &bull; Updated: September 19, 2024 05:32 PM</div>
+<div class="msg user"><div class="role user">You</div>Can you deal with stuff like spreadsheets? I want to analyze some magic card data from 17lands.com</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>Yes, I can definitely help with analyzing spreadsheet data! If you upload your data from 17lands.com, I can assist with organizing, analyzing, or visualizing it based on your needs. Just let me know what specific insights you&#x27;re looking to gain from the data!</div>
+<div class="msg user"><div class="role user">You</div>Name	Color	Rarity	# Seen	ALSA	# Picked	ATA	# GP	% GP	GP WR	# OH	OH WR	# GD	GD WR	# GIH	GIH WR	# GNS	GNS WR	IWD
+Allied Assault
+
+W	U	28349	6.59	3895	9.31	6458	99.0%	53.7%	805	54.7%	1329	51.5%	2046	53.0%	2661	55.4%	-2.3pp
+Angel of Destiny
+
+W	M	1142	1.54	716	1.50	3038	99.7%	55.1%	339		666	58.4%	905	58.9%	1284	52.4%	6.5pp
+Angelheart Protector
+
+W	C	75335	6.10	10637	8.61	27214	99.3%	53.6%	4415	51.7%	6720	52.5%	9784	52.7%	10673	54.4%	-1.7pp
+Archon of Emeria
+
+W	R	4436	3.09	878	3.77	2644	99.4%	51.6%	319		503	54.1%	768	51.4%	1073	50.2%	1.2pp
+Archpriest of Iona
+
+W	R	3626	2.50	1253	2.76	5242	100.0%	55.2%	742	61.5%	1100	56.0%	1784	58.5%	2281	54.4%	4.1pp
+Attended Healer
+
+W	U	13885	3.13	4444	3.45	16294	99.9%	54.4%	2543	56.9%	4205	57.6%	5862	57.3%	6479	52.1%	5.1pp
+Canyon Jerboa
+
+W	U	20451	4.64	2801	6.36	7511	99.3%	51.6%	877	46.5%	1310	49.7%	2060	
+48.4%
+2676	53.1%	
+-4.7pp
+Cliffhaven Sell-Sword
+
+W	C	77611	6.45	12086	8.98	31427	99.6%	54.7%	5943	56.5%	8562	52.2%	12536	54.4%	12688	55.6%	-1.2pp
+Dauntless Unity
+
+W	C	84787	
+7.63
+9589	11.05	9018	96.9%	52.3%	1031	49.7%	1707	52.0%	2653	51.6%	3725	53.5%	-1.9pp
+Disenchant
+
+W	C	87343	
+8.75
+8625	12.71	924	78.6%	47.1%	86		170		250		380		
+Emeria Captain
+
+W	U	14006	3.04	4506	3.48	18166	99.8%	54.6%	2725	54.5%	4607	55.9%	6364	55.5%	7583	54.5%	1.0pp
+Emeria&#x27;s Call
+
+W	M	1178	1.57	754	1.51	3148	99.7%	53.9%	428		672	60.9%	998	57.8%	1336	50.2%	7.6pp
+Expedition Healer
+
+W	C	66602	5.11	11631	6.94	35433	99.8%	54.5%	6790	56.3%	10495	54.5%	13934	55.5%	12526	53.7%	1.8pp
+Farsight Adept
+
+W	C	76706	6.24	10713	8.89	26121	99.4%	54.4%	4277	55.2%	6627	53.0%	9398	54.1%	10575	54.9%	-0.8pp
+Fearless Fledgling
+
+W	U	11596	2.71	4082	2.96	17009	99.9%	55.0%	2682	64.8%	4015	55.3%	5894	59.0%	6890	52.3%	6.7pp
+Felidar Retreat
+
+W	R	1979	
+1.24
+1606	1.22	8361	100.0%	55.2%	1098	61.4%	1673	61.4%	2739	
+61.3%
+3672	51.2%	
+10.1pp
+Journey to Oblivion
+
+W	U	11392	2.57	4182	2.84	17766	99.9%	54.7%	2411	54.5%	4056	57.2%	6054	56.3%	7430	54.1%	2.2pp
+Kabira Outrider
+
+W	C	78756	6.55	11265	9.24	27163	99.5%	54.4%	4046	53.6%	6845	54.8%	9782	54.9%	11234	55.4%	-0.6pp
+Kabira Takedown
+
+W	U	17665	3.30	5537	3.89	24447	99.9%	55.0%	3570	56.4%	5304	57.3%	8122	56.9%	10115	54.4%	2.5pp
+Kitesail Cleric
+
+W	U	21401	4.62	3649	6.30	12874	99.7%	54.4%	1784	57.4%	2748	52.6%	4251	54.6%	5334	55.4%	-0.8pp
+Kor Blademaster
+
+W	U	19521	4.32	3828	5.39	12240	99.7%	55.1%	2123	59.8%	2701	54.7%	4368	57.1%	5188	54.2%	2.9pp
+Kor Celebrant
+
+W	C	59786	4.76	12851	5.97	34645	99.7%	54.2%	7488	55.7%	11911	55.5%	14804	55.7%	11796	52.5%	3.2pp
+Legion Angel
+
+W	R	3112	2.07	1409	2.12	6152	99.9%	54.0%	761	54.7%	1338	54.6%	1930	54.8%	2725	54.1%	0.7pp
+Luminarch Aspirant
+
+W	R	2180	
+1.46
+1494	1.41	7807	99.8%	58.4%	1093	74.2%	1689	62.5%	2631	
+67.2%
+3384	51.6%	
+15.6pp
+Makindi Ox
+
+W	C	82513	7.36	8679	10.92	8040	97.2%	50.8%	947	51.3%	1730	49.6%	2406	50.2%	3187	50.8%	-0.6pp
+Makindi Stampede
+
+W	U	25596	4.81	5272	6.30	21661	99.8%	53.6%	2837	50.1%	4349	51.3%	6626	51.1%	8833	56.2%	
+-5.0pp
+Maul of the Skyclaves
+
+W	R	2158	
+1.40
+1532	1.37	7596	99.8%	56.5%	990	63.0%	1447	61.4%	2406	
+62.0%
+3268	53.0%	
+9.0pp
+Mesa Lynx
+
+W	C	86333	
+8.14
+9867	11.65	5618	94.9%	50.6%	837	48.1%	1206	48.0%	1828	
+48.9%
+2142	52.4%	-3.5pp
+Nahiri&#x27;s Binding
+
+W	C	45094	3.51	8758	4.49	30459	99.8%	53.6%	4497	51.9%	7331	52.6%	10457	52.7%	11621	54.5%	-1.8pp
+Ondu Inversion
+
+W	R	4934	3.20	1198	3.74	4017	99.6%	52.5%	524	51.5%	759	53.5%	1222	53.2%	1466	51.6%	1.6pp
+Paired Tactician
+
+W	U	20136	4.48	3310	5.90	11075	99.6%	54.2%	1822	56.1%	2515	52.6%	3891	54.5%	4789	55.4%	-0.9pp
+Practiced Tactics
+
+W	C	76780	6.41	11440	8.89	26788	99.4%	54.5%	4384	54.8%	7359	55.6%	10354	55.3%	10892	54.4%	0.8pp
+Pressure Point
+
+W	C	87034	
+8.44
+8759	12.35	2125	88.9%	50.2%	250		431		651	
+48.7%
+840	52.5%	-3.8pp
+Prowling Felidar
+
+W	C	62911	5.04	7305	7.44	17441	99.1%	51.8%	2714	51.5%	4359	48.5%	5885	50.8%	6204	52.4%	-1.7pp
+Resolute Strike
+
+W	C	84554	
+7.77
+10103	11.09	12098	98.0%	55.2%	1707	54.1%	2469	53.9%	3977	54.4%	5484	56.6%	-2.2pp
+Sea Gate Banneret
+
+W	C	77690	6.45	10464	9.17	28368	99.4%	55.2%	4545	57.1%	6568	54.9%	10398	56.2%	12578	54.7%	1.4pp
+Sejiri Shelter
+
+W	U	21340	3.90	5392	4.87	23554	99.9%	54.7%	3413	54.5%	4871	54.0%	7689	54.2%	9745	56.1%	-1.9pp
+Shepherd of Heroes
+
+W	C	51379	3.93	12782	4.95	43353	99.8%	55.1%	7562	55.7%	13553	57.1%	17135	56.9%	16079	53.8%	3.1pp
+Skyclave Apparition
+
+W	R	2810	1.92	1237	1.92	5318	99.7%	56.2%	712	58.4%	1108	58.9%	1743	59.0%	2345	54.4%	4.6pp
+Skyclave Cleric
+
+W	U	22721	4.21	4716	5.53	19797	99.8%	53.9%	2810	55.0%	3984	53.3%	6346	54.2%	7992	54.8%	-0.6pp
+Squad Commander
+
+W	R	2738	1.85	1584	1.81	7715	99.8%	57.8%	987	64.8%	1554	64.0%	2467	
+64.2%
+3402	53.9%	
+10.3pp
+Smite the Monstrous
+
+W	C	78247	6.78	6442	10.56	7584	97.4%	51.6%	871	49.8%	1462	51.6%	2244	51.6%	2947	51.3%	0.2pp
+Tazeem Raptor
+
+W	C	73888	5.88	10724	8.23	25705	99.2%	52.8%	4029	50.0%	6041	51.5%	8664	51.3%	9364	54.8%	-3.5pp
+Tazri, Beacon of Unity
+
+W	M	1213	1.58	772	1.49	3643	100.0%	56.3%	468		855	57.9%	1208	59.1%	1582	54.2%	4.9pp
+Anticognition
+
+U	C	79825	6.96	9903	10.24	14022	98.5%	54.1%	2072	56.1%	3402	55.5%	4995	55.5%	5106	52.7%	2.8pp
+Beyeen Veil
+
+U	U	28963	5.36	6658	7.04	27673	99.9%	53.1%	3963	52.3%	6505	54.0%	9804	53.2%	10325	53.1%	0.2pp
+Bubble Snare
+
+U	C	45011	3.52	15078	4.22	51837	99.8%	53.9%	9508	52.0%	16858	58.0%	22013	55.8%	17552	51.7%	4.2pp
+Cascade Seer
+
+U	C	80994	6.91	11426	9.86	19456	98.8%	51.1%	2734	48.6%	5404	53.1%	7300	51.7%	7414	50.9%	0.8pp
+Charix, the Raging Isle
+
+U	R	3299	2.18	1735	2.18	7573	100.0%	52.1%	1018	52.5%	1976	51.1%	2798	52.4%	3152	52.9%	-0.5pp
+Chilling Trap
+
+U	C	83683	7.50	15014	10.00	24234	99.0%	53.2%	4672	53.2%	9526	56.8%	11165	55.2%	8409	50.6%	4.7pp
+Cleric of Chill Depths
+
+U	C	81513	7.07	10641	10.28	15779	98.5%	50.0%	2297	49.1%	3943	47.9%	5635	
+49.0%
+5585	50.3%	-1.2pp
+Concerted Defense
+
+U	U	30409	
+7.66
+3354	11.38	842	86.3%	47.3%	92		192		277		355		
+Confounding Conundrum
+
+U	R	8630	5.47	1074	7.99	77			5		14		19		13		
+Coralhelm Chronicler
+
+U	R	3948	2.66	1640	2.72	7356	99.7%	54.7%	972	57.6%	1712	58.5%	2587	58.4%	2966	51.1%	7.3pp
+Cunning Geysermage
+
+U	C	60137	4.49	15256	5.78	51179	99.8%	53.3%	9418	51.5%	17625	56.8%	21997	54.8%	17070	51.5%	3.3pp
+Deliberate
+
+U	C	83126	7.41	10128	10.78	10514	98.5%	51.1%	1445	50.3%	2546	52.6%	3656	51.4%	3771	50.6%	0.7pp
+Expedition Diviner
+
+U	C	62339	4.74	14255	6.24	44427	99.8%	53.0%	8329	52.0%	16203	54.3%	19265	53.6%	14901	52.3%	1.3pp
+Field Research
+
+U	C	69980	5.52	14526	7.33	48510	99.8%	53.5%	8337	53.3%	15120	57.3%	19646	55.1%	18783	52.2%	3.0pp
+Glacial Grasp
+
+U	C	76960	6.31	12169	8.91	26107	99.5%	53.7%	4384	51.5%	8199	55.7%	10788	54.1%	10012	53.1%	0.9pp
+Glasspool Mimic
+
+U	R	3037	2.00	1709	2.03	7904	99.8%	53.7%	1099	57.1%	1841	57.9%	2753	57.6%	3271	51.6%	6.0pp
+Inscription of Insight
+
+U	R	2762	1.84	1727	1.85	8523	99.9%	55.6%	1077	57.1%	2504	65.7%	3115	
+61.3%
+3466	50.8%	
+10.6pp
+Into the Roil
+
+U	C	47345	3.65	18372	4.18	59266	99.9%	53.7%	12068	54.3%	24323	59.2%	26398	56.5%	19238	50.3%	6.2pp
+Jace, Mirror Mage
+
+U	M	1085	
+1.42
+782	1.43	3477	100.0%	52.0%	460		831	55.7%	1268	54.1%	1474	50.3%	3.8pp
+Jwari Disruption
+
+U	U	25879	4.81	5461	6.34	23246	99.9%	53.3%	3248	53.5%	5126	54.0%	8043	53.8%	8943	53.3%	0.5pp
+Living Tempest
+
+U	C	83145	7.32	10506	10.64	11939	97.3%	51.7%	1357	49.6%	2798	51.3%	3777	51.0%	4176	51.9%	-0.8pp
+Lullmage&#x27;s Domination
+
+U	U	14255	3.18	5488	3.48	23125	99.8%	55.2%	3195	54.9%	7489	61.4%	9172	58.0%	8985	52.3%	5.7pp
+Maddening Cacophony
+
+U	R	4801	3.32	947	4.08	2595	99.1%	51.4%	320		647	54.7%	886	51.1%	1084	51.7%	-0.5pp
+Master of Winds
+
+U	R	3096	2.10	1803	2.12	8921	99.9%	56.1%	1175	60.7%	2174	62.2%	3174	
+61.7%
+3604	51.9%	
+9.8pp
+Merfolk Falconer
+
+U	U	14241	3.18	5440	3.50	23309	100.0%	53.6%	3264	52.8%	6884	55.7%	8710	55.3%	8996	51.9%	3.4pp
+Merfolk Windrobber
+
+U	U	19761	4.34	3509	5.88	11279	99.7%	54.3%	1795	58.8%	3125	54.3%	4344	56.0%	4394	52.1%	3.9pp
+Negate
+
+U	C	85741	
+8.21
+8648	12.09	2211	89.3%	49.5%	256		485		721	
+49.0%
+834	50.0%	-1.0pp
+Nimble Trapfinder
+
+U	R	4164	2.83	1488	3.07	6009	99.9%	52.3%	829	50.5%	1382	54.4%	2108	52.9%	2545	52.2%	0.7pp
+Risen Riptide
+
+U	C	74569	6.33	14214	8.32	28245	99.2%	52.3%	5326	51.6%	9742	53.2%	11596	53.0%	8503	52.1%	0.9pp
+Roost of Drakes
+
+U	U	11158	2.61	6552	2.61	26965	99.9%	55.2%	4476	61.1%	7609	62.5%	10937	
+60.8%
+9612	48.5%	
+12.3pp
+Ruin Crab
+
+U	U	13064	3.08	4529	3.31	16624	99.8%	55.5%	2882	65.4%	4961	58.6%	6772	59.7%	6304	50.8%	
+9.0pp
+Sea Gate Restoration
+
+U	M	2176	2.89	592	3.23	2057	99.6%	52.3%	247		473		675	49.2%	816	54.3%	
+-5.1pp
+Sea Gate Stormcaller
+
+U	M	1437	2.00	693	2.08	2649	100.0%	50.5%	328		624	47.3%	934	
+49.0%
+1085	52.5%	-3.5pp
+Seafloor Stalker
+
+U	C	72433	5.81	14014	7.87	38757	99.6%	52.9%	6812	53.7%	12837	55.5%	16303	54.6%	13905	51.2%	3.4pp
+Shell Shield
+
+U	C	82544	7.26	12493	10.16	20898	99.2%	52.1%	2801	50.4%	5665	53.9%	7665	52.6%	7801	52.1%	0.5pp
+Silundi Vision
+
+U	U	27743	5.20	6093	6.81	24496	99.8%	52.2%	3335	50.7%	5734	53.3%	8524	52.4%	9280	52.2%	0.3pp
+Skyclave Plunder
+
+U	U	24743	5.44	4368	7.38	12490	99.3%	53.2%	1545	51.7%	2914	57.0%	4209	54.7%	5080	51.5%	3.2pp
+Skyclave Squid
+
+U	C	81849	6.98	15102	9.45	31822	99.3%	53.2%	6245	56.5%	10235	53.1%	13844	54.5%	11940	52.2%	2.3pp
+Sure-Footed Infiltrator
+
+U	U	16951	3.83	4179	4.64	14579	99.7%	53.1%	2047	52.4%	4101	56.6%	5276	54.5%	5709	52.1%	2.3pp
+Tazeem Roilmage
+
+U	C	60119	4.55	17687	5.63	58008	99.9%	53.5%	11424	51.5%	21165	56.6%	25684	54.2%	19175	52.9%	1.3pp
+Thieving Skydiver
+
+U	R	3417	2.33	1611	2.41	7515	100.0%	53.5%	1007	55.5%	1880	59.0%	2768	57.6%	2998	50.2%	7.4pp
+Umara Wizard
+
+U	U	19686	3.64	7127	4.23	31579	100.0%	53.0%	4475	51.7%	8034	54.2%	11298	53.6%	11498	52.2%	1.4pp
+Windrider Wizard
+
+U	U	17515	3.72	5171	4.38	21082	99.8%	53.1%	3286	54.9%	5903	55.4%	8168	55.3%	7894	51.6%	3.7pp
+Zulaport Duelist
+
+U	C	74800	6.24	11707	8.82	28015	99.5%	54.8%	5167	54.5%	8729	59.0%	11830	56.6%	10644	52.7%	3.8pp
+Acquisitions Expert
+
+B	U	16030	3.43	4936	4.12	21547	99.9%	56.2%	3351	59.9%	5097	58.3%	7598	58.9%	9102	53.8%	5.1pp
+Agadeem&#x27;s Awakening
+
+B	M	1239	1.71	762	1.70	3303	99.8%	53.0%	415		726	55.4%	1091	54.2%	1461	53.7%	0.5pp
+Blackbloom Rogue
+
+B	U	16711	3.15	6225	3.62	28477	99.9%	55.0%	4211	54.5%	6470	56.9%	9537	56.2%	11504	54.8%	1.5pp
+Blood Beckoning
+
+B	C	73115	5.81	13852	7.83	45745	99.8%	54.0%	6758	50.9%	11547	54.9%	16827	53.3%	19542	54.9%	-1.6pp
+Blood Price
+
+B	C	84137	7.46	10618	10.70	14471	98.6%	53.1%	1867	50.5%	2910	52.5%	4671	51.7%	6251	54.0%	-2.3pp
+Bloodchief&#x27;s Thirst
+
+B	U	9464	2.22	4861	2.38	21700	100.0%	54.8%	3235	55.1%	4861	57.0%	7420	56.5%	8832	53.4%	3.0pp
+Coveted Prize
+
+B	R	6837	4.37	966	6.01	1297	98.9%	52.1%	142		232		374		527	54.1%	
+Deadly Alliance
+
+B	C	35442	2.85	14217	3.23	52824	99.9%	54.7%	8714	54.3%	14672	57.7%	19978	56.2%	20229	53.3%	2.9pp
+Demon&#x27;s Disciple
+
+B	U	20820	4.44	3387	6.06	11929	99.9%	54.3%	1761	54.4%	3011	55.9%	4211	55.2%	5042	53.7%	1.5pp
+Drana, the Last Bloodchief
+
+B	M	908	
+1.23
+748	1.21	3809	99.8%	56.5%	511	60.1%	892	63.5%	1252	
+62.1%
+1696	52.7%	
+9.3pp
+Drana&#x27;s Silencer
+
+B	C	82453	7.10	10492	10.23	14593	98.9%	52.4%	1582	47.9%	3067	50.6%	4379	50.0%	5688	55.1%	
+-5.1pp
+Dreadwurm
+
+B	C	80526	7.06	9191	10.46	12065	98.2%	51.0%	1468	50.5%	2916	50.6%	3899	51.2%	4870	51.6%	-0.3pp
+Expedition Skulker
+
+B	C	69739	5.37	12121	7.41	37535	99.8%	54.8%	7188	56.1%	11192	54.9%	14765	55.6%	13834	54.4%	1.2pp
+Feed the Swarm
+
+B	C	45641	3.57	12624	4.34	48896	99.9%	54.3%	7968	54.6%	12116	55.4%	18057	55.3%	19570	53.8%	1.5pp
+Ghastly Gloomhunter
+
+B	C	63111	4.76	10743	6.70	35196	99.7%	53.4%	6171	52.7%	10415	54.0%	13483	54.0%	13116	53.4%	0.6pp
+Guul Draz Mucklord
+
+B	C	82319	7.41	8360	11.10	7210	97.0%	48.7%	895	47.0%	1373	46.7%	1989	
+47.5%
+2295	50.8%	-3.3pp
+Hagra Constrictor
+
+B	C	79857	7.00	8469	10.39	9669	98.4%	49.2%	1412	46.3%	2323	47.9%	3155	
+47.9%
+3326	50.8%	-2.9pp
+Hagra Mauling
+
+B	R	2654	1.70	1658	1.67	7799	99.9%	55.2%	1051	54.2%	1580	56.8%	2504	55.3%	3417	55.3%	-0.1pp
+Highborn Vampire
+
+B	C	86115	
+7.76
+11035	11.07	12048	97.6%	52.1%	1688	49.1%	2980	51.2%	4104	51.3%	5025	53.9%	-2.6pp
+Inscription of Ruin
+
+B	R	2551	1.70	1490	1.71	7115	99.9%	54.7%	921	55.5%	1426	58.9%	2277	57.4%	3048	53.6%	3.8pp
+Lithoform Blight
+
+B	U	30837	
+7.70
+3675	11.24	1251	92.1%	47.6%	181		287		437		477		
+Malakir Blood-Priest
+
+B	C	61297	4.61	14644	5.92	47111	99.9%	55.3%	9633	57.5%	14946	58.4%	19420	57.9%	17313	53.2%	4.6pp
+Malakir Rebirth
+
+B	U	23348	4.24	5614	5.43	24776	99.8%	53.6%	3450	53.5%	4984	52.4%	8029	52.6%	10152	55.0%	-2.3pp
+Marauding Blight-Priest
+
+B	C	63890	5.10	12227	6.68	32251	99.7%	54.1%	6703	54.0%	10902	54.5%	13454	54.7%	10923	53.7%	0.9pp
+Mind Carver
+
+B	U	25740	5.96	3141	8.65	5258	98.3%	53.9%	612	48.9%	1081	53.8%	1626	52.3%	2032	55.2%	-2.8pp
+Mind Drain
+
+B	C	76684	6.33	11173	8.98	28102	99.4%	54.6%	4365	54.4%	6851	56.5%	10613	55.6%	12695	54.1%	1.5pp
+Nighthawk Scavenger
+
+B	R	2051	
+1.39
+1409	1.35	7203	100.0%	56.5%	1003	61.4%	1837	62.2%	2458	
+62.1%
+3078	52.6%	
+9.5pp
+Nimana Skitter-Sneak
+
+B	C	78483	6.48	11630	9.14	28265	99.5%	54.0%	4491	53.1%	8320	53.5%	10476	53.5%	10986	54.7%	-1.2pp
+Nimana Skydancer
+
+B	C	65861	5.05	10893	7.07	35256	99.7%	54.1%	6269	53.5%	10206	54.7%	13622	54.2%	13286	54.3%	-0.1pp
+Nullpriest of Oblivion
+
+B	R	2340	1.53	1591	1.50	7814	100.0%	55.6%	1141	58.3%	1850	61.6%	2754	
+60.4%
+3337	52.3%	
+8.1pp
+Oblivion&#x27;s Hunger
+
+B	C	84846	
+7.89
+8920	11.64	5146	96.0%	49.5%	660	46.1%	1094	50.9%	1648	
+48.6%
+1991	50.3%	-1.7pp
+Pelakka Predation
+
+B	U	25145	4.60	5478	5.94	23122	99.9%	53.2%	3054	50.8%	4441	52.3%	7183	51.7%	9163	54.7%	-3.0pp
+Scion of the Swarm
+
+B	U	16215	3.60	3895	4.25	13871	99.8%	53.0%	1976	54.9%	3699	56.0%	4821	55.2%	5455	52.0%	3.2pp
+Scourge of the Skyclaves
+
+B	M	1220	1.69	618	1.65	2583	99.7%	53.3%	293		569	54.1%	786	54.3%	1092	53.1%	1.2pp
+Shadow Stinger
+
+B	U	18891	4.13	3984	5.21	14325	99.7%	55.1%	2220	55.9%	3846	54.5%	5115	55.1%	5780	55.4%	-0.3pp
+Shadows&#x27; Verdict
+
+B	R	5340	3.74	901	4.63	1513	99.4%	53.1%	170		265		434		598	53.5%	
+Skyclave Shade
+
+B	R	2465	1.67	1587	1.64	7765	100.0%	55.3%	1124	59.9%	1693	56.2%	2677	57.6%	3343	54.8%	2.8pp
+Skyclave Shadowcat
+
+B	U	22307	4.94	3075	7.09	7722	99.2%	50.0%	1006	51.7%	1738	48.5%	2379	50.7%	2880	50.5%	0.2pp
+Soul Shatter
+
+B	R	2837	1.91	1445	1.93	6513	100.0%	53.7%	872	54.5%	1258	57.5%	2076	56.2%	2836	53.1%	3.1pp
+Subtle Strike
+
+B	C	68462	5.27	12021	7.25	39355	99.7%	54.8%	5903	56.4%	8986	56.2%	13581	56.3%	15274	53.9%	2.4pp
+Taborax, Hope&#x27;s Demise
+
+B	R	2280	1.49	1453	1.46	7242	99.9%	54.6%	962	58.6%	1668	56.4%	2358	57.8%	3205	53.2%	4.7pp
+Thwart the Grave
+
+B	U	14175	3.17	5822	3.45	24443	99.9%	55.6%	3307	54.6%	5433	59.9%	8287	57.8%	10513	54.3%	3.5pp
+Vanquish the Weak
+
+B	C	49777	3.81	12547	4.73	46322	99.8%	54.6%	7619	55.3%	11443	56.2%	16899	55.6%	17683	53.9%	1.7pp
+Zof Consumption
+
+B	U	26693	4.83	6302	6.24	26808	99.9%	54.3%	3626	52.9%	5383	54.1%	8398	53.5%	10658	55.9%	-2.4pp
+Akoum Hellhound
+
+R	C	78302	7.28	8162	10.84	6904	96.3%	51.6%	1099	58.8%	1463	43.4%	2111	51.3%	2070	52.0%	-0.7pp
+Akoum Warrior
+
+R	U	21958	4.04	6803	4.88	30019	99.9%	54.5%	4083	53.4%	6543	52.3%	9338	53.1%	12343	56.1%	-3.0pp
+Ardent Electromancer
+
+R	C	72421	5.77	17046	7.35	50212	99.8%	55.7%	10530	57.8%	15067	55.1%	20892	56.6%	18864	55.4%	1.2pp
+Cinderclasm
+
+R	U	24323	5.53	4025	7.64	7621	98.8%	52.7%	1010	53.1%	1630	53.9%	2468	53.6%	2701	52.4%	1.2pp
+Cleansing Wildfire
+
+R	C	86082	
+8.42
+10875	11.84	6114	96.1%	50.4%	931	46.5%	1313	48.6%	2016	
+48.0%
+2302	52.0%	-3.9pp
+Expedition Champion
+
+R	C	70633	5.71	13158	7.65	36152	99.6%	55.8%	7728	57.8%	10690	53.3%	14620	55.5%	14079	56.9%	-1.5pp
+Fireblade Charger
+
+R	U	23367	5.12	4387	6.80	13535	99.6%	56.3%	2210	56.7%	2838	54.8%	4645	55.9%	6167	57.0%	-1.1pp
+Fissure Wizard
+
+R	C	76672	6.24	15111	8.25	44372	99.8%	55.2%	8373	56.0%	11942	53.3%	17210	55.0%	17274	55.7%	-0.6pp
+Goma Fada Vanguard
+
+R	U	19230	4.12	5108	4.98	19861	99.8%	57.2%	3586	60.2%	4515	55.7%	7199	57.5%	8663	57.7%	-0.2pp
+Grotag Bug-Catcher
+
+R	C	65380	5.15	18285	6.21	51107	99.8%	56.0%	12574	60.7%	16994	55.3%	22906	57.5%	17905	55.0%	2.5pp
+Grotag Night-Runner
+
+R	U	21236	4.49	4463	5.87	16724	99.7%	54.6%	2428	54.8%	3680	51.5%	5531	53.4%	7427	56.5%	-3.1pp
+Inordinate Rage
+
+R	C	84280	
+7.73
+12191	10.82	19480	98.9%	54.3%	2818	51.9%	4299	52.8%	6700	52.8%	8911	56.5%	-3.7pp
+Kargan Intimidator
+
+R	R	2927	1.98	1588	1.96	7862	100.0%	57.3%	1105	64.5%	1456	57.9%	2434	
+61.1%
+3568	55.8%	5.2pp
+Kazuul&#x27;s Fury
+
+R	U	23732	4.40	6835	5.40	30297	99.9%	54.7%	4387	54.5%	6632	55.1%	9927	54.4%	12668	56.0%	-1.6pp
+Leyline Tyrant
+
+R	M	1097	
+1.38
+817	1.34	3963	99.8%	56.5%	509	64.0%	938	59.4%	1296	
+62.6%
+1769	54.1%	
+8.5pp
+Magmatic Channeler
+
+R	R	3245	2.24	1642	2.27	7712	99.8%	56.5%	1159	60.5%	1684	57.2%	2700	58.6%	3394	55.7%	3.0pp
+Molten Blast
+
+R	C	79862	6.96	11330	9.95	19161	98.7%	52.9%	2400	52.8%	3815	51.5%	5868	52.3%	7315	54.5%	-2.2pp
+Moraug, Fury of Akoum
+
+R	M	1078	1.52	730	1.43	3225	100.0%	52.5%	359		732	54.2%	1031	54.9%	1415	51.6%	3.3pp
+Nahiri&#x27;s Lithoforming
+
+R	R	8044	5.23	1125	7.47	725	94.8%	47.2%	85		112		197		328		
+Pyroclastic Hellion
+
+R	C	79376	6.67	14165	9.11	36497	99.6%	54.7%	5171	55.2%	8997	55.3%	12519	55.7%	15086	54.9%	0.8pp
+Relic Robber
+
+R	R	3205	2.11	1463	2.16	7111	99.9%	55.6%	985	60.4%	1327	57.5%	2237	58.6%	3185	54.2%	4.5pp
+Rockslide Sorcerer
+
+R	U	17262	3.83	6116	4.20	21926	99.8%	54.3%	3511	56.4%	6094	55.6%	8176	55.8%	8330	52.7%	3.1pp
+Roil Eruption
+
+R	C	36450	2.93	17348	3.24	58805	99.9%	55.4%	11767	56.4%	18532	58.5%	23904	57.4%	21509	53.7%	3.7pp
+Roiling Vortex
+
+R	R	8124	5.30	1044	7.96	274			30		53		81		128		
+Scavenged Blade
+
+R	C	82666	
+7.65
+9892	10.99	12457	98.3%	54.1%	1658	53.7%	2382	50.5%	3776	52.3%	5126	56.4%	-4.1pp
+Scorch Rider
+
+R	C	81385	7.02	11918	9.88	24465	99.4%	54.0%	3674	52.1%	5711	52.3%	8306	52.9%	10237	55.6%	-2.6pp
+Shatterskull Charger
+
+R	R	2979	2.01	1590	2.00	7713	100.0%	56.1%	1016	57.5%	2390	57.6%	2427	57.9%	3519	55.3%	2.7pp
+Shatterskull Minotaur
+
+R	U	17908	3.85	5597	4.47	22884	99.9%	56.7%	3397	60.2%	5578	56.4%	8056	58.1%	10147	56.1%	2.0pp
+Shatterskull Smashing
+
+R	M	1281	1.75	817	1.74	3787	99.6%	54.8%	524	56.3%	815	57.1%	1213	56.2%	1633	54.6%	1.7pp
+Sizzling Barrage
+
+R	C	84044	
+7.99
+9589	11.52	6509	96.1%	51.3%	799	47.4%	1206	48.1%	1883	
+48.6%
+2426	53.8%	
+-5.2pp
+Skyclave Geopede
+
+R	U	19971	4.41	4371	5.64	14544	99.7%	54.8%	2271	57.2%	3246	53.3%	4896	55.1%	6069	54.8%	0.2pp
+Sneaking Guide
+
+R	C	85047	
+7.90
+14756	10.44	29938	98.9%	56.3%	5342	58.7%	7179	52.4%	11519	55.5%	13868	57.2%	-1.7pp
+Song-Mad Treachery
+
+R	U	25424	4.70	5694	6.24	24315	99.8%	54.6%	3246	55.1%	5064	53.4%	7536	53.7%	9858	56.1%	-2.4pp
+Spikefield Hazard
+
+R	U	24011	4.35	5989	5.53	26258	99.8%	54.6%	3804	55.2%	5393	54.2%	8597	54.6%	10963	55.7%	-1.1pp
+Spitfire Lagac
+
+R	C	80332	7.18	10387	10.42	13700	98.3%	52.3%	1912	52.4%	3094	50.1%	4349	51.3%	4898	53.7%	-2.4pp
+Synchronized Spellcraft
+
+R	C	70508	5.63	11861	7.86	34478	99.6%	54.2%	4681	52.4%	7848	54.1%	11363	53.7%	13457	55.7%	-2.0pp
+Teeterpeak Ambusher
+
+R	C	80434	6.97	12756	9.60	29941	99.4%	54.7%	5256	54.5%	7205	52.6%	11024	53.9%	12420	56.1%	-2.2pp
+Thundering Rebuke
+
+R	U	11586	2.61	5338	2.82	23833	99.9%	55.8%	3641	58.3%	5491	57.7%	8341	57.9%	10111	54.7%	3.2pp
+Thundering Sparkmage
+
+R	U	16436	3.54	5797	4.07	22948	99.9%	56.1%	3593	59.5%	5380	58.2%	8216	58.6%	9826	54.4%	4.2pp
+Tormenting Voice
+
+R	C	86966	
+8.42
+11204	11.85	7606	96.1%	52.1%	971	47.2%	1527	48.6%	2393	
+47.7%
+2933	54.8%	
+-7.1pp
+Tuktuk Rubblefort
+
+R	C	87062	
+8.88
+9132	12.85	1431	84.4%	47.4%	162		235		369		574	50.7%	
+Valakut Awakening
+
+R	R	5320	3.41	1387	4.06	5453	99.5%	52.1%	759	50.1%	1097	49.8%	1745	49.5%	2176	54.9%	
+-5.5pp
+Valakut Exploration
+
+R	R	3750	2.75	1319	2.83	5275	99.6%	53.1%	673	46.7%	1010	53.3%	1672	50.7%	2411	55.7%	
+-4.9pp
+Wayward Guide-Beast
+
+R	R	7382	4.82	892	6.94	823	97.9%	51.3%	79		102		177		281		
+Adventure Awaits
+
+G	C	85907	
+8.25
+7820	12.30	1788	90.4%	48.5%	206		289		480		602	48.5%	
+Ancient Greenwarden
+
+G	M	1152	1.53	605	1.47	2530	100.0%	51.8%	285		548	54.2%	766	56.3%	1038	49.0%	7.2pp
+Ashaya, Soul of the Wild
+
+G	M	1050	
+1.39
+685	1.37	2947	100.0%	52.9%	331		604	61.4%	882	
+60.7%
+1179	47.2%	
+13.5pp
+Bala Ged Recovery
+
+G	U	21597	4.00	5561	4.88	22315	99.8%	52.1%	3048	51.4%	5317	55.6%	7342	53.2%	8463	52.1%	1.0pp
+Broken Wings
+
+G	C	85910	
+8.15
+8894	11.95	6512	96.6%	51.3%	764	49.5%	1405	52.7%	2071	51.8%	2676	50.2%	1.5pp
+Canopy Baloth
+
+G	C	64582	5.10	8784	7.18	24711	99.6%	52.1%	4058	54.2%	6676	52.2%	8836	53.2%	8630	50.9%	2.3pp
+Cragplate Baloth
+
+G	R	2928	2.08	967	2.07	3926	100.0%	50.8%	434		832	53.8%	1239	50.7%	1581	51.5%	-0.9pp
+Dauntless Survivor
+
+G	C	75256	6.16	8576	9.00	20137	99.3%	50.7%	3147	50.6%	4661	50.1%	6838	50.6%	6781	51.3%	-0.7pp
+Gnarlid Colony
+
+G	C	59926	4.57	11589	6.04	35545	99.8%	51.8%	6849	51.0%	11314	52.7%	14197	52.5%	11794	51.0%	1.5pp
+Inscription of Abundance
+
+G	R	2482	1.66	1369	1.63	6376	100.0%	55.7%	831	59.9%	1688	67.3%	2149	
+63.1%
+2648	50.8%	
+12.4pp
+Iridescent Hornbeetle
+
+G	U	21172	4.73	2965	6.42	7132	99.9%	48.3%	903	47.6%	1648	47.1%	2221	
+48.4%
+2680	48.9%	-0.4pp
+Joraga Visionary
+
+G	C	65666	5.05	10174	6.93	31321	99.7%	52.9%	5464	53.8%	8857	55.1%	11861	54.5%	11252	51.7%	2.9pp
+Kazandu Mammoth
+
+G	R	2651	1.79	1276	1.78	5649	99.9%	52.5%	809	55.3%	1256	55.2%	1862	55.5%	2269	50.3%	5.2pp
+Kazandu Nectarpot
+
+G	C	80254	7.19	9104	10.38	14175	99.0%	50.5%	2169	50.8%	3495	48.5%	4987	50.0%	5054	51.3%	-1.3pp
+Kazandu Stomper
+
+G	C	75688	6.24	10429	8.79	29378	99.8%	51.3%	3802	49.4%	7272	51.1%	9866	51.2%	11144	51.5%	-0.4pp
+Khalni Ambush
+
+G	U	17760	3.33	4737	3.98	20034	99.9%	52.1%	2695	52.0%	4574	54.0%	6375	53.0%	7522	51.8%	1.2pp
+Lotus Cobra
+
+G	R	2809	1.92	1152	1.93	4842	100.0%	52.6%	676	59.3%	928	50.2%	1569	54.2%	2042	52.2%	2.0pp
+Might of Murasa
+
+G	C	81509	7.04	9582	10.20	18174	99.2%	51.9%	2423	53.0%	4662	54.3%	6298	53.6%	6832	51.0%	2.6pp
+Murasa Brute
+
+G	C	83009	7.36	9468	10.65	13895	98.2%	52.0%	2094	51.8%	3082	51.7%	4576	51.9%	5019	52.1%	-0.2pp
+Murasa Sproutling
+
+G	U	16671	3.67	4726	4.27	17357	99.9%	53.1%	2694	52.0%	4894	57.4%	6482	55.1%	6374	51.1%	4.0pp
+Nissa&#x27;s Zendikon
+
+G	C	82951	
+7.81
+8791	11.36	7719	97.3%	48.9%	873	46.2%	1410	49.1%	2116	
+48.2%
+2450	49.1%	-0.9pp
+Oran-Rief Ooze
+
+G	R	2602	1.79	1195	1.76	5357	99.8%	53.5%	741	58.7%	1150	55.3%	1752	57.0%	2234	51.0%	6.0pp
+Rabid Bite
+
+G	C	51032	3.97	10085	5.16	33345	99.9%	52.7%	5643	53.1%	9644	56.8%	12418	55.0%	11421	50.8%	4.2pp
+Reclaim the Wastes
+
+G	C	72889	5.97	11601	8.06	30293	99.7%	50.7%	5640	50.2%	8780	51.9%	12121	50.9%	11112	51.0%	-0.1pp
+Roiling Regrowth
+
+G	U	19390	4.27	3267	5.58	10439	99.7%	49.9%	1434	48.1%	2159	51.0%	3385	49.5%	4239	50.8%	-1.3pp
+Scale the Heights
+
+G	C	77281	6.74	6684	10.44	9445	98.8%	50.7%	1266	50.0%	1820	51.8%	2850	51.3%	3467	51.0%	0.3pp
+Scute Swarm
+
+G	R	2231	1.55	1359	1.49	6292	99.7%	53.7%	811	58.6%	1314	58.1%	2050	58.3%	2607	50.7%	7.6pp
+Skyclave Pick-Axe
+
+G	U	23989	5.47	2591	8.11	5265	98.7%	49.1%	650	46.6%	866	44.8%	1443	
+45.7%
+1986	50.6%	
+-4.9pp
+Springmantle Cleric
+
+G	U	26246	5.93	3280	8.71	6137	98.8%	48.8%	795	46.8%	1484	50.4%	2004	49.8%	2320	48.2%	1.6pp
+Strength of Solidarity
+
+G	C	87527	
+8.59
+8162	12.60	1388	86.3%	44.2%	157		256		365		440		
+Swarm Shambler
+
+G	R	3099	2.10	1051	2.12	4438	99.9%	52.2%	556	60.8%	930	51.4%	1408	55.0%	1804	49.9%	5.1pp
+Tajuru Blightblade
+
+G	C	72179	5.77	7892	8.58	22777	99.9%	51.9%	3447	54.5%	5682	52.3%	8058	53.5%	8789	50.8%	2.7pp
+Tajuru Paragon
+
+G	R	3067	2.15	1253	2.13	5419	99.8%	53.5%	697	59.0%	1112	55.4%	1716	56.4%	2207	51.1%	5.2pp
+Tajuru Snarecaster
+
+G	C	86186	
+8.09
+9141	11.70	7017	97.8%	49.5%	1029	48.4%	1618	48.4%	2418	
+48.8%
+2787	51.5%	-2.7pp
+Tangled Florahedron
+
+G	U	20936	3.92	4186	5.02	17738	99.9%	52.1%	2487	55.4%	3376	52.6%	5558	53.6%	6722	51.4%	2.2pp
+Taunting Arbormage
+
+G	U	22084	4.72	4433	6.14	15656	99.8%	52.0%	2148	49.8%	3737	54.3%	5443	52.7%	6161	51.8%	0.9pp
+Territorial Scythecat
+
+G	C	55878	4.37	7472	6.14	23157	99.8%	51.5%	4126	53.4%	6336	51.0%	8509	52.2%	8005	50.6%	1.6pp
+Turntimber Ascetic
+
+G	C	79389	6.66	9847	9.58	21837	99.6%	52.6%	3015	52.4%	5778	55.2%	7763	54.5%	8495	51.2%	3.2pp
+Turntimber Symbiosis
+
+G	M	1396	2.03	588	2.05	2170	99.7%	50.0%	310		516	51.6%	744	50.3%	875	52.1%	-1.8pp
+Vastwood Fortification
+
+G	U	25747	4.83	4483	6.57	17818	99.7%	52.0%	2429	52.4%	3850	53.7%	5651	53.0%	6552	51.7%	1.3pp
+Vastwood Surge
+
+G	U	17023	3.71	3681	4.58	14407	99.8%	50.9%	1902	48.8%	3712	54.4%	5000	51.4%	5854	50.9%	0.5pp
+Veteran Adventurer
+
+G	U	18299	3.99	3219	5.18	10283	99.8%	51.9%	1386	51.9%	2778	54.2%	3634	53.3%	3996	51.3%	1.9pp
+Vine Gecko
+
+G	U	16339	3.66	4779	4.17	16729	99.8%	53.1%	2873	58.8%	4672	55.4%	6400	55.8%	6145	49.8%	6.0pp
+Akiri, Fearless Voyager
+
+WR	R	4061	2.94	1368	2.91	4761	99.6%	56.5%	642	62.0%	869	56.8%	1438	59.1%	2288	55.4%	3.7pp
+Brushfire Elemental
+
+RG	U	21444	5.14	2752	7.10	5582	99.4%	52.6%	912	58.1%	1181	53.2%	1821	54.6%	1954	51.4%	3.2pp
+Cleric of Life&#x27;s Bond
+
+WB	U	14783	3.51	4480	3.71	14934	99.8%	55.9%	2602	64.9%	4626	59.1%	5682	
+60.9%
+5549	50.8%	
+10.0pp
+Grakmaw, Skyclave Ravager
+
+BG	R	3342	2.46	1117	2.48	3678	99.4%	52.6%	469		854	56.6%	1194	57.4%	1510	49.5%	7.9pp
+Kargan Warleader
+
+WR	U	18465	4.40	4221	5.16	12626	99.7%	57.8%	2335	63.3%	3027	60.1%	4616	
+61.2%
+5241	56.2%	5.0pp
+Kaza, Roil Chaser
+
+UR	R	6132	4.05	1281	4.96	3436	99.3%	51.0%	483		814	49.4%	1268	50.7%	1317	50.8%	-0.1pp
+Linvala, Shield of Sea Gate
+
+WU	R	4042	2.85	1279	2.95	3732	99.9%	53.4%	559	58.0%	974	61.3%	1447	59.8%	1469	48.6%	
+11.2pp
+Lullmage&#x27;s Familiar
+
+UG	U	20779	4.77	4736	5.71	13111	99.7%	52.8%	2169	57.8%	4003	56.3%	5227	56.6%	4751	49.3%	7.3pp
+Moss-Pit Skeleton
+
+BG	U	21176	4.93	3248	6.58	7416	99.6%	50.6%	1195	51.9%	2952	54.9%	2623	52.6%	2624	50.3%	2.3pp
+Murasa Rootgrazer
+
+WG	U	20334	4.79	2843	6.45	6121	99.3%	53.1%	946	58.6%	1345	54.2%	2026	56.3%	2211	51.0%	5.3pp
+Nahiri, Heir of the Ancients
+
+WR	M	1201	1.69	605	1.61	2280	99.7%	55.7%	295		361		653	57.1%	1031	56.0%	1.2pp
+Nissa of Shadowed Boughs
+
+BG	M	1008	
+1.39
+559	1.30	2060	100.0%	48.7%	238		376		604	51.8%	849	46.3%	5.5pp
+Omnath, Locus of Creation
+
+WURG	M	2118	3.08	456		644	97.3%	46.1%	73		152		221		252		
+Orah, Skyclave Hierophant
+
+WB	R	3252	2.31	1367	2.13	5398	99.9%	55.8%	706	58.5%	1331	60.3%	1799	59.5%	2215	52.2%	7.3pp
+Phylath, World Sculptor
+
+RG	R	2498	1.73	1472	1.65	6596	100.0%	54.5%	825	61.7%	1388	63.6%	2131	
+62.7%
+2780	48.8%	
+13.9pp
+Ravager&#x27;s Mace
+
+BR	U	26504	6.15	4838	7.98	10646	99.4%	55.0%	1576	52.9%	2270	53.3%	3590	53.6%	4749	57.1%	-3.5pp
+Soaring Thought-Thief
+
+UB	U	14906	3.53	4443	3.81	14170	99.8%	56.4%	2587	66.3%	4780	63.7%	5938	
+63.4%
+5168	48.9%	
+14.4pp
+Spoils of Adventure
+
+WU	U	22406	5.00	4391	6.36	9438	98.8%	53.4%	1513	54.6%	3068	58.5%	3783	56.4%	3510	50.8%	5.6pp
+Umara Mystic
+
+UR	U	22109	5.08	5491	5.88	14074	99.7%	52.6%	2575	55.2%	4989	55.7%	6118	55.2%	4643	49.0%	6.2pp
+Verazol, the Split Current
+
+UG	R	3573	2.42	1590	2.41	5931	99.6%	52.4%	799	54.4%	1527	58.6%	2126	57.3%	2492	49.5%	7.8pp
+Yasharn, Implacable Earth
+
+WG	R	3654	2.70	961	2.88	2650	98.7%	52.6%	337		519	57.4%	818	57.9%	1100	49.2%	
+8.8pp
+Zagras, Thief of Heartbeats
+
+BR	R	2508	1.77	1641	1.64	7589	99.8%	57.0%	1036	65.4%	1697	65.1%	2534	
+65.4%
+3439	51.5%	
+13.8pp
+Zareth San, the Trickster
+
+UB	R	2590	1.81	1592	1.71	6883	99.7%	53.9%	906	59.4%	1724	58.9%	2444	58.6%	2890	49.8%	
+8.8pp
+Cliffhaven Kitesail
+
+C	80438	6.60	11546	9.41	26036	99.5%	53.5%	3537	52.4%	5409	52.1%	8681	52.4%	12161	55.1%	-2.7pp
+Forsaken Monument
+
+M	2954	3.90	434		44			1		6		7		8		
+Lithoform Engine
+
+M	1362	1.94	560	1.84	2045	100.0%	48.3%	252		406		644	
+43.5%
+831	52.8%	
+-9.3pp
+Myriad Construct
+
+R	2446	1.65	1665	1.65	8967	100.0%	55.1%	1134	56.8%	1888	54.6%	2886	55.6%	3881	54.0%	1.6pp
+Relic Amulet
+
+U	20765	4.59	6193	5.19	19460	99.7%	53.1%	3414	57.3%	5973	52.7%	8273	54.2%	7370	51.8%	2.4pp
+Relic Axe
+
+U	24560	5.18	4189	6.86	12814	99.8%	56.4%	2070	56.2%	2611	54.4%	4412	55.4%	5870	58.0%	-2.6pp
+Relic Golem
+
+U	22657	4.85	3817	6.49	10279	99.6%	54.7%	1604	55.7%	3041	57.3%	3940	56.2%	4023	53.3%	2.9pp
+Relic Vial
+
+U	22423	4.99	5432	5.81	14143	99.6%	53.5%	2284	50.2%	3572	55.3%	5280	53.0%	5800	54.6%	-1.6pp
+Sea Gate Colossus
+
+C	78091	6.09	10373	8.93	25915	99.3%	53.0%	3506	51.9%	6631	52.2%	9039	52.4%	10885	53.8%	-1.3pp
+Skyclave Relic
+
+R	5430	3.64	899	4.78	1863	99.4%	46.7%	291		407		689	
+45.6%
+744	48.5%	-2.9pp
+Skyclave Sentinel
+
+C	78664	6.14	11618	8.85	28460	99.5%	50.8%	4127	47.1%	7836	51.0%	10177	50.4%	10431	51.8%	-1.4pp
+Spare Supplies
+
+C	84416	7.36	9832	10.77	10430	97.5%	53.8%	1822	55.5%	2378	56.5%	3988	56.0%	4866	53.4%	2.6pp
+Stonework Packbeast
+
+C	59373	4.15	17305	5.37	68064	99.9%	54.2%	13077	54.7%	18623	52.5%	27386	53.9%	27102	54.9%	-1.0pp
+Utility Knife
+
+C	87971	
+8.30
+8963	12.05	4165	94.5%	52.7%	462		715	49.4%	1125	52.1%	1548	54.8%	-2.7pp
+Base Camp
+
+U	28225	6.46	2656	10.09	2484	95.2%	51.1%	315		457		739	
+48.3%
+931	52.6%	-4.3pp
+Branchloft Pathway
+
+R	5405	3.41	872	4.55	1825	98.3%	50.5%	249		329		562	51.2%	729	50.5%	0.8pp
+Brightclimb Pathway
+
+R	5120	3.28	889	4.22	2428	98.8%	52.1%	336		428		754	52.3%	960	51.8%	0.5pp
+Clearwater Pathway
+
+R	5344	3.33	1034	4.22	2840	99.2%	53.4%	402		571	53.1%	964	54.3%	1140	52.8%	1.4pp
+Cragcrown Pathway
+
+R	5564	3.51	963	4.63	2085	98.2%	50.0%	261		410		644	53.3%	838	48.6%	4.7pp
+Crawling Barrens
+
+R	2765	1.96	1641	1.93	8719	100.0%	54.8%	1163	56.1%	1805	59.4%	2960	58.2%	3825	52.3%	5.9pp
+Needleverge Pathway
+
+R	5557	3.52	1047	4.54	2688	99.6%	54.0%	404		456		824	51.1%	1176	57.7%	
+-6.6pp
+Riverglide Pathway
+
+R	5610	3.53	1125	4.64	2958	99.6%	51.0%	434		651	51.3%	1056	50.9%	1162	49.4%	1.5pp
+Throne of Makindi
+
+R	8071	5.05	1146	7.10	1864	99.1%	51.9%	262		432		688	50.1%	763	52.7%	-2.5pp</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>Yes, I can help you with analyzing this Magic: The Gathering data from 17lands.com. I can assist in cleaning the data, calculating statistics, visualizing trends, or performing specific analyses (e.g., win rates, pick rates, etc.).
+
+Please specify the type of analysis you&#x27;d like to perform or if you need help organizing or summarizing certain metrics from this data. If you have a spreadsheet file you want to work with, feel free to upload it, and I can help you further.</div>
+<div class="msg user"><div class="role user">You</div>I&#x27;d like a graph of the best commons</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>To create a graph of the best commons, I&#x27;ll need to clarify what metric you&#x27;re using to define &quot;best.&quot; Some possibilities could include:
+
+- <strong>Win rate</strong> (e.g., GP WR for games played win rate)
+- <strong>Games in hand win rate</strong> (GIH WR)
+- <strong>ALSA</strong> (average last seen at pick number, a metric for how late the card is available in drafts)
+- <strong>Picked rate</strong> (e.g., # Picked)
+
+Let me know which metric or combination of metrics you want to use to rank the commons, and I’ll generate the graph based on that!</div>
+<div class="msg user"><div class="role user">You</div>GIH WR</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>Here is a graph showing the top commons by Games In Hand Win Rate (GIH WR). If you&#x27;d like to explore more cards or adjust the data further, feel free to let me know!</div>
+<div class="msg user"><div class="role user">You</div>Can you show the top uncommons next?</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>Here is the graph showing the top uncommons by Games In Hand Win Rate (GIH WR). If you have more requests or need further analysis, feel free to ask!</div>
+<div class="msg user"><div class="role user">You</div>suggest some ways that you could analyze the data to help me rapidly learn the format</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>Here are some suggestions for analyzing the Magic: The Gathering data to help you rapidly learn the format:
+
+1. <strong>Win Rate Comparisons</strong>:
+   - Compare win rates (e.g., GP WR, GIH WR) across different card types (commons, uncommons, rares) to identify which types generally perform better.
+   - Analyze how different colors perform overall, as well as within specific card types.
+
+2. <strong>Pick Rates vs. Performance</strong>:
+   - Create scatter plots to visualize the relationship between pick rates and win rates. This can help identify cards that are highly picked but underperform, or vice versa.
+
+3. <strong>Card Synergies</strong>:
+   - Analyze how specific cards perform in combination with others. You can look for patterns in win rates based on shared colors or mechanics (e.g., tribal synergies).
+
+4. <strong>Format Trends</strong>:
+   - Track changes in card performance over time or across different sets/expansions to understand how the format evolves and which strategies become more viable.
+
+5. <strong>Player Experience Levels</strong>:
+   - If data is available, analyze how win rates differ between experienced and novice players. This can help identify cards that might be more beginner-friendly or advanced.
+
+6. <strong>Archetype Performance</strong>:
+   - Categorize cards by archetype (e.g., aggro, control, midrange) and analyze win rates for different archetypes. This can reveal which strategies are most effective in the current format.
+
+7. <strong>Threshold Analysis</strong>:
+   - Identify a threshold for win rates and analyze which cards consistently meet or exceed this threshold. This could help in building decks with a higher chance of success.
+
+8. <strong>Sample Deck Builds</strong>:
+   - Create sample decks based on top-performing cards and analyze their win rates in practice games. This can help reinforce understanding of effective synergies and strategies.
+
+9. <strong>Meta Analysis</strong>:
+   - Examine how the current metagame influences card performance. Identify cards that may be underplayed due to meta shifts, yet still perform well against popular decks.
+
+10. <strong>Interactive Dashboards</strong>:
+    - If you have the capability, create interactive dashboards using tools like Tableau or Google Data Studio to explore the data dynamically, allowing you to filter and drill down into specific metrics.
+
+Let me know if you&#x27;d like to dive deeper into any of these analyses or if you have other ideas in mind!</div>
+<div class="msg user"><div class="role user">You</div>Analyze specific card synergies next.</div>
+<div class="msg assistant"><div class="role assistant">ChatGPT</div>To analyze card synergies, we can focus on a few key aspects:
+
+1. <strong>Shared Colors</strong>: Look at how cards of the same color perform together.
+2. <strong>Mechanics and Abilities</strong>: Identify cards that have complementary abilities or mechanics (e.g., cards that benefit from lifegain synergizing with cards that gain bonuses for gaining life).
+3. <strong>Archetypes</strong>: Examine cards that fit into specific archetypes (e.g., aggressive strategies, control decks) and how they support one another.
+
+### Steps for Analysis
+
+1. <strong>Identify Synergistic Groups</strong>:
+   - Select a few top-performing cards in a particular color or archetype.
+
+2. <strong>Analyze Performance Metrics</strong>:
+   - Look at win rates, pick rates, and overall usage statistics for these groups.
+
+3. <strong>Correlate Mechanics</strong>:
+   - Analyze cards with abilities that enhance each other (e.g., creatures that create tokens synergizing with cards that benefit from having multiple creatures on the field).
+
+4. <strong>Visualize Data</strong>:
+   - Create graphs or charts to show the relationships between synergistic cards.
+
+### Example Analysis
+
+Let&#x27;s choose a color (e.g., White) and identify a few key cards. We can focus on their synergies and performance metrics. If you have specific cards in mind or want to analyze a particular color or mechanic, let me know! Otherwise, I can create a sample analysis based on common synergies.</div>
+<div class="msg user"><div class="role user">You</div>Can you give me a graph of cards that the community undervalues by comparing ALSA to GIH WR?</div>
+</body></html>

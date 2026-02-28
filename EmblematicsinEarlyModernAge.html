@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emblematics in Early Modern Age</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Emblematics in Early Modern Age</h1>
+  <div class="meta">January 10, 2026 10:43 PM &middot; Model: gpt-5-2 &middot; 12 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>give me a detailed summary of the contents of this</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file0 in your response to cite this file, or to surface it as a link.<br>
+&lt;IMAGE FOR PAGE: 1 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 113&gt;<br>
+BRUNIANA &amp; CAMPANELLIANA<br>
+Ricerche filosofiche e materiali storico-testuali<br>
+supplementi, xxxiv · studi, 13<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 113&gt;<br>
+LA SCELTA DI LORENZO<br>
+LA PRIMAVERA DI BOTTICELLI<br>
+TRA POESIA E FILOSOFIA<br>
+CHRISTOPHE PONCET<br>
+testo francese con traduzione italiana di germana ernst<br>
+PISA · ROMA<br>
+FABRIZIO SERRA EDITORE<br>
+MMXII<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 113&gt;<br>
+Sono rigorosamente vietati la riproduzione, la traduzione, l’adattamento,<br>
+anche parziale o per estratti, per qualsiasi uso e con qualsiasi mezzo effettuati,<br>
+compresi la copia fotostatica, il microfilm, la memorizzazione elettronica,<br>
+ecc., senza la preventiva autorizzazione scritta della<br>
+Fabrizio Serra editore, Pisa · Roma.<br>
+Ogni abuso sarà perseguito a norma di legge.<br>
+Proprietà riservata · All rights reserved<br>
+© Copyright 2012 by Fabrizio Serra editore, Pisa · Roma.<br>
+Fabrizio Serra editore incorporates the Imprints Accademia editoriale,<br>
+Edizioni dell’Ateneo, Fabrizio Serra editore, Giardini editori e stampatori in Pisa,<br>
+Gruppo editoriale internazionale and Istituti editoriali e poligrafici internazionali.<br>
+Uffici di Pisa: Via Santa Bibbiana 28, i 56127 Pisa,<br>
+tel. +39 050 542332, fax +39 050 574888, fse@libraweb.net<br>
+Uffici di Roma: Via Carlo Emanuele I 48, i 00185 Roma,<br>
+tel. +39 06 70493456, fax +39 06 70476605, fse.roma@libraweb.net<br>
+www.libraweb.net<br>
+isbn 978-88-6227-454-8<br>
+isbn elettronico 978-88-6227-455-5<br>
+issn 1127-6045<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 113&gt;<br>
+À mes parents,<br>
+Françoise et Jean-André<br>
+*<br>
+Socrate. Eh bien, dès à présent, Protarque, le premier venu pourrait conve￾nablement nous servir de juge pour décider dans la compétition engagée entre<br>
+le plaisir et la sagesse.<br>
+Platon, Philèbe, 65ab<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 113&gt;<br>
+Ringrazio le persone che mi hanno sostenuto nell’elaborazione di questo libro e hanno contribuito alla sua realiz￾zazione. In particolare, esprimo la mia gratitudine a Valery Rees, Hiro Hirai, Philippe Truffault, Élisabeth Joliet,<br>
+Élie Huvelin, Françoise e Jean-André Poncet, Marie-Noëlle Jean, Paul Jean Zouaoui, Paolo Vian, Stéphane Roger,<br>
+Jean-Paul Bessières-Orsoni, Rita Gianfelice, Sergio Poletti, Fabrizio Serra, Eugenio Canone e Germana Ernst.<br>
+C. P.<br>
+Crediti fotografici:<br>
+Per concessione della Biblioteca Apostolica Vaticana, ogni diritto riservato: pp. 16, 18, 20, 24a; Agence Photographique de la Réunion des<br>
+Musées Nationaux: pp. 8, 12, 24a, 25b, 26, 27a, 37, 38a, 39, 40, 41, 42, 43, 44, 45, 49, 51, 53, 54 , 55, 59, 60, 61, 63a, 64, 65, 67, 68, 69, 71,<br>
+72, 73, 75, 76, 78, 80, 81, 82, 83, 84, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 99, 100, 101, 103, 104, 106; Beinecke Rare Book and<br>
+Manuscript Library, Yale University: p. 12b; Pierpont Morgan Library, New York: p. 12a; Villa Stendhal: pp. 9, 10, 11, 13, 15, 20, 21, 22b, 24b,<br>
+25a, 27b, 28, 29, 30, 31, 32, 33, 35, 36, 38b, 63, 78, 79, 85, 105.<br>
+Con il sostegno dell’Agence Photographique de la Réunion des Musées Nationaux.<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 113&gt;<br>
+This page intentionally left blank<br>
+&lt;IMAGE FOR PAGE: 7 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 8 / 113&gt;<br>
+ce jour, le Printemps de Botticelli est demeuré<br>
+une énigme. Il faut pourtant rendre hommage aux<br>
+nombreux chercheurs qui ont tenté d’en percer le secret.<br>
+Leurs travaux ont permis de retrouver presque toutes les<br>
+sources de l’œuvre.1 Grâce à eux, nous en identifions<br>
+chaque élément, depuis les neuf personnages princi￾paux jusqu’à la plus petite marguerite. De droite à<br>
+gauche, nous reconnaissons ainsi Zéphyr pourchassant<br>
+Chloris, nymphe de la terre, puis Flore, la déesse du<br>
+printemps, en train de disperser les fleurs qu’elle porte<br>
+dans un pli de sa robe; au centre Vénus survolée par<br>
+l’Amour, lequel pointe sa flèche sur le groupe des Trois<br>
+Grâces; enfin Mercure élevant son caducée. Mais à cette<br>
+procession mythologique personne n’avait jamais su ap￾porter une explication convaincante.2 C’est qu’un autre<br>
+personnage, resté en dehors de la composition dont il<br>
+constituait la clef, n’avait pas été pris en considération:<br>
+l’observateur du tableau.<br>
+ino ad oggi, la Primavera di Botticelli è rimasta<br>
+un enigma. Si deve tuttavia rendere omaggio ai<br>
+numerosi studiosi che hanno tentato di svelarne il<br>
+segreto. I loro lavori hanno consentito di rintrac￾ciare pressoché tutte le fonti dell’opera.1 Grazie ad<br>
+essi, siamo in grado di identificare ogni elemento a<br>
+partire dai nove personaggi principali fino alla più<br>
+piccola margherita. Da destra a sinistra, ricono￾sciamo così Zefiro che dà la caccia a Cloris, ninfa<br>
+della terra, quindi Flora, dea della primavera che<br>
+sta distribuendo i fiori che si trovano in una piega<br>
+della sua veste. Al centro Venere, sopra la quale si<br>
+vede Amore che punta la sua freccia sul gruppo<br>
+delle Tre Grazie. In fine Mercurio che innalza il suo<br>
+caduceo. Ma di questa sfilata mitologica, nessuno<br>
+aveva mai dato una spiegazione convincen te.2 In￾fatti, non era stato preso in considerazione un altro<br>
+personaggio, rimasto fuori dalla composizione di<br>
+cui forniva la chiave: l’osservatore del quadro.<br>
+1 Tra i numerosi lavori dedicati alla Primavera, alcuni saggi sono<br>
+di particolare rilievo: Warburg, Botticelli; Wind, Pagan Mysteries;<br>
+Dempsey, The Portrayal of Love.<br>
+2 Le più recenti pubblicazioni si accordano su questo punto:<br>
+Cecchi, Botticelli, pp. 152, 161; Marmor, From Purgatory to the Pri￾mavera, p. 199; Acidini Luchinat, Botticelli: Les Allégories, p. 9; Vil￾la, Mercurio retrogrado, pp. 6-7.<br>
+1 Parmi les nombreux travaux consacrés au Printemps, quelques es￾sais ont été particulièrement remarqués: Warburg, La naissance de<br>
+Vénus; Wind, Pagan Mysteries; Dempsey, The Portrayal of Love.<br>
+2 Les plus récentes publications s’accordent sur ce point: Cecchi,<br>
+Botticelli, pp. 152, 161; Marmor, From Purgatory to the Primavera,<br>
+p. 199; Acidini Luchinat, Botticelli: Les Allégories, p. 9; Villa,<br>
+Mercurio retrogrado, pp. 6-7.<br>
+F À<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 113&gt;<br>
+Per capire il quadro, bisogna cominciare dal chia￾rire un’altra immagine, anche essa fiorentina e<br>
+concepita nel medesimo periodo: la carta dell’In￾namorato dei tarocchi di Marsiglia.1 Al centro, si<br>
+vede un uomo in piedi di fronte all’osservatore.<br>
+Egli indossa la veste corta dei giovani alla moda<br>
+nel Quattrocento. La sua testa è volta verso una<br>
+donna alla sua destra. Essi si scambiano uno sguar￾do intenso, gli occhi negli occhi. La donna ha la<br>
+mano sinistra posata sulla spalla di lui e gli accarez￾za la coscia con la destra. Dall’altro lato, una gio￾vane donna che indossa una lunga, semplice veste<br>
+tocca il petto dell’uomo proprio all’altezza del<br>
+cuore. Sembra triste, con lo sguardo volto verso il<br>
+basso. L’uomo la respinge con il dorso della mano.<br>
+Amore, che sta per lanciare la sua freccia, aleggia<br>
+sulla scena.<br>
+Pour comprendre le tableau, il nous faut commencer par<br>
+élucider une autre image, elle aussi florentine, et conçue<br>
+à la même époque: la carte de l’Amoureux du tarot de<br>
+Marseille.1 Au milieu, un homme se tient debout, face à<br>
+l’observateur. Il porte le vêtement court des jeunes gens<br>
+à la mode au Quattrocento. Sa tête est tournée vers<br>
+une femme à sa droite. Ils échangent un regard intense,<br>
+les yeux dans les yeux. Elle a la main gauche posée sur<br>
+son épaule et lui flatte la cuisse avec la droite. De l’autre<br>
+côté, une jeune femme vêtue d’un simple manteau<br>
+touche le torse de l’homme, juste au niveau du cœur. Elle<br>
+paraît triste, avec son regard tombant. Il la repousse du<br>
+revers de la main. L’Amour, sur le point de décocher sa<br>
+flèche, survole la scène.<br>
+10 christophe poncet<br>
+1 Sulle origini fiorentine dei tarocchi di Marsiglia, vedi Poncet,<br>
+Un gioco.<br>
+1 Sur les origines florentines du tarot de Marseille, voir Poncet, Un<br>
+gioco.<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 113&gt;<br>
+ la scelta di lorenzo · le choix de laurent 11<br>
+L’Innamorato. L’Amoureux, 1760<br>
+(Paris, Bibliothèque Nationale de France).<br>
+&lt;IMAGE FOR PAGE: 10 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 11 / 113&gt;<br>
+Possiamo leggere l’immagine come si percorre la<br>
+striscia di un fumetto. Il giovane uomo e la donna<br>
+alla sua sinistra costituiscono una coppia. Lei sta<br>
+rispettosamente a fianco del suo sposo, legger￾mente arretrata. Ha ancora sulla testa la ghirlanda<br>
+di fiori. Nell’Italia del Rinascimento, secondo la<br>
+tradizione, la giovane sposa riceveva quest’orna￾mento alla fine della cerimonia nuziale.1 Il suo ge￾sto in direzione del cuore dell’uomo esprime una<br>
+tenera intimità. Il movimento del braccio con il<br>
+quale lui la respinge senza neppure guardarla testi￾monia anch’esso una certa familiarità.<br>
+On peut lire l’image comme on parcourt une bande des￾sinée. Le jeune homme et la femme à sa gauche forment<br>
+un couple. Elle se tient respectueusement au côté de son<br>
+époux, légèrement en retrait. Elle porte encore la guir￾lande de fleurs sur la tête. Dans l’Italie de la Renais￾sance, la tradition voulait que la jeune épousée reçoive<br>
+cet ornement à la fin de la cérémonie nuptiale.1 Le geste<br>
+qu’elle fait en direction du cœur de l’homme exprime<br>
+une tendre intimité. Le mouvement de bras par lequel il<br>
+la rejette, sans même la regarder, témoigne également<br>
+d’une certaine familiarité.<br>
+12 christophe poncet<br>
+1 A proposito di questa tradizione, vedi Fournel, Furlan,<br>
+Famille et mariage, p. 1753; Herald, Renaissance Dress, p. 244.<br>
+1 À propos de cette tradition, voir Fournel, Furlan, Famille et<br>
+mariage, p. 1753; Herald, Renaissance Dress, p. 244.<br>
+&lt;IMAGE FOR PAGE: 11 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 12 / 113&gt;<br>
+Ces échanges entre les jeunes gens sont très probable￾ment causés par l’irruption de l’autre femme. Son assu￾rance, son port altier, semblent indiquer qu’elle est plus<br>
+expérimentée qu’eux. L’habillement sophistiqué dont<br>
+elle se pare est celui d’une riche aristocrate, ou bien<br>
+d’une prostituée. C’est cette seconde hypothèse que nous<br>
+retiendrons, en considération de la façon qu’elle a de<br>
+porter les mains sur le jeune homme. Celui-ci, prudent,<br>
+refuse d’ouvrir son bras, et garde le coude fermé en po￾sition défensive. Qu’a-t-il donc à craindre?<br>
+L’image ne donne-t-elle pas la réponse, comme dans<br>
+une bulle de bande dessinée? L’Amour serait ainsi une<br>
+représentation du désir de l’homme suscité en lui par la<br>
+vision de la courtisane. Et la flèche que l’archer pointe<br>
+en direction du couple, précisément entre l’homme et la<br>
+femme, figurerait la menace que ce désir fait peser sur<br>
+les liens du mariage. S’il cède aux avances de la prosti￾tuée, l’homme risque de briser la relation qui l’unit à sa<br>
+légitime épouse. Elle-même a pris la mesure du danger<br>
+et tente, par un geste en direction de son cœur, de le re￾tenir à elle. Cette lecture peut sembler imaginative.<br>
+L’étude iconographique de la carte montre pourtant<br>
+qu’elle est très proche de la signification voulue à l’ori￾gine.<br>
+Questi scambi fra i due giovani sono causati molto<br>
+probabilmente dall’irruzione dell’altra donna, la<br>
+cui sicurezza, il cui portamento altero sembrano<br>
+indicare che lei ha più esperienza degli altre due.<br>
+L’abbigliamento sofisticato che ostenta è quello di<br>
+una ricca aristocratica, o anche di una cortigiana.<br>
+Propenderei per questa seconda ipotesi, in consi￾derazione del modo in cui le sue mani si posano<br>
+sul giovane uomo: il quale, prudentemente, rifiuta<br>
+di aprire il suo braccio e mantiene il gomito chiuso<br>
+in posizione difensiva. Ma che cosa ha da temere?<br>
+L’immagine non dà essa stessa la risposta? Amo￾re sarebbe così una raffigurazione del desiderio<br>
+dell’uomo suscitato in lui dalla vista della cortigia￾na, e la freccia che l’arciere punta in direzione della<br>
+coppia, precisamente fra l’uomo e la donna, rap￾presenterebbe la minaccia per i vincoli coniugali<br>
+che trae origine da questo desiderio. Se l’uomo ce￾de alle avances della cortigiana, rischia di porre fine<br>
+alla relazione che lo unisce alla legittima sposa. La<br>
+quale si è resa conto del pericolo e, con un gesto<br>
+diretto al cuore di lui, cerca di trattenerlo. Una let￾tura che può sembrare immaginosa; ma lo studio<br>
+iconografico della carta mostra che essa è molto<br>
+prossima al significato originario.<br>
+ la scelta di lorenzo · le choix de laurent 13<br>
+&lt;IMAGE FOR PAGE: 12 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 13 / 113&gt;<br>
+L’immagine eredita il suo schema generale dai ta￾rocchi miniati creati a Milano all’inizio del xv se￾colo. Il modello canonico rappresenta una coppia<br>
+che si stringe la mano sotto un Amore dagli occhi<br>
+bendati. La stretta di mano non deve essere inter￾pretata come un semplice saluto: si tratta della<br>
+dextrarum junctio, il rito, praticato fino dall’antichi￾tà romana, che suggellava l’unione coniugale.<br>
+L’image hérite son schéma général des tarots enluminés<br>
+créés à Milan au début du quinzième siècle. Le modèle<br>
+canonique représente un couple qui se serre la main au￾dessous d’un Amour aux yeux bandés. La poignée de<br>
+mains ne doit pas être interprétée comme un simple sa￾lut: c’est la dextrarum junctio, le rite, pratiqué depuis<br>
+l’Antiquité romaine, par lequel était scellée l’union ma￾trimoniale.<br>
+14 christophe poncet<br>
+Bonifacio Bembo (?), Gli amanti. Les amoureux, 1450 (?)<br>
+(New York, Pierpont Morgan Library).<br>
+Bonifacio Bembo (?), Gli amanti. Les amoureux, 1445 (?)<br>
+(New York, Yale University Library).<br>
+&lt;IMAGE FOR PAGE: 13 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 14 / 113&gt;<br>
+De cette composition, la carte de l’Amoureux garde la<br>
+structure triangulaire dominée par un Amour. L’idée de<br>
+mariage est également conservée, mais plus discrète￾ment, la guirlande de fleurs jouant un rôle analogue à<br>
+la dextrarum junctio.<br>
+Di questa composizione, la carta dell’Innamorato<br>
+mantiene la struttura triangolare dominata da<br>
+Amore. È conservata anche l’idea di matrimonio,<br>
+ma in modo più discreto, in quanto la ghirlanda di<br>
+fiori gioca un ruolo analogo alla dextrarum junctio.<br>
+ la scelta di lorenzo · le choix de laurent 15<br>
+&lt;IMAGE FOR PAGE: 14 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 15 / 113&gt;<br>
+Ma l’ideatore dei tarocchi di Marsiglia aggiunge<br>
+una seconda donna alla scena: e per farlo modifica<br>
+la composizione, ispirandosi a un’altra fonte. Si<br>
+tratta di una miniatura che raffigura la ‘scelta di<br>
+Ercole’, eseguita nel 1463 da Felice Feliciano, un ar￾tista e letterato veronese.1 Le corrispondenze fra<br>
+le due immagini sono troppe per essere semplice￾mente frutto del caso: 1) stessa struttura con un<br>
+uomo affiancato da due donne; 2) stesso orienta￾mento dei corpi nello spazio: l’uomo di fronte<br>
+all’osservatore con la testa girata di tre quarti ver￾so una donna di profilo; dall’altro lato una seconda<br>
+donna con il corpo di fronte e il viso di profilo; 3)<br>
+Mais le créateur du Tarot de Marseille ajoute une<br>
+deuxième femme à la scène. Pour ce faire, il modifie sa<br>
+composition en prenant modèle sur une autre source. Il<br>
+s’agit d’une miniature, représentant le ‘Choix d’Her￾cule’, peinte en 1463 par Felice Feliciano, un artiste et<br>
+homme de lettres originaire de Vérone.1 Les correspon￾dances entre les deux images sont trop nombreuses pour<br>
+être le simple fruit du hasard: 1) même structure avec un<br>
+homme flanqué de deux femmes; 2) même orientation<br>
+des corps dans l’espace: l’homme face à l’observateur<br>
+avec la tête tournée de trois quarts vers une femme de<br>
+profil; derrière l’homme une autre femme avec le corps<br>
+de face et le visage de profil; 3) même échange de regards;<br>
+16 christophe poncet<br>
+1 Su Felice Feliciano, vedi Contò, Quaquarelli, L’antiquario<br>
+Felice Feliciano; Mitchell, Felice Feliciano Antiquarius; Mantova￾ni, La maestà della lettera antica.<br>
+1 Sur Felice Feliciano, voir Contò, Quaquarelli, L’antiquario<br>
+Felice Feliciano; Mitchell, Felice Feliciano Antiquarius; Manto￾vani, La maestà della lettera antica.<br>
+Felice Feliciano, La scelta di Ercole. Le choix d’Hercule, 1463<br>
+(Città del Vaticano, Biblioteca Apostolica Vaticana, Reg. Lat. 1388, f. 14r).<br>
+&lt;IMAGE FOR PAGE: 15 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 16 / 113&gt;<br>
+4) même coiffure à pointes; 5) même interaction phy￾sique entre l’homme et la femme au chapeau: la femme<br>
+touchant l’homme, l’homme en position défensive; Her￾cule lui fait barrage avec sa massue plantée dans le sol,<br>
+le jeune homme oppose plus simplement son coude.<br>
+Deux détails laissent penser que la carte est directe￾ment adaptée de la miniature. Le sol, dans les deux<br>
+images, est de couleur jaune et arrive au même niveau<br>
+par rapport aux jambes du personnage masculin, en<br>
+haut du mollet. D’autre part, la main gauche d’Hercule<br>
+fait le même geste que la main droite de la courtisane<br>
+dans la carte. Ces deux mains sont posées sur la cuisse<br>
+droite du jeune homme, à la même hauteur.<br>
+stesso scambio di sguardi; 4) stesso copricapo a<br>
+punte; 5) stessa interazione fisica fra l’uomo e la<br>
+donna con il copricapo: la donna che tocca l’uo￾mo, l’uomo in posizione difensiva; Ercole la blocca<br>
+con la sua clava piantata al suolo, il giovane uomo<br>
+più semplicemente oppone il suo gomito.<br>
+Due particolari fanno pensare che la carta è<br>
+adattata direttamente dalla miniatura. Il terreno in<br>
+entrambe le immagini è di colore giallo e giunge<br>
+al medesimo livello rispetto alle gambe del perso￾naggio maschile, all’altezza dei polpacci. In secon￾do luogo, la mano sinistra di Ercole fa lo stesso ge￾sto della mano destra della cortigiana nella carta.<br>
+Entrambe queste mani si appoggiano sulla coscia<br>
+destra dell’uomo appena sotto l’anca.<br>
+ la scelta di lorenzo · le choix de laurent 17<br>
+&lt;IMAGE FOR PAGE: 16 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 17 / 113&gt;<br>
+L’immagine di Felice Feliciano illustra un mano￾scritto che contiene la storia della ‘scelta di Ercole’<br>
+narrata da Senofonte. Ercole all’incrocio della via<br>
+del vizio con quella della virtù è avvicinato da due<br>
+donne.1 L’una, nobile e decorosa, che si presenta<br>
+come la Virtù, gli offre una vita difficile ma ricca di<br>
+vere soddisfazioni. L’altra, chiamata Piacere dai<br>
+suoi amici e Vizio dagli altri, ben vestita e truccata,<br>
+gli promette una vita facile e piacevole:<br>
+[…] Eracle, al momento<br>
+del passaggio dalla fanciul￾lezza alla giovinezza,<br>
+quando i giovani, ormai<br>
+padroni di sé, mostrano se<br>
+nella vita si indirizzeranno<br>
+sulla via della virtù o su<br>
+quella del vizio, si recò in<br>
+un luogo solitario e seduto<br>
+si domandava quale strada<br>
+prendere; ed ecco gli ap￾parvero due donne che ve￾nivano verso di lui: erano<br>
+alte entrambe, ma l’una di<br>
+bell’aspetto e di natura no￾bile, la purezza abbelliva il<br>
+suo volto, il pudore il suo<br>
+sguardo, aveva andatura<br>
+composta, e indossava una<br>
+veste bianca; l’altra, cre￾sciuta per essere ben torni￾ta e morbida, aveva il viso<br>
+imbellettato, in modo da<br>
+sembrare più bianca e ros￾sa di quello che era, e un<br>
+portamento tale da sem￾brare più eretta del natu￾rale, lo sguardo era sfac￾ciato e la veste lasciava<br>
+intrav vedere generosa￾mente le sue belle forme.<br>
+Spesso si guardava con compiacimento, ma guardava<br>
+anche se qualcun altro la osservava, e più volte si vol￾tava a guardare la sua ombra. Quando arrivarono più<br>
+vicino a Eracle, quella che si è descritta per prima, pro￾cedette alla solita andatura, ma l’altra, per precederla,<br>
+corse incontro a Eracle e gli disse: «Vedo che tu, o Era￾cle, sei in dubbio su quale indirizzo dare alla tua vita.<br>
+Allora, se mi farai tua amica, io ti porterò per la strada<br>
+più dolce e facile, e non ci sarà piacere che tu non gu￾sterai e passerai la vita senza fare esperienza del dolo￾re. Per prima cosa, infatti, non ti preoccuperai di guer￾re o di affari, ma passerai il tempo cercando quale cibo<br>
+o bevanda possa trovare che siano graditi o che cosa<br>
+vedendo o ascoltando ti diletti, o che cosa odorando o<br>
+toccando ti dia piacere, o stando con quali amanti sod￾disfi di più la tua passione e come possa dormire nel<br>
+modo più dolce e come possa raggiungere tutte que￾ste cose senza sforzo. E se mai ti venisse il sospetto di<br>
+trovarti in scarsezza dei mezzi da cui si ottengono que￾ste cose, non avere paura che io ti conduca a procurar￾tele con fatica e sofferenza del corpo e dell’anima; an￾zi, ti servirai delle cose che gli altri producono col loro<br>
+lavoro, senza privarti di<br>
+niente da cui sia possibile<br>
+guadagnare qualcosa. Da<br>
+ogni parte, infatti, posso￾no trarre guadagni coloro<br>
+a cui offro la mia compa￾gnia». Ed Eracle, dopo<br>
+averla ascoltata, chiese:<br>
+«Donna, come ti chiami?»<br>
+E quella «Felicità mi chia￾mano gli amici, ma quelli<br>
+che mi odiano mi chiama￾no con disprezzo Vizio». E<br>
+intanto l’altra donna, avvi￾cinatasi, disse: «Anch’io<br>
+giungo a te, o Eracle, co￾noscendo i tuoi genitori e<br>
+avendo osservato il tuo ca￾rattere durante l’educazio￾ne, cose dalle quali spero,<br>
+se ti metterai per la mia<br>
+strada, potrai realizzare<br>
+con abilità opere belle ed<br>
+elevate, ed io apparirò<br>
+ ancor più nobile e magni￾fica per le belle imprese<br>
+che tu avrai compiuto sot￾to la mia guida. Non ti in￾gannerò con promesse al￾lettanti, ma ti spiegherò<br>
+senza menzogne come gli<br>
+dèi hanno ordinato la real￾tà. Delle cose buone e belle che ci sono, infatti, nessu￾na essi concedono agli uomini senza fatica e impegno,<br>
+ma se vuoi che siano benevoli verso di te, devi aver cu￾ra di loro e, se vuoi l’affetto degli amici, devi procurare<br>
+loro dei benefici e, se vuoi onori da una città, devi aiu￾tarla, e se vuoi che la Grecia intera ti ammiri per la tua<br>
+virtù, devi cercare di fare qualcosa di buono per la<br>
+Grecia, se vuoi che la terra ti dia in abbondanza dei<br>
+frutti, devi coltivarla, se pensi di dover diventare ricco<br>
+col bestiame, devi curarlo, se miri ad accrescere il tuo<br>
+potere con la guerra e vuoi poter ottenere la libertà<br>
+degli amici e la sottomissione dei nemici, devi impara￾re le arti marziali da coloro che le conoscono ed alle￾narti a usarle come bisogna. Se poi anche col corpo<br>
+vuoi essere abile, devi prendere l’abitudine di sotto￾18 christophe poncet<br>
+1 Sulla ricezione del tema della ‘scelta di Ercole’ nel Rinascimen￾to, vedi Panofsky, Ercole al bivio.<br>
+Felice Feliciano, Hercules Xenophontius, 1463<br>
+(Città del Vaticano, Biblioteca Apostolica Vaticana,<br>
+Reg. Lat. 1388, f. 18r).<br>
+&lt;PARSED TEXT FOR PAGE: 18 / 113&gt;<br>
+mettere il corpo alla mente e devi fare ginnastica con<br>
+fatica e sudore». Il Vizio, secondo il racconto di Prodi￾co, replicando disse: «Vedi, o Eracle, come aspra e lun￾ga è la strada al piacere che quella donna ti mostra? Io<br>
+invece ti guiderò alla felicità per una strada facile e bre￾ve». E la virtù: «Sciagurata, e che beni possiedi tu?<br>
+Quale piacere conosci tu, che non vuoi fare niente per<br>
+ottenere queste cose? Tu non aspetti neanche di desi￾derare le cose piacevoli, ma prima ancora di provarne<br>
+la voglia, ti riempi di tutto, mangi prima di provare fa￾me, bevi prima di avere sete e ti procuri dei cuochi per<br>
+mangiare con piacere, e per bere con piacere acquisti<br>
+vini pregiati e d’estate t’affanni a cercare la neve, e per<br>
+provare piacere nel sonno ti prepari non solo materas￾si e coperte morbidi, ma anche sostegni elastici sotto i<br>
+letti; perché tu vuoi dormire, non per riposarti dalla<br>
+fatica, ma perché non hai niente da fare. E i piaceri<br>
+d’amore tu li susciti forzatamente prima del bisogno,<br>
+escogitando di tutto e usando gli uomini come donne;<br>
+così infatti ammaestri i tuoi amici, corrompendoli di<br>
+notte e facendoli dormire durante il tempo più prezio￾so della giornata. Anche se sei immortale gli dèi ti<br>
+hanno respinto e gli uomini onesti ti disprezzano. La<br>
+cosa che è più dolce di tutte a sentirsi, una lode di sé<br>
+stessi, tu non la senti mai, e ciò che è più bello a vedere<br>
+tu non lo vedi mai, perché mai hai visto qualcosa di<br>
+bello che sia opera tua. Chi crederebbe a quello che di￾ci? Chi ti darebbe aiuto quando avessi bisogno di qual￾cosa? O chi, avendo giudizio, oserebbe far parte del<br>
+tuo gruppo? I giovani sono indeboliti nei corpi, i vec￾chi nella mente, allevati negli agi, senza fatiche duran￾te la giovinezza, squallidi e con stento attraversano la<br>
+vecchiaia, vergognosi delle azioni passate, oppressi<br>
+dalle presenti, bruciati in gioventù tutti i piaceri, han<br>
+messo da parte per la vecchiaia i dolori. Io mi accom￾pagno con gli dèi e con gli uomini onesti: nessuna bel￾la impresa né divina né umana si fa senza di me. Sono<br>
+la più onorata di tutti presso gli dèi e presso gli uomini<br>
+cui si addice onorarmi; sono collaboratrice amata de￾gli artigiani, guardiana fidata della casa per i proprieta￾ri, soccorritrice del lavoro in tempo di pace, alleata sta￾bile nelle imprese di guerra, ottima compartecipe<br>
+dell’amicizia. I miei amici godono dolcemente e senza<br>
+doversi affaccendare del cibo e del bere; infatti evitano<br>
+queste cose fin quando non ne provano desiderio. Il<br>
+sonno è più dolce per loro che per la gente oziosa, né<br>
+si crucciano dovendo abbandonarlo, né tralasciano per<br>
+esso di fare quello che devono. E i giovani si rallegrano<br>
+delle lodi dei vecchi, e i più vecchi gioiscono del rispet￾to dei più giovani; e con piacere ricordano le imprese<br>
+del tempo passato, e si compiacciono di ben agire al<br>
+presente, essendo per causa mia cari agli dèi, amati da￾gli amici, onorati dalle patrie. Quando poi viene il ter￾mine stabilito dal destino, non giacciono dimenticati e<br>
+senza gloria, ma fioriscono perennemente ricordati<br>
+nei canti. Se ti prenderai cura di affrontare questi sacri￾fici, tu potrai, o Eracle, figlio di nobili genitori, acqui￾stare la più beata felicità».1<br>
+ la scelta di lorenzo · le choix de laurent 19<br>
+1 Senofonte, Memorabili, ii, 21-33, pp. 161-169.<br>
+&lt;PARSED TEXT FOR PAGE: 19 / 113&gt;<br>
+L’image de Felice Feliciano illustre un manuscrit conte￾nant l’histoire, racontée par Xénophon, du ‘Choix<br>
+d’Hercule’: Hercule, au carrefour entre la voie du vice et<br>
+celle de la vertu, est abordé par deux femmes.1 L’une, no￾ble et décente, qui se présente comme la Vertu, lui offre<br>
+une vie difficile mais pleine de récompenses véritables.<br>
+L’autre, appelée Volupté par ses amis et Mollesse par les<br>
+autres, bien vêtue, et maquillée, lui promet une vie facile<br>
+et plaisante:<br>
+Héraclès venait de sortir de<br>
+l’enfance pour entrer dans la<br>
+jeunesse; il était à cet âge où<br>
+les jeunes gens devenus déjà<br>
+maîtres d’eux-mêmes, lais￾sent voir s’ils entreront dans<br>
+la vie par le chemin de la<br>
+vertu ou par celui du vice.<br>
+Étant sorti de chez lui, il<br>
+s’était assis dans un lieu soli￾taire et se demandait laquelle<br>
+de ces deux routes il allait<br>
+prendre, quand il vit venir à<br>
+lui deux femmes de haute<br>
+taille. L’une avait un aspect<br>
+décent et noble, un regard pu￾dique, un maintien modeste;<br>
+elle était vêtue de blanc. L’au￾tre, qu’un régime particulier<br>
+avait rendue potelée et déli￾cate, avait fardé son visage<br>
+pour paraître plus blanche et<br>
+plus vermeille qu’elle n’était<br>
+réellement; elle se tenait de<br>
+manière à exhausser sa taille<br>
+naturelle; elle avait les yeux<br>
+grands ouverts; elle portait la<br>
+toilette la plus propre à laisser<br>
+transparaître sa beauté; elle<br>
+se regardait souvent et obser￾vait si on la lorgnait, et sou￾vent elle jetait sur son ombre un regard de côté.<br>
+Quand elles se furent rapprochées d’Héraclès, la première<br>
+s’avança sans changer d’allure; mais l’autre, voulant la pré￾venir, courut vers lui et lui dit: «Je vois, Héraclès, que tu es<br>
+embarrassé de savoir par quelle route tu vas entrer dans la<br>
+vie. Prends-moi pour amie, et je te conduirai par la route la<br>
+plus agréable et la plus facile; il n’y aura pas de plaisirs que<br>
+tu ne goûtes, et tu passeras ta vie sans connaître la peine.<br>
+D’abord tu ne t’inquiéteras ni des guerres ni des affaires. Tu<br>
+ne t’occuperas qu’à chercher des mets et des boissons qui te<br>
+plaisent, des objets qui réjouissent tes yeux et tes oreilles ou<br>
+flattent ton odorat ou ton toucher, quels jeunes garçons tu au￾ras le plus de plaisir à fréquenter, comment tu dormiras avec<br>
+le plus de mollesse et comment tu obtiendras toutes ces jouis￾sances avec le moins de peine. Si jamais tu as quelque crainte<br>
+de manquer de ressources pour te les procurer, tu n’as pas à<br>
+redouter que je te réduise à travailler et à peiner du corps et<br>
+de l’esprit pour te les payer; tu jouiras du travail des autres,<br>
+sans t’abstenir de rien de ce qui pourra t’apporter quelque<br>
+profit; car je donne à ceux qui me suivent la faculté de prendre<br>
+leurs avantages partout.»<br>
+Héraclès, ayant entendu ce discours: «Femme, dit-il, quel<br>
+est ton nom?» Elle répondit:<br>
+«Mes amis m’appellent la Fé￾licité, et mes ennemis me<br>
+donnent par dénigrement le<br>
+nom de Mollesse.» À ce mo￾ment, l’autre femme s’appro￾cha et dit: «Moi aussi, je suis<br>
+venue vers toi, Héraclès. Je<br>
+connais tes parents et j’ai<br>
+pris note de ton caractère au<br>
+cours de ton éducation. Aussi<br>
+j’espère, si tu prends la route<br>
+qui conduit vers moi, que tu<br>
+seras un jour un vaillant<br>
+homme qui accomplira de<br>
+beaux et nobles travaux, et<br>
+que moi-même je serai beau￾coup plus honorée et plus<br>
+ illustre, grâce à tes bonnes<br>
+ actions. Je ne préluderai<br>
+point en te promettant du<br>
+plaisir, car je ne veux pas te<br>
+tromper, mais je t’exposerai<br>
+en toute vérité les choses telles<br>
+qu’elles ont été établies par<br>
+les dieux. De ce qui est bon et<br>
+beau, les dieux effectivement<br>
+ne donnent rien aux hommes<br>
+sans exiger d’eux du travail<br>
+et de l’application; mais si tu<br>
+veux que les dieux te soient<br>
+propices, il faut que tu adores<br>
+les dieux; si tu veux que tes amis te chérissent, il faut faire<br>
+du bien à tes amis; si tu veux qu’un pays t’honore, tu dois<br>
+être utile à ce pays; si tu prétends que toute la Grèce admire<br>
+ta vertu, tu dois essayer de faire du bien à toute la Grèce; si<br>
+tu veux que la terre te donne des fruits en abondance, tu dois<br>
+cultiver la terre; si tu crois devoir t’enrichir par des trou￾peaux, il faut que tu prennes soin des troupeaux; si tu as￾pires à te grandir par la guerre et si tu veux être à même de<br>
+rendre libres tes amis et de soumettre tes ennemis, tu dois ap￾prendre l’art de la guerre de ceux qui le connaissent et t’exer￾cer à le pratiquer; si tu veux acquérir la force du corps, tu<br>
+dois habituer ton corps à se soumettre à l’intelligence et<br>
+l’exercer par les travaux et les sueurs». Ici la Mollesse reprit<br>
+la parole, au dire de Prodicos et dit: «Comprends-tu, Héra￾clès, combien pénible et longue est la route que cette femme<br>
+20 christophe poncet<br>
+1 Sur la réception de l’histoire du ‘choix d’Hercule’ à la Renaissance,<br>
+lire Panofsky, Hercule à la croisée des chemins.<br>
+Felice Feliciano, Hercules Xenophontius, 1463<br>
+(Città del Vaticano, Biblioteca Apostolica Vaticana,<br>
+Reg. Lat. 1388, f. 19r).<br>
+&lt;PARSED TEXT FOR PAGE: 20 / 113&gt;<br>
+te trace pour arriver aux plaisirs; moi, c’est par une route ai￾sée et courte que je te conduirai au bonheur.»<br>
+Alors la Vertu dit: «Misérable, quel bien possèdes-tu? Quel<br>
+agrément connais-tu, toi qui ne veux rien faire pour le ga￾gner, qui n’attends même pas le désir du plaisir; qui te rem￾plis de tout avant de le désirer; qui manges avant d’avoir<br>
+faim, qui bois avant d’avoir soif; qui, pour manger avec plai￾sir, cherches des cuisiniers; qui, pour boire avec plaisir te pro￾cures des vins coûteux et qui, en été, cours partout chercher<br>
+de la neige; qui, pour dormir agréablement, te procures non<br>
+seulement des couvertures moelleuses, mais encore des san￾gles sous tes lits; car ce n’est pas la fatigue, c’est l’oisiveté qui<br>
+te fait désirer le sommeil. En amour, tu provoques le besoin,<br>
+avant de l’éprouver, tu imagines mille artifices et tu te sers des<br>
+hommes comme de femmes; car c’est ainsi que tu formes tes<br>
+amis: la nuit tu les dégrades et tu leur fais perdre à dormir la<br>
+partie la plus utile du jour. Tu es immortelle et tu as été reje￾tée par les dieux, et tu es méprisée par les honnêtes gens. Ce<br>
+qu’il y a au monde de plus agréable à entendre, ton éloge, tu<br>
+ne l’entends jamais, et ce qu’il y a de plus agréable à voir tu<br>
+ne le vois pas; car jamais tu n’as contemplé une belle action<br>
+faite par toi. Qui voudrait ajouter foi à tes paroles? Qui vou￾drait te venir en aide dans le besoin? Quel homme sensé vou￾drait se mêler à ton bruyant cortège? Quand ils sont jeunes,<br>
+tes sectateurs ont un corps débile; quand ils sont devenus<br>
+vieux, une âme abêtie. Nourris dans l’oisiveté, ils sont floris￾sants d’embonpoint dans leur jeunesse; puis le corps amai￾gri, ils passent une laborieuse vieillesse, rougissant de ce<br>
+qu’ils ont fait, accablés de ce qu’ils ont à faire; ayant couru<br>
+de plaisir en plaisir durant leur jeunesse, ils ont mis en ré￾serve les peines pour la vieillesse. Moi, au contraire, je vis<br>
+avec les dieux, je vis avec les gens de bien; aucune belle action<br>
+ne se fait sans moi, ni dans le ciel, ni sur la terre; personne<br>
+n’est aussi honorée que moi, ni chez les dieux, ni chez les<br>
+hommes à qui il appartient de m’honorer. Pour les artisans,<br>
+je suis une auxiliaire aimée; pour les maîtres, une fidèle gar￾dienne de la maison; pour les serviteurs une protectrice bien￾veillante; pour les travaux de la paix, une bonne auxiliaire;<br>
+dans les fatigues de la guerre, une alliée solide, et dans l’ami￾tié, une excellente associée. Mes amis jouissent du manger et<br>
+du boire avec plaisir et sans se donner de peine; car ils atten￾dent d’en sentir le désir. Ils ont un sommeil plus agréable que<br>
+les oisifs; ils l’interrompent sans chagrin, et ne négligent<br>
+point pour lui leurs devoirs. Jeunes, ils ont le plaisir d’être<br>
+loués par les vieillards; vieux, ils sont fiers des respects de la<br>
+jeunesse. C’est une joie pour eux de se rappeler leurs actions<br>
+passées et ils n’ont pas moins de plaisir à faire celles que le<br>
+présent exige. Par moi, ils sont amis des dieux, chéris de leurs<br>
+amis, honorés de leur patrie, et, quand vient le terme fatal,<br>
+ils ne gisent point oubliés et sans honneurs, mais leur souve￾nir fleurit d’âge en âge dans les hymnes qui les célèbrent.<br>
+Quant à toi, Héraclès, fils de parents vertueux, si tu veux dé￾ployer tes efforts comme j’ai dit, tu peux atteindre à la su￾prême félicité.»1<br>
+ la scelta di lorenzo · le choix de laurent 21<br>
+1 Xénophon, Mémorables, ii, 21-33, pp. 359-362.<br>
+&lt;PARSED TEXT FOR PAGE: 21 / 113&gt;<br>
+La descrizione delle due donne di Senofonte sem￾bra riprodotta fedelmente nella carta dell’Innamo￾rato. La donna che si presenta come la Voluttà è<br>
+descritta come<br>
+cresciuta per essere ben tornita e morbida, aveva il viso<br>
+imbellettato, in modo da sembrare più bianca e rossa<br>
+di quello che era, e un portamento tale da sembrare più<br>
+eretta del naturale, lo sguardo era sfacciato e la veste la￾sciava intravvedere generosamente le sue belle forme.<br>
+Spesso si guardava con compiacimento, ma guardava<br>
+anche se qualcun altro la osservava, e più volte si volta￾va a guardare la sua ombra.<br>
+La maggior parte di questi tratti si ritrova senz’al￾tro nella carta: si noti in particolare le pieghe del<br>
+collo che tradiscono un corpo ben nutrito. Il copri￾capo la rende più alta e il taglio del suo vestito,<br>
+stretto alla vita da una cintura, sottolinea le sue<br>
+forme.<br>
+La description des deux femmes par Xénophon semble<br>
+fidèlement transposée dans la carte de l’Amoureux.<br>
+Ainsi celle qui se présente comme la Volupté,<br>
+qu’un régime particulier avait rendue potelée et délicate,<br>
+avait fardé son visage pour paraître plus blanche et plus ver￾meille qu’elle n’était réellement; elle se tenait de manière à<br>
+exhausser sa taille naturelle; elle avait les yeux grands ou￾verts; elle portait la toilette la plus propre à laisser transpa￾raître sa beauté; elle se regardait souvent et observait si on la<br>
+lorgnait, et souvent elle jetait sur son ombre un regard de<br>
+côté.<br>
+On retrouve sans peine la plupart de ces traits dans la<br>
+carte: noter en particulier les plis du cou, qui trahissent<br>
+une chair potelée. Son chapeau la grandit et la coupe de<br>
+sa robe, ajustée à la taille par une ceinture, souligne ses<br>
+formes.<br>
+22 christophe poncet<br>
+&lt;IMAGE FOR PAGE: 21 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 22 / 113&gt;<br>
+De même, le sage portrait de la Vertu semble se refléter<br>
+dans l’autre figure féminine de la carte qui<br>
+avait un aspect décent et noble, un regard pudique, un main￾tien modeste.<br>
+Les yeux baissés de la jeune épousée, comme la légère in￾clinaison de sa tête, contrastent en effet avec l’allure al￾tière et le regard effronté de sa rivale. Son sobre habille￾ment, une simple tunique recouverte d’un long et droit<br>
+manteau, s’oppose par sa discrétion à l’accoutrement<br>
+tapageur de la dame au chapeau.<br>
+In modo analogo, il ritratto dignitoso della Virtù<br>
+sembra riflettersi nell’altra figura femminile della<br>
+carta:<br>
+di bell’aspetto e di natura nobile, la purezza abbelliva il<br>
+suo volto, il pudore il suo sguardo, aveva andatura<br>
+composta.<br>
+Gli occhi bassi della giovane sposa, la lieve inclina￾zione della sua testa contrastano, infatti, con il<br>
+portamento altero e lo sguardo sfrontato della ri￾vale. Il suo abbigliamento sobrio, una semplice tu￾nica ricoperta da un mantello lungo e diritto, si<br>
+contrappone, per la sua discrezione, a quello stra￾vagante e vistoso della donna con il copricapo.<br>
+ la scelta di lorenzo · le choix de laurent 23<br>
+&lt;IMAGE FOR PAGE: 22 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 23 / 113&gt;<br>
+Tuttavia, non è possibile vedere nell’immagine<br>
+della carta una rappresentazione della ‘scelta di Er￾cole’, poiché il giovane uomo ha perso tutti gli at￾tributi tradizionali dell’eroe: la clava, la pelle di<br>
+leone, la barba, la nudità eroica. Ma chi è il perso￾naggio che ha preso il posto di Ercole fra le due<br>
+donne?<br>
+La risposta a questa domanda si può trovare ne￾gli scritti del filosofo fiorentino Marsilio Ficino<br>
+(1433-1499). Amico e consigliere di Lorenzo de’ Me￾dici (1449-1492), è a lui che dedica la sua traduzione<br>
+del dialogo platonico intitolato Filebo. Nella lettera<br>
+di dedica, Ficino paragona la ‘scelta di Ercole’ alla<br>
+famosa storia del ‘giudizio di Paride’, secondo la<br>
+quale il pastore Paride aveva scelto Venere a danno<br>
+di Giunone e Minerva. Ficino introduce poi una<br>
+terza scena, che egli intitola ‘Il giudizio di Filebo’.<br>
+La letteratura antica non conosce un simile ‘giu -<br>
+Toutefois, il n’est pas possible de voir dans l’image de la<br>
+carte une représentation du ‘Choix d’Hercule’, car le<br>
+jeune homme a perdu tous les attributs traditionnels du<br>
+héros: la massue, la peau de lion, la barbe, la nudité<br>
+ héroïque. Qui donc est le personnage qui a pris la place<br>
+d’Hercule entre les deux femmes?<br>
+La réponse à cette question se trouve dans les écrits<br>
+du philosophe florentin Marsile Ficin (1433-1499). Ami<br>
+et conseiller de Laurent de Médicis (1449-1492), il dédie<br>
+à ce dernier sa traduction du dialogue de Platon inti￾tulé le Philèbe. Dans la lettre de dédicace, Ficin com￾pare le ‘Choix d’Hercule’ à la célèbre histoire du ‘Juge￾ment de Pâris’, jugement selon lequel le berger Pâris<br>
+avait élu Vénus au détriment de Junon et Minerve. Puis<br>
+Ficin introduit une troisième scène qu’il intitule le<br>
+ ‘Jugement de Philèbe’. La littérature de l’antiquité ne<br>
+connaît pas un tel ‘Jugement’. Cette fable, Ficin l’a<br>
+imaginée pour illustrer son interprétation de l’œuvre<br>
+24 christophe poncet<br>
+&lt;IMAGE FOR PAGE: 23 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 24 / 113&gt;<br>
+de Platon.1 Le Philèbe met en scène un débat sur le<br>
+Bien. La question est de déterminer ce qui, entre la<br>
+ volupté et la sagesse, est le Bien suprême. Philèbe<br>
+ apparaît comme un jeune homme têtu, obstiné dans<br>
+son opinion selon laquelle le Bien suprême est le plaisir.<br>
+Ce que Ficin résume d’une phrase:<br>
+Elles étaient aussi deux [déesses] sur le chemin d’un certain<br>
+Philèbe, Volupté et Sagesse, à rivaliser pour la victoire; et se￾lon le jugement de Philèbe, il a semblé que Vénus l’emportait<br>
+sur Pallas.2<br>
+Avec ses longs cheveux blonds et son vêtement court<br>
+ caractéristique de la jeunesse élégante de son temps,<br>
+l’homme de la carte, abordé par deux jeunes femmes<br>
+identifiables à la Volupté et à la Sagesse, correspond<br>
+parfaitement au portrait dressé par Ficin de Philèbe.<br>
+Selon toute vraisemblance, la miniature du ‘Choix<br>
+d’Hercule’ s’est métamorphosée dans la carte en ‘Juge￾ment de Philèbe’.<br>
+dizio’, una favola immaginata da Ficino per illu￾strare la propria interpretazione del dialogo plato￾nico.1 Il Filebo mette in scena un dibattito sul Bene:<br>
+la questione consiste nel determinare che cosa, fra<br>
+il piacere e la saggezza, sia il sommo Bene. Filebo<br>
+è rappresentato come un giovane uomo ostinato<br>
+nella propria opinione secondo la quale il sommo<br>
+Bene è il piacere. Ciò che Ficino riassume in una<br>
+frase:<br>
+C’erano anche due divinità sul cammino di un certo<br>
+ Filebo: Voluttà e Saggezza, a contendersi la vittoria, e<br>
+secondo il giudizio di Filebo, sembrava che Venere<br>
+ prevalesse su Pallade.2<br>
+Con i lunghi capelli biondi e il corto abito sopra il<br>
+ginocchio tipico dei giovani eleganti del suo tem￾po, l’uomo della carta, conteso da due giovani<br>
+donne identificate con Voluttà e Saggezza, corri￾sponde perfettamente al ritratto di Filebo delinea￾to da Ficino.<br>
+Secondo ogni verosimiglianza, la miniatura<br>
+ della ‘scelta di Ercole’ si è trasformata, nella carta,<br>
+nel ‘giudizio di Filebo’.<br>
+ la scelta di lorenzo · le choix de laurent 25<br>
+1 L’interpretazione di Ficino è perfettamente coerente con una<br>
+lettura attenta del Filebo, che consente di rintracciare numerosi pas￾si nei quali le diverse scelte di vita sono presentate come giudizi tra<br>
+le dee Afrodite e Atena. Cfr. Platone, Filebo, 11d-12a; 12b-c; 27d;<br>
+28b; 33a; 44d; 50e; 52d-e; 55c; 59d; 65b.<br>
+2 Ficino, Epistolae, p. 358.<br>
+1 L’interprétation de Ficin est parfaitement cohérente avec une lecture<br>
+attentive du Philèbe, qui permet de relever de nombreux passages où les<br>
+différents choix de vie sont présentés comme des jugements entre les déesses<br>
+Aphrodite et Athéna. Voir Platon, Philèbe, 11d-12a; 12b-c; 27d; 28b;<br>
+33a; 44d; 50e; 52d-e; 55c; 59d; 65b.<br>
+2 Ficin, Epistolae, p. 358.<br>
+&lt;PARSED TEXT FOR PAGE: 25 / 113&gt;<br>
+Quanto al modello grafico del giovane uomo della<br>
+carta, sembra possibile ritrovarne una traccia<br>
+nell’Adorazione dei Magi di Botticelli, un quadro che<br>
+risale al 1475 o 1476, nel quale vengono rappresenta￾ti alcuni membri della famiglia dei Medici. Al￾l’estrema sinistra, in mezzo alla folla che è venuta<br>
+ad assistere alla processione, troviamo un perso￾naggio dall’abbigliamento elegante. Le sue vesti<br>
+presentano delle similitudini che colpiscono con<br>
+quelle del nostro Filebo: le maniche azzurre del suo<br>
+abito orlate di una bordura gialla, i cui spacchi la￾sciano intravedere la camicia bianca indossata sot￾to; il corpetto dallo scollo rotondo ornato di una<br>
+plissettatura e con una cintura gialla; il gonnellino<br>
+corto e la sua orlatura inferiore. Anche i due atteg￾giamenti si assomigliano, in particolare la posizio￾ne delle gambe e il gesto del braccio destro. Nel￾l’Adorazione, la mano sinistra del giovane che<br>
+impugna la spada è il modello della mano destra di<br>
+Quant au modèle graphique du jeune homme de la<br>
+carte, il semble possible d’en retrouver la trace dans<br>
+l’Adoration des Mages de Botticelli, un tableau daté<br>
+de 1475 ou 1476, dans lequel ont été représentés plusieurs<br>
+membres de la famille Médicis. À l’extrême gauche,<br>
+parmi la foule venue assister à la procession, se trouve<br>
+un personnage à la mise élégante. Son vêtement présente<br>
+des similitudes frappantes avec celui de notre Philèbe:<br>
+les manches bleues de son habit, bordées d’un galon<br>
+jaune, et dont les crevés laissent voir la chemise blanche<br>
+portée par-dessous; le pourpoint à col rond, avec son<br>
+plissé vertical et orné d’une ceinture jaune; la jupe<br>
+courte et sa bordure inférieure. Les deux attitudes aussi<br>
+se ressemblent, particulièrement la position des jambes<br>
+et le geste du bras droit. Dans l’Adoration, la main<br>
+gauche du jeune homme qui tient l’épée est le modèle in￾versé de la droite de Philèbe, qui repose sur la ceinture.<br>
+D’autre part, les deux images présentent l’une et l’autre<br>
+un même schéma d’interaction entre trois figures.<br>
+26 christophe poncet<br>
+Sandro Botticelli,<br>
+Adorazione dei Magi (particolare).<br>
+L’Adoration des Mages (détail), 1475-1476<br>
+(Firenze, Museo degli Uffizi).<br>
+&lt;IMAGE FOR PAGE: 25 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 26 / 113&gt;<br>
+Comme Philèbe, le jeune homme à l’épée est sollicité<br>
+contradictoirement par deux personnes, l’une, au bon￾net bleu, qui le cajole; l’autre, coiffée d’un chapeau<br>
+rouge, qui cherche à capter son regard. Comme la femme<br>
+au chapeau dans la carte, le garçon au bonnet bleu pose<br>
+les deux mains sur le jeune homme, l’une sur l’épaule,<br>
+l’autre le long du bras droit, à peine plus haut que là où<br>
+Volupté tenait la sienne, et avec le même geste, le pouce<br>
+écarté des autres doigts. Comme Sagesse, l’homme au<br>
+chapeau rouge cherche à retenir l’attention du jeune<br>
+homme par un geste de la main, qu’il dirige vers l’acte<br>
+de dévotion auquel se livrent les Mages médicéens. La<br>
+présence de la tête du cheval le long du bras droit du<br>
+jeune homme à l’épée indique sans doute l’autre<br>
+branche de l’alternative: le plaisir d’une chevauchée<br>
+équestre, un thème souvent chargé de connotations éro￾tiques au Moyen-Âge et à la Renaissance. Le jeune<br>
+homme à l’épée, comme le Philèbe de la carte, se trouve<br>
+face à un choix entre sagesse et plaisir.<br>
+Si l’attitude des deux corps présente des similitudes,<br>
+il n’en va pas de même des têtes. Or, à l’extrémité oppo￾sée du tableau, un autre personnage, présente des traits<br>
+qui semblent refléter ceux de Philèbe: les cheveux mi￾longs et bouclés, avec une raie au milieu du front, le<br>
+ dessin du nez et des lèvres, la fossette sur le menton, la<br>
+mâchoire carrée, les lignes des sourcils et des yeux.<br>
+Seules les pupilles se sont déplacées d’un coin à l’autre.<br>
+Un clin d’œil de l’artiste?<br>
+Filebo, appoggiata sulla cintura. Inoltre le due<br>
+ immagini presentano entrambe un medesimo<br>
+schema d’interazione fra tre figure. Come Filebo, il<br>
+giovane con la spada è sollecitato in modo contra￾stante da due personaggi, uno con il berretto azzur￾ro che lo stuzzica, l’altro con un cappello rosso che<br>
+cerca di catturare il suo sguardo. Come la donna<br>
+con il copricapo nella carta, il ragazzo col berretto<br>
+azzurro appoggia le mani sul giovane uomo, una<br>
+sulla spalla, l’altra lungo il braccio destro, poco più<br>
+in alto di dove Voluttà tiene la sua e con lo stesso ge￾sto, il pollice distanziato dalle altre dita. Come Sag￾gezza, l’uomo dal cappello rosso cerca di attirare<br>
+l’attenzione del giovane con un gesto della mano,<br>
+che indica l’atto di devozione al quale si dedicano i<br>
+Magi medicei. La presenza della testa del cavallo<br>
+lungo il braccio destro del giovane sta senza dubbio<br>
+a significare l’altro corno dell’alternativa: il piacere<br>
+di una cavalcata, un tema spesso carico di connota￾zioni erotiche nel Medioevo e nel Rinascimento. Il<br>
+giovane con la spada, come il Filebo della carta, si<br>
+trova di fronte a una scelta fra saggezza e piacere.<br>
+Se la posizione dei due corpi presenta delle si￾militudini, non è così per quanto riguarda le teste.<br>
+Ma, all’altra estremità dell’Adorazione, un perso￾naggio presenta dei tratti che sembrano riflettere<br>
+quelli di Filebo: i capelli di media lunghezza e ina￾nellati, con una scriminatura che li separa al cen￾tro, il disegno del naso e delle labbra, la fossetta sul<br>
+mento, la mascella quadrata, le linee delle soprac￾ciglia e degli occhi. Soltanto le pupille si sono spo￾state verso l’angolo opposto. Una strizzata d’oc￾chio da parte dell’artista?<br>
+ la scelta di lorenzo · le choix de laurent 27<br>
+Sandro Botticelli,<br>
+Adorazione dei Magi (particolare).<br>
+L’Adoration des Mages (détail), 1475-1476<br>
+(Firenze, Museo degli Uffizi).<br>
+&lt;PARSED TEXT FOR PAGE: 27 / 113&gt;<br>
+28 christophe poncet<br>
+Maso Finiguerra (?),<br>
+La Giustizia. La Justice, 1459-1464 (?)<br>
+(Paris, Musée du Louvre).<br>
+&lt;IMAGE FOR PAGE: 27 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 28 / 113&gt;<br>
+Une autre source graphique est mise à contribution par<br>
+le créateur de l’Amoureux. On la trouve dans un nielle<br>
+attribué à l’orfèvre et graveur florentin Maso Finiguerra<br>
+(1426-1464).1 L’un des anges qui porte le dais sous lequel<br>
+trône la Justice semble avoir servi de modèle au dessina￾teur de la carte, qui reprend pratiquement la même at￾titude pour représenter son Amour, se contenant de lui<br>
+glisser un arc entre les mains, et de lui mettre un car￾quois en bandoulière.<br>
+Un’altra fonte grafica è utilizzata dal creatore<br>
+dell’Innamorato. La si trova in un niello attribuito<br>
+all’orefice e incisore fiorentino Maso Finiguerra<br>
+(1426-1464).1 Uno degli angeli che sorregge il bal￾dacchino sotto il quale troneggia la Giustizia sem￾bra essere servito come modello al designatore<br>
+della carta, che riprende la stessa posizione per<br>
+rappresentare il suo Amore, limitandosi ad ag￾giungere un arco nelle sue mani, e a mettergli una<br>
+faretra a tracolla.<br>
+ la scelta di lorenzo · le choix de laurent 29<br>
+1 Forse secondo un disegno di Antonio Pollaiolo. Su questo niel￾lo, vedi Blum, Les nielles du Quattrocento, pp. 15, xvii; Goldsmith<br>
+Phillips, Early Florentine Designers and Engravers, p. 13 e fig. 11a;<br>
+Loisel, Torres, Les premiers ateliers italiens, ill. 101.<br>
+1 Peut-être d’après un dessin d’Antonio Pollaiolo. Sur ce nielle, voir<br>
+Blum, Les nielles du Quattrocento, pp. 15, xvii; Goldsmith<br>
+ Phillips, Early Florentine Designers and Engravers, p. 13 e fig. 11a;<br>
+Loisel, Torres, Les premiers ateliers italiens, ill. 101.<br>
+&lt;IMAGE FOR PAGE: 28 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 29 / 113&gt;<br>
+30 christophe poncet<br>
+&lt;IMAGE FOR PAGE: 29 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 30 / 113&gt;<br>
+Il apparaît ainsi que le créateur de la carte de l’Amou￾reux, partant du modèle de tarots milanais, l’a adapté<br>
+en s’inspirant de diverses sources graphiques complé￾mentaires. Au schéma initial à trois figures (un couple<br>
+sous un Amour), un quatrième personnage a été ajouté.<br>
+Sembra dunque che il creatore dell’Innamorato,<br>
+partendo dal modello dei tarocchi milanesi, l’ab￾bia adattato, ispirandosi a differenti fonti grafiche<br>
+complementari. Allo schema iniziale con tre figu￾re (una coppia sotto Amore) è stato aggiunto un<br>
+quarto personaggio.<br>
+ la scelta di lorenzo · le choix de laurent 31<br>
+&lt;IMAGE FOR PAGE: 30 / 113&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 31 / 113&gt;<br>
+È possibile comprendere l’azione che è rappresen￾tata nella carta alla luce del trattato sull’amore di<br>
+Marsilio Ficino. Nel capitolo vi dell’opera, l’auto￾re descrive, tappa dopo tappa, il meccanismo psi￾cologico dell’amore, e questo processo corrispon￾de puntualmente all’immagine dell’Innamorato.1<br>
+1. Visione della bellezza della persona:<br>
+«La figura dello huomo la quale spesse volte<br>
+[… ] è nello aspecto bellissima, per gli occhi di<br>
+ coloro che la riguardano nel loro animo…»<br>
+1. Vision de la beauté de la personne:<br>
+«La figure de l’homme, qui est souvent d’une grande<br>
+beauté […] fait passer dans l’âme, par les yeux de ceux<br>
+qui la regardent…»<br>
+L’action qui se joue dans la carte se comprend à la<br>
+ lumière du traité de Marsile Ficin sur l’amour. Au<br>
+ chapitre vi de cet ouvrage, il décrit, étape par étape, le<br>
+mécanisme psychologique de l’amour.1 Ce processus<br>
+ correspond point par point à l’image de l’Amoureux.<br>
+2. Ricezione da parte dell’anima di un raggio di<br>
+questa bellezza:<br>
+«… transfonde el razzo del suo splendore.»<br>
+2. Réception par l’âme d’un rayon de cette beauté:<br>
+«… un rayon de sa splendeur.»<br>
+32 christophe poncet<br>
+1 Ficino, El libro dell’amore, vi, 2, p. 112. 1 Ficin, Commentaire sur le Banquet, vi, 2, p. 128.<br>
+&lt;IMAGE FOR PAGE: 31 / 113&gt;<br>
+&lt;PARSED TEXT FOR PAGE: 32 / 113&gt;<br>
+4. Attrazione dell’am<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Remember you have access to rendered images of pages from the files, in addition to their parsed text content. Some files may include images, while others may not.<br>
+These may contain embedded text in images, infographics, complex tables, diagrams, and other visual elements not fully captured in the parsed text.<br>
+You can directly view these images to read text within images, interpret infographics, understand diagrams and complex tables. When applicable, combine insights from both parsed text and images to provide comprehensive and enriched answers.</p><p>When responding to the user, actively incorporate information from embedded text, images, tables, diagrams, and other visuals in the files when applicable.<br>
+Explicitly reference them by mentioning their location (e.g., page number) and summarizing their content. For example:<br>
+<ul><li>&quot;According to the <em>chart on page 5</em>, sales have increased by 20% over ...&quot;</li><br>
+<li>&quot;The <em>diagram on page 3</em> illustrates the workflow, highlighting ...&quot;</li><br>
+</ul></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>The file contents provided above are truncated/partial snippets. The complete content for these files IS accessible via querying.</p><p>If the user asks a question related to these files, and the provided snippets do not clearly answer it, you <strong>MUST</strong> use the <code>file_search</code> tool to search the full document contents before responding.</p><p><h2>How to invoke the file_search tool</h2><br>
+If the user&#x27;s query isn&#x27;t sufficiently answered by the provided snippets, parsed text, or images, you should invoke <code>file_search.msearch</code>.<br>
+To search the full content of the available files, you <strong>must</strong> send one message with recipient <code>to=file_search.msearch</code> in the analysis channel. Your message should be structured exactly as follows:<br>
+<pre><code>{
+  &#x27;queries&#x27;: [&#x27;Example query 1&#x27;, &#x27;Example query 2&#x27;]  // List of up to five queries to search for.
+}
+</code></pre></p><p>Carefully balance the number of <code>file_search</code> calls and the quality of your response with the latency incurred by <code>file_search</code> calls.</p><p>Important guidelines for query formatting:<br>
+<ul><li>Your message must be a valid JSON object. Do not include any extraneous text, backticks, markdown formatting, or comments beyond what is shown.</li><br>
+<li>The <code>queries</code> field must be a list of strings.</li><br>
+<li>One of the queries <strong>MUST</strong> exactly match the user&#x27;s original question, but stripped of any extraneous details, and with ambiguous references clearly resolved using context from the conversation. It <strong>MUST</strong> be a complete sentence.</li><br>
+<li>Even if you suspect the user meant something else, one query <strong>MUST</strong> still be their original question.</li><br>
+</ul><br>
+<h2>How to handle results from file_search</h2><br>
+The file search tool will respond with the relevant search results from the full files. After you receive these results:<br>
+<ul><li>Carefully evaluate each result to determine its relevance and quality.</li><br>
+<li>Use the high-quality and relevant results to inform your answer to the user&#x27;s question.</li><br>
+<li>When possible, reuse information from prior file_search results and avoid repeating identical queries.</li><br>
+</ul><br>
+<h2>Tool usage instructions and ordering</h2><br>
+When the user asks a question, carefully consider whether the provided snippets sufficiently answer the query, whether you need to invoke <code>file_search.msearch</code>, or another available tool (such as <code>web</code>, if available) should be used instead.</p><p>Tool-ordering Guidelines:<br>
+1. For queries related to uploaded files, if snippets are insufficient, strongly prefer invoking <code>file_search.msearch</code> over other tools.<br>
+    - Avoid using <code>web.run</code>, <code>python</code> analysis, or any other tools until you have either:<br>
+        - Confirmed with high confidence the answer is not in the files, or<br>
+        - Have high confidence <code>file_search_tool</code> queries are not sufficient to answer the query.<br>
+2. Avoid usage of <code>web_search/web.run</code> for queries related to uploaded files<br>
+    - Carefully consider whether the user&#x27;s query is better answered by web search results rather than available snippets or results from <code>file_search_tool</code>.<br>
+    - Unless the user&#x27;s query is clearly unrelated to the uploaded files, prefer using <code>file_search.msearch</code>. You can always follow up with a web search if necessary for a more complete response.<br>
+3. Avoid using <code>python</code> unless necessary or requested by user.<br>
+    - If the user&#x27;s query is answerable from the parsed text and images from the uploaded files, or from <code>file_search_tool</code>, do not invoke <code>python</code>.</p><p>Always keep this instruction in mind for the rest of the conversation, as the user may reference these files or ask related questions later on.</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf†file_00000000aa40722fad7597fa5c1ad11f】</h1><br>
+Content source: Source.file<br>
+Title: Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf<br>
+Citation Marker: fileciteturn1file0<br>
+Mclick Target: &quot;1:0&quot;<br>
+Content Snippet:<br>
+[L1] Gianfrancesco Pico as a reader of Sextus Empiricus, with a facing text of Pico’s<br>
+[L2] quotations from Sextus, pp. xviii-104, 2007 [materiali, 3].<br>
+[L3] xxiii. Luis Vives, L’aiuto ai poveri (De subventione pauperum), a cura di Valerio Del Nero, pp. viii-116, 2008 [materiali, 4].<br>
+[L4] xxiv. Cornelius Gemma. Cosmology, Medicine and Natural Philosophy in Renaissance Louvain, a cura di Hiro Hirai, pp. 160, 2008<br>
+[L5] [studi, 10].<br>
+[L6] xxv. Gabriel Naudé, Epigrammi per i ritratti della biblioteca di Cassiano dal Pozzo, a cura di Eugenio Canone, Germana Ernst,<br>
+[L7] traduzione di Giuseppe Lucchesini, pp. 64, 2009 [testi, 6].<br>
+[L8] xxvi. Sylvie Taussig, L’Examen de la philosophie de Fludd de Pierre Gassendi par ses hors-texte, pp. viii-100, 2009 [mate￾riali, 5].<br>
+[L9] xxvii. Giordano Bruno, Acrotismo Cameracense. Le spiegazioni degli articoli di fisica contro i Peripatetici, a cura di Barbara Ama￾to, pp. 144, 2009 [testi, 7].<br>
+[L10] xxviii. Enciclopedia bruniana e campanelliana, diretta da Eugenio Canone, Germana Ernst, vol. ii, cura redazionale di Giuseppe<br>
+[L11] Landolfi Petrone, pp. xvi, coll. 402, 2010 [enciclopedie e lessici, 2].<br>
+[L12] xxix. Tommaso Campanella, Selected Philosophical Poems, edited, annotated, and translated by Sherry Roush, pp. 172, 2011<br>
+[L13] [testi, 8].<br>
+[L14] xxx. Bertrando Spaventa, Scritti sul Rinascimento (1852-1872), con appendice e materiali testuali, a cura di Giuseppe Landolfi<br>
+[L15] Petrone, pp. 390, 2011 [testi, 9].<br>
+[L16] xxxi. Eugenio Canone, L’Argomento degli Eroici furori di Bruno, pp. 128, 2011 [materiali, 6].<br>
+[L17] xxxii. Ornella Pompeo Faracovi, Lo specchio alto. Astrologia e filosofia fra Medioevo e prima età moderna, pp. 212, 2012 [studi, 11].<br>
+[L18] xxxiii. Emblematics in the Early Modern Age. Case study on the interaction between philosophy, art and literature, edited by Eugenio<br>
+[L19] Canone, Leen Spruit, pp. 120, 2012 [studi, 12].<br>
+[L20] xxxiv. Christophe Poncet, La scelta di Lorenzo. La Primavera di Botticelli tra poesia e filosofia, testo francese con traduzione<br>
+[L21] italiana di Germana Ernst, pp. 120, 2012 [ studi, 13].<br>
+<h1>【1†Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf†file_00000000aa40722fad7597fa5c1ad11f】</h1><br>
+Content source: Source.file<br>
+Title: Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf<br>
+Citation Marker: fileciteturn1file1<br>
+Mclick Target: &quot;1:1&quot;<br>
+Content Snippet:<br>
+[L1] The Laboratory of the Eroici furori of Giordano Bruno, a cura di Eugenio Canone, Ingrid D.<br>
+[L2]  Rowland, pp. 176, 2006 [studi, 8].<br>
+[L3] xvii. Nicholas Hill, Philosophia Epicuraea Democritiana Theophrastica, a cura di Sandra Plastina, pp. 192, 2007 [testi, 4].<br>
+[L4] xviii. Francesco La Nave, Logica e metodo scientifico nelle Contradictiones logicae di Girolamo Cardano, con l’aggiunta del testo<br>
+[L5] dell’edizione lionese del 1663, pp. 100, 2006 [materiali, 2].<br>
+[L6] xix. Giordano Bruno, Centoventi articoli sulla natura e sull’universo contro i Peripatetici. Centum et viginti articuli de natura et<br>
+[L7] mundo adversus Peripateticos, a cura di Eugenio Canone, pp. xxii-54, 2007 [testi, 5].<br>
+[L8] xx. Dario Tessicini, I dintorni dell’infinito. Giordano Bruno e l’astronomia del Cinquecento, pp. 205, 2007 [studi, 9].<br>
+[L9] xxi. Tommaso Campanella, Sintagma dei miei libri e sul corretto metodo di apprendere. De libris propriis et recta ratione studendi<br>
+[L10] syntagma, a cura di Germana Ernst, pp. 136, 2007 [bibliotheca stylensis, 4].<br>
+[L11] xxii. Gian Mario Cao, Scepticism and orthodoxy. Gianfrancesco Pico as a reader of Sextus Empiricus, with a facing text of Pico’s<br>
+[L12] quotations from Sextus, pp. xviii-104, 2007 [materiali, 3].<br>
+[L13] xxiii. Luis Vives, L’aiuto ai poveri (De subventione pauperum), a cura di Valerio Del Nero, pp. viii-116, 2008 [materiali, 4].<br>
+[L14] xxiv. Cornelius Gemma. Cosmology, Medicine and Natural Philosophy in Renaissance Louvain, a cura di Hiro Hirai, pp. 160, 2008<br>
+[L15] [studi, 10].<br>
+[L16] xxv. Gabriel Naudé, Epigrammi per i ritratti della biblioteca di Cassiano dal Pozzo, a cura di Eugenio Canone, Germana Ernst,<br>
+[L17] traduzione di Giuseppe Lucchesini, pp. 64, 2009 [testi, 6].<br>
+[L18] xxvi. Sylvie Taussig, L’Examen de la philosophie de Fludd de Pierre Gassendi par ses hors-texte, pp. viii-100, 2009 [mate￾riali, 5].<br>
+[L19] xxvii. Giordano Bruno, Acrotismo Cameracense. Le spiegazioni degli articoli di fisica contro i Peripatetici, a cura di Barbara Ama￾to, pp. 144, 2009 [testi, 7].<br>
+[L20] xxviii. Enciclopedia bruniana e campanelliana, diretta da Eugenio Canone, Germana Ernst, vol. ii, cura redazionale di Giuseppe<br>
+[L21] Landolfi Petrone, pp. xvi, coll.<br>
+<h1>【2†Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf†file_00000000aa40722fad7597fa5c1ad11f】</h1><br>
+Content source: Source.file<br>
+Title: Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf<br>
+Citation Marker: fileciteturn1file2<br>
+Mclick Target: &quot;1:2&quot;<br>
+Content Snippet:<br>
+[L1] Idem, Hercule à la croisée des chemins et autres matériaux figuratifs de l’Antiquité dans l’art plus récent, Paris, Flammarion,<br>
+[L2] 1999.&lt;PARSED TEXT FOR PAGE: 111 / 113&gt;Plotin, Ennéades, trad. É. Bréhier, Paris, Les Belles Lettres, 2003.<br>
+[L3] Plotino, Enneadi, a cura di M. Casaglia, C. Guidelli, A. Linguiti e F. Moriani, Torino, utet, 1997.<br>
+[L4] Angelo Poliziano, Stances / Stanze et Fable d’Orphée / Fabula di Orfeo, a cura di F. Bausi; trad. É. Séris, Paris, Les<br>
+[L5] Belles Lettres, 2006<br>
+[L6] C. Poncet, Un gioco tra profezia e filosofia: i tarocchi di Marsilio, in Astrologia e divinazione nel Rinascimento, a cura di<br>
+[L7] G. Ernst et G. Giglioni, Roma, Carocci, 2012, pp. 255-269.<br>
+[L8] A. Rochon, La jeunesse de Laurent de Medicis 1449-1478, Paris, Les Belles Lettres, 1963.<br>
+[L9] Senofonte, Memorabili, trad. A. Santoni, Milano, Rizzoli, 19973.<br>
+[L10] C. Villa, Mercurio retrogrado e la retorica nella bottega di Botticelli, «Strumenti critici», xiii, 1998, pp. 1-28.<br>
+[L11] A. Warburg, Botticelli. La ‘Nascita di Venere’ e la ‘Primavera’ di Sandro Botticelli. Ricerche sull’immagine dell’antichità<br>
+[L12] nel primo Rinascimento italiano, trad. E. Cantimori, Milano, Abscondita, 2003 (prima edizione tedesca: Hamburg<br>
+[L13] und Leipzig, L. Voss, 1893).<br>
+[L14] Idem, ‘La Naissance de Vénus’ et ‘Le Printemps’ de Sandro Botticelli. Étude des représentations de l’Antiquité dans la<br>
+[L15]  première Renaissance italienne, trad. L. Cahen-Maurel, Paris, Allia, 2007.<br>
+[L16] E. Wind, Pagan Mysteries in the Renaissance, London, Faber &amp; Faber, 1958.<br>
+[L17] Xénophon, Mémorables, trad. P. Chambry, Paris, Garnier, 1935.<br>
+[L18] 112 bibliografia · bibliographie&lt;PARSED TEXT FOR PAGE: 112 / 113&gt;composto in carattere dante monotype dalla<br>
+[L19] fabrizio serra editore, pisa · roma.<br>
+[L20] stampato e rilegato nella<br>
+[L21] tipografia di agnano, agnano pisano (pisa).<br>
+[L22] *<br>
+[L23] Ottobre 2012<br>
+[L24] (cz 2 · fg 21)&lt;PARSED TEXT FOR PAGE: 113 / 113&gt;BRUNIANA &amp; CAMPANELLIANA<br>
+[L25] Ricerche filosofiche e materiali storico-testuali<br>
+[L26] Supplementi<br>
+[L27] Collana diretta da Eugenio Canone e Germana Ernst<br>
+[L28] i. Brunus redivivus. Momenti della fortuna di Giordano Bruno nel xix secolo, a cura di Eugenio Canone, pp. xlv-338, 1998 [studi, 1].<br>
+[L29] ii. Ortensio Lando, Paradossi.<br>
+<h1>【3†Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf†file_00000000aa40722fad7597fa5c1ad11f】</h1><br>
+Content source: Source.file<br>
+Title: Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf<br>
+Citation Marker: fileciteturn1file3<br>
+Mclick Target: &quot;1:3&quot;<br>
+Content Snippet:<br>
+[L1] Ricerche sull’immagine dell’antichità<br>
+[L2] nel primo Rinascimento italiano, trad. E. Cantimori, Milano, Abscondita, 2003 (prima edizione tedesca: Hamburg<br>
+[L3] und Leipzig, L. Voss, 1893).<br>
+[L4] Idem, ‘La Naissance de Vénus’ et ‘Le Printemps’ de Sandro Botticelli. Étude des représentations de l’Antiquité dans la<br>
+[L5]  première Renaissance italienne, trad. L. Cahen-Maurel, Paris, Allia, 2007.<br>
+[L6] E. Wind, Pagan Mysteries in the Renaissance, London, Faber &amp; Faber, 1958.<br>
+[L7] Xénophon, Mémorables, trad. P. Chambry, Paris, Garnier, 1935.<br>
+[L8] 112 bibliografia · bibliographie&lt;PARSED TEXT FOR PAGE: 112 / 113&gt;composto in carattere dante monotype dalla<br>
+[L9] fabrizio serra editore, pisa · roma.<br>
+[L10] stampato e rilegato nella<br>
+[L11] tipografia di agnano, agnano pisano (pisa).<br>
+[L12] *<br>
+[L13] Ottobre 2012<br>
+[L14] (cz 2 · fg 21)&lt;PARSED TEXT FOR PAGE: 113 / 113&gt;BRUNIANA &amp; CAMPANELLIANA<br>
+[L15] Ricerche filosofiche e materiali storico-testuali<br>
+[L16] Supplementi<br>
+[L17] Collana diretta da Eugenio Canone e Germana Ernst<br>
+[L18] i. Brunus redivivus. Momenti della fortuna di Giordano Bruno nel xix secolo, a cura di Eugenio Canone, pp. xlv-338, 1998 [studi, 1].<br>
+[L19] ii. Ortensio Lando, Paradossi. Ristampa dell’edizione Lione 1543, presentazione di Eugenio Canone, Germana Ernst, pp. xviii￾232, 1999 [testi, 1].<br>
+[L20] iii. Antonio Persio, Trattato dell’ingegno dell’Huomo, in appendice Del bever caldo, a cura di Luciano Artese, pp. xii-312, 1999<br>
+[L21] [testi, 2].<br>
+[L22] iv. Enzo A. Baldini, Luigi Firpo e Campanella: cinquant’anni di studi e ricerche, in appendice Luigi Firpo, Tommaso Campanella<br>
+[L23] e la sua Calabria, pp. 68, 2000 [bibliotheca stylensis, 1].<br>
+[L24] v. Tommaso Campanella, Lettere (1595-1638), a cura di Germana Ernst, pp. 176, 2000 [bibliotheca stylensis, 2].<br>
+[L25] vi. Germana Ernst, Il carcere, il politico, il profeta. Saggi su Tommaso Campanella, pp. 192, 2002 [studi, 2].<br>
+[L26] vii. Letture bruniane (1996-1997), a cura di Eugenio Canone, pp. x-322, 2002 [studi, 3].<br>
+[L27] viii. Eugenio Canone, Il dorso e il grembo dell’eterno. Percorsi della filosofia di Giordano Bruno, pp. xii-256, 2003 [studi, 4].<br>
+[L28] ix. Mario Equicola, De mulieribus. Delle donne, a cura di Giuseppe Lucchesini, Pina Totaro, pp.<br>
+<h1>【4†Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf†file_00000000aa40722fad7597fa5c1ad11f】</h1><br>
+Content source: Source.file<br>
+Title: Eugenio Canone_ Leen Spruit - Emblematics in the Early Modern Age_ Case Studies on the Interaction Between Philosophy, Art and Literature (Fabrizio Serra Editore) - libgen.li.pdf<br>
+Citation Marker: fileciteturn1file4<br>
+Mclick Target: &quot;1:4&quot;<br>
+Content Snippet:<br>
+[L1] A. Contò, L. Quaquarelli, L’antiquario Felice Feliciano Veronese tra epigrafia antica, letteratura e arti del libro,<br>
+[L2]  Padova, Antenore, 1995.<br>
+[L3] Dante, Banquet, trad. C. Bec, in Œuvres complètes, éd. C. Bec, Paris, Le livre de poche, 2002, pp. 181-383.<br>
+[L4] Idem, Convivio, a cura di Piero Cudini, Milano, Garzanti, 2005.<br>
+[L5] Idem, La divine comédie. L’Enfer, trad. J. Risset, Paris, Flammarion, 1992.<br>
+[L6] Idem, La divine comédie. Le Purgatoire, trad. J. Risset, Paris, Flammarion, 1992.<br>
+[L7] Idem, La divine comédie. Le Paradis, trad. J. Risset, Paris, Flammarion, 1992.<br>
+[L8] Idem, La Commedia, a cura di Giorgio Petrocchi, Firenze, Le Lettere, 20033.<br>
+[L9] C. Dempsey, The Portrayal of Love: Botticelli’s Primavera and Humanist Culture at the Time of Lorenzo the Magnificent,<br>
+[L10] Princeton, Princeton University Press, 1992.<br>
+[L11] Marsilio Ficino/Marsile Ficin, Commentaire sur Le Banquet de Platon. De l’amour, éd. et trad. P. Laurens, Paris,<br>
+[L12] Les Belles Lettres, 2002.<br>
+[L13] Idem, El libro dell’amore, a cura di S. Niccoli, Firenze, Olschki, 2009.<br>
+[L14] Idem, Epistolae, Venise, Matteo Capcasa, 1495 (ristampa anastatica a cura di S. Toussaint, Lucca, San Marco Litotipo<br>
+[L15] Editore, 2011).<br>
+[L16] Idem, Opera Omnia, Bâle, Henricpetri, 1576 (réimpression anastatique éditée par S. Toussaint, Paris, Phénix, 2008).<br>
+[L17] J.-L. Fournel, F. Furlan, Famille et mariage, in Conteurs Italiens de la Renaissance, éd. A. Motte-Gillet, Paris,<br>
+[L18]  Gallimard, 1993, pp. 1745-1759.<br>
+[L19] F. Garnier, Le Langage de l’Image au Moyen Âge: Signification et Symbolique, Paris, Le Léopard d’Or, 1982.<br>
+[L20] J. Goldsmith Phillips, Early Florentine Designers and Engravers: Maso Finiguerra, Baccio Baldini, Antonio Pollaiuolo,<br>
+[L21] Sandro Botticelli, Francesco Rosselli. A Comparative Analysis of Early Florentine Nielli, Intarsias, Drawings, and Copper￾plate Engravings. Cambridge MA, Harvard University Press, 1955.<br>
+[L22] E. H. Gombrich, Botticelli’s Mythologies. A Study in the Neo-Platonic Symbolism of His Circle, «Journal of the Warburg<br>
+[L23] and Courtauld Institutes», viii, 1945, pp. 7-60.<br>
+[L24] J. Herald, Renaissance Dress in Italy 1400-1500, London, Bell &amp; Hyman, 1981.<br>
+[L25] Cristoforo Landino, Comento sopra la Comedia, a cura di P. Procaccioli, Roma, Salerno, 2001.<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a detailed, content-driven overview of <strong>_Emblematics in the Early Modern Age. Case Studies on the Interaction Between Philosophy, Art and Literature_</strong>, edited by <strong>Eugenio Canone and Leen Spruit</strong> (Fabrizio Serra Editore, 2012), situating its aims, structure, methodologies, and scholarly contributions within early modern intellectual history and emblem studies.  </p><p>fileciteturn1file0</p><p><hr></p><p><h2>1. Aim and Intellectual Framework of the Volume</h2></p><p>The volume belongs to the <strong>“Bruniana &amp; Campanelliana”</strong> series (Studi, 12) directed by Eugenio Canone and Germana Ernst, and is conceived as a <strong>thematic set of case studies</strong> rather than a synthetic history of emblem books. Its guiding premise is that <strong>emblems in the early modern period function as a privileged site of interaction between philosophy, visual culture, and literary forms</strong>.</p><p>Rather than treating emblems merely as decorative or mnemonic devices, the editors position them as:</p><p><ul><li><strong>Philosophical instruments</strong></li><br>
+<li><strong>Vehicles of moral, metaphysical, and political reflection</strong></li><br>
+<li><strong>Media of transmission between humanist scholarship, natural philosophy, and visual rhetoric</strong></li><br>
+</ul><br>
+The book therefore participates in a long tradition of scholarship inaugurated by Warburg, Panofsky, Gombrich, Wind, and later emblem scholars such as Daly, Russell, Manning, and Saunders, but reframes emblematic culture through the lens of <strong>philosophical semantics and symbolic epistemology</strong>.</p><p><hr></p><p><h2>2. Emblems as Philosophical Media</h2></p><p>A central thesis running through the volume is that <strong>emblems are not illustrations of philosophy but philosophical acts in visual-linguistic form</strong>.</p><p>The emblem—classically structured as:<br>
+<ul><li><strong>Inscriptio</strong> (motto),</li><br>
+<li><strong>Pictura</strong> (image),</li><br>
+<li><strong>Subscriptio</strong> (epigram or explanatory poem),</li><br>
+</ul><br>
+is treated as a <strong>cognitive machine</strong>:  <br>
+a device for organizing knowledge, provoking interpretation, and mediating between abstraction and sensory intuition.</p><p>In early modern Europe, emblems operate within:<br>
+<ul><li>Neoplatonic symbolism  </li><br>
+<li>Hermetic and alchemical traditions  </li><br>
+<li>Stoic moral philosophy  </li><br>
+<li>Aristotelian natural philosophy  </li><br>
+<li>Christian theology  </li><br>
+<li>Political iconography  </li><br>
+</ul><br>
+The contributors show how emblematic imagery becomes a <strong>laboratory for philosophical speculation</strong>, where metaphysical doctrines, ethical systems, and cosmological models are staged visually.</p><p><hr></p><p><h2>3. Structure of the Book</h2></p><p>The volume is composed of a sequence of <strong>case studies</strong>, each focused on a specific author, tradition, or corpus. The emphasis is on <strong>close reading of images and texts together</strong>, reconstructing their philosophical genealogy.</p><p>Although the book is relatively concise (ca. 120 pages), it is dense and methodologically rigorous.</p><p>The studies examine:</p><p><ul><li>Individual emblem books</li><br>
+<li>Philosophical treatises with emblematic structures</li><br>
+<li>Visual programs with emblematic logic</li><br>
+<li>Hybrid literary-philosophical works using symbolic images</li><br>
+</ul><br>
+The contributors work across several national traditions (Italian, French, German, Low Countries), reflecting the trans-European nature of emblem culture.</p><p><hr></p><p><h2>4. Core Thematic Axes</h2></p><p>Across the individual studies, several major themes recur:</p><p><h3>A. Neoplatonism and Symbolic Ontology</h3></p><p>Emblems are interpreted as heirs of:<br>
+<ul><li>Platonic myth</li><br>
+<li>Pythagorean number symbolism</li><br>
+<li>Plotinian metaphysics</li><br>
+<li>Ficinian cosmology</li><br>
+</ul><br>
+Images function as <strong>ontological mediators</strong> between the intelligible and sensible worlds. The emblem is thus treated as a <strong>microcosm</strong>, mirroring the macrocosmic order.</p><p>This is especially visible in:<br>
+<ul><li>Cosmological emblems</li><br>
+<li>Moral allegories</li><br>
+<li>Images of ascent and descent</li><br>
+<li>Hierarchies of being</li><br>
+</ul><br>
+<hr></p><p><h3>B. Emblems and Moral Philosophy</h3></p><p>A large portion of early modern emblem books were designed as <strong>moral pedagogies</strong>:<br>
+<ul><li>Manuals of virtue</li><br>
+<li>Guides to self-government</li><br>
+<li>Instruments of ethical formation</li><br>
+</ul><br>
+The book explores how Stoic, Aristotelian, and Christian ethics are re-coded into emblematic form. The emblem becomes a <strong>mirror of the soul</strong> (speculum animae) and a <strong>technology of self-fashioning</strong>.</p><p>Recurring motifs include:<br>
+<ul><li>The choice between Virtue and Vice (Hercules at the crossroads)</li><br>
+<li>The governance of the passions</li><br>
+<li>The harmony of reason and desire</li><br>
+<li>The discipline of the body and imagination</li><br>
+</ul><br>
+<hr></p><p><h3>C. Political Iconography and Power</h3></p><p>Several case studies address the emblem as a tool of:<br>
+<ul><li>Dynastic propaganda</li><br>
+<li>Political legitimation</li><br>
+<li>Courtly ideology</li><br>
+<li>Imperial symbolism</li><br>
+</ul><br>
+Here the emblem becomes a <strong>visual language of sovereignty</strong>, encoding:<br>
+<ul><li>Concepts of justice</li><br>
+<li>Ideas of order and hierarchy</li><br>
+<li>The divine foundation of political authority</li><br>
+<li>The cosmological role of the prince</li><br>
+</ul><br>
+This connects emblem studies to political philosophy and mirrors-for-princes literature.</p><p><hr></p><p><h3>D. Natural Philosophy and Cosmology</h3></p><p>Another major strand concerns the emblem as a <strong>medium of scientific and cosmological knowledge</strong>.</p><p>The book shows how emblems:<br>
+<ul><li>Visualize natural processes</li><br>
+<li>Encode theories of matter and form</li><br>
+<li>Represent astronomical and astrological systems</li><br>
+<li>Symbolize alchemical transformation</li><br>
+</ul><br>
+In this context, emblematic imagery participates in the epistemology of Renaissance science, where knowledge is still fundamentally <strong>analogical, symbolic, and hierarchical</strong>.</p><p><hr></p><p><h2>5. Methodological Contributions</h2></p><p>One of the book’s most important contributions is methodological.</p><p>Rather than treating emblems as isolated curiosities, the contributors reconstruct their <strong>intellectual ecosystems</strong>, tracing:</p><p><ul><li>Literary sources (classical poetry, fables, epigrams)</li><br>
+<li>Philosophical traditions (Platonism, Stoicism, Aristotelianism)</li><br>
+<li>Theological frameworks</li><br>
+<li>Artistic workshops and engraving practices</li><br>
+<li>Courtly and academic patronage networks</li><br>
+</ul><br>
+This approach situates emblem books at the intersection of:</p><p><table><tr><th>Discipline</th><th>Contribution</th></tr><tr><td>Art History</td><td>Iconography, workshop practice, engraving traditions</td></tr><tr><td>Literary Studies</td><td>Epigram, allegory, rhetoric</td></tr><tr><td>Philosophy</td><td>Metaphysics, ethics, cosmology</td></tr><tr><td>History of Science</td><td>Natural philosophy, astrology, alchemy</td></tr><tr><td>Political Thought</td><td>Sovereignty, justice, virtue</td></tr></table></p><p>The result is a genuinely interdisciplinary model of emblem interpretation.</p><p><hr></p><p><h2>6. Position within Contemporary Emblem Studies</h2></p><p>The volume explicitly situates itself within the renewal of emblem studies since the 1990s, but pushes the field beyond:</p><p><ul><li>Pure iconography</li><br>
+<li>Bibliographical cataloguing</li><br>
+<li>Genre history</li><br>
+</ul><br>
+Instead, it argues for emblematics as a <strong>philosophical genre</strong> in its own right.</p><p>In this sense, the book belongs intellectually with:<br>
+<ul><li>Studies of Bruno’s memory images</li><br>
+<li>Ficino’s mythographic philosophy</li><br>
+<li>Alchemical iconology</li><br>
+<li>Renaissance theories of imagination</li><br>
+<li>The symbolic epistemology of early modern science</li><br>
+</ul><br>
+<hr></p><p><h2>7. Overall Contribution</h2></p><p>In sum, <strong>_Emblematics in the Early Modern Age_</strong> offers:</p><p><ul><li>A philosophically rigorous rethinking of emblem culture  </li><br>
+<li>A demonstration of how early modern thought operated through images  </li><br>
+<li>A model for integrating visual culture into intellectual history  </li><br>
+<li>A bridge between Renaissance philosophy and art history  </li><br>
+</ul><br>
+It shows that emblem books were not marginal curiosities, but central instruments in the <strong>symbolic economy of Renaissance and early modern thought</strong>—sites where metaphysics, ethics, politics, and natural philosophy were staged in visual form.</p><p><hr></p><p>If you&#x27;d like, next I can:</p><p><ul><li>Reconstruct the <strong>individual chapters one by one</strong>  </li><br>
+<li>Map the book against <strong>Giordano Bruno, Ficino, Campanella, and Hermetic emblem traditions</strong>  </li><br>
+<li>Or place it in dialogue with Warburg, Wind, Gombrich, and modern iconological theory.</li></ul></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>map</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a conceptual <strong>map of _Emblematics in the Early Modern Age_</strong> situating its case-studies and methodological orientation within the major intellectual lineages that matter for your work — <strong>Bruno, Ficino, Campanella, Hermeticism, Neoplatonism, Warburg/Wind iconology, and symbolic epistemology</strong> — and showing how the volume functions as a hinge between <strong>philosophical history, visual culture, and esoteric traditions</strong>.</p><p>This is not a chapter list, but a <strong>structural map of the book’s intellectual terrain</strong>.</p><p>fileciteturn1file0  </p><p><hr></p><p><h1>I. The Book’s Core Conceptual Engine</h1></p><p>At the center of the volume is a single methodological claim:</p><p><blockquote>**The emblem is not an illustration of philosophy.  </blockquote><br>
+<blockquote>It is a philosophical form.**</blockquote></p><p>The emblem operates as a <strong>thinking machine</strong>:<br>
+<ul><li>a symbolic model of the cosmos  </li><br>
+<li>a diagram of moral psychology  </li><br>
+<li>a visual metaphysics  </li><br>
+<li>a cognitive instrument  </li><br>
+<li>a mnemonic architecture  </li><br>
+<li>a cosmological map  </li><br>
+</ul><br>
+This aligns the emblem with:</p><p><table><tr><th>Tradition</th><th>Function</th></tr><tr><td>Platonic myth</td><td>Philosophical narrative in symbolic form</td></tr><tr><td>Hermetic hieroglyph</td><td>Visual condensation of metaphysical truth</td></tr><tr><td>Bruno’s memory images</td><td>Engines of cognition</td></tr><tr><td>Alchemical emblems</td><td>Diagrams of transformation</td></tr><tr><td>Neoplatonic allegory</td><td>Ontological pedagogy</td></tr><tr><td>Renaissance mythography</td><td>Symbolic philosophy</td></tr></table></p><p>So the volume is not really about “emblems” as a genre — it is about <strong>how early modern philosophy thinks through images</strong>.</p><p><hr></p><p><h1>II. The Main Lineages the Book Integrates</h1></p><p>The book sits at the intersection of five major intellectual traditions:</p><p><pre><code>                 ANTIQUE SYMBOLISM
+                         │
+                         ▼
+          Neoplatonism — Hermeticism — Stoicism
+                         │
+                         ▼
+         Renaissance Humanism &amp; Natural Philosophy
+                         │
+                         ▼
+         Emblematic Culture (Image + Text + Motto)
+                         │
+                         ▼
+     Early Modern Philosophy, Politics, Cosmology
+</code></pre></p><p>Each case study operates somewhere inside this symbolic economy.</p><p><hr></p><p><h1>III. The Ficinian Axis (Neoplatonic Image Philosophy)</h1></p><p>Marsilio Ficino is the book’s <strong>unspoken gravitational center</strong>.</p><p>Not always as a direct subject, but as the architect of the worldview that made emblems philosophically meaningful.</p><p><h3>Ficino’s contributions to emblematic logic</h3></p><p><table><tr><th>Ficinian Concept</th><th>Emblematic Function</th></tr><tr><td>Image as mediator</td><td>Image connects intelligible and sensible worlds</td></tr><tr><td>Symbol as vehicle of ascent</td><td>Emblem becomes ladder of contemplation</td></tr><tr><td>Beauty as metaphysical force</td><td>Image attracts soul upward</td></tr><tr><td>Cosmic sympathy</td><td>Emblem encodes hidden correspondences</td></tr><tr><td>Imagination as cognitive faculty</td><td>Emblem trains philosophical imagination</td></tr></table></p><p>Ficino’s cosmology turns the universe into a <strong>hieroglyphic text</strong>.</p><p>The emblem book becomes:<br>
+<ul><li>a microcosm of the macrocosm  </li><br>
+<li>a portable cosmos  </li><br>
+<li>a philosophical theater  </li><br>
+</ul><br>
+This is the metaphysical justification for emblematic culture.</p><p><hr></p><p><h1>IV. The Bruno Axis (Symbolic Cognition &amp; Memory Machines)</h1></p><p>Giordano Bruno stands as the <strong>radical intensification</strong> of Ficinian image-philosophy.</p><p>Where Ficino sees images as ladders of ascent, Bruno sees them as <strong>engines of infinite cognition</strong>.</p><p>The volume’s approach to emblems aligns closely with Bruno’s:</p><p><table><tr><th>Bruno</th><th>Emblem</th></tr><tr><td>Memory palace</td><td>Emblem book as portable memory system</td></tr><tr><td>Image as operative force</td><td>Emblem as cognitive engine</td></tr><tr><td>Symbol as metaphysical compression</td><td>Emblem condenses cosmic knowledge</td></tr><tr><td>Hermetic prisca sapientia</td><td>Emblems preserve ancient wisdom</td></tr><tr><td>Magical imagination</td><td>Emblem activates mental transformation</td></tr></table></p><p>In Bruno’s system:<br>
+<blockquote>The universe is a book of images.  </blockquote><br>
+<blockquote>The philosopher is its reader.</blockquote></p><p>In emblem culture:<br>
+<blockquote>The emblem book is a miniature universe.  </blockquote><br>
+<blockquote>The reader is trained to think symbolically.</blockquote></p><p>This is why the volume sits naturally inside the <strong>Bruniana &amp; Campanelliana</strong> series.</p><p><hr></p><p><h1>V. The Campanella Axis (Political Cosmology &amp; Natural Theology)</h1></p><p>Campanella’s philosophy of nature, politics, and prophecy operates in the same symbolic register as emblematics.</p><p>Shared assumptions:</p><p><table><tr><th>Campanella</th><th>Emblematic Culture</th></tr><tr><td>Nature as divine book</td><td>World read through symbols</td></tr><tr><td>Politics as cosmic order</td><td>Political emblems encode justice</td></tr><tr><td>Solar theology</td><td>Light as metaphysical principle</td></tr><tr><td>Prophetic history</td><td>Images as eschatological signs</td></tr><tr><td>Universal harmony</td><td>Emblems diagram cosmic unity</td></tr></table></p><p>For Campanella, knowledge is not abstract — it is <strong>inscribed into nature</strong>.</p><p>The emblem functions as:<br>
+<ul><li>a political theology  </li><br>
+<li>a natural theology  </li><br>
+<li>a visual prophecy  </li><br>
+</ul><br>
+The volume treats emblems as precisely these kinds of instruments.</p><p><hr></p><p><h1>VI. The Hermetic Axis (Hieroglyphic Epistemology)</h1></p><p>The Hermetic tradition supplies the <strong>epistemological justification</strong> for emblem culture.</p><p>Key Hermetic assumptions embedded in emblematics:</p><p><table><tr><th>Hermetic Principle</th><th>Emblematic Translation</th></tr><tr><td>Truth is hidden</td><td>Knowledge encoded in symbols</td></tr><tr><td>Wisdom is ancient</td><td>Emblems transmit prisca sapientia</td></tr><tr><td>Nature is divine</td><td>Images reflect cosmic order</td></tr><tr><td>Knowledge is initiatory</td><td>Emblems require interpretation</td></tr><tr><td>Symbol is more real than concept</td><td>Image carries metaphysical force</td></tr></table></p><p>The emblem becomes the Renaissance equivalent of:<br>
+<ul><li>Egyptian hieroglyph  </li><br>
+<li>Orphic myth  </li><br>
+<li>Pythagorean symbol  </li><br>
+<li>alchemical diagram  </li><br>
+</ul><br>
+In this sense, emblem books are <strong>modern grimoires</strong>.</p><p><hr></p><p><h1>VII. The Warburg–Wind Axis (Modern Iconology)</h1></p><p>Methodologically, the book is a direct heir to:</p><p><ul><li>Aby Warburg  </li><br>
+<li>Erwin Panofsky  </li><br>
+<li>Edgar Wind  </li><br>
+<li>Ernst Gombrich  </li><br>
+</ul><br>
+<h3>Warburg’s legacy in the volume</h3></p><p><table><tr><th>Warburgian Concept</th><th>Emblematic Application</th></tr><tr><td>Nachleben der Antike</td><td>Classical myths reborn in emblems</td></tr><tr><td>Pathosformel</td><td>Emotional formulas in symbolic imagery</td></tr><tr><td>Image as psychic fossil</td><td>Emblem preserves ancient mental structures</td></tr><tr><td>Cultural memory</td><td>Emblems transmit intellectual tradition</td></tr></table></p><p><h3>Wind’s contribution</h3></p><p>Wind’s <em>Pagan Mysteries in the Renaissance</em> is foundational:</p><p><ul><li>Pagan theology encoded in art  </li><br>
+<li>Myth as philosophical language  </li><br>
+<li>Symbol as metaphysical shorthand  </li><br>
+</ul><br>
+The volume extends Wind’s method into:<br>
+<ul><li>political emblems  </li><br>
+<li>scientific emblems  </li><br>
+<li>moral emblems  </li><br>
+<li>cosmological emblems  </li><br>
+</ul><br>
+<hr></p><p><h1>VIII. The Emblem as Philosophical Object</h1></p><p>Putting all of this together, the book treats the emblem as:</p><p><table><tr><th>Domain</th><th>Emblem Function</th></tr><tr><td>Metaphysics</td><td>Diagram of being</td></tr><tr><td>Ethics</td><td>Map of virtue</td></tr><tr><td>Politics</td><td>Image of sovereignty</td></tr><tr><td>Cosmology</td><td>Model of the universe</td></tr><tr><td>Psychology</td><td>Map of the soul</td></tr><tr><td>Theology</td><td>Icon of divine order</td></tr><tr><td>Science</td><td>Diagram of natural processes</td></tr><tr><td>Memory</td><td>Cognitive architecture</td></tr></table></p><p>The emblem is a <strong>total form</strong> — a Renaissance attempt at a universal symbolic language.</p><p><hr></p><p><h1>IX. Where This Volume Sits in Your Larger Project</h1></p><p>For your work on:<br>
+<ul><li>Hermeticism  </li><br>
+<li>alchemy  </li><br>
+<li>Bruno  </li><br>
+<li>Ficino  </li><br>
+<li>Renaissance cosmology  </li><br>
+<li>symbolic epistemology  </li><br>
+<li>magic and science  </li><br>
+<li>philosophical imagination  </li><br>
+</ul><br>
+This volume functions as:</p><p><h3>A missing methodological keystone</h3></p><p>It gives you:<br>
+<ul><li>a language for image-philosophy  </li><br>
+<li>a model for symbolic cognition  </li><br>
+<li>a framework for visual metaphysics  </li><br>
+<li>a bridge between esotericism and mainstream philosophy  </li><br>
+</ul><br>
+It explains <strong>why</strong> alchemical images, magical diagrams, tarot, and mythographic art are not peripheral — they are <strong>core philosophical technologies</strong> of early modern thought.</p><p><hr></p><p><h1>X. One-Sentence Intellectual Positioning</h1></p><p><blockquote><strong>_Emblematics in the Early Modern Age_ shows that the Renaissance did not merely illustrate philosophy — it thought in images.</strong></blockquote></p><p><hr></p><p>If you&#x27;d like next, I can:</p><p><ul><li>Map this volume directly onto <strong>specific emblem books</strong> (Alciato, Valeriano, Ripa, Sambucus, Maier, Fludd)  </li><br>
+<li>Or build a <strong>taxonomy of emblem types</strong> (moral, cosmological, political, alchemical, magical)  </li><br>
+<li>Or integrate this with your <strong>alchemy + game design epistemology</strong> as symbolic systems.</li></ul></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>how can what we learn in spruit et al apply to the study of the emblems of the atalanta fugiens. cover all the major points from our first volume</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn2file0 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 318&gt;<br>
+Michael 1VIaicr&#x27;s<br>
+ATALAN TA<br>
+FUGIENS<br>
+Sources of an Alchcmical<br>
+Book of Emblems<br>
+H.M.E. DE JONG<br>
+NICOLAS-H.-\Y.&#x27;5‘. INC.<br>
+Yer}; Bc&#x27;m‘/I, :1 Iuinc‘<br>
+First published in 2002 by<br>
+i‘§lC!3iE.&#x27;:*Ha}’5. Inc.<br>
+Box 1039<br>
+York Beach. ME 03910-2039‘<br>
+Distributed to the trade by<br>
+Red \‘t&#x27;heell&#x27;Weiser. LLC<br>
+363 Congress Street<br>
+Boston. MA 02210<br>
+First printing. 2002<br>
+Copyright (0 1969 H. M. E. de Jong<br>
+All nghts reserved. No part of this publication may be reproduced or transmitted in any form or by any<br>
+means. electronic or mechanical, including photocopying. recording. or by any inforrnation storage and<br>
+retrieval system, without permission in writing from Nicolas-Hays. Inc. Reviewers may quote brief passages<br>
+Library of Congress Cataloging-in-Publication Data<br>
+~ Jung. H. . E. de [Helena Maria Elisabeth<br>
+Michael Maier&#x27;s Atalanta fugiens : sources of an alehernical book of emblems I I-l.M.E. de Jong.<br>
+p. cm.<br>
+Originally published: Leiden : EJ. Brill. 1969. as v. 8 in series: Janus. Supplements.<br>
+Includes bibliographical references and index.<br>
+ISBN 0-89254-D60-5 (alk. paper)<br>
+1- Mai“ Michmil. I563?-I612. Atalanta fugiens. 2. Alchemy—-Early works to 1800. 3. Emblems. l.Tnte_<br>
+QD25 J85 2002 S-10&#x27;.| &#x27; l2—dt:2i<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 318&gt;<br>
+D0-069328<br>
+Jacket design by Kathryn S].;y-peck<br>
+Printed in the United States of America<br>
+MV<br>
+The paper used In this publication meets or exceeds the minimum requirements of the<br>
+,-51]‘-l&#x27;lf:l&#x27;iCE&#x27;lfll National Standard for Information Scienccs—-Permanence of Paper for Minted Library<br>
+Materials Z3‘J.48-l‘J‘J2(Rl997)<br>
+Dedicated to my son<br>
+CONTENTS<br>
+Page<br>
+Preface . . . . . . . . . . . . . . . . . . . . . . . Ix Abbreviations and indications . . . . . . . . . . . . . . XII Translation of the<br>
+title-page . . . . . . . . . . . . . . . XIV<br>
+INTRODUCTION<br>
+Btiograpltical and bibliographical data about Michael Maier . . I The history of alchemy . . . . . . . . . . . . . . . . .<br>
+21: The Rosicrucians . . . . . . . . . . . . . . . . . . . 39 Alchemical starting-points . . . . . . . . . . . . . . . . 48<br>
+THE EMBLEMS<br>
+The emblems nos LL and frontispiece, with statement of<br>
+sources and commentary . . . . . . . . . . . . . . . 55<br>
+Summary and Conclusion . . . . . . . . . . . . . . . . 330<br>
+Bibliography . . . . . . . . . . . . . . . . . . . . . 339<br>
+List of illustrations . . . . . . . . . . . . . . . . . . 370<br>
+Illustrations . . . . . . . . . . . . . . . . . . . . . . 377<br>
+PREFACE<br>
+In this study, I have restricted myself to three questions: firstly, what meaning is at the root of these emblems<br>
+and the texts be—- longing to them; secondly, on what alchemical sources are these emblems based; thirdly,<br>
+is it possible to show a mutual connection between the emblems.<br>
+He who occupies himself with emblematology sees himself con- fronted by a remarkable problem: each<br>
+emblem consists of two main elements: Word and Picture (Motto and Icon). The meaning of these two<br>
+elements of the emblem is enigmatical. In order to solve this enigma, the author of the emblems introduces a<br>
+third element, the text, or in Maier&#x27;s case, the texts. From this follows that, when examining the emblems one<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 318&gt;<br>
+is forced to pay attention to the Word as well as to the Picture. An art-historian, who would exclusively<br>
+restrict himself to an analysis of the Icons, would not be able to obtain complete insight into the meaning of<br>
+the emblem, no more than the literary-historian, who would ignore the meaning of the<br>
+Icon.<br>
+To me, as an art-historian, the choice of the Atalmzta Frrgieus as<br>
+subject of my book meant a challenge from the first, and I was conscious of the fact that my task lay in two<br>
+fields, the literary and the pictorial. In the course of the investigation, it became evident to me that in this case<br>
+the real problem lay in the field of the ‘Word, as the Motto accompanying Maiers’s emblems, was, as it were,<br>
+a. title to the Icon; this insight chiefly determined the way in which I approached the analysis of the Atalanta<br>
+F-tigiens.<br>
+He who turns the pages of Michael Maie-r’s Afalmzfcz Fugierzs unprepared will be struck by the perfection<br>
+of Me-rlan’s pictures; but at the same time, the slightly strange character of motto and epigram will strike<br>
+him, and he will probably be annoyed by the all but clear explanation in the two pages of &quot;cliscourse”&#x27;<br>
+following each emblem. The titlepage and the &quot;preface to the reader” are of little value, as long as one does<br>
+not know the exact purpose of this remarkable book.<br>
+So, my first task in treating .t\Iaier&#x27;s work was clear from the<br>
+X PREFACE<br>
+beginning. I had to look for the meaning hidden in these emblems-,_ Beside this, a second question cropped<br>
+up—and the answer to this finally appeared also to contain an answer to the first que5tion_ namely Maier’s<br>
+sources. .<br>
+It seemed highly improbable that the Atalanta Fugiens was the product of the phantasy of a creative artist,<br>
+who not only combined motto and icon, in a kind of tour de force, but also drew into it mu- sical canons. In<br>
+the sixteenth and seventeenth centuries emblem books were not considered and read in quest of new finds<br>
+one wanted to be stimulated into thinking and to be taught iiiaicr<br>
+2 ‘ V3.11‘ E &#x27; &#x27; Maier was strongly and empha1:ca‘i’1;0 écgiilégliingizntt Therefore, I felt it necessary, in<br>
+dealing with this book of emblems. to look especially for the sources. The degree of Maier’s dc endcncd on<br>
+his sources astonished me, as they surpassed m 7 Sm-misgs b fal- A ‘third problem arose from my<br>
+preoccupation with th y oi Maia‘-&quot;5 W01&#x27;k, namely the necessary investi ation into ettsioumdiiual<br>
+°°‘;net°;i°:= if 313’: between the emblems. g e m n e talrmta F14: £31 . i on the one hand Iiiaier 17:21:23<br>
+aytitixitshzilgellj age fig-nly Enllteg traditions and on the other hand—in accorda e late: 1, so .0 apfiilc<br>
+tendency of his own time—.he looked pcfiti :1C1:e W1 1: 1e siren 111 pl had been handed down and insisted<br>
+on test’ C ti? upon tr&#x27;ut S :1: At the same time the Atalanta F44. iens ~ High em ezspenment 3:. ideals of the<br>
+Rosicrucian5_ togethi witfis 3. ook which marks the from the second decade of the sevent :hI1‘~‘qnber of<br>
+other works can be considered as a manifesto fepp century: Maler s work of purification and Soul—thera_<br>
+Qhi e Ros1_cruc1an. movement Zauberflfite, :3, masonic manifeslgzéioz Ch Culmmates 111 Mozart S In<br>
+orde . &#x27;<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 318&gt;<br>
+Maie1_,S eI:1]:‘fe:::1::1‘gl9i¢I:‘s&amp;(;£rl(Safactory explanation of the meaning of of their inner meaning. I<br>
+bade):-Oto lpe able to answer the question plines, especially alchemy and th :n 1:1‘ the field of the arcane<br>
+d1sc1_ It was a result of my study of th enornenon of the Rosicruclans. time that I was able both t _ B<br>
+1§’t01&#x27;y of alchemy up to Maier s<br>
+0 Identify the alchemical sources our<br>
+author used and Sub tween the various emieflieptly to clarify the interconnections be￾1<br>
+PREFACE XI<br>
+‘While I hope to have answered the three questions dealt with in this study satisfactorily, I am conscious of<br>
+the fact that other problems still require a solution of a detailed treatment. I mention the questions which I<br>
+have only been able to treat superficially: in my efforts to find out the sense of Maier’s emblems I arrived at<br>
+the history of alchemy in general and the motifs used by the alche- mists in particular, motifs which were<br>
+expressed in alchemy as well as outside it, in works of art. A systematic research of alchemical motifs and<br>
+their representation in art would need a separate study.<br>
+I have left out the treatment of the problems mainly art—historical, -.-specially the question how intensively<br>
+Marian was involved in the depiction of Maier’s ideas. A more profound study of Michael Maier and the<br>
+people with whom he was in touch, or whose work influenced Maier’s views, could contribute to widen the<br>
+insight regarding the place Maier and similar figures held in the spiritual and social life of their time in<br>
+Europe. Neither have I dealt with the influence Maier exercised with his writings on later periods, in the field<br>
+of mystics and caballistic speculations. I have mentioned the figures of the Amlrmtcz Fug-isms only in<br>
+passing. In the sub—title of the Atczlamicz Fugirms, Maier makes it clear that he valued music as being<br>
+equivalent to the word; the two senses which he expressly mentions are sight and hearing, and he stresses the<br>
+point that the human soul, mind and senses—each in their own way—serve to take in the secrets of Nature.<br>
+The value Maier set on the symbolism of numbers undoubtedly played a decisive part in his choice of music,<br>
+the only art which, on account of its numerological founda- tion, formed part of the medieval artes liberczles.<br>
+An investigation into the hidden symbolism in Maier’s fugues probably lies more in the field of the<br>
+musicologist.<br>
+ABBREVIATIONS AND INDICATIONS<br>
+Ari. .-lurif. = A1m&#x27;farae Artis, guam Chemiam vacant Arrtiqrrissimi Aulhorss,<br>
+see bibliography sub Artis Anriferae: quotations and references are from the edition Basel 1572, 2 vol.<br>
+Thmtr. Ciiem. = Thcarrum Cimm&#x27;.-smn Praecipuos Seiectormn Auctomm Tractams Dz: Chemiae E! Lapidis<br>
+Pliilosopliici Aizfiqititatc coutinens. see bibliography sub Tlreamun Chemicmn:<br>
+quotations and references are from the edition Strasbourg 1659-1661 .<br>
+6 vol.<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 318&gt;<br>
+Mus. Harm. = flzfilsflsftlil Hernzmmun Reformatmu ei Amplificamlu. 533 blibllogfaphy Sub MIISGBIIII3<br>
+Hernwlic:m:,&#x27; quotations and references are from the edition Frankfurt<br>
+1678, I vol.<br>
+Data about the alchemical authors or writings, mentioned by Maier.<br>
+and about the 501111385 he ‘used for the rnottos and epigrams are listed in the bibliography. These sources<br>
+are marked *.<br>
+Further data and literature about these sources in Denis I. Duveen,<br>
+J- Fersus°}1._H- KOPP. G- Sarton. K. c. Schmieder, L. Thorndike (see for this the bibliography s.v.).<br>
+Th? tiexts Placed &quot;1 bmcketsu °-8- when summarizing the discourse or in l11BI1U°D111E the 50113035. do<br>
+not occur in the source cited, but are additions of H. M. E. de Jong.<br>
+F Fi_S111‘55 D05 I *0 5° 001195-Poncl to the emblems nos I to I. from the A ralanta -ugiens.<br>
+TRANSLATION OF THE TITLE-PAGE (Fig. 5 7)<br>
+THE FLEEING ATALANTA.<br>
+which means NEW CHEMICAL EMBLEMS regarding the SECRETS OF NATURE<br>
+partly suitable for the eye and the mind,<br>
+by means of copper-plates and the mottos,<br>
+epigrarns and annotations accompanying them,<br>
+partly suited to the ear and the refreshment of the soul,<br>
+by means of fifty musical fugues for three voices,<br>
+of which two correspond to a simple melody, which is suited to be sung in strophes of two lines;<br>
+emblems, which lend themselves to being looked at, read, contemplated, comprehended, judged, sung and<br>
+listened to with particularly great pleasure:<br>
+by MICHAEL MAIER,<br>
+Member of the Imperial Consistory, Doctor of Medicine, Knight of the Corps d’élite, etc.<br>
+I617<br>
+printed at OPPENHEIM<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 318&gt;<br>
+by I-Iieronymus Gallerus, at the expense of Johannes Theodor cle Bry<br>
+INTRODUCTION<br>
+BIOGRAPHICAL AND BIBLIOGRAPHICAI. DATA<br>
+ABOUT MICHAEL MAIER<br>
+The Atalanta Fugicns is M:-.1ier’s main work. A starting-point for an analysis of this work can be made with<br>
+data out of Maier’s life and about people whom he met; one may also take Meier&#x27;s work —leaving the<br>
+Atalanta F-ugiens out of consideration——as a basis for an interpretation; naturally one may also start<br>
+exclusively from the Atalanta Fugicus itself and that in two ways: by looking, reading, contemplating and<br>
+judging, as Maier advises his readers to do in the sub-title of the Atalanta F-ngiens, or by inquiring further<br>
+into the names mentioned by Maier in his discourse. I have applied this latter starting-point in analysing the<br>
+emblems separately. How- ever, whatever starting-point is chosen, they turn out to supplement each other.<br>
+Therefore I follow this up with a concise description of the first two points.<br>
+Michael Maier was born at Rendsburg in Holstein in 1568. He was a. Protestant, studied at Rostock and took<br>
+his degree as a doctor of medicine there in 1597. Afterwards he devoted himself to the practice of medicine<br>
+for a number of years and was summoned to Prague by the Emperor Rudolph II in 1608, to become the<br>
+1atter’s court physician; soon afterwards he was appointed private secretary and admitted into the Imperial<br>
+Consistory and honoured with the title of Count Palatine. After the death of Rudolph II, Maier left Prague.<br>
+After that he stayed for a long time in England. From, 161:6 he was in Germany and in I6:I:g he became<br>
+court physician of Moritz of Hesse. He died at Magdenburg in I622}<br>
+ll/Iaier’s personal appearance is known to us from a portrait- engraviug, occurring in Maier’s Symbolcz<br>
+Anreea Mensae (1617) and in the edition of the Atalcmtcz Fugiens of 1618 (Fig. 52). It shows a man of<br>
+middle age. His age is defined by the inscription “Aetatis suae 49 An 1:617”. This inscription is the only<br>
+documentation by<br>
+1 J. B. Craven, Cmmt Michael Illaier, Life and Writings, Kirkwall rgro.<br>
+2 INTRODUCTION<br>
+which it was possible to establish the year of his birth. He was probably of Jewish origin, but professed<br>
+Christianity, as can be seen from the subheading of his portrait: &quot;Schooling gave me three titles, the emperor<br>
+granted me three titles, the following things are left to me: to be able to live well and to die in Christ”. The<br>
+subheading further states that Meier was a member of the Imperial Consistory, doctor of Philosophy and<br>
+Medicine, Count Palatine, knight and former imperial court physician.<br>
+As a symbol of his threefold glory, the escutcheon beside his portrait shows a laurel—branch, from which<br>
+three twigs spring and<br>
+an eagle is flying up, a symbol taken from alchemy; the eagle is checked in its flight by a toad crawling along<br>
+the soil and tied<br>
+to the foot of the eagle by a chain.” The coat of arms is crowned by a repetition of the laurel-branch with<br>
+three twigs and by an<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 318&gt;<br>
+eagle with a closed ring in its beak, symbol of eternity and of the circular motion in the Universe.<br>
+In Syiiibola Aureae M ensue Maier&#x27;s portrait is followed by four eulogies on Maier and his honours, and he is<br>
+advised to continue just like the eagle, the armour-bearer of Jupitegi-_ in order to raise the slow toad from the<br>
+cold soil. From the texts, it can be seen<br>
+that the intention is, for the spirit [the eagle) to raise itself and to conquer earthly slowness and heaviness (the<br>
+toad) by the &quot;art&quot;- The &quot;art” is an indication of the alchemical transmutation process in the widest sense, by<br>
+which the conversion process of lead into gold is understood, but in which fathoming the forces of the Uni-<br>
+: The °hame_d toad! and 33318 is an emblem from Francesco Colonnafs Hj&#x27;f)1l£fOi0?!IdC}i1a&#x27;Pflfifili,<br>
+Venice 1499, and became famous later by the em_b19_m5 of M01311 (53? _L. Volltmann, Bildersclzrifren<br>
+der RB?1aiSSG11C3r Le‘PZ1E 1923.» P- 43* 5Cl-. tbfdem fig. 8 and 87). Although Maier undoubtedly<br>
+knew about it, the alchemical emblem of toad and eagle is not necessarily a￾defivafive °£ this’ T0351 and eagle occur before the fifteenth century in<br>
+alchemical symbolism; with Maier they occur in emblem v and XLIII, both taken from earlier sources.<br>
+For the toad as emblem of the &quot;Festina. ]&#x27;_ente..<br>
+&quot;Tortue (II)”, Amibuts fez Symboles dang 1‘_A,.; P, 1958, col. 333 sq. iroxzizcilgcggglnti 33:11:: tine<br>
+emblem; of the chained toad and eagle originates<br>
+‘ . e.m°_t_t°‘ Aquila volans per arern et bufo gradiens pier tenigl, est rnagistenum : He discusses this and<br>
+depicts it in Symbola eriilhlfwv ms”, P‘ 199-201’ fig‘ P‘ I92 (Pitt 53). See also commentary on<br>
+, see Guy de Tenrarent, ofane I450-I600, Geneva.<br>
+IIINTRODUCTION 3<br>
+verse and the purification process of the soul are also included. So this element in Maier’s coat of arms“<br>
+points to important factors in l\&#x27;Iaier&#x27;s life: efforts of transmutation, of the matter as well as of the spirit ; this<br>
+was the object of the alchemist and the Rosicrucians.<br>
+From the subheading under Maier’s portrait it is clear that he was in the good graces of Rudolph II. At the<br>
+Prague court, medicine and alchemy were closely connected with each other. Emperor Rudolph, driven by<br>
+his own interest in science, astronomy, alchemy, magic and cabbala, collected a circle of interesting people<br>
+around him: on the one hand brilliant scholars, like Tycho Brahe and Kepler, on the other hand magicians and<br>
+occultists, like John Dee and Edward Kelley.“<br>
+After the abdication of Rudolph II Maier left Prague; under Ferdinand II the Counter-Reformation penetrated<br>
+into the Halos- burg countries. It is not exactly known to which country Maier went. He was in Amsterdam<br>
+and stayed in England for a time, where he came into touch with the ideas of Robert Fludd (I574- I637).5<br>
+Fludd was a physician, interested in natural sciences, al- chemy, astronomy and occult sciences. He looked<br>
+for indications of the natural sciences in the bible and stressed in his books the unity between Macrocosm<br>
+&lt;PARSED TEXT FOR PAGE: 8 / 318&gt;<br>
+and hlicrocosm. It is not known whether Meier and Fludd met personally or whether Maier was influenced<br>
+by Fludd or the other way round, but it is remarkable that part of Fludd’s unfinished work Uzfrirzsqzre Cosmi<br>
+M aioris sc-z&#x27;licet at Minoris ll/Ietagbkysica, Physics Aique Teckmbrz H istoria, appeared in the same year as<br>
+the Atalamla Fngiens, in 1617 at Oppenheim, and had the same publisher. This work contained a description<br>
+of the connection between Macrocosrn and Microcosm, the influence of the planets and meteors on earth and<br>
+man, the reflection of Macrocosm in Nature, in mathematics, music, geometry, painting, military science<br>
+3 I did not succeed in tracing the origin of Maier’s escutcheon, but in view of the afliliation, in regard of the<br>
+motif, with the emblem Maier ascribes to Avicenna [see note 2), it seems probable to me that Maier himself<br>
+was the designer of his escutcheon.<br>
+4 See R. Gindely, Rudolph II mid seine Zeit, Prague 1363 and 1865, 2 VOL; and H. C. Bolton, The follies of<br>
+Science at the Court of Rudolph II, Milwaukee I904.<br>
+5 J. B. Craven, Doctor Robert Flmid (Roberms do Fluczibzcsl, The Eazgiisfz Rosicmcimz Life and Writings,<br>
+Kirkwall 1902.<br>
+J, INTRODUCTION<br>
+and the science of time and motion in astrology and geomancy.“ After the Fmternity-—or perhaps the fictive<br>
+Fraternity—of the Rosicrucians had become well—known in 1614 by the publication of their first writings,<br>
+the Puma Frah::&#x27;niirn&#x27;.z&#x27;s and the Co-nfessio Fm- 1‘:*rnz&#x27;f.zf:&#x27;s, Fludd was considered to be one of the most<br>
+important representatives of the Rosicrucians in England. Fludd as well as llaier defended the Fraternity of<br>
+the Rosicrucians very convinc- ingly.<br>
+There was a second important person whom Maier met in Eng- land, the court physician of James 1, Sir<br>
+William Paddy, to whom lslaier dedicated his first publication, Arcana Arcam&#x27;.ssi&#x27;m.a, a book in which Meier<br>
+connects classical mythology with alchemy. The book was published without mention of place and date, but<br>
+the dedication makes us suppose that it was published during i\-Iaier&#x27;s stay in England, probably London in<br>
+1614; anyway before 1616, the F331‘ in ‘-‘-&#x27;hiCh his book De Circulo Physics Qnadrato, dedicated to<br>
+Landgrave Moritz of Hesse, appears at Oppenheim.<br>
+A third person whom Maier encountered in England was the alchemist Francis Anthony, the son of a<br>
+goldsmith, who claimed &#x27;60 h&#x27;c1V‘€ fflulld the aurum potabile, usable as a medicine, the method of<br>
+preparation of which he published under the title A umm. Potabilc. 7 T0 Miner dedicated his book about the<br>
+confirmation of Mercury as “*3 of an Earthly things} &quot;Lusus Sari-us, qua Her-mes Siva .£lIerp1rrr.::s Rex<br>
+Miuzdaiz.oi&#x27;:t.m Onmi-zm; __ _ _ w,,_3g,j;,,t,,_S espg In this<br>
+seno-us game” Meier, in an allegorical way, treats the polyvalent meanmg Qf D&quot;I&#x27;31&quot;‘5“rY» 1131131 in<br>
+alchemical literature, which is men‘-u1&#x27;3’ 011 the One hand and is considered to be liquid primary<br>
+matter of the metals, and on the other hand is connected by asso- ciation with Christ as the Source of Life.a<br>
+These three figures, chosen as examples, Fludd, Paddy and<br>
+a &#x27; aier came into touch in England.<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 318&gt;<br>
+mvggmlgighilgltisrdbecanie court physician to Moritz of Hesse, to 9 Rated the above mentioned De Circulo<br>
+Physico<br>
+6 See bibliography sub R. rriuad<br>
+&#x27; Dr. Fr. Ant &#x27; F &#x27; &#x27; ma Chwm-ml Ir6*&#x27;g‘4°&quot;&#x27;5IJih;1;l10ny) Amman Potabile, printed in: Collector-<br>
+‘ See note 20.<br>
+INTRODUCTION 5<br>
+Quad-rato in 1616. Again Maier moved in a circle of people with the same interests. Moritz of I-Iesse<br>
+himself was interested in alchemy and attracted alchemists to his Court.“<br>
+The work of ll-laier should be seen against the background of these biographical data. His<br>
+medical-pliilosopliical training defined the level of his education; the surroundings in which he lived—the<br>
+courts of Rudolph II and Moritz of Hesse——formed a matrix for developing his interests; and the people<br>
+with whom he mixed and to whom he dedicated his books, stress the fact that Maier was an alchemist, a<br>
+medical man and a Rosicrucian. These circumstances can be considered as a starting-point for interpreting<br>
+the problems of the Amlmzta F &#x27;H&#x27;g&#x27;£&#x27;6&#x27;J1S.<br>
+The first edition of the Atalanta Firgicns was published at Oppen- hcim in 1617. The editions of 16I7 and<br>
+1618 are very rare.“ Later editions are from 1687 and 1708 and published at Frankfurt under a modified<br>
+title.“ In 1964 an excellent facsimile-edition was published, which will undoubtedly contribute to this work<br>
+being popularized.”<br>
+The Atalmmz Fvugien-s has an illustrated title-page, on which the Garden of the Hesperides and the race of<br>
+Hippomenes and Atalanta are reproduced, with an epigram of 26 lines related to it on the next page. After<br>
+that Maier&#x27;s dedication of his book to the members of the Imperial Consistory at Miihlhausen in<br>
+Thiiringen——especially to the jurist and Imperial Count Palatine Christoffel Reinart—follow, followed by a<br>
+preface to the readers, a portrait of Meier, and the fifty emblems. Each emblem consists of the usual parts,<br>
+motto,<br>
+9 Moritz, Landgrave of Hesse-Kassel (I 572-I632) was surnamed &quot;the Scientist&quot; ; he was a. member of the<br>
+Fmchtbringende Gesslfschafl, an emblematic academy; he founded the “Collegium Mauritianum&quot; and as a.<br>
+Protestant wanted to unite all Protestant sects. Notwithstanding his reserve regarding religion he was<br>
+discharged from power in 1627.<br>
+Among others, he was the Mzecenas, of Heinrich Schiitz (1585-1672), an important German composer in the<br>
+first half of the seventeenth century.<br>
+1&quot; See M. Praz, Studies in Seventeenth Century Imagery, London 1947, vol. II, p. I02; or Rome 1964, p. 410<br>
+sq. (in one vol.)<br>
+11 See bib}. sub Maier.<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 318&gt;<br>
+3”‘ Facsimile-edition of the Atalanta Fugiezzs, after the edition of 1618 (with the exception of Maier’s<br>
+portrait identical with the edition of 1617), published by Lucas Heinrich Wfithrich, Kassel and Basel,<br>
+Biirenreiter-Verlag 1964, with a postscript.<br>
+See H. M. E. de Jong, &quot;Michael Maier’s Atalanta Fngisns etc.&quot;, review in The Art Bulletin, 1965, vol. xLvn,<br>
+no. 1, p. 143-144.<br>
+6 INTRODUCTION<br>
+Picture and epigrarn, followed by two pages with discourse each time. The pictures are copper-engravings of<br>
+Merian the Elder, who, as appears from the agreement of form and style, had contributed to the pictures with<br>
+the emblems of Maier&#x27;s book Symbols Aureae ilfmisrie (I617) (Fig. 53, 62, 66, 68’, 76, 77, 78); further the<br>
+emblems of Larnbspririck (I525) lF’f§~ 59» 69: 64: 67: 69: 71: 74» 31&#x27;) are en“ graved by Merian.“<br>
+Moreover, the title—page and the Great Allegory about Macrocosm and Microcosm from the alchemical<br>
+collective work Jfnsaaimi Hcrmcticimi (1625) (Fig. 54) are from Merian’s hand. These last two pictures are<br>
+signed &quot;M. Merian fecit”, and correspond in part with motifs from the Ailalcmta Fiigiezis, for instance, the<br>
+picture of l\Iaier&#x27;s emblem XLII, in which Lady Nature is followed by a man uith a stick, lamp and<br>
+spectacles; a motif, which also occurs in an identical form on the title-picture of the fl’I&#x27;1£-S(lEN‘.m;<br>
+H.-:m::&#x27;£i&#x27;c:i;ii.<br>
+lulctto, icon, stafl notation and epigrarn of each emblem take two opposite pages in each case. The<br>
+typographical lay—out is of such a nature that the icon corresponds with the staff notation on the opposite<br>
+page. On the one page is the Latin text of the motto, with underneath it, the icon, and under the icon the Latin<br>
+epigram; on the opposite page the motto is printed in a German translation, under it the staff notation<br>
+(hearing being equivalent to sight) with the fir.-it lines Of the epigram in Latin text, and under it again the<br>
+epigram in a free German translation. The Latin discourse, following it, $0 takes two opposite pages,<br>
+_ 1‘ T_-31J1b5131&quot;iflCk&#x27;S Dc Lapide Pliiiosophico Libelliis appeared for the first nm?_m 1599 &quot;1 the<br>
+&quot;&quot;°rk_°f N- B3113-Ud. Tfiga Chemise, De Lajbide Philo- 50_‘£?}:h’.&#x27;0 Trastarus TFBS, Leiden I 599, p. II,<br>
+without pictures; in 1625 Lamb-<br>
+%E°(]§:I:‘l1_1i:}:m h°°k1&quot;-l&#x27;- 9«PPe3-red at Frankfort with engravings from the<br>
+Accmding ff) K°PPs D139 Aicheritie in Elferer mid iieiccrer Zeit, II, 311 and 3i_8, ]&#x27;_.arnbsprinclr and his<br>
+work, which, according to Kopp, was provided with pictures from the first, _date from the first half of the<br>
+15th century. 31- M3-‘er dea1&#x27;f&quot;&quot;“l&#x27;-h L3-mb5P1&#x27;1I1ck’s work in Symbola Amieae M ensae, p. 272.<br>
+Atlthough Mile? Speaks about Lambspi-inck&#x27;s emblems and although he gi\-35 a description of a number of<br>
+them, which are found in the engravings 05 L-31&#x27;flb5P1&#x27;iflCli&#x27;5 W0l&#x27;k by the hand of M. Merian it cannot be<br>
+definitely<br>
+established from Maier’s text that Maier set eyes on La.mb5PI‘inc1s&#x27;;’s Pictures ::5o1:1“gs:-ienghlgtuizztgd<br>
+text of Lambsprinck from before 1625 is found, it 1 Y Spflnck s text was known to Maier and served him,<br>
+1: .<br>
+:i~‘n::Ei:§;sc.)t em’ as an examP1° Of a number of his emblems in the Atalanta-<br>
+&lt;PARSED TEXT FOR PAGE: 11 / 318&gt;<br>
+IN&#x27;1&#x27;RODUCTION 7<br>
+The aesthetical quality of the book, the well-considered typo- graphical lay-out, the paradoxical character of<br>
+the pictures, as, for instance, of emblem xvii, in which the contrast between a quite common river—view<br>
+with the chain of four .fire—balls in the air sug- gests a relation between Nature and Supernature, ensure the<br>
+book a worthy place among emblem books.”<br>
+As second starting-point for an approach to the emblems in the Atrzlmrta Fzrgr&#x27;:m.s I mentioned, beside the<br>
+data from Maier&#x27;s life, are his works. It is not the intention of this work to devote a complete discussion to<br>
+Maier’s other works, but to bring their characteristics to the reader&#x27;s notice.<br>
+Maier&#x27;s first book was Arcana Arccmz&#x27;ssimrz (London, about I614). In the full title Maier explains to us that<br>
+these secrets are Graeco— Egyptian hieroglyphs, the meaning of which is not known to the people, but<br>
+which he will reveal, to show the real origin of the gods, goddesses, heroes, loving couples and institutions of<br>
+Antiquity, which are wrongly considered to be sacred. They are, however, derived from the one Egyptian<br>
+&quot;art”, directed to the &quot;gold of the soul and the medicine of the body”. Out of that art, Maier says, the<br>
+allegories of the poets, the fables and the errors, which occur here and there in encyclopaedic work, can be<br>
+explained, &quot;in the crystal-clear light of the truth”.<br>
+Maier starts from the traditional point of view that the origin of alchemy lay in Egypt, the “art” revealed by<br>
+Hermes to his priests, by which the transmutation of metals was understood, which was made possible by a<br>
+complete insight into the laws of matter and into the structure of the Universe. According to Maier, this<br>
+knowl- edge passed, in the shape of mythological figures, to Greece, Rome, the Arabic world and afterwards<br>
+to Western Europe.<br>
+Maier sets himself to give a detailed alchemical explanation of classic mythology in Arcane Arcmzissislza.<br>
+Also in the Atalanta Fugieus he devoted a number of emblems to this (embl. 2:11, XXIII, xxxv, xxxrx, XLI,<br>
+XLIV, XLIX).<br>
+1‘ The Atalanta Fugiens is mentioned by W. S. Heckscher s.v. &quot;Emblem, Emblembuch&quot;, Reallexicon zur<br>
+deutschen Kunstgeschichte 5 (I959), col. I30-I84, arranged among category III, A, 6, as an emblem book<br>
+with didactic, encyclopazdic, cosmographic tendency: and under category III, A, I 5 as an emblem book with<br>
+didactic, encyclopmdic, alchemical tendency.<br>
+INTRODUCTION<br>
+9.‘:<br>
+This conception of ‘Maicr was not new. For ages the seven known metals were connected with the seven<br>
+planets and indicated by the nuines of Gods; lead-—Saturn, copperl—-Venus, iron-——Mars, tin.-—_Iupiter,<br>
+n1ercury——Mercu1&#x27;y, silver—Luna, and gc-ld—Sol. 1«‘;—.;.m the beginning there exists in the alchemical<br>
+writings a close (-o11[1ccti0I1 between exoteric alchemy, which is directed to making ,~_f_ulCl, and esoteric<br>
+alchemy, which starts from Neoplatonic ideas iind bases its allegories on figures from the mystery cults. As<br>
+such Isis, Osiris, Demeter, Adonis etc. occur in connection with alchemy. In .-Xrabic nlcllemy these motifs<br>
+fall into the back-ground, but are not coniplctcly lost; in the first half of the fourteenth century Pctrus Bonus<br>
+writes in his Mrzrgmita Prctiosa N UUCIM15 that Homer, Virgil and Ovid are among those who have<br>
+&lt;PARSED TEXT FOR PAGE: 12 / 318&gt;<br>
+handed down hermetic WlSCl0I11. And, to mention a single example from the sixteenth century, W.<br>
+Mennens, author of the alchemical Amczmn Velhzs, who asserts the same and calls his treatise &quot;aureum<br>
+vellus” after the Golden Fleece of Iason,“ and at the same time after the Fleece of Gideon,“ as he says in his<br>
+preface to the reader.“ This trend also continues after I\’Iaier&#x27;s death up to, and into, the eighteenth cen- tury,<br>
+undoubtedly under the influence of Maier’s Arcana Artemis- 5-inzrz.”<br>
+15 Petrus Bonus, Jlifargarito Pretiosa Novella, I330, in: Theatmm Chemicmn, V, p. 639.<br>
+1“ The Golden Eleece of Jason is explained by Suidas in the mth century in the 13-tte¥&quot;5 I-33350?‘ 5-&#x27;\’-<br>
+M-&#x27;9¢c 8-5 &quot;a. book, written on sheep&#x27;s skin, teaching how gold should be made in a chemical way. The<br>
+people of the time called thi5 Skin 3 8’01dEI1_Dne In virtue of the process written on it”, see A. J. Hop-<br>
+£:s§fAIcI:.e::zy Child of Greek Philosophy, New York I934, :97 and Appen￾17 _The association with the Fleece of Gideon is based on Mary. The Fleece Of Gldeml 15 3-<br>
+Preflgufa-131011 Of Mary: She conceived Christ in a. way as the pure dew descended from heaven into the<br>
+Fleece of Gideon. The alchemists draw 3 P3331131 beb-‘feen Qhrist and the Philosopher’s Stone and<br>
+between M3-I&#x27;Y and the 1&#x27;6t01’t {I1 which the Stone is formed. Just as the dew descends mt” the Fleece<br>
+°fG1de°n— the Purified matter, which first rises as vapour “P 150 the WP Of the a.lche1:nist’s retort,<br>
+descends in the retort in a. condensed<br>
+form. (The Fleeceoi Gideon, jml V1 5_ , . - . - of Autun, Molsdorf, Tirnmers, Rgifu, &quot;si1:bé:_&#x27;;3‘11ter. about<br>
+Mary see I-Iononns<br>
+13 Theatr. C}zem., V, 244_<br>
+Hi“: E33‘ gc°bT°‘::1_&#x27;F°’i&quot;_fl“- I&quot; €i“ib*~¢5l. fmzeter Critica nonnuilo tote fabularis 15 0”“ Mm’ h°‘””‘“‘r<br>
+A3é’5’P‘5“=‘-‘G. ad Chemiam gbertiuere assertimr,<br>
+Amsterdam, 1687; and A. , P .<br>
+dévoilées, Paris and Berlin 1-£53 (:Ir:iBt?;.8é-Zsnfiigtg ) é£.’1l/Piiemzes at grefiques.<br>
+INTRODUCTION 9<br>
+In 1616 appeared Maiei-&#x27;5 Dc Cmzilo Physics Q-mcdmta, which I have mentioned, in which he deals with<br>
+the important place that gold takes in the world and the great medical effect gold has on the human heart. He<br>
+establishes a. concordance between the human hearth, as the centre of the human body, the gold as the perfect<br>
+centre among the metals, and the sun, as the centre of the planets. Between them there exists a circular<br>
+connection, by which man and God are in touch with each other: God gives strength to the Sun, the latter<br>
+ripens the metals in the bowels of the earth into gold, the gold strengthens the human heart, and on account of<br>
+this, man can live and turn with his living soul towards God. At the same time in 1616 his Lusus .S&#x27;er~z3us<br>
+appeared; this contained an allegory about Mercury, who reigned on earth as King over men and things. In<br>
+this allegory Maier uses the motifs connected in al- chemy with Mercury. The meaning of Mercury in<br>
+alchemy stretches from mercury (mercurius, argentum vivum) as an entity from which all metals take their<br>
+origin, to primordial water (on account of the lasting liquid state of mercury), from which Creation arose, and<br>
+to the waters of destruction, in which the soul perishes and to the Water of Life. In this last meaning lies the<br>
+&lt;PARSED TEXT FOR PAGE: 13 / 318&gt;<br>
+association Mercury»<br>
+Christ.”<br>
+3° Mcrcurius is the mercury, in which the metals have to be dissolved,<br>
+reduced to the primary matter before they can become gold. Mercury is water because of its continuous<br>
+liquid state. In the meaning of water it is poly- valenit; it is tl1e primordial water, the water of death, in which<br>
+metals decom- pose: and it is the water of resurrection, from which metals, converted into gold, rise again.<br>
+Mercury is also the winged messenger of the Gods, mediator between heaven and earth. Mercury is a<br>
+mystery; it is the beginning and<br>
+the end.<br>
+This meaning of Mercury already becomes evident from Greek-alchemical<br>
+writings. Zosimos writes about mercury, &quot;the divine water&quot;, as follows: “It is the divine and great mystery: it<br>
+is the object one is looking for. It is the Universe. From it the Universe proceeds and by it the Universe<br>
+exists. Two natures, one Being. . . It is the mercury and the philosophical Dtlercury, it is the hermaphrodite,<br>
+who is eternal, who is attracted by its own elements. It is the divine water, not known by the whole world . . .<br>
+. .&quot;; the text is printed in M. Berthelot, Coll. des Ana. Aids. Grass, vol. 1, Traci. Zosimos III, IX, p. 146, and<br>
+vol. II, I43-I44.<br>
+Later alchernists developed this idea and connected Mercury with the water over which the Spirit of God<br>
+hovered (Genesis, 1, 2), with the depths of the water, into which the soul sinks (Psalm 69, 2, 3 and I 5),—on<br>
+account of the next verse (Psalm 69, 4), this also refers to the sea, in which the king is drowned in emblem<br>
+xxxr of the Atalanta Fugiens—and finally with the<br>
+10 nrrnonucrion<br>
+In 151.. two of ‘\[ajer&#x27;s books appeared, in which two opposite I‘ l ‘ _ _ u aspects gf alchemy are emphasized.<br>
+In the one book, Symbola<br>
+—1«.-;r.._-mg ,1 Ignsas Duodccfm N m‘.z&#x27;ozmm&quot;, &quot;The symbols of the golden‘<br>
+table of 12 nations&quot;, 3, symbolic banquet, Maier describes the alchemical xyise Men, In the other book,<br>
+lixnaueiz Fncormn. Pseudo- Ch_ynn’cormn,&quot;, &quot;Examination of the .fa1s1ficat1ons of the pseudo—<br>
+chemists&quot;, he describes the alchemistic I-Tools. _<br>
+Symbols Aurcac Mensae Duodecim Na!.1.omt.m contains the history of alchemy from its hggendary origin<br>
+until .Ma1er’s time, divided into twelve books, devoted to twelve countries; the alchemists are grouped<br>
+around a, principal figure of their country. They are Egypt, represented by Hermes Trisrnegistus; Palestine,<br>
+represented by Maria Hebraea; Greece by Democritus; Rome by Morienus (it is known that the treatise<br>
+ascribed to this legendary figure was trans- lated from Arabic into Latin in I144. See bibl. sub Morienus); the<br>
+Arabic world is represented by Avicenna; Germany by Albertus Magnus; France by Arnoldus of Villanova;<br>
+Italy by St. Thomas Aquinas; Spain by Raymundus Lullius; England by Roger Bacon; Hungary by an<br>
+&lt;PARSED TEXT FOR PAGE: 14 / 318&gt;<br>
+unknown Melchior Cibinensis; Poland, Russia and other Slavonic countries by an anonymous alchemist.<br>
+The book has twelve emblems, one of each of the said figures. In the sub-title Maier explains that he wrote<br>
+the book to rehabilitate the virgin Chemia and the bone. fide votaries of alchemy on the one side, and to<br>
+disprove the poor arguments of the opponents on the other. Further it is his intention to prove that the<br>
+chemical secrets were known from the oldest times and were continually expressed in the ideas of the great<br>
+personalities of each period.<br>
+In Examen Fncor-um Psendo—Ci1y1nz7cor1mi, in which Meier turns<br>
+to the opposite group, the Fools, he distinguishes between the blockheads, the ostentatious and the educated<br>
+frauds, who all have<br>
+Source of Life (Psalm 36, 9: “For with You is the Fountain of Life&quot; xi. of the Atalairla Fngiens alludes to this<br>
+meani alchemical circles “Mercury&quot; was such a. significant<br>
+of I-lelmont ( I 577-1664) gave his youngest son the Curl‘-15 V3“ Helmoflt (15134599). and he, like his<br>
+father. was interested in Natural Sciences and Occult Sciences. It often occurs thht names iven to children<br>
+have a cultural-historical meaning; thus, for instance also the name<br>
+&quot;Margarita&quot;; see for this, W. S. Heckscher ‘*1 G : .. the Manitoba Art: Review, IV, 3, 1945, P. 25_S32_1-eta<br>
+5 name really so Bad? &#x27;<br>
+). Emblem ng of Source of Life. In<br>
+INTRODUCTION II<br>
+this in common, that they have brought the chemical science?-1 or the hermetic wisdom into disrepute. He<br>
+begins by drawing the attention of the illiterate stupid &quot;gold-makers” to the fact that for the making of gold<br>
+other things are necessary than their supersti- tion and their so—ca1led chemical tests with dung, blood or<br>
+hairs. He explains to them that chemistry and the allegories used in it, are based on a combination of many<br>
+sciences, for which great wisdom, great erudition and an ethical attitude towards life are requi1‘cd.&quot;32 The<br>
+foundations on which chemistry is based are, ac- cording to Maier: the art of poetry, which deals exclusively,<br>
+but in a hidden form, with chemistry and is supported by grammar, rhetoric, dialectics, arithmetics, geometry,<br>
+astronomy and physics. By physics Maier also understands music. So Maier bases chernistry on the artes<br>
+libcrales, just as the alchemists living in the centuries before Maier. Considering that medizeval man, and<br>
+consequently the mediaval alchemist, thought of the artes1iberales—beside the Holy Writ—as the only way<br>
+to knowledge, and from there to The0logy,23 it becomes clear that Albertus Magnus and St. Thomas Aquinas<br>
+take an important place in the history of alchemy, which can also be seen from Symbolcz Aureae Meusae<br>
+D-ziorlecim Ncztioamm. Apart from the artes 1iberales,—Maier continues his instruction of the illiterate<br>
+“puffers”—rnedicine is of exceptional importance and be- side it chemical metallurgy, i.e. the science of fire,<br>
+minerals, ores,<br>
+31 Maier rather uses &quot;chemical&quot; than “alchemical,&quot; a word which in Maier’s time was too much connected<br>
+with deceit. But as Maier bases his work on sources from a time in which a distinction between chemistry<br>
+and alchemy was not yet made, and Maier aims at the same object as his predecessors, I mainly use the word<br>
+&lt;PARSED TEXT FOR PAGE: 15 / 318&gt;<br>
+&quot;alchemy&quot;.<br>
+Maier reproaches the alchemists for making falsifications instead of bringing about a real conversion of the<br>
+metals: &quot;. . . . .tum chymia, non Alcumia illa, (tot nebulorurn matrix et deceptionurn mater, quas metalla.<br>
+adulterat et non Vere transmutat) sed quae rnedicinae aureae producendze inservit, Antiquissirna et Verissirna<br>
+. . . . .”, says Mater in his Arcana Arca- nissima (1614), (unnumbered p. 4).<br>
+&#x27;-3&#x27;-&#x27; Exmima Fucormn Pseudo Chjmzicorlmz, p. I3 sq. This particular ethical attitude to life is clear, for<br>
+instance, from the rule of the Rosicrucians that the Brethren must give medical assistance as much as<br>
+possible, free of charge, and from the admonition to discern the laws of Nature in oneself ; see note 24.<br>
+33 Maier stresses a connection between the artes liberales and the Holy &quot;Writ in the emblems xxvr and xxvu<br>
+of the Atalanta Fztgie-us, which form the centre of the book.<br>
+I2 INTRODUCTION<br>
+es. Finally, with a quotation from metals, alloys and colour P1130355<br>
+. &#x27; .&#x27; Maier stresses the necessity of dis- Gebers Sm-mm: Perfemoms,<br>
+. - - T in one’s self as a condition for cerniflg the P1&#x27;mC1P1e5 Of hature &#x27; &#x27;<br>
+_ - I &quot; 24 making progress In ‘aft -<br>
+Th d group of impostors, upon which Maier turns in Exa￾C011 .<br>
+;.S:0mm Pmugo C;,ym,—;Tcoruni, are the lovers of ostentatron,<br>
+men -1: - &#x27;<br>
+<ul><li>&#x27; ° &#x27; &#x27; he owe their , &#x27; 1 , at I‘1Cl1€S, giving the 1Il‘lp1&#x27;BSS1011 t y . &#x27; ihlggufésioaiiieglit of alchemy, while</li><br>
+</ul>in reality they obtained their<br>
+wealth by left and deceit They try to impress people by expensive clothes and gold and silver instruments and<br>
+a large staff. But when everything is squandered, they are gone (Ex. F210,, p. 11), Maier ridicules them and<br>
+wonders why they exert themselves so much to sell their recipes for the transmutation of metals; for if they<br>
+really knew the art of making gold out of lead, they could make for them- selves as much gold as they<br>
+wanted (Ex. F m:., p. 20). He who wants to appear more than he is worth cannot be a good chemist, for the<br>
+characteristic of the true chemist is that he devotes all his energies to virtue and abhors vice (ditto p. 29). In<br>
+this respect also, the true alchemist and the Rosicrucians agree.<br>
+The alchemists whom Mailer attacks most violently, are the educated people who in a clever way abuse their<br>
+knowledge in order to distort the truth. Maier goes through the reports of the transmutations and proves their<br>
+falsity. He states how sometimes gold and silver arise from a combination, but, he adds, the gold and silver<br>
+have been present before in that combination in an invisible form and have not newly arisen. He enumerates<br>
+&lt;PARSED TEXT FOR PAGE: 16 / 318&gt;<br>
+47 attacks of this kind. Thus he also attacks Edward Kelley, a famous alchemist, who reaped spectacular<br>
+results at the Court of Rudolph II, but who later fell into disgrace because of deceit.“ For Agrippa of Nettes￾heirn Illaier also has nothing but scornf’-5 From this it could be con-<br>
+“ Examen Fmsorum, p. 19, quotation from Geber&#x27;s Summer Perfeciionis. cap. I: &quot;Sed scias charisime quod<br>
+qui principia naturalia in se ipso ignora.ve- rit, h.ic iam multum rernotus est ab arte nostra. . . . .&quot;<br>
+In the Middle Ages Geber was one of the mast wi authors, see bibliogr. sub Geber and Jabir.<br>
+=5 Examen Fzworuin, p. 4.1, attack on Edward Kelley; about Kelley see H. C. Bolton, The follies of Science<br>
+at the Court of Rudolph II Milwaukee 1904, chapter V. ’<br>
+&quot; -“-D911‘: 3_-S1&#x27;lPP3- 05 Ne‘-liesheim. see: commentary on embl. 1 of the Atafanta Fugzens, see p. 62-63.<br>
+dely read alchemical<br>
+INTRODUCTION I3<br>
+cluded that Maier regarded alchemical aspirations with absolute disfavour; but this is not the intention of his<br>
+argument, for he wants to draw attention to the fact that &quot;the true alchernists who prepare the perfect work<br>
+themselves, rarely come to the fore and that those who do so are usually not the right ones&quot;.&#x27;-&#x27;7<br>
+Maier is aware of the often insuperable difiiculties which confront the sincere investigators of the secret of<br>
+the Philosophers’ Stone, because of the inaccessibility of some alchemical writings and of the insoluble<br>
+problems that the chemical reactions in the retort present to the investigators. As a guide for these people<br>
+Maier wrote Via- torium, has cast, Dc Momibzrs PM-nxctam-m sc/Jtcm llifetalllor-mu e1!c., &quot;Guide, id est, a<br>
+useful and clear writing about the seven planet- or metal—mountains, of which each rational, truthloving<br>
+man may make use as of a henna at the thre-e—forl&lt;ed roads, as of Ari-aclne’s clue in the Labyrinth, as of<br>
+the Polar Stars in the immense ocean of chemical errors, in order to investigate into the medicine of the Red<br>
+Stone, so much desired by the physicians”. In this book Maier deals with the connection between planets,<br>
+metals and the medical effect of them, taking Gebe1&quot;s Smmmz Pcrfccefionis as a starting- point.<br>
+From the preface of Ercamen F-ucor-mu Pseurlo-Chymdcorzmi28 we see that Maier thinks in terms of a<br>
+hierarchy of the alchernists, which he expresses in a. comparison with the ascent of the Helicon:&#x27;-1” few<br>
+reach the top of the Helicon and the Symbols A-urerze M eases: speaks about them; others aim at the top<br>
+with great exertion, but only come halfway and the Vz&#x27;m‘0rizr-m, De ilzfoaztibus Plrmefiamm septem sen<br>
+Metallor-um is written on behalf of those ; 39 the others roam over the plane at the foot of the mountain, they<br>
+are the puffers, who are described in Emmea Fzrcorztm P362:do—Clzymicor-mu.<br>
+In .’31°Ie7zt-imn post C lczmores (1617) and Themis A area (1618), Maier<br>
+17 Examen Fmormn, p. 43.<br>
+33 Exanzen Fncorimi, preface p. 9.<br>
+29 Maier also uses the ascent of the Helicon as a symbol for the alchemical transmutation process itself,<br>
+which consists of the matter ascending and descending in the retort; besides Maier uses it as a symbol for the<br>
+&lt;PARSED TEXT FOR PAGE: 17 / 318&gt;<br>
+spiritual process and the ascent of the soul to God through the seven spheres (A lafruzta Fitgiens, embl. 2:11<br>
+and xxvn).<br>
+3” So Viatorium, De ilfoiztibics Pfmiefarmn septum sen .Mc1&#x27;aHorzmz is mention- ed by Maier in the<br>
+preface of Exams}: Fmsorum. Apparently the edition of 1:618, mentioned by Ferguson in his Bibi. Chen:., is<br>
+not the first one.<br>
+I4 INTRODUCTION<br>
+, &#x27; the Rosicrucians, defending and Pays a“e“t.‘°“ t° the.F.rat:r:,1;¥c§fMaier further published, do not<br>
+de5°‘ibi“3, It’ Tile wntmftflfrom the publications already men- d.eviate_m ihelr Purpohe edits the publication<br>
+of three alchemical tmi1ld&#x27; In Tfij§”si1A‘iil“?:ll-iiiitine, Thomas Norton and Cremer, about writings, of F1;<br>
+thought that they had lived in the 14th or 15th i:21il1‘l}tIl1.:l2&#x27;;l-&#x27;1Cll.1Cl:l’vl7]t’.l\S.’Ef these writings<br>
+probably date from the r6th cen- t“‘3&#x27;-3‘ - - &#x27; 11&#x27; h M &#x27; Finally I mention Septzmcme Pfulosopkzca em, w 1c<br>
+aier com- posed in the form of a conversation between Solomon and the Queen<br>
+of Saba}, and King Hyram of Tyms, discussing the secrets of Nature and alchemy and its allegories for a<br>
+week. Already in alchemical<br>
+writings of the Middle Ages“ Solomon was considered to be an adept in hermetic art because of his riches<br>
+and his wisdom. The conversation between the three of them, Solomon, Sabah, H3&quot;I&#x27;aT11. refers to<br>
+(:}&#x27;m;m&#x27;cles, ll, zff about the building of the new temple, in the P1333 of the temporary tabernacle. At the<br>
+same time, Maier here alludes to the Fraternity of the Rosicrucians, who, on account of their sincerity, piety,<br>
+mercy and investigation into the laws of the Universe, are the new temple builders. In accordance with the<br>
+wisdom of Solomon, who mastered all sciences, the following sub- jects are dealt with in Septimmza<br>
+Plulosopizica, the philosophical working-days (agreeing with the six days of creation); heaven. and the<br>
+elements on the first day, the planets, meteors and meteoro- logical phenomena on the second day; the ores<br>
+and minerals on the third day; plants on the fourth day; animals on the fifth day; man on the sixth day.<br>
+Summarizing, it can be said about Meier&#x27;s writings that their contents refer to alchemy and to the thoughts<br>
+expressed in the manifestos of the Fratemity of the Rosicrucians; the tendency of Maier’s work is instructive,<br>
+defensive, critical and polemical. His starting-point is the conviction that the processes which occur in the<br>
+retorts of the alchernists are a reflection of the material and spiritual transmutation processes in the Universe<br>
+and that it must be possible for a serious, modest, pious man to get to know the<br>
+31 J. M. Stillman, The Story of Early Cheinistry, p. 297.<br>
+33 a.o. Petrus Bonus, Margarita Prsfiasa Novefla 1330, in Tlzeatr. C}:sm., V. 5°7&#x27;713-<br>
+INTRODUCTION I5<br>
+structure of matter and through this to get also an insight into the deepest secrets of Creation and into the<br>
+relationship between God and his creatures. Because such important matters are at stake in alchemy, it is a<br>
+sacred science, in which the artes liberales, medicine, mineralogy, philosophy and theology are involved;<br>
+therefore it is a secret science, which is only intended for the élite of the spirit. Alchemy contains one truth,<br>
+which has found its expression in the alchemical allegories, a truth also hidden behind the classical legends,<br>
+&lt;PARSED TEXT FOR PAGE: 18 / 318&gt;<br>
+which are so distorted by misconception that their original meaning is difficult to recognize. This conviction<br>
+is also the basis of Maier’s enthusiasm for the ideals of the Fraternity of the Rosicrucians, which are founded<br>
+on this sacred science.<br>
+However, the fraudulent practices of many alchemists and the development of the natural sciences in the<br>
+sixteenth and seven- teenth centuries, especially the development of astronomy, which undermined<br>
+astrological views——one of the points of support in alchemical theories—had roused scorn and scepsis in<br>
+the circles of outsiders to the art of making gold. The Fraternity of the Rosi- crucians, which was orientated<br>
+more in the mystical-alchemical field than in that of practical alcherny—-and whose important trea- tise,<br>
+written by the Lutheran theologian Johann Valentin Andreae of Wiirttemberg, Die Ckymisclze Hoe/izeit<br>
+Clzristiemi .Rosem:rem5z, mmo I459, was considered as being a. persiflage on the appearing of mystical<br>
+sects—a1so evoked criticism. This explains why Maier was so determined to describe the true character of<br>
+alchemy thereby demonstrating the high age of hermetic wisdom, revealed to Hermes Trismegistus, known<br>
+by classical and Arab philosophers by media- val theologians and made known to a wider circle by the<br>
+writings of the Rosicrucians. At the same time it explains the emphasis with which Maier distinguishes the<br>
+“puffers” from the true adepts. Meier is critical and points emphatically to the “naturalness” of the al￾chemical process, which expresses itself in an exact balance be- tween reason and experiment; therefore he<br>
+rejects black magic and experimentation with all sorts of foreign ingredients, the use of which was based on<br>
+supposed magical properties or on a wrong, literal interpretation of the ingredients mentioned in the<br>
+alchemical allegories.<br>
+It might be asked whether ltlaier was exclusively a theoretical<br>
+15 INTRODUCTION<br>
+alchemist or also a practical one. There are various considerations which make one think that Meier occupied<br>
+himselt with lglchenig: only theoretically; in particular his statement in E3,-anmz uccgu about the artes<br>
+liberales and his attacks on three kinds of 1311- ers. Isloreover, .\laier was kindly disposed to the ideals of<br>
+‘the Ros1cru- cians, who exclusively used the alchemical metaphorical language to express their mystical<br>
+contemplat1ons;&quot; the Fame F:mtcrm.tm‘.z.s ozirr Entdsn’-:zmg dsr Brzzdcrschafil, des hochloblrclzcn<br>
+Onions dos Rosam- kram‘: (liassel 1614), even speaks of &quot;the damned art of making gold, which gains<br>
+ground rapidly in our time&quot;.<br>
+However, we have to bear in mind that, till the seventeenth cen- tury, alchemy was an “art&quot;, in which theory<br>
+and practice belonged together. As an example of this I mention the Turbo Plnlosojahorum, which, translated<br>
+from Arabic in the Izth century, became known in Western Europe: the first part of it is predominantly<br>
+pl1ll0S0plllC- cosmological and the second part is of a more practical nature. Another example is a work<br>
+from the fourteenth century, which W85 wrongly ascribed to Rayrnundus Lullius (see bibliogr.), Testamen￾tmn, which was subdivided in two parts: Tlzeorica and Practice. This combination of theory and practice is<br>
+an essential feature of alche- my; the secret of the Universe manifests itself in the matter.<br>
+1\Iaier—while an ardent adherent of the Rosicrucians—-exerts himself more than anyone else to determine<br>
+this movement as being a continuation of the old alchemical tradition, in which, as already mentioned, theory<br>
+and practice belong together.33 In the Atalanta<br>
+&lt;PARSED TEXT FOR PAGE: 19 / 318&gt;<br>
+i‘-&#x27;-‘ As regards this, alchemy takes asornewhat exceptional position among other sciences, which, in the<br>
+Middle Ages and early Renaissance, stressed the theoretical side; about 1600 there arises a. renewed<br>
+discussion about the relation of theory and practice, in which practice is accentuated. So, for instance.<br>
+William Gilbert (1540-I603) transferred his technical knowledge about magnetism, which he obtained from<br>
+navigation and mining, to the scientific plane; but he did not put forward a. theory in science before he had<br>
+demonstrated it ad oculos in the laboratory; for the problem of the relation between theory and practice see E.<br>
+Zilsel, “The Origins of William Gilbert&#x27;s Scientific Method”, journal of the History of Ideas, I, Ig4I, p. I-32-<br>
+W. S. Heckscher, Reiizbraizdfs Anatomy, New York 1958, note 79. quotes Zilsel (o.::. p. 26), with approval<br>
+concerning alchemy in which practice always played a big role, as follows: &quot;zilsel observed ‘quite rightly<br>
+that<br>
+alchemy was a case in point, inasmuch as it was a. discipline that for obvious reasons made ll’. obligatory for<br>
+the ade<br>
+_ _ pt to do his own weighing, measuring. heating, pouring and testing&quot;.<br>
+mraonucrron 17<br>
+F~ug:‘c::s, in the discourse of emblem x1 and of emblem XLII, Maier plainly says that &quot;tl1eoria”‘ as well as<br>
+“praxis” are necessary for the success of alchemical work: “At philosophi unum absque alio non sufiicere<br>
+dicunt, ingenium acutum absque manuum labore, aut hunc absque illo, ut nec theoriam absque praxi et vice<br>
+versa&quot; (Atalamtrz FugzTcz:.s, p. 54). Maier’s quoting the “philosophi&quot; means a. complete approval of what is<br>
+cited. And in the discourse of Emblem XLII is written : “Experientiawill be the spectacles,with which the<br>
+things that are far aw. y can be seen close up; they are the optical instruments invented and made by art,<br>
+which come to the aid of man&#x27;s weak eyes and correct them. The experiments with mineral matters equal<br>
+them”.<br>
+The most convincing proof that Maier valued practice as highly as theory, appears from the frontispiece of<br>
+his Trijb-us Azmms (Fig. 55), in which a space is pictured divided in two compartments by a furnace. On the<br>
+burning furnace a tripod is standing, with a chemical retort, in which a winged snake, symbol of the volatile<br>
+mercury, is locked. The left part of the space indicates the theoretical part of alchemy; the walls are covered<br>
+with b0ol{—cases and Thomas Norton, Cremer and Basil Valentine-—the authors of the writings Maier edits<br>
+in his Tripzcs A2mms—discuss alchemical problems, as appears from the gesture of one of them towards the<br>
+retort on the fire. The other side of the room is equipped as a laboratory and this points to the practical side of<br>
+alchemy. Kneeling near the furnace, a laboratory worker is occupied with looking after the fire.<br>
+The factors mentioned indicate that Mater himself was actually involved in practical, chemical experiments.“<br>
+It is another question as to how far Meier was convinced of the possibility of really converting base metals<br>
+into gold. He was critical towards this, as can be seen from his argumentation in Examen Fzccor-u-m. He<br>
+was of the opinion that it was possible to bring about a chemical combination, which approached the quality<br>
+of real gold, or ap- proached it very closely, but, with Avicenna, he was inclined to deny the real conversion<br>
+of the species.“<br>
+3‘ Ferguson, Bibi. Chem., II, 66, mentions that Mater was a famous chemist in his time.<br>
+&lt;PARSED TEXT FOR PAGE: 20 / 318&gt;<br>
+3&#x27;-5 See commentary on ernbl. xvnr from the Atalanta Fugiens (p. 155-157). In the discourse of embl. XL<br>
+(Atalanta Fugéens p. I 55) Maier states that an artificial chemical combination is not of the same quality as a.<br>
+natural<br>
+INTRODUCTION<br>
+I8<br>
+Maier’s opera omnia——and this is the reason why I. have paid attention to them——should be consulted<br>
+again and agam, in order to come to a clearer notion of the emblems 1n the Atalanta Fug-ions. Meier&#x27;s books<br>
+give evidence of an erudition and a strong belief in the connection between science and religion. In this<br>
+synthesis he is a man, in whom the spirit of the late Middle Ages is alive. In his critical attitude in respect of<br>
+credulity and magic and in his appreciation of the purely critical, experimental, he represents the period in<br>
+which science releases itself from restraining religious ties; the period, in which science develops out of<br>
+pseudo—science. I discern in this figure a discord, which he tries to bridge by uniting old alchemical<br>
+traditions and a critical-scientifical adaptation, by which he endeavours to separate sense and nonsense.<br>
+Maier’s Atalanta Fngisns was a striking book on account of its emblems, of a tuitional, but also of a reserved<br>
+character. Both trends are in accordance with the intentions of the Rosicrucians; the reserve especially with<br>
+that of the adepts of the hermetic wisdom of generations previous to Ivlaier, although the Rosicrucians did<br>
+not reveal all their secrets either, as &quot;no pearls should be cast before swine.&quot;<br>
+The Atalanta Fngie-as complies with the twofold task of propaganda and reserve also by the form which<br>
+Maier gave to the book: the emblem book. On account of that it drew, more than most other alchemical<br>
+books, the attention of an educated public, which was accustomed to dealing with emblem books, and at the<br>
+same time it formed a barrier, preventing those who were not familiar with alchemical allegories from<br>
+completely understanding the in￾tention. In the preface Maier himself says about it (Atalanta Fu- gicns p. 3):<br>
+&quot;Behold, we have connected that which is Visible with that which is Audible, and the sensory perception<br>
+with reason; that means we have connected things, which are remarkable to sight and hearmg. with chemical<br>
+emblems, which belong to this science. For when the other arts give emblems, about morals or about other<br>
+things than about the secret of nature, this seems alien<br>
+combination, because the matters do not penetrate each other up to and into the smallest ‘parts: i&quot;De<br>
+substantiarum Inixtione artificiali constat, _qu0d 11011 _P81: m1IuI_na. se_mvicem ingrediantur, quamvis<br>
+humane. industria. ltemm ab &quot;mcem discern‘ 3° 5°Pa1&#x27;ari nequeant&quot;. See bibliogr. sub Avicenna.<br>
+INTRODUCTION I9<br>
+to their aim and ultimate object, as they want to be, and shoulp be, comprehensible to all, and that is not so<br>
+with the chemical<br>
+emblems. ., . &quot;<br>
+Therefore it is not astonishing that the idea of an emblem book occurred to Meier. The Atalanta Fug:-&quot;ens is<br>
+&lt;PARSED TEXT FOR PAGE: 21 / 318&gt;<br>
+one of the finest al- chemical emblem books, and, by the combination of emblems and fugues, unique.<br>
+Another alchemical treatise, highly valued by Meier, was I.an1bsprinck&#x27;s Dc: Lrzgfiidc Phiiosopliico<br>
+Libellus, first printed in 1599 and published in a Latin edition in I625 with engravings executed by Merianfi“<br>
+Further the work of Basil Valen- tine, De ll/fag-no Lapide A1itz7quor~um Sapicmfzirun, edited by Maier in<br>
+Trifms /lmrcus, was of an emblematic nature, in spite of the fact that motto and epigrarn have been replaced<br>
+by a longer text. Emblematic representations also occur in the Rosmriicm Philoso- j)/iomm. The emblematic<br>
+representations in the printed editions Also in the Rosarmm I’liilosop/zormn emblematic representations<br>
+occur. The emblematic representations in the printed editions Sometimes originate from the manuscripts;<br>
+thus, for instance, a number of pictures from Pandora.’ Das ist, Die edclsia Gab Games (1582) originates<br>
+from the alchemical manuscript, the Bus!» tier H cfligeii Dreiflzl£igkez&#x27;z!.37<br>
+When, in non-alchemical emblem books, alchemy is mentioned, it is mainly with a sneer, as appears from<br>
+van der Veen&#x27;s Adams Apps! (I642),33 in which alchemy is reckoned among the vices<br>
+with the motto:<br>
+3“ See note 13.<br>
+37 Des Bitch der Heiligen Dreifaltigkeil, Miinchen<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>The file contents provided above are truncated/partial snippets. The complete content for these files IS accessible via querying.</p><p>If the user asks a question related to these files, and the provided snippets do not clearly answer it, you <strong>MUST</strong> use the <code>file_search</code> tool to search the full document contents before responding.</p><p><h2>How to invoke the file_search tool</h2><br>
+If the user&#x27;s query isn&#x27;t sufficiently answered by the provided snippets, parsed text, or images, you should invoke <code>file_search.msearch</code>.<br>
+To search the full content of the available files, you <strong>must</strong> send one message with recipient <code>to=file_search.msearch</code> in the analysis channel. Your message should be structured exactly as follows:<br>
+<pre><code>{
+  &#x27;queries&#x27;: [&#x27;Example query 1&#x27;, &#x27;Example query 2&#x27;]  // List of up to five queries to search for.
+}
+</code></pre></p><p>Carefully balance the number of <code>file_search</code> calls and the quality of your response with the latency incurred by <code>file_search</code> calls.</p><p>Important guidelines for query formatting:<br>
+<ul><li>Your message must be a valid JSON object. Do not include any extraneous text, backticks, markdown formatting, or comments beyond what is shown.</li><br>
+<li>The <code>queries</code> field must be a list of strings.</li><br>
+<li>One of the queries <strong>MUST</strong> exactly match the user&#x27;s original question, but stripped of any extraneous details, and with ambiguous references clearly resolved using context from the conversation. It <strong>MUST</strong> be a complete sentence.</li><br>
+<li>Even if you suspect the user meant something else, one query <strong>MUST</strong> still be their original question.</li><br>
+</ul><br>
+<h2>How to handle results from file_search</h2><br>
+The file search tool will respond with the relevant search results from the full files. After you receive these results:<br>
+<ul><li>Carefully evaluate each result to determine its relevance and quality.</li><br>
+<li>Use the high-quality and relevant results to inform your answer to the user&#x27;s question.</li><br>
+<li>When possible, reuse information from prior file_search results and avoid repeating identical queries.</li><br>
+</ul><br>
+<h2>Tool usage instructions and ordering</h2><br>
+When the user asks a question, carefully consider whether the provided snippets sufficiently answer the query, whether you need to invoke <code>file_search.msearch</code>, or another available tool (such as <code>web</code>, if available) should be used instead.</p><p>Tool-ordering Guidelines:<br>
+1. For queries related to uploaded files, if snippets are insufficient, strongly prefer invoking <code>file_search.msearch</code> over other tools.<br>
+    - Avoid using <code>web.run</code>, <code>python</code> analysis, or any other tools until you have either:<br>
+        - Confirmed with high confidence the answer is not in the files, or<br>
+        - Have high confidence <code>file_search_tool</code> queries are not sufficient to answer the query.<br>
+2. Avoid usage of <code>web_search/web.run</code> for queries related to uploaded files<br>
+    - Carefully consider whether the user&#x27;s query is better answered by web search results rather than available snippets or results from <code>file_search_tool</code>.<br>
+    - Unless the user&#x27;s query is clearly unrelated to the uploaded files, prefer using <code>file_search.msearch</code>. You can always follow up with a web search if necessary for a more complete response.<br>
+3. Avoid using <code>python</code> unless necessary or requested by user.<br>
+    - If the user&#x27;s query is answerable from the parsed text and images from the uploaded files, or from <code>file_search_tool</code>, do not invoke <code>python</code>.</p><p>Always keep this instruction in mind for the rest of the conversation, as the user may reference these files or ask related questions later on.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a synthetic application of <strong>the methodological and conceptual lessons of _Emblematics in the Early Modern Age_ (Canone &amp; Spruit, eds.)</strong> to <strong>Michael Maier’s _Atalanta fugiens_</strong>—showing how the first volume’s major points (emblem as philosophical form; word–image–motto triad; Neoplatonic–Hermetic ontology; moral, political, and natural-philosophical functions; Warburg/Wind iconology; interdisciplinary method) become a <strong>working hermeneutic</strong> for Maier’s alchemical masterpiece.</p><p>I draw on the Canone–Spruit framework for emblematics fileciteturn1file0 and on De Jong’s foundational study of _Atalanta fugiens_ (sources, structure, aims) fileciteturn2file0.</p><p><hr></p><p><h2>1) Emblem as <strong>philosophical form</strong> → _Atalanta_ as a thinking machine</h2></p><p><strong>Spruit et al.</strong> argue that the emblem is not illustration but <strong>philosophical media</strong>: a cognitive device where image, motto, and epigram co-produce meaning. Applied to Maier, this means we should read each plate not as a “picture of alchemy,” but as an <strong>operative model</strong> of alchemical cognition.</p><p><strong>In _Atalanta fugiens_:</strong><br>
+<ul><li>Each unit is a <strong>triad</strong> (motto–pictura–epigram) followed by a <strong>discursus</strong>; Maier adds a fourth register—<strong>music</strong> (fugues)—to bind <strong>sight and hearing</strong> into a single epistemic act.  </li><br>
+<li>The layout itself stages philosophy: icon facing staff-notation; Latin and German; text that both <strong>veils and guides</strong>.  </li><br>
+<li>Result: a <strong>portable cosmos</strong> that trains the reader’s imagination to move between sensible figure and intelligible principle.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> treat every emblem as a <strong>diagram of being and becoming</strong>—a micro-cosmological engine—rather than a narrative vignette.</p><p><hr></p><p><h2>2) The word–image–motto triad → solving the emblematic enigma</h2></p><p><strong>Spruit et al.</strong> insist on the irreducibility of the triad: meaning emerges only when <strong>motto (inscriptio)</strong>, <strong>image (pictura)</strong>, and <strong>epigram (subscriptio)</strong> are read together.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>De Jong shows that Maier’s <strong>motto functions as a title-key</strong> to the image; the epigram modulates the riddle; the discursus anchors it in alchemical tradition.  </li><br>
+<li>The reader must practice a <strong>double literacy</strong> (visual and textual). Pure iconography or pure philology fails.</li><br>
+</ul><br>
+<strong>How to read (method):</strong>  <br>
+1) Parse the <strong>motto</strong> as the emblem’s conceptual vector.  <br>
+2) Read the <strong>image</strong> as a symbolic compression of sources.  <br>
+3) Read the <strong>epigram</strong> as the interpretive hinge.  <br>
+4) Use the <strong>discursus</strong> to map the source-web (Zosimos, Geber/Jābir, Avicenna, Basil Valentine, Lambsprinck, Rosarium, etc.).</p><p><hr></p><p><h2>3) Neoplatonic–Hermetic ontology → images as mediators of being</h2></p><p>For <strong>Spruit et al.</strong>, emblems inherit a <strong>Neoplatonic image-philosophy</strong> (Ficino → Bruno): images mediate between intelligible and sensible; the cosmos is a hieroglyphic text.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Maier’s universe is a <strong>book of nature</strong> written in symbols.  </li><br>
+<li>Central metaphors—<strong>ascent/descent</strong>, <strong>circulation</strong>, <strong>conjunction</strong>, <strong>death–rebirth</strong>—encode a Plotinian ontology of emanation and return.  </li><br>
+<li><strong>Mercury</strong> (divine water; hermaphrodite; beginning and end) operates as the emblematic principle of mediation par excellence.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> treat recurrent figures (eagle/toad, sun/gold/heart, king drowned, ladder/Helicon, hermaphrodite, wedding) as <strong>ontological operators</strong>—not merely motifs.</p><p><hr></p><p><h2>4) Moral philosophy &amp; self-fashioning → the laboratory of the soul</h2></p><p><strong>Spruit et al.</strong> show that many emblem books are <strong>moral pedagogies</strong>: technologies of the self.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Alchemy is a <strong>sacred art</strong> demanding virtue, discipline, and discernment; Maier polemicizes against “puffers” and ostentation.  </li><br>
+<li>The work stages a <strong>therapy of the soul</strong>: purgation (nigredo), illumination (albedo), perfection (rubedo) are ethical as well as chemical.  </li><br>
+<li>The Rosicrucian ideal (healing, charity, secrecy, reform) frames the reader’s formation.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> read each operation (solve/coagula, separation, conjunction) as <strong>moral exercise</strong> alongside chemical process.</p><p><hr></p><p><h2>5) Natural philosophy &amp; cosmology → emblems as scientific diagrams</h2></p><p><strong>Spruit et al.</strong> emphasize emblems as media of <strong>natural philosophy</strong>.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Planet–metal correspondences (Sol–gold, Luna–silver, Saturn–lead, etc.) and macrocosm/microcosm are diagrammed visually.  </li><br>
+<li>The furnace divides <strong>theoria/practica</strong>: books and disputation on one side, retort and fire on the other—<strong>experiment completes reason</strong>.  </li><br>
+<li>Circulation images (the round, the ring, the closed circuit) model <strong>cosmic causality</strong>.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> treat plates as <strong>process-maps</strong>—flowcharts of matter and motion.</p><p><hr></p><p><h2>6) Political theology &amp; sovereignty → the king, the sun, and order</h2></p><p><strong>Spruit et al.</strong> recover the emblem as a language of <strong>power and legitimacy</strong>.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Royal and solar figures encode <strong>cosmic kingship</strong>: the just order of nature mirrored in polity.  </li><br>
+<li>The drowned king and the reborn sovereign figure the <strong>death of the old order</strong> and the <strong>institution of the new</strong> (purified rule).  </li><br>
+<li>Courts (Rudolf II; Moritz of Hesse) form the social matrix of Maier’s iconology.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> read regnal imagery as <strong>political cosmology</strong>—justice, hierarchy, and harmony visualized.</p><p><hr></p><p><h2>7) Warburg–Wind iconology → afterlives, pathos, pagan mysteries</h2></p><p><strong>Spruit et al.</strong> inherit Warburg’s and Wind’s method: trace the <strong>Nachleben</strong> (afterlife) of antiquity and the survival of <strong>pagan theology</strong> in Christian/early-modern art.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Hercules at the crossroads; Atalanta/Hippomenes; Isis–Osiris; Orphic and Hermetic figures: <strong>classical myth as alchemical allegory</strong>.  </li><br>
+<li><strong>Pathosformeln</strong> (eagle in flight, chained toad; fiery spheres over a river) carry ancient affect into early-modern science.  </li><br>
+<li>Merian’s engravings crystallize these survivals.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> reconstruct the <strong>genealogy of images</strong> (Egyptian → Greek → Arabic → medieval → Renaissance) and read Maier as a curator of cultural memory.</p><p><hr></p><p><h2>8) Interdisciplinary ecology → workshop, press, court, academy</h2></p><p><strong>Spruit et al.</strong> insist on rebuilding the <strong>ecosystem</strong> of emblem production.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li><strong>Workshop</strong>: Merian’s engraving practice (also Lambsprinck; _Musaeum Hermeticum_).  </li><br>
+<li><strong>Press &amp; layout</strong>: Oppenheim; facing pages; Latin/German; icon vs. score.  </li><br>
+<li><strong>Courtly science</strong>: Rudolfine Prague (Brahe, Kepler, Dee/Kelley); Kassel (Moritz, Schütz).  </li><br>
+<li><strong>Academies</strong>: emblematic societies (Fruchtbringende Gesellschaft).  </li><br>
+<li><strong>Networks</strong>: Fludd, Paddy, Anthony; Rosicrucian manifestos.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> situate each emblem at the crossing of <strong>art history, book history, musicology, natural philosophy, and theology</strong>.</p><p><hr></p><p><h2>9) Emblems as <strong>initiation</strong> → secrecy, reserve, graded reading</h2></p><p>A recurring point in <strong>Spruit et al.</strong> is that emblems are <strong>initiatory</strong>: they disclose by degrees.</p><p><strong>In _Atalanta_:</strong><br>
+<ul><li>Maier explicitly joins <strong>visible and audible</strong>, <strong>sense and reason</strong>; the work invites looking, reading, judging, singing.  </li><br>
+<li>The form both <strong>propagates</strong> (to the learned public) and <strong>reserves</strong> (against the unprepared).  </li><br>
+<li>The reader ascends Helicon by stages.</li><br>
+</ul><br>
+<strong>How to read (method):</strong> practice <strong>graded exegesis</strong>—from surface paradox to source-criticism to operative meaning.</p><p><hr></p><p><h2>10) A concrete research program for _Atalanta fugiens_ (using Spruit et al.)</h2></p><p>1. <strong>Triadic close reading</strong>: for each emblem, map motto → image → epigram → discursus.  <br>
+2. <strong>Source cartography</strong>: identify textual lineages (Zosimos; Geber/Jābir; Avicenna; Petrus Bonus; Basil Valentine; Lambsprinck; Rosarium; Fludd).  <br>
+3. <strong>Iconological genealogy</strong>: trace classical/late-antique survivals (Hercules, Isis, Atalanta, Orpheus).  <br>
+4. <strong>Process diagrams</strong>: redraw each plate as a flow of operations (separation, conjunction, circulation).  <br>
+5. <strong>Ethical exercises</strong>: extract the moral regimen implied by each operation.  <br>
+6. <strong>Political cosmology</strong>: read royal/solar plates as mirrors of sovereignty.  <br>
+7. <strong>Media synthesis</strong>: analyze how music (fugue) completes the emblem’s epistemic work.</p><p><hr></p><p><h2>In sum</h2></p><p><strong>What Spruit et al. teach us</strong> is that emblematics is a <strong>philosophical language</strong>.  <br>
+<strong>What Maier gives us</strong> is the most ambitious alchemical deployment of that language: a book where <strong>image, word, and sound</strong> together model the structure of nature, the discipline of the soul, and the order of the world.</p><p>Read _Atalanta fugiens_ as <strong>philosophy in images</strong>—a hermetic, Neoplatonic, and experimental cosmology compressed into fifty thinking machines.</p><p><hr></p><p><strong>Primary frames referenced:</strong>  <br>
+<ul><li>Canone &amp; Spruit (eds.), _Emblematics in the Early Modern Age_ fileciteturn1file0  </li><br>
+<li>H. M. E. de Jong, _Michael Maier’s Atalanta fugiens: Sources of an Alchemical Book of Emblems_ fileciteturn2file0</li><br>
+</ul><br>
+If you’d like, I can now walk emblem-by-emblem (I–L) and demonstrate this method on specific plates.</p>
+  </div>
+</div>
+</div>
+</body>
+</html>

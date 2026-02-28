@@ -1,0 +1,82 @@
+======================================================================
+ESOTERIC CHAT ARCHIVE -- MINING REPORT
+Generated: 2026-02-27 23:58
+======================================================================
+
+OVERVIEW
+----------------------------------------
+  Conversations : 249
+  Total turns   : 9864  (user: 4056  assistant: 4426)
+  Words (AI)    : 3,162,473
+  Date range    : 2024-09-12  to  2026-02-06
+
+TOP MENTIONED ENTITIES
+----------------------------------------
+  alchemy                                       3618
+  Aristotle                                     1000
+  Neoplatonism                                   966
+  Plato                                          913
+  the One                                        710
+  Giovanni Pico della Mirandola                  695
+  Paracelsus                                     581
+  kabbalah                                       548
+  Giordano Bruno                                 516
+  Heinrich Cornelius Agrippa                     397
+  Marsilio Ficino                                396
+  Renaissance magic                              380
+  theurgy                                        354
+  Hermes Trismegistus                            351
+  Corpus Hermeticum                              343
+  emanation                                      339
+  astral magic                                   334
+  Plotinus                                       309
+  John Dee                                       306
+  Proclus                                        291
+  Pythagoras                                     257
+  Albertus Magnus                                244
+  Roger Bacon                                    199
+  Ibn Sina                                       196
+  Iamblichus                                     194
+  De occulta philosophia                         178
+  Robert Fludd                                   166
+  Oration on the Dignity of Man                  151
+  Picatrix                                       139
+  Porphyry                                       120
+
+USER REQUEST TYPES
+----------------------------------------
+  other                     2104
+  table                      607
+  summary                    523
+  explanation                303
+  refinement                 240
+  close-reading              239
+  methodology                213
+  list                       178
+  python                     165
+  timeline                    91
+  comparison                  80
+  analysis                    77
+  bibliography                72
+  visualisation               42
+  translation                 31
+
+MOST ENTITY-RICH CONVERSATIONS
+----------------------------------------
+  [2024-09-22] Medieval Magic Summary Request                     41 entities
+  [2024-10-16] Plato and Aristotle on Alchemy                     39 entities
+  [2025-10-29] Cutting edge in Pico studies【0†M. V. Dougherty -   39 entities
+  [2024-09-26] Pico della Mirandola Philosophy Summary            36 entities
+  [2024-09-21] Alchemical Emblems Summary Request                 36 entities
+  [2024-09-29] Alchemy Chemistry summary                          34 entities
+  [2024-09-29] Alchemy Chemistry summary                          34 entities
+  [2025-07-04] Pico 900 Conclusions Exegesis【0†(Palgrave Histor   33 entities
+  [2024-09-21] Tilton on Spiritual Alchemy                        32 entities
+  [2025-05-27] Khunrath Theosophy Summary【0†(Aries Book) Peter    31 entities
+  [2024-10-24] Pico's Oration and Cabala                          29 entities
+  [2024-09-15] Historical Magical Texts                           29 entities
+  [2025-05-26] Heinrich Khunrath Summary【0†(Aries Book) Peter J   28 entities
+  [2024-09-20] Giordano Bruno Overview                            25 entities
+  [2026-02-06] Trithemius【0†[Sixteenth Century Journal vol. 10    24 entities
+
+======================================================================

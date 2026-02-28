@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reuchlin</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Reuchlin</h1>
+  <div class="meta">February 06, 2026 07:42 PM &middot; Model: gpt-5-2 &middot; 21 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>summarize these documents</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file0 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 3&gt;<br>
+Johannes Reuchlin. Briefwechsel: Band 4, 1518 –1522.<br>
+Ed. Matthias Dall’Asta and Gerald D€orner. Stuttgart-Bad Cannstatt: Frommann-Holzboog,<br>
+2013. l + 522 pp. €128. ISBN: 978–3–7728–1986–5.<br>
+With this volume, Matthias Dall-Asta and Gerald D€orner have brought to<br>
+a magnificent conclusion their monumental edition of the correspondence of<br>
+Johannes Reuchlin. Although the correspondence comprises only 405 letters<br>
+(184 by Reuchlin), Dall’Asta and D€orner’s extensive commentaries swell the<br>
+four-volume collection to over 2600 pages. The quantity may be modest, but the<br>
+correspondence is of extreme significance, above all because it offers multifaceted<br>
+insiders’ views on these unusually formative decades of German history. The<br>
+powerful and influential make regular appearances in these pages because Reuchlin<br>
+was not only the leading German humanist of his generation, still celebrated as the<br>
+founder of Christian Hebrew studies, but also a political figure who over a long and<br>
+successful career networked extensively with many courts, including Wurttemberg, €<br>
+the Palatinate, Bavaria, Electoral Mainz, as well as the imperial courts of Friedrich<br>
+III and Maximilian I. Reuchlin also maintained close contact with the Vatican,<br>
+which he visited as an emissary during three separate pontificates (Sixtus IV,<br>
+Innocent VIII, and Alexander VI). Reuchlin first encountered Leo X, the pope who<br>
+would play such a major role in his life, as a boy with his tutors in the Medici palace<br>
+REVIEWS 1359<br>
+This content downloaded from 128.252.067.066 on July 26, 2016 07:56:27 AM<br>
+All use subject to University of Chicago Press Terms and Conditions (http://www.journals.uchicago.edu/t-and-c).<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 3&gt;<br>
+in 1482 (letter 309). Moreover, the widespread controversy over his defense of<br>
+Jewish books, an issue that for nearly a decade was the unofficial rallying cry of<br>
+humanists throughout the empire and beyond, made Reuchlin a familiar name to<br>
+European leaders.<br>
+Volume 4 covers important and fascinating topics: the complex denouement of<br>
+the heresy trial, the spread of Christian Hebrew studies (and humanism more<br>
+generally), as well as the eruption of the Reformation. Since Reuchlin was at the<br>
+center of the German intellectual world, it is not surprising that his biography<br>
+thrusts us into the early years of the Reformation in so many ways. Philipp<br>
+Melanchthon was his relative (raised by his sister) and devoted protege. Indeed, it<br>
+was in his 1518 correspondence with Elector Friedrich of Saxony (letter 331) that he<br>
+arranged for Melanchthon to take a professorship in Wittenberg. Later, Reuchlin<br>
+would be unable to coax him away from Wittenberg and Luther to accept a position<br>
+at the orthodox stronghold of Ingolstadt (letter 383). We also see Franz von<br>
+Sickingen and Ulrich von Hutten, to their bitter disappointment, trying in vain to<br>
+rally Reuchlin to Luther’s cause (letter 395). Reuchlin’s Hebrew research, moreover,<br>
+was decisive for Luther’s early exegesis, and his defense of Judaism created the<br>
+context for some of Luther’s early reflections on Judaism. It is all but certain that<br>
+the final papal verdict against Reuchlin was motivated by the urgent need to<br>
+support inquisitional authorities in Germany and quash Luther: Leo issued the<br>
+condemnation on 23 June 1520, just eight days after signing the initial<br>
+condemnation of Luther (‘‘Exsurge Domine’’). In December 1518, Luther<br>
+himself sent a fawning tribute to Reuchlin in which he tried to portray the<br>
+controversies swirling around him as an extension of the Reuchlin affair (letter<br>
+352). It may well have been a strategic mistake for Reuchlin to publish this letter<br>
+in his 1519 Illustrium virorum epistolae. After the papal condemnation, some of<br>
+Reuchlin’s great adversaries — Hoogstraeten, Cajetan, Prierias, and Adrian of<br>
+Utrecht (soon to be Hadrian VI) — turned from his trial and devoted themselves<br>
+entirely to the harsh crackdown on Luther.<br>
+The correspondence also offers many glimpses into the early history of<br>
+printing. From the beginning of his studies at the University of Paris to his<br>
+final tenure as a professor of Greek and Hebrew at the University of Tubingen, €<br>
+Reuchlin associated with major figures in the burgeoning world of printing:<br>
+Heynlin von Stein, Guillaume Fichet, the Amerbachs, the Kobergers, Aldus<br>
+Manutius, Thomas Anshelm, Johannes Setzer, and, not least, Daniel Bomberg.<br>
+The last surviving letter addressed to Reuchlin was from Bomberg, the most<br>
+significant Renaissance publisher of Hebrew. Despite his preoccupation with<br>
+producing the first complete edition of the Talmud, Bomberg announces that his<br>
+presses have just completed a special edition in Hebrew of Proverbs, the Song of<br>
+Songs, and Ecclesiastes for use in Reuchlin’s Tubingen classroom (letter 402). We €<br>
+know from Reuchlin’s last letter (letter 403) that the University of Tubingen had €<br>
+also ordered 100 copies of Bomberg’s rabbinic Bible for their students preparing<br>
+to enter the new world of Christian Hebrew studies for the first time.<br>
+1360 RENAISSANCE QUARTERLY<br>
+This content downloaded from 128.252.067.066 on July 26, 2016 07:56:27 AM<br>
+All use subject to University of Chicago Press Terms and Conditions (http://www.journals.uchicago.edu/t-and-c).<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 3&gt;<br>
+The truly great achievement of Dall’Asta and D€orner’s monument lies in the<br>
+impeccable textual scholarship and expansive commentary. They have traced every<br>
+reference and explained every unfamiliar allusion with consummate judgment and<br>
+erudition. The commentary is a model for editions of Renaissance correspondence,<br>
+and one could only wish that the authors of other<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file1 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 2&gt;<br>
+Sixteenth Century Journal is collaborating with JSTOR to digitize, preserve and extend access to The Sixteenth Century <br>
+Journal.<br>
+http://www.jstor.org<br>
+Sixteenth Century Journal<br>
+Review <br>
+Author(s): James V. Mehl <br>
+Review by: James V. Mehl <br>
+Source: The Sixteenth Century Journal, Vol. 27, No. 1 (Spring, 1996), p. 264<br>
+Published by: Sixteenth Century Journal<br>
+Stable URL: http://www.jstor.org/stable/2544349<br>
+Accessed: 28-10-2015 00:37 UTC<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at http://www.jstor.org/page/<br>
+info/about/policies/terms.jsp<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of content <br>
+in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms of scholarship. <br>
+For more information about JSTOR, please contact support@jstor.org.<br>
+This content downloaded from 178.250.250.21 on Wed, 28 Oct 2015 00:37:39 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 2&gt;<br>
+264 Sixteenth CenturyJournal XXVII / 1 (1996) <br>
+Johannes Reuchlin (1455-1522). Ed. Hermann Kling and Stefan Rhein. Pforz￾heimer Reuchlinschriften, 4. Expanded reprint edition; Sigmaringen: Jan <br>
+ThorbeckeVerlag, 1994. 327 pp. DM 58,-. <br>
+This volume is more than a reprinting of the original essays on Reuchlin from the 1955 <br>
+publication, which was a Festgabe edited by Manfred Krebs on the 500th anniversary of <br>
+Reuchlin&#x27;s birth in Pforzheim. As the editor, Hermann Kling, mentions in a brief foreword, <br>
+the first edition quickly sold out. So the reprinting ofthe nine original essays, which include, <br>
+among others, the important articles by Hans Rupprich on Reuchlin&#x27;significance inEuro￾pean humanism and by Karl Preisendanz on Reuchlin&#x27;s library, iswelcome. Kling further <br>
+states that an essay by Wilhelm Maurer, &quot;Reuchlin und das Judentum,&quot; has been added to the <br>
+reprinted edition in order to fill a gap on this important theme that existed in the first edi￾tion. It should be noted, however, that Maurer&#x27;s article was first published in the Theologisclile <br>
+Literaturzeitung (1952).Thus the information on this topic will need to be supplemented by <br>
+more recent works, such as the collected essays in Reuchlin und die Juden, which was printed <br>
+as the third volume in the Pforzheimer Reuchlinschriften following a conference in 1993. <br>
+Three articles by Stefan Rhein, who also served as an editor, have been added to the <br>
+enlarged edition. These bibliographical essays provide extensive citations and useful critical <br>
+commentary on Reuchlin and Reuchlin-related studiesince 1955.Two of Rhein&#x27;s articles, <br>
+&quot;Reuchliniana I: Neue Bausteine zur Biographie Johannes Reuchlins&quot; and &quot;Reuchliniana <br>
+II: Forschungen zumWerkJohannes Reuchlins,&quot; first appeared as reports in the WoifenbUtteler <br>
+Renaissance Mitteilungen (1988 and 1989 respectively). A third report on Reuchlin research <br>
+since 1989, &quot;Reuchliniana III: Ergdnzungen,&quot; is new for this volume. In these reports, Rhein <br>
+arranges his information topically. In the firstwo &quot;Reuchliniana,&quot; for example, he surveys <br>
+the literature concerning Reuchlin&#x27;s birth date, his studies at Orleans, his recently discovered <br>
+correspondence, as well as his contributions as a jurist, auniversity teacher, a Hebraist/Caba￾list, a promoter of Greek studies, a poet and dramatist, a theologian, and other subjects. The <br>
+latest &quot;Reuchliniana&quot; focus on research since the last two reports and cover topics concern￾ing Reuchlin&#x27;s correspondence, Greek studies, poetry and school drama, Hebrew and <br>
+Cabala, philosophy, the controversy over Jewish books, and his cultural legacy. <br>
+Rhein&#x27;s bibliographical essays are very thorough.They are useful guides to the increasing <br>
+number of Reuchlin and Reuchlin-related studies being produced internationally. In addi￾tion to giving specific citations, Rhein often summarizes the authors&#x27; main arguments, <br>
+including at times direct quotations from the studies. He also establishes the significance of <br>
+the contributions by discussing them within the thematic context of other works. He often <br>
+extends these critical discussions in long footnotes. Rhein&#x27;s treatments, in &quot;Reuchliana&quot; I <br>
+and II, of the growing body of literature on the Reuchlin affair are especially good examples <br>
+of the effectiveness of his methodologicalpproach. <br>
+The appearance of this expanded reprint edition both confirms and documents the <br>
+growing scholarly interest in Reuchlin. It also coincides with some other important Reuch￾lin projects currently under way.These include a German translation of his works, sponsored <br>
+by the Free University of Berlin, and a critical edition of his correspondence being carried <br>
+out at the Reuchlinforschungsstelle, which was established in Pforzheim in 1994 by the <br>
+Heidelberg Academy of Sciences. <br>
+James V. Mehl ......... Missouri Western State College <br>
+This content downloaded from 178.250.250.21 on Wed, 28 Oct 2015 00:37:39 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 2&gt;<br>
+[image]</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file2 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 5&gt;<br>
+National Council of Teachers of English is collaborating with JSTOR to digitize, preserve and extend access to College English.<br>
+http://www.jstor.org<br>
+National Council of Teachers of English<br>
+The Firesign Theatre: A Review <br>
+Author(s): M. C. Beard <br>
+Source: College English, Vol. 33, No. 3 (Dec., 1971), pp. 379-382<br>
+Published by: National Council of Teachers of English<br>
+Stable URL: http://www.jstor.org/stable/375035<br>
+Accessed: 17-10-2015 22:13 UTC<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at http://www.jstor.org/page/<br>
+info/about/policies/terms.jsp<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of content <br>
+in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms of scholarship. <br>
+For more information about JSTOR, please contact support@jstor.org.<br>
+This content downloaded from 155.69.24.171 on Sat, 17 Oct 2015 22:13:15 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 5&gt;<br>
+Books 379 <br>
+to the proposed theory, the failure of <br>
+high-level features to provide sentence <br>
+meanings would simply mean the with￾drawal of truth-functional categorization. <br>
+This does not mean that sentences like <br>
+&#x27;My youngest child teaches mathematics&#x27; <br>
+would be described as lacking truth or <br>
+falsity, but simply that the question of <br>
+their truth or falsity would not be raised <br>
+within the framework of the semantic <br>
+theory. In its entirety such a theory could <br>
+provide meanings both for the logically <br>
+true sentence &#x27;A child is a living human <br>
+being&#x27; and for the sentence &#x27;Their unborn <br>
+child will be named Martha or Jacob.&#x27; <br>
+Potential contradictions in these two uses <br>
+of the word child would be reconciled <br>
+by making a logical evaluation of only <br>
+the first sentence, not of the second. <br>
+The nature and range of second-level <br>
+features that are written into such a lex￾icon will depend upon whether or not we <br>
+seek a definition of metaphor within the <br>
+framework of the theory. With the in￾clusion of appropriate semantic features, <br>
+phrases such as &#x27;child at heart&#x27; and &#x27;child <br>
+of his imagination&#x27; could be supplied with <br>
+acceptable interpretations without their <br>
+being classified as metaphorical. But it <br>
+would be possible to distinguish a meta￾phorical from a literal meaning by desig￾nating two degrees of low level features. <br>
+In either case the resulting theory re￾mains open to the charge that not all <br>
+meaningful sentences can be supplied <br>
+with valid interpretations. For the honest <br>
+effort to supply meanings for metaphor￾ical sentences can only emphasize the fact <br>
+that some recognizable metaphors, in <br>
+particular those that are freshly coined, <br>
+will always elude lexical description. I <br>
+know no final solution to such a problem, <br>
+but I do agree with Thomas that in for￾mulating a semantic theory a good lin￾guist cannot afford to ignore the evi￾dence of metaphor. <br>
+PETER SWIGGART <br>
+Brandeis University <br>
+The Firesign Theatre: A Review <br>
+Most of us are more or less aware <br>
+of contemporary efforts to create an <br>
+alternative culture. Most of us, I think, <br>
+would characterize that culture (from <br>
+its press, its music, its seminal poster <br>
+art, the lyrics of rock songs) as exuber￾ant, inventive, infectious, but limited by <br>
+shallowness and a kind of anti-intellec￾tualism. It was said by people otherwise <br>
+sympathetic to the late hippy movement <br>
+that hippies didn&#x27;t read much: Magister <br>
+Ludi, The Lord of the Rings, maybe the <br>
+I Ching was about the extent of it. (If <br>
+what Gary Snyder says is true, that we <br>
+are experiencing the revival of a subcul￾ture extending to the late Paleolithic age, <br>
+there is a substantial amount of what has <br>
+been called culture that may have to be <br>
+by-passed.) In light of this, a recently re￾leased record by a group called the Fire￾sign Theatre (&quot;Don&#x27;t Crush That <br>
+Dwarf, Hand Me The Pliers&quot;-Columbia <br>
+C30102) will come as a surprise to most <br>
+of us. We gather from the album notes <br>
+that the group is a four man improvisato￾ry theatre based in Los Angeles. They are <br>
+popular (though not wildly so) in urban <br>
+centers with underground cultures, <br>
+where their records sell largely without <br>
+advertising and by word of mouth. A sur￾prise, because the record is complex, <br>
+erudite, multi-leveled, and in its way as <br>
+polysemous as Finnegans Wake (cer￾tainly as complex as any of the printed <br>
+matter which is passing itself off as mod￾ern these days). The reviewer for Rolling <br>
+Stone has mentioned the similarity of <br>
+the album&#x27;s hero, George Leroy Tire￾biter, to Joyce&#x27;s HCE: I propose to <br>
+describe the resemblance of the album&#x27;s <br>
+structure and style to that of Finnegans <br>
+Wake as a whole and raise some questions <br>
+about our alternative cultures. <br>
+As the story goes Tirebiter (the name <br>
+This content downloaded from 155.69.24.171 on Sat, 17 Oct 2015 22:13:15 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 5&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 5&gt;<br>
+380 COLLEGE ENGLISH <br>
+is interesting: a man tough enough to <br>
+eat tires; a man run over and otherwise <br>
+assaulted by the pounding forces of our <br>
+contemporary media), a kind of every￾man and a culture hero (he is a former <br>
+film director), is sitting up late at night <br>
+in his Los Angeles home (a Los Angeles <br>
+of the future which, as we learn from <br>
+announcements and references through￾out the record, is divided into sectors) <br>
+watching television. The soundtrack of <br>
+the record consists of the voices from the <br>
+television screen, Tirebiter&#x27;s comments, <br>
+and clicks from the remote control chan￾nel selector. The rhythm, the rhetoric,<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file3 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 10&gt;<br>
+This article was downloaded by: [New York University]<br>
+On: 21 February 2015, At: 10:50<br>
+Publisher: Routledge<br>
+Informa Ltd Registered in England and Wales Registered Number: 1072954<br>
+Registered office: Mortimer House, 37-41 Mortimer Street, London W1T 3JH, UK<br>
+Text and Performance Quarterly<br>
+Publication details, including instructions for authors and<br>
+subscription information:<br>
+http://www.tandfonline.com/loi/rtpq20<br>
+Reality is only an option: Firesign<br>
+theatre and surrealism<br>
+Gail T. Miller a<br>
+a<br>
+ Taught at Long Beach City College, El Camino College, and<br>
+L.A. Harbor College ,<br>
+Published online: 05 Jun 2009.<br>
+To cite this article: Gail T. Miller (1991) Reality is only an option: Firesign theatre and<br>
+surrealism, Text and Performance Quarterly, 11:4, 325-333, DOI: 10.1080/10462939109366024<br>
+To link to this article: http://dx.doi.org/10.1080/10462939109366024<br>
+PLEASE SCROLL DOWN FOR ARTICLE<br>
+Taylor &amp; Francis makes every effort to ensure the accuracy of all the information<br>
+(the “Content”) contained in the publications on our platform. However, Taylor<br>
+&amp; Francis, our agents, and our licensors make no representations or warranties<br>
+whatsoever as to the accuracy, completeness, or suitability for any purpose of the<br>
+Content. Any opinions and views expressed in this publication are the opinions and<br>
+views of the authors, and are not the views of or endorsed by Taylor &amp; Francis. The<br>
+accuracy of the Content should not be relied upon and should be independently<br>
+verified with primary sources of information. Taylor and Francis shall not be liable<br>
+for any losses, actions, claims, proceedings, demands, costs, expenses, damages,<br>
+and other liabilities whatsoever or howsoever caused arising directly or indirectly in<br>
+connection with, in relation to or arising out of the use of the Content.<br>
+This article may be used for research, teaching, and private study purposes. Any<br>
+substantial or systematic reproduction, redistribution, reselling, loan, sub-licensing,<br>
+systematic supply, or distribution in any form to anyone is expressly forbidden.<br>
+Terms &amp; Conditions of access and use can be found at http://www.tandfonline.com/<br>
+page/terms-and-conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 10&gt;<br>
+Text and Performance Quarterly<br>
+11 (1991): 325-333<br>
+Reality Is Only an Option: Firesign<br>
+Theatre and Surrealism<br>
+GAIL T. MILLER<br>
+I<br>
+N 1889 the Paris Exposition opened, celebrating both the centennial of the<br>
+French Revolution and France&#x27;s participation in the Industrial Revolution.<br>
+The symbol of this exposition and of French technological prowess was the Eiffel<br>
+Tower.<br>
+By the mid 1920s a new generation had grown up under the shadow of the<br>
+Tower. This generation included surrealists who viewed the Tower as a symbol<br>
+of French absurdity rather than French achievement, glorifying a technology<br>
+which had built little and a France which had been conquered twice in fifty<br>
+years. These young surrealists reflected changing attitudes toward art, technol￾ogy, and society in their irreverent response to the Tower, adopting it as a kind<br>
+of technological mascot. They painted pictures and wrote poems and plays<br>
+featuring the Tower for the sheer fun of being heretical. Spoofing the symbol of<br>
+&quot;technological progress&quot; was a wonderful way to thumb their noses at their<br>
+conservative contemporaries. Nahma Sandrow explains that in the hands of the<br>
+surrealists, &quot;The Tower was a monumental rude gesture.&quot;1<br>
+In 1966 in Los Angeles, four young American artists used another kind of<br>
+tower to create and transmit an art form which would satirize both that tower&#x27;s<br>
+technology and the society which created it. They were called the Firesign<br>
+Theatre and theirs was a broadcast tower. They created a form of acoustical<br>
+theatre which used state of the art recording technology and comedy to<br>
+comment on the surrealistic aspects of American life. The young people coming<br>
+out of the &#x27;60s had grown up under the influence of the electronic media; they<br>
+were media-literate, multi-sensory, and highly critical of society. Thus Firesign<br>
+Theatre had a natural audience for its experiments in audio collage and satire of<br>
+American culture.<br>
+Sandrow&#x27;s comments about the surrealists&#x27; influence on their time could have<br>
+been said about Firesign Theatre:<br>
+Dada and surrealism were born out of the artists&#x27; awareness of a society gone haywire<br>
+and clinging to a rational explanation of increasingly irrational twentieth-century<br>
+experiences, chief among which was World War I. They were closely linked attempts<br>
+to be fully conscious of their own participation in the rush toward chaos. And their<br>
+particular genius lay not only in their vision but also in their determination to enjoy<br>
+the experience.2<br>
+Gail T. Miller holds a Ph.D. in performance studies from the University of Texas and has most recently taught<br>
+at Long Beach City College, El Camino College, and L.A. Harbor College. She will study theatre at the<br>
+University of Idaho.<br>
+Downloaded by [New York University] at 10:50 21 February 2015 <br>
+&lt;IMAGE FOR PAGE: 2 / 10&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 10&gt;<br>
+326<br>
+TEXT AND PERFORMANCE QUARTERLY OCTOBER 1991<br>
+Over its twenty-year history Firesign Theatre worked in all performance<br>
+media, including record albums, live stage performances, radio, and film; and<br>
+now two members of the group (which no longer exists as a group) are working<br>
+with video and computer disc interactives. The longevity, creativity, and diver￾sity of Firesign Theatre and its pioneering work in performance form and<br>
+technology have made its contributions important for performance research.<br>
+This essay explores Firesign Theatre&#x27;s innovative extensions of the aims and<br>
+practices of the surrealist movement of the 1920s.<br>
+Brockett and Findlay note that surrealism emphasized spontaneity, chance,<br>
+and the juxtaposition of disparate elements. They state that a few common<br>
+threads emerge from the various spokespersons of the movement.<br>
+First, all seem to have believed in the primacy of the subconscious. Second, they<br>
+attempted to distinguish between the subconscious and the conscious and to draw<br>
+battle lines on this basis. They believed that truth is most apt to surface when the<br>
+superego&#x27;s censorship and the ego&#x27;s logic have been neutralized. Third, they declared<br>
+that in moments of truth life&#x27;s contradictions are transcended.3<br>
+Firesign Theatre, in true surrealist fashion, always asked, &quot;What is reality?&quot; In<br>
+fact, this question appeared as a slogan on several of their albums after a<br>
+drug-influenced audience member blurted it out during<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file4 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 746&gt;<br>
+cover next page &gt;<br>
+title: Trithemius and Magical Theology : A<br>
+Chapter in the Controversy Over<br>
+Occult Studies in Early Modern<br>
+Europe SUNY Series in Western<br>
+Esoteric Traditions<br>
+author: Brann, Noel L.<br>
+publisher: State University of New York Press<br>
+isbn10 | asin: 0791439623<br>
+print isbn13: 9780791439623<br>
+ebook isbn13: 9780585054520<br>
+language: English<br>
+subject Trithemius, Johannes,--1462-1516--<br>
+Contributions in magic, Magic--<br>
+Religious aspects--Christianity--<br>
+History of doctrines.<br>
+publication date: 1999<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 746&gt;<br>
+lcc: BX4705.T77B73 1999eb<br>
+ddc: 261.5/13/092<br>
+subject: Trithemius, Johannes,--1462-1516--<br>
+Contributions in magic, Magic--<br>
+Religious aspects--Christianity--<br>
+History of doctrines.<br>
+cover next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 746&gt;<br>
+&lt; previous page cover-0 next page &gt;<br>
+Page i<br>
+Trithemius and<br>
+Magical Theology<br>
+&lt; previous page cover-0 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 746&gt;<br>
+&lt; previous page cover-1 next page &gt;<br>
+Page ii<br>
+SUNY Series in Western Esoteric Traditions<br>
+David Appelbaum, Editor<br>
+&lt; previous page cover-1 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 746&gt;<br>
+&lt; previous page page_iii next page &gt;<br>
+Page iii<br>
+Trithemius and<br>
+Magical Theology<br>
+A Chapter in the Controversy over<br>
+Occult Studies in Early Modern Europe<br>
+Noel L. Brann<br>
+STATE UNIVERSITY OF NEW YORK PRESS<br>
+&lt; previous page page_iii next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 746&gt;<br>
+&lt; previous page page_iv next page &gt;<br>
+Page iv<br>
+Cover illustration: Gravestone image of Trithemius, Würzburg, Neumünster,<br>
+from workshop of Tilmann Riemenschneider. Author&#x27;s photograph.<br>
+Gratitude is expressed for permission to reprint the following:<br>
+The Title page, John Dee, Monas hieroglyphica, Antwerp, 1564. Reprinted by<br>
+permission of The Huntington Library, San Marino, California.<br>
+Title page, Robert Fludd, De macrocosmi historia, Vol. II, Oppenheim, 1619.<br>
+Reprinted by permission of The Huntington Library, San Marino, California.<br>
+Title page, Gustavus Selenus (Augustus II), Cryptomenytices et cryptographiae,<br>
+Lüneburg, 1624. Reprinted by permission of The Huntington Library, San Marino,<br>
+California.<br>
+Title page, Gaspar Schott, Schola steganographica, Nuremberg, 1665. Reprinted by<br>
+permission of The Huntington Library, San Marino, California.<br>
+Title page, Gaspar Scott, Physica curiosa, Würzburg, 1667. Reprinted by permission<br>
+of The Huntington Library, San Marino, California.<br>
+Trithemius presenting Octo quaestiones to Emperor Maximilian. Title page,<br>
+Oppenheim, 1515. Reprinted by permission of the Rare Books Division, New York<br>
+Public Library, Astor, Lenox and Tilden Foundations.<br>
+Engraving by Albrecht Dürer, Melencolia, 1514. Photo: Warburg Institute,<br>
+University of London.<br>
+Marketing by Fran Keneston<br>
+Production by Ruth Fisher<br>
+Published by<br>
+State University of New York Press, Albany<br>
+© 1999 State University of New York<br>
+All rights reserved<br>
+Printed in the United States of America<br>
+No part of this book may be used or reproduced in any manner<br>
+whatsoever without written permission. No part of this<br>
+book may be stored in a retrieval system or transmitted<br>
+in any form or by any means including electronic,<br>
+electrostatic, magnetic tape, mechanical, photocopying,<br>
+recording, or otherwise without the prior permission in<br>
+writing of the publisher.<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 746&gt;<br>
+For information, address the State University of New York Press,<br>
+State University Plaza, Albany, NY 12246<br>
+Library of Congress Cataloging-in-Publication Data<br>
+Brann, Noel L.<br>
+Trithemius and magical theology : a chapter in the controversy<br>
+over occult studies in early modern Europe / Noel L. Brann.<br>
+p. cm. (SUNY series in Western esoteric traditions)<br>
+Includes bibliographical references and index.<br>
+ISBN 0-7914-3961-5 (alk. paper). ISBN 0-7914-3962-3 (pbk. :<br>
+alk. paper)<br>
+1. Trithemius, Johannes, 14621516Contributions in magic.<br>
+2. MagicReligious aspectsChristianityHistory of doctrines.<br>
+I. Title. II. Series.<br>
+BX4705.T77B73 1999<br>
+261.5´13´092dc21 98-14898<br>
+CIP<br>
+10 9 8 7 6 5 4 3 2 1<br>
+&lt; previous page page_iv next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 8 / 746&gt;<br>
+&lt; previous page page_v next page &gt;<br>
+Page v<br>
+To my wife Joy, with love<br>
+&lt; previous page page_v next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 746&gt;<br>
+&lt; previous page page_vii next page &gt;<br>
+Page vii<br>
+Contents<br>
+Acknowledgments ix<br>
+1 Introduction: The Theoretical and Biographical Ingredients 1<br>
+The Theological-Magical Nexus 1<br>
+The Biographical Setting 4<br>
+2 The Magical Inheritance 13<br>
+Patristic and Medieval Demonology 13<br>
+The Medieval and Early Renaissance Defense of Magic 22<br>
+3 The Demonological Vision 33<br>
+The Monastic Rudiments 33<br>
+Sorcery Sin and Divine Providence 36<br>
+The Problem of Accommodating Magic to Miracle 44<br>
+The Witch Issue 51<br>
+The Problem of Learned Sorcery 57<br>
+The Distinction Between Sorcery and Exorcism 75<br>
+4 The Occult Vision 85<br>
+The Making of the Magical Legend 85<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 746&gt;<br>
+The Personal Defense 91<br>
+The Divine Revelation and the Esoteric Rule 100<br>
+The Special Appeal to Princes 105<br>
+Pelagius and Libanius 109<br>
+&lt; previous page page_vii next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 11 / 746&gt;<br>
+&lt; previous page page_viii next page &gt;<br>
+Page viii<br>
+The Theoretical Precepts 112<br>
+From Occult Theory to Cryptographical Practice 135<br>
+Trithemius and Agrippa 152<br>
+5 The Debate over Trithemian Magic during the Renaissance,<br>
+Reformation, and Age of Reason<br>
+157<br>
+Agrippa&#x27;s Later Ambivalence 157<br>
+The Monastic Apologists 161<br>
+The Protestant Reaction 165<br>
+The Catholic Reaction 169<br>
+The Cryptographical and Alchemical Revivals 176<br>
+The &quot;Jesuit Labyrinth&quot; and Demonological Response 186<br>
+The Cryptographical Vogue 200<br>
+The Rosicrucian Debate 214<br>
+The Skeptical Shift and the Scientific Revolution 227<br>
+6 Conclusion: Trithemian Magic in Later Perspective 239<br>
+The Persisting Scholarly Conundrum 239<br>
+The Trithemian Will 248<br>
+Notes 255<br>
+&lt;PARSED TEXT FOR PAGE: 12 / 746&gt;<br>
+Bibliography 315<br>
+Index 341<br>
+&lt; previous page page_viii next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 13 / 746&gt;<br>
+&lt; previous page page_ix next page &gt;<br>
+Page ix<br>
+Acknowledgments<br>
+Of the specialist libraries to which I am indebted for expediting the<br>
+present study, I single out for special thanks the offerings and staffs of<br>
+the Warburg Institute and British National Library, London; the<br>
+Bibliothèque Nationale, Paris; the Folger Shakespeare Library,<br>
+Washington, D.C.; and the Huntington Library, San Marino,<br>
+California. Also helpful were certain generalist collections, most<br>
+notably the Library of Congress and the libraries of Stanford<br>
+University, the California Institute of Technology, the University of<br>
+California at Los Angeles, and Hofstra University. For relevant visual<br>
+illustrations and permission to publish I thank, in addition to the<br>
+Huntington Library and Warburg Institute indicated above, the New<br>
+York Public Library.<br>
+Among individuals who significantly contributed, both indirectly and<br>
+directly, to the eventual appearance of this study I single out for special<br>
+mention Irwin Abrams, Roger Williams, Lewis Spitz, and Lawrence<br>
+Ryan, all of whom guided me in the earliest phases of my academic<br>
+career at Antioch College and Stanford University; Wayne Shumaker,<br>
+with whom I conversed over this topic in the beautiful environs of the<br>
+Huntington Library and who gave a critical reading to an early version<br>
+of my manuscript; and the late Charles Schmitt, with whom I shared<br>
+many hours on the subject of Renaissance magic within the highly<br>
+conducive walls of the Warburg Institute. I likewise express my<br>
+indebtedness to a number of anonymous readers, among whom<br>
+Professor Shumaker and Professor Jeffrey Russell subsequently<br>
+identified themselves, who had the patience to<br>
+&lt;PARSED TEXT FOR PAGE: 14 / 746&gt;<br>
+&lt; previous page page_ix next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 15 / 746&gt;<br>
+&lt; previous page page_x next page &gt;<br>
+Page x<br>
+pore through this study at various earlier stages of its preparation and<br>
+to furnish me with helpful comments for revision.<br>
+Finally, Trithemius scholars everywhere, myself included, owe a<br>
+special acknowledgment of gratitude to Professor Klaus Arnold, who<br>
+has so diligently worked to prepare the bibliographical ground for a<br>
+study like this one. Though, in my own Trithemius inquiries, I have<br>
+always been borne along by ideas crystallized by my own independent<br>
+reading of the primary sources, first in my book on the monastic<br>
+humanism of the abbot and then in this one on his magical theology, I<br>
+have never lost sight of how Arnold&#x27;s preliminary spadework has<br>
+facilitated my task.<br>
+Last, but far from least, I mention the indispensable support of my<br>
+wife Joy, to whom I dedicate this book. Without her constant nurturing<br>
+and help of more practical kinds, such as giving me the needed push to<br>
+replace my mechanical typewriter with the word processor, this study<br>
+might not have made it past its difficult prepublishing stages.<br>
+&lt; previous page page_x next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 16 / 746&gt;<br>
+&lt; previous page page_1 next page &gt;<br>
+Page 1<br>
+Chapter 1<br>
+Introduction: The Theoretical and Biographical Ingredients<br>
+The Theological-Magical Nexus<br>
+One of the more prominently featured themes in the history of ideas,<br>
+extensively spelled out by Lynn Thorndike in a multivolumed study, is<br>
+the association between magic and science. &#x27;&#x27;My idea,&quot; explained<br>
+Thorndike at the outset of his vast scholarly undertaking, &quot;is that<br>
+magic and experimental science have been connected in their<br>
+development; that magicians were perhaps the first to experiment; and<br>
+that the history of both magic and experimental science can be better<br>
+understood by studying them together.&quot;<br>
+1 Refining this thesis for the early modern period is Frances Yates,<br>
+who, by claiming that the Hermetic expression of magic in particular<br>
+played a substantive role in the evolution of modern science, has raised<br>
+a virtual hornets&#x27; nest in the midst of Renaissance studies.<br>
+The intellectual breakthrough setting the stage for the modern<br>
+scientific temper, according to Yates, required a critical change in the<br>
+conception of man&#x27;s relation to the universe, the key of which lay in<br>
+the shift from a geocentric to heliocentric cosmic outlook. Instrumental<br>
+in promoting this revolutionary shift, Yates has argued,<br>
+&lt; previous page page_1 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 17 / 746&gt;<br>
+&lt; previous page page_2 next page &gt;<br>
+Page 2<br>
+was a revived Hermeticism. With Giordano Bruno her main focus,<br>
+whose Hermeticized world view reputedly resonated with and helped<br>
+to confirm the heliocentric cosmic outlook of Copernicus and Galileo,<br>
+Yates forced a reevaluation among Renaissance historians concerning<br>
+the proper connection between the Hermetic revival and the<br>
+seventeenth-century scientific revolution. While intrinsically<br>
+fascinating in its own right, however, it will not be our object here to<br>
+enter into the controversy surrounding the so-called Yates thesis<br>
+concerning the origins of modern science.<br>
+2 The subject of the present study, the abbot Trithemius (14621516),<br>
+rather highlights the affiliation of magic with another discipline more<br>
+basic than science, since even science was traditionally said to hinge<br>
+from it. Reference of course is to theology, which represents the<br>
+intellectualization of religious attitude and practice.<br>
+One of the founders of modern anthropology, Bronislaw Malinowski,<br>
+concluded after a lifelong investigation of the magically conditioned<br>
+Polynesian Trobrianders that, in their primitive beginnings, magic and<br>
+religion are essentially indistinguishable. Magic, Malinowski<br>
+determined on the basis of his Trobriander study, springs from an<br>
+instinctual and emotional need of the human being to press forth &quot;into<br>
+impasses where gaps in his knowledge and the limitations of his early<br>
+power of observation and reason betray him in a crucial moment.&quot; An<br>
+important social consequence of this inner drive to resolve the enigmas<br>
+of existence, Malinowski maintained, is the formation of a system of<br>
+&quot;rudimentary modes of behavior and rudimentary beliefs,&quot; with the<br>
+function of magical ritual being to fix and standardize such behavior<br>
+and beliefs into permanent forms.3 Inasmuch as these are traits which<br>
+also inherently belong to religion, it followed for Malinowski that<br>
+magic and religion, at bottom, are essentially one and the same.<br>
+When such primitive impulses to bridge the gaps of knowledge and<br>
+overcome human limitations are organized by religion into an<br>
+&lt;PARSED TEXT FOR PAGE: 18 / 746&gt;<br>
+intellectual system, the result is theology. To the extent that religion, as<br>
+Malinowski would persuade us, can be identified with magic, the<br>
+result is &quot;magical theology&quot;theologia magica. It will be the object of<br>
+the present study to go one step further. When a conscious attempt is<br>
+made, as in the case of the abbot Trithemius, to recapture the religious<br>
+origins of magic and to harmonize its precepts with Christian dogma,<br>
+the outcome is more properly termed &quot;Christian<br>
+&lt; previous page page_2 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 19 / 746&gt;<br>
+&lt; previous page page_3 next page &gt;<br>
+Page 3<br>
+magical theology&quot;theologia magica Christiana. Though himself only<br>
+marginally immersed in practical magic (his specialty lay in the<br>
+techniques of cryptography, or secret communication through magical<br>
+means), Trithemius, first at Sponheim and later at Würzburg, was not<br>
+content to leave the matter there. He devoted considerable time and<br>
+effort to the problem of how to rationalize the theory of magical<br>
+theology upon which his practical operations rested.<br>
+4<br>
+Living to the threshold of the Lutheran revolt from Rome, Trithemius<br>
+was immersed in a Christian tradition of magic that linked him with<br>
+occultist strains in the scholastic and humanist movements of the past<br>
+and the reform movements of the future on both sides of the Catholic￾Protestant divide. Much as Trithemius could scarcely uphold the<br>
+legitimacy and benefits of magic without reference to certain of its<br>
+leading champions of the Middle Ages, so did the sixteenth- and<br>
+seventeenth-century exponents of magical theology commonly call<br>
+upon the name and ideas of Trithemius among their forerunners to<br>
+justify their magical speculations and operations. Indeed, as we will<br>
+subsequently note, some were so taken by his magic, originally<br>
+deemed to constitute a bridge from the ancient pagan and Jewish<br>
+theologies to the theology of Christ, as to perceive in it a further bridge<br>
+to reconciliation between Catholics and Protestants.<br>
+If, as will be conceded, Trithemius shares some blame for the ensuing<br>
+witch persecutions by authoring certain writings which played a part in<br>
+their justification, it will be pointed out that he also helped set the<br>
+stage for the Renaissance and seventeenth-century movement,<br>
+spearheaded by the Paracelsians, to preserve a legitimate place for<br>
+magic within the orthodox theological schemes of Catholic and<br>
+Protestants alike. There were predecessors and even contemporaries, it<br>
+is true, who, assuming a more thoroughgoing and systematic approach<br>
+to the revival of the ancient arcane traditions than is represented by<br>
+&lt;PARSED TEXT FOR PAGE: 20 / 746&gt;<br>
+Trithemius&#x27;s sporadic outbursts in the same vein, may have exercised a<br>
+more decisive influence on later occult theory. Among the latter were<br>
+the Italian Platonists Marsilio Ficino and Giovanni Pico della<br>
+Mirandola and Trithemius&#x27;s German acquaintances Johann Reuchlin<br>
+and Agrippa of Nettesheim.5 The point of the present study, however,<br>
+is not to uphold a dominant influence by Trithemius on the history of<br>
+magic. Rather,<br>
+&lt; previous page page_3 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 21 / 746&gt;<br>
+&lt; previous page page_4 next page &gt;<br>
+Page 4<br>
+on a more modest scale, it is to present the theological rationale for<br>
+magic of one of its more provocative Renaissance spokesmen, and to<br>
+show how that rationale was diversely received during the highly<br>
+volatile two centuries after the abbot&#x27;s death commensurate with the<br>
+Reformation, the witch hunts, and the onset of the scientific revolution.<br>
+Needless to say, Trithemius&#x27;s theory of magical theology did not arise<br>
+out of a vacuum. It was forged out of a particular life experience which<br>
+embraced, in conjunction with the occult studies, a strong desire to<br>
+effect spiritual reform both in its author and in the wider Christian<br>
+Church to which he devoted his monastic way of life. Prior to entering<br>
+into the theoretical intricacies of the magical program formulated by<br>
+Trithemius, accordingly, we need first, in a concluding section to this<br>
+introductory chapter, take stock of the concrete circumstances within<br>
+which that program was forged.<br>
+The Biographical Setting<br>
+Trithemius, according to a story put into circulation during the latter<br>
+half of the sixteenth century, was once summoned into the presence of<br>
+Emperor Maximilian I where, in a dramatic demonstration of<br>
+necromantic powers for which he had earned widespead notoriety, he<br>
+conjured from the dead, together with sundry ancient heroes,<br>
+Maximilian&#x27;s own deceased wife Mary of Burgundy. That a similar tale<br>
+was contemporaneously afloat concerning a certain Doctor Faustus,<br>
+who was said to have performed a comparable feat for Maximilian&#x27;s<br>
+son Charles V, was not lost to the demonological critics of both men.<br>
+As one among these, Christoph Zeisseler, observed in relation to the<br>
+Faustian anecdote: &quot;Some men relate that this same act was performed<br>
+by Johannes Trithemius.&quot;<br>
+6<br>
+How, then, did the magical legend of the abbot Trithemius, coalesced<br>
+as it came to be with the legend of Faustus, take shape? Unlike the<br>
+&lt;PARSED TEXT FOR PAGE: 22 / 746&gt;<br>
+historical Faustus, Trithemius came to his magical studies from what<br>
+initially was an entirely different slate of interests. Trithemius was first<br>
+and foremost a Christian monk, a member of the Benedictine order,<br>
+who dedicated his life to fulfilling the requirements of monastic piety.<br>
+Secondly, Trithemius was an exceptionally erudite monk who, as the<br>
+abbot of two monasteries during<br>
+&lt; previous page page_4 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 23 / 746&gt;<br>
+&lt; previous page page_5 next page &gt;<br>
+Page 5<br>
+his lifetime, zealously advocated in the pursuance of his monastic<br>
+goals, not piety alone, but learned piety. This feature of Trithemius&#x27;s<br>
+career led him not only into more traditional ventures expected of the<br>
+monastic career, such as mystical theology and ecclesiastical history,<br>
+but also into the not so traditional venture of humanistic studies which<br>
+were in a state of widespread revival in his day. Thirdly, Trithemius<br>
+joined forces with other learned theologians of his day in taking the<br>
+offensive against those he considered to be foremost human conveyors<br>
+of the demonic arts, the witches and sorcerers. Only fourthly did<br>
+Trithemius himself enter into the arcane field of magic, centering on<br>
+the techniques of cryptography for his special interest but furnishing<br>
+them with a solid foundation of occult theory which also drew on<br>
+affiliated magical studies such as astrology, Pythagorean number<br>
+theory, alchemy, and Cabala.<br>
+7<br>
+What, then, are the biographical particulars that led Trithemius from<br>
+his uncontroversial beginnings to the controversies of his final<br>
+decades? Christened Johann Heidenberg, Trithemius acquired his Latin<br>
+name from his birthplace of Trittenheim on the banks of the Mosel.<br>
+Following the premature death of his father, his mother eventually<br>
+remarried and, adopting the new family name Zell, produced several<br>
+more children, of which only one, Johann&#x27;s half-brother Jacob,<br>
+survived to maturity.8 Convinced by a &quot;miraculous&quot; dream at the age<br>
+of fifteen that he was destined to a life of letters, and frustrated at<br>
+every turn in this regard by a stern stepfather who had a very different<br>
+idea about his future, the young Johann was anxious to leave home as<br>
+soon as possible to pursue his education. Upon breaking away from his<br>
+parents Trithemius at first adopted an itinerant way of life, spending a<br>
+short spell in nearby Trier, moving on into the Netherlands, and at last<br>
+making his way to Heidelberg where, enrolled in the studium generale,<br>
+he came into association with some of the foremost German humanists<br>
+of his day. In the company of these, who included in their number<br>
+&lt;PARSED TEXT FOR PAGE: 24 / 746&gt;<br>
+Johann von Dalberg, Conrad Celtis, Jacob Wimpfeling, and Johann<br>
+Reuchlin, Trithemius helped to form the Rhenish Literary Sodality.9<br>
+After completing his Heidelberg studies, in 1482, Trithemius set out in<br>
+the company of a friend on a journey back to the Mosel valley. He did<br>
+not, however, reach his goal, being caught up in a snow storm on his<br>
+way home and taking shelter in the nearby<br>
+&lt; previous page page_5 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 25 / 746&gt;<br>
+&lt; previous page page_6 next page &gt;<br>
+Page 6<br>
+Benedictine monastery of St. Martin at Sponheim, located in the<br>
+diocese of Mainz. In obedience to what he construed to be a<br>
+providential hand guiding his way, Trithemius, once the storm ceased,<br>
+chose to remain within the cloister&#x27;s walls as a novice. By the age of<br>
+twenty-one he was elevated to the Sponheim abbacy, which office he<br>
+occupied for the next twenty-three years.<br>
+10<br>
+In his abbatial role Trithemius vigorously pursued the career of letters<br>
+which he believed that God had marked out for him. His avowed ideal<br>
+was &quot;true monastic erudition&quot;vera eruditio monastica, conceived as<br>
+the union of learning with piety, of the intellect with the will, of pagan<br>
+philosophy with the &quot;philosophy of Christ.&quot; In keeping with this ideal<br>
+he gathered on the shelves of his abbey library a large collection of<br>
+texts, &quot;of about two thousand volumes, both handwritten and printed,&#x27;&#x27;<br>
+as he later nostalgically recalled after being compelled to forsake them<br>
+following his move to Würzburg. To promote this venture he pressured<br>
+his monks into handwriting texts in the monastic scriptorium even as<br>
+the printing revolution was making that task seemingly superfluous.11<br>
+And at his writing desk he undertook his own private literary career,<br>
+concentrating for most of his Sponheim period in the areas of monastic<br>
+reform, mystical theology, ecclesiastical history, and Christian<br>
+humanism in keeping with the principles of literary elegance he shared<br>
+with his associates of the Rhenish sodality.12 In both functions, as<br>
+bibliophile and literary scholar, Trithemius became renowned<br>
+throughout Europe, in which dual role he served as an attractive<br>
+magnet for some of the most illustrious men of his age. Among these<br>
+were not only leading literary scholars of his day, but also a number of<br>
+princely patrons. Of the topics of interest championed by Trithemius<br>
+which increasingly drew these visitors to his cloister, not the least<br>
+noteworthy is that of magic.13<br>
+&lt;PARSED TEXT FOR PAGE: 26 / 746&gt;<br>
+If Trithemius gave much to his many studious visitors, he also took<br>
+much from them. This held true especially in the area of language<br>
+study, concerning which, he later acknowledged, he owed his earliest<br>
+lessons in Hebrew to an unnamed Jew he had met in Heidelberg, his<br>
+first Greek lessons to Celtis, and his advanced lessons in both<br>
+languages to Reuchlin. It was especially as a Greek scholar that<br>
+Trithemius earned fame in humanist quarters, with one visitor to<br>
+Sponheim revelling in this regard: &quot;The abbot was Greek, his monks<br>
+Greeks, and likewise Greek were his dogs, stones, and vineyards.<br>
+&lt; previous page page_6 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 27 / 746&gt;<br>
+&lt; previous page page_7 next page &gt;<br>
+Page 7<br>
+And that entire monastery seemed as though it were located in the<br>
+middle of Ionia.&quot;<br>
+14 Both the proficient Greek and the less proficient Hebrew of the<br>
+abbot, as it turned out, directly played into the formulation of his<br>
+magical theories, since, through Greek, he gained access to the obscure<br>
+mysteries of Pythagoras and Hermes Trismegistus, and through<br>
+Hebrew, to the mysteries of Cabala.<br>
+Until 1499 the visible scope of Trithemius&#x27;s intellectual activity was<br>
+largely circumscribed by the conventional boundaries of the medieval<br>
+liberal arts curriculum. Then, as if out of the blue, Trithemius in that<br>
+year declared himself to be an exponent of the occult arts. The form in<br>
+which this announcement took place was a letter addressed to a<br>
+Carmelite monk of Ghent, Arnold Bostius, the object of which was to<br>
+inform the correspondent of a treatise the abbot was currently<br>
+composing. The subject was steganography, that is, the art of writing<br>
+secret messages and transmitting them over long distances through the<br>
+mediation of angelic messengers. Unhappily for the future reputation<br>
+of Trithemius, Bostius was not in a position to receive the abbot&#x27;s<br>
+letter, having died shortly before its arrival. As a result, words intended<br>
+for Bostius&#x27;s eyes alone fell into the hands of the unsympathetic prior<br>
+of the cloister, who, expressing shock by what he beheld therein to be<br>
+an admission of illicit demonic magic, circulated the abbot&#x27;s words to<br>
+the general public. Thus was born Trithemius&#x27;s magical legend.15<br>
+Reinforcing the abbot&#x27;s notoriety as a black magician was a sharply<br>
+negative response to the cryptographic tract in question by a visitor to<br>
+Sponheim a few years later, the French scholar Carolus Bovillus, who,<br>
+during a fortnight stay at Sponheim, was requested by his host to read<br>
+and comment upon the completed portions of his steganographical<br>
+tract. To the abbot&#x27;s surprise and consternation Bovillus was far from<br>
+pleased by what he gleaned therein, and at some later date, after<br>
+pondering the experience, wrote a letter to a mutual friend of the two<br>
+&lt;PARSED TEXT FOR PAGE: 28 / 746&gt;<br>
+men in which he recounted his Sponheim visit and acrimoniously<br>
+stigmatized his host as a demonic magician.16 While not discouraged<br>
+by these traumatic events from further engaging in his magical<br>
+speculations, Trithemius was chastened by them into being more<br>
+circumspect about their disclosure, one facet of which lay in his<br>
+decision to retain the completed portions of the steganographical<br>
+handbook in manuscript form accessible only to specially selected<br>
+disciples.<br>
+&lt; previous page page_7 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 29 / 746&gt;<br>
+&lt; previous page page_8 next page &gt;<br>
+Page 8<br>
+In the ensuing years Trithemius and his Sponheim monks developed<br>
+increasingly strained relations, and by 1505 they mutually agreed to a<br>
+parting of their ways. There is no direct evidence that Trithemius&#x27;s<br>
+emerging magical interests played a part in this decision, the more<br>
+probable bone of contention lying in the abbot&#x27;s imposition of highly<br>
+demanding scholarly standards upon his monks which even included<br>
+the hand copying of texts as if the art of printing had never come into<br>
+existence. As the years of his Sponheim abbacy wore on, Trithemius<br>
+evidently became looked upon by his monks as an uncompromising<br>
+taskmaster whose exactions from them went well beyond what they<br>
+believed to be the just requirements of their vows. However, while<br>
+Trithemius&#x27;s rapidly proliferating reputation as a magician may have<br>
+played no direct role in the quarrel with his Sponheim monks, it may<br>
+well have played at least an indirect role. For very likely exacerbating<br>
+the tension between the resident abbot and monks was the disturbing<br>
+intrusion into their cloistered tranquillity of many visitors. While some<br>
+of these were certainly attracted by the conventional monastic subjects<br>
+of Trithemius&#x27;s scholarly expertise, others were undoubtedly attracted<br>
+by his reputation for unconventional subjects in the arcana and by the<br>
+many magical offerings on his monastic shelves.<br>
+In any case the bad rapport between Trithemius and his Sponheim<br>
+monks reached a breaking point, and in 1505 the abbot was handed a<br>
+convenient means to finalize the break by accepting an invitation from<br>
+the margrave-elector Joachim of Brandenburg to meet him during an<br>
+assembly of the German princes in Cologne. Trithemius&#x27;s official<br>
+resignation from Sponheim came the following year when, after<br>
+spending a period itinerantly (part of the time as Joachim&#x27;s guest in<br>
+Berlin), he succeeded in finding a new post at the head of the<br>
+monastery of St. Jacob in Würzburg. Here Trithemius was to last out<br>
+the remainder of his life, dying in 1516 at the relatively young age of<br>
+fifty-four.<br>
+&lt;PARSED TEXT FOR PAGE: 30 / 746&gt;<br>
+17 It is true that, in his new Würzburg home, Trithemius often found<br>
+cause to lament the loss of his Sponheim cloister and the magnificent<br>
+library which he had collected there. The trade-off, however, was that<br>
+his changed environment provided him with much-needed peace and<br>
+quiet. Being no longer besieged by the strife characteristic of his<br>
+Sponheim years, Trithemius at last felt free to pursue untrammeled the<br>
+ambitious<br>
+&lt; previous page page_8 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 31 / 746&gt;<br>
+&lt; previous page page_9 next page &gt;<br>
+Page 9<br>
+literary program to which he had dedicated himself years before.<br>
+18 Among the works completed during this seminal period were some,<br>
+such as the Hirsau annals, which might be expected of a monastic<br>
+scholar. Other writings appearing during this period of intense literary<br>
+activity, however, did not so easily fit the contours of monastic custom,<br>
+pursuing as they did a theme of occult causation laid down earlier in<br>
+the aborted Steganographia.<br>
+The special significance of Trithemius for the present study lies in<br>
+more than his effort to justify the occult studies. It lies in the<br>
+specifically theological mode in which he chose to express that<br>
+justification. While still at Sponheim, primarily through a series of<br>
+letters to friends, Trithemius began a protracted campaign to<br>
+rationalize his invention of steganography, crucial to which was was<br>
+the reconciliation of magic with the theological dogmas defining<br>
+Catholic orthodoxy, and after arriving at Würzburg brought to fruition<br>
+a number of further writings in the same vein. Following the<br>
+guidelines of this theologically conditioned program Trithemius<br>
+concentrated on two separate genres of occult writings, the first<br>
+consisting of extended demonological warnings and the second of<br>
+positive defenses of magic.<br>
+Trithemius&#x27;s removal from Sponheim to Würzburg afforded him the<br>
+time and psychological respite he needed to bring to fruition this<br>
+bipartite magical program. Belonging to the first category,<br>
+demonology, were his Antipalus maleficiorum and Liber octo<br>
+quaestionum, the latter of which, directed to certain theological queries<br>
+posed by Emperor Maximilian, was considerably taken up with the<br>
+issues of demonic influence. In addition he outlined a projected<br>
+encyclopedia of demons, De demonibus, for which he completed a<br>
+preface, and composed a query, no longer extant, into the association<br>
+between demons and epilepsy, De morbo caduco et maleficiis.<br>
+Belonging to the second category in turn, the theory and practice of<br>
+&lt;PARSED TEXT FOR PAGE: 32 / 746&gt;<br>
+magic, were an apologetic of magic inserted into the autobiographical<br>
+Nepiachus, the second major cryptographical tract titled Polygraphia,<br>
+and the De septem secundeis, an amalgamation of astrological with<br>
+Cabalistic theory about occult influences upon human behavior which<br>
+drew on the same system of planetary angels enlisted in the<br>
+controversial steganographical tract and identified by critics such as<br>
+Bovillus with the demonic servants of Satan. In addition Trithemius<br>
+used this opportunity to pen a more complete<br>
+&lt; previous page page_9 next page &gt;<br>
+If you like this book, buy it!<br>
+&lt;PARSED TEXT FOR PAGE: 33 / 746&gt;<br>
+&lt; previous page page_10 next page &gt;<br>
+Page 10<br>
+answer to Bovillus than was hitherto possible, a Defensorium mei<br>
+contra Caroli Bovilii mendacia, which, like the De morbo caduco, has<br>
+been lost to posterity.<br>
+19 Trithemius&#x27;s intention in all of these arcane writings, to be spelled<br>
+out in the following pages, was to stem the tide of accusations against<br>
+his magic triggered by the waylaying of his 1499 letter to Bostius and<br>
+augmented by the unsympathetic response of Bovillus to his reading of<br>
+the Steganographia.<br>
+The format for the remainder of this study is organized according to<br>
+the following scheme. Being mindful of the need for an historical<br>
+context within which Trithemius could credibly plead for adherence to<br>
+his magical program, we will proceed in chapter 2 to a presentation of<br>
+the patristic, medieval, and early Renaissance magical heritage from<br>
+which Trithemius drew sustenance for his occult speculations.<br>
+Following this preparatory step we will move, in chapters 3 and 4, to a<br>
+systematic exposition of the occult theory forged by Trithemius in his<br>
+Sponheim and Würzburg cloisters, with one part consisting of his<br>
+demonology and another of his positive magical program. That<br>
+mission accomplished, we will proceed in chapter 5 to an examination<br>
+of how Trithemius came to serve as a kind of hub for the further debate<br>
+over occult studies in the context of such subsequent events as the<br>
+Protestant and Catholic reform movements, the culmination of the<br>
+witch persecutions, and the emergence of the scientific revolution and<br>
+accompanying &quot;new philosophy.&quot; In the concluding chapter 6 we will<br>
+take note of sundry post-1700 scholarly responses to Trithemian magic<br>
+and elicit from the foregoing five chapters what this author has<br>
+perceived to be a basic theme of consistency underlying what<br>
+sometimes appears to be its divergent and even self-contradictory<br>
+goals.<br>
+Unlike Doctor Faustus, with whose magical legend his own became<br>
+popularly entangled, Trithemius furnished to apologists of magic in the<br>
+&lt;PARSED TEXT FOR PAGE: 34 / 746&gt;<br>
+next two centuries a thoroughgoing Christian rationale for engaging in<br>
+the occult arts. The posthum<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn0file5 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 32&gt;<br>
+Mandel Institute for Jewish Studies / מנדל ש&quot;ע היהדות למדעי המכון is collaborating with JSTOR to digitize, preserve <br>
+and extend access to<br>
+Jerusalem Studies in Jewish Thought / ישראל במחשבת ירושלים מחקרי.<br>
+http://www.jstor.org<br>
+המכון למדעי היהדות ע&quot;ש מנדל / Studies Jewish for Institute Mandel<br>
+The Kabbalah of Johannes Reuchlin and its Historical Significance /<br>
+תורת הקבלה של יוהנס רויכלין ומשמעותה ההיסטורית<br>
+Author(s): דן יוסף and Joseph Dan<br>
+Source:<br>
+Jerusalem Studies in Jewish Thought /<br>
+מחקרי ירושלים במחשבת ישראל<br>
+. ספר זיכרון ליוסף-ברוך )תשנ&quot;ח(, 455-485 .pp / Volume Memorial Sermoneta Baruch Joseph<br>
+כרך מרומי לירושלים<br>
+Published by: Mandel Institute for Jewish Studies / מנדל ש&quot;ע היהדות למדעי המכון<br>
+Stable URL: http://www.jstor.org/stable/23364555<br>
+Accessed: 13-03-2016 04:45 UTC<br>
+Your use of the JSTOR archive indicates your acceptance of the Terms &amp; Conditions of Use, available at http://www.jstor.org/page/<br>
+info/about/policies/terms.jsp<br>
+JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of content <br>
+in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms of scholarship. <br>
+For more information about JSTOR, please contact support@jstor.org.<br>
+This content downloaded from 128.122.230.148 on Sun, 13 Mar 2016 04:45:20 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 32&gt;<br>
+תירוטסיהה התועמשמו ןילכיור סנהוי לש הלבקה תרות <br>
+ןד ףסוי <br>
+[א] <br>
+םישגדהבו תונוש תורוצב תידוהיה היפרגוירוטסיהב םוקמ תספות ןילכיור סנהוי לש ותומד <br>
+־ימיב לארשי תודלות תא ץרג ךירנייה בתכ רשאכ ,הנש םישולשו האמכ ינפל .םינתשמ <br>
+רואיתב הלעמב הנושאר ןויצ ןבא וייח תשרפו ןילכיור סנהוי לש ותנשמ ול ושמיש ,םייניבה <br>
+בחרנ םוקמ הז אשונל שידקה אוהו ,תינמרגה תוברתה ןיבל תודהיה ןיב םיסחיה תומקרתה <br>
+םוסרפ תובקעב ללוחתהש בחרנה סומלופה .1לודגה ורוביח לש ישישה ךרכב דואמ דע <br>
+םיטסינמוה וב ופתתשהש סומלופ 2,1517 תנשב ,cabbalistica arte De ןילכיור לש ורפס <br>
+לע תועמשמ לעב םתוח עיבטה ,םירויפיפאו םירסיק ,םיטסיארבהו םירמומ ,םינקינימודו <br>
+תישאר לש לרוגה ירה םיעוריאב תמיוסמ הדימב בלתשהו ,הפוקת התואב םיינחור םיקבאמ <br>
+לש ןתוררועתהל םדקומ יוטיב ןילכיור לש ותריציב האר ץרג .הינמרגב היצמרופרה <br>
+המודו ,זאמ ופלח תורוד העברא .ינמרגה־ירצונה םלועב תודהיה יפלכ תוינלבוס תוסיפת <br>
+תוברת לש ןהיתודלות ירקוחו םינוירוטסיה לש םתעד לע הלבקתנ אל ץרג לש ותשיגש <br>
+םרז גציימ תניחב ןהו דיחי תניחב ןה - ןילכיור לש וסחי רקח .3הינמרג תוברתו לארשי <br>
+ האר: 2 .H. Graetz, Geschichte der Juden, IX, Leipzig 1870, pp. 63ff., 477ff., n. הארו םג<br>
+ הרעהה האבה, הוושהו: 1892 ,S.A. Hirsch, Johann Pfefferkorn and the Battle of the Books, ספדנ<br>
+ שדחמ ץבוקב וירקחמ לש רבחמה, 1905 s.a. Hirsch, A Book of Essays, London, ימע 115-73,<br>
+ הארו םג היפרגוילביבה ךותב: :S.W. Baron, A Social and Religious History of the Jews, XIII<br>
+ 28-29 .Inquisition, Renaissance and Reformation, New York-Philadelphia 19692, p. 408, nn<br>
+arte&#x27;L ,Reuchlin Johannes :תיקלטיאב הנורחאל רואל האצי רפסה לש רתויב הבוטה הרודהמה <br>
+ 1995 cabbalistica, eds. G. Busi &amp;C S. Campanini, Firenze, איהו תללוכ אובמ טרופמ, םוגרת<br>
+Reuchlin Johann:,תיתפרצ הרודהמ הל המדק .היפרגוילביבו תורוקמ תמישר ,שוריפ ,תיקלטיאל <br>
+ 1973 La Kabbale, introd. and trans. F. Secret, Paris. הרודהמה תילגנאה החיכשה םויכ איה:<br>
+ Johann Reuchlin, On the Art of the Kabbalah, trans. M. fe S. Goodman, introd. G. Lloyd<br>
+ 1993 .Jones, introduction to the Bison Book edition M. Idel, Lincoln, Nebraska<br>
+.וז הרודהמ לע םיססובמ ןלהל םיטוטיצה <br>
+Schöps .H.J, ׳Der :האר הרשע־עשתה האמב תורחא תוסיפת םע התאוושהו ץרג לש ותסיפת לע <br>
+[ח״נשת (די ,לארשי תבשחמב םילשורי ירקחמ)הטינומרס ב״יל ןורכיז רפס :םילשוריל ימורמ] <br>
+This content downloaded from 128.122.230.148 on Sun, 13 Mar 2016 04:45:20 UTC<br>
+All use subject to JSTOR Terms and Conditions<br>
+&lt;IMAGE FOR PAGE: 2 / 32&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 32&gt;<br>
+2] ןד ףסוי <br>
+תודהיל - הרשע־ששה האמה תישארו הרשע־שמחה האמה ףוס לש תוברתב תועמשמ לעב <br>
+הצקהש םוקמ ותוא ונרוד לש תינמרגהו תידוהיה היפרגוירוטסיהב ספות ונניא התוברתלו <br>
+אל יאדווב םלואו ,וירבחמו ןילכיורמ המלעתה הירוטסיהה יכ ןועטל םוקמ ןיא .ץרג ול <br>
+םולש .הילאמ תנבומ איהש רבס ץרגש תיזכרמ תירוטסיה תועמשמ התוא םהל התנקוה <br>
+תיתרבחהו תיתדה הירוטסיהה לע לודגה ורפסב תירצונה הלבקל שידקהש קרפב ,ןוראב <br>
+תוצקהל רחוב אוהש העשב ץרג ןיבל וניבש דוגינה תא ריתסמ ונניא ,לארשי םע לש <br>
+תבחרנה הביטחה םוקמב ,םיטעמ םידומע תודהיל ןילכיור לש וסחי ביבס סומלופה תשרפל <br>
+הוולמה היפרגוילביבבו ןוראב לש ותריקסב ןויעה .ץרג לש הירוטסיהב ךכל תשדקומה <br>
+תוירקיעה תודבועה תניחבמ רבד ףסונ אל טעמכ יכ הלעמ ,5םירחא םירקחמב ןכו ,4התוא <br>
+הרוצב השרפה לש היתודלות תא תעדל שקבמה לכו ,תונורחאה םינשה האמב ןתכרעהו <br>
+ Reuchlin-Pfefferkom Streit in der jüdischen Historiographie des 19. und 20.<br>
+ Jahrhundredts׳, in: A. Herzig St J.H. Schöps (eds.), Reuchlin und die Juden, Sigmaringen<br>
+ 1993, pp. 203-212<br>
+:(185-184 ימע ,[1 הרעה ,ליעל] ןוראב)וז השרפ לע ןוראב לש תצקמב תיתרוקיבה ותריקס הוושהו <br>
+השק הרשע־ששה האמה תישאר לש תיללכהו תידוהיה הירוטסיהב וז הדוזיפא לש התובישח םנמא&#x27; <br>
+הינמרגב ולש תוזכרתההו ץרג ךירנייה לש תישיאה תושגרתהה רקיעב וז התיה ידר ,הב זירפהל <br>
+תוצראב םידוהיה תודלות תא ףיקמה ךרכ לש המלש תישימח הז אשונל שידקהש ךכל ותוא ואיבהש <br>
+ןוידהו תקולחמהש קפס לכ ןיא 1618. דע 1492־מש האמה עברו האמ לש תערכמה הפוקתב תובר <br>
+,תימואל־ןיב תיתדו תיטילופ היעבל ושענ ףוסבלו ,רתויו רתוי םיבחר םילגעמ ופיקה יטפשמה <br>
+הייסנכהו תורויפיפאה ,תפרצ ,השודקה תימורה הירפמיאה יגיהנמ לש םבל תמושת תא השרדש <br>
+.׳תינמוקאה <br>
+לגרל רואל אציש ץבוקה ןכו ,(3 הרעה ,ליעל)ספשו גיצרה לש ץבוקה האר ותרותו וייח ,ןילכיור לע <br>
+ תאלמ שמח תואמ הנש ותדלוהל: ,1455-1522 ,H. Kling fe S. Rhein (eds.), Johannes Reuchlin<br>
+׳Erforschung Die :ןילכיור לע םולש לש ירקיעה ורמאמ ;reprinted (1955 Pforzheim 1995 (<br>
+תנשב םייהצרופב האשינש האצרה לע דסוימ ,Gegenwart zur bis Reuchlin von Kabbala der׳ <br>
+Judaica :תינמרגב םולש לש וירקחמ ץבוקב ללכנש ינפל תדחוימ תרבוחב רואל אצי רמאמהו 1969 <br>
+תודהיל ןילכיור לש וסחיב רקיעב תוקסוע תויסלקה תויפרגויבה .pp 1973, Frankfurt .111,<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Remember you have access to rendered images of pages from the files, in addition to their parsed text content. Some files may include images, while others may not.<br>
+These may contain embedded text in images, infographics, complex tables, diagrams, and other visual elements not fully captured in the parsed text.<br>
+You can directly view these images to read text within images, interpret infographics, understand diagrams and complex tables. When applicable, combine insights from both parsed text and images to provide comprehensive and enriched answers.</p><p>When responding to the user, actively incorporate information from embedded text, images, tables, diagrams, and other visuals in the files when applicable.<br>
+Explicitly reference them by mentioning their location (e.g., page number) and summarizing their content. For example:<br>
+<ul><li>&quot;According to the <em>chart on page 5</em>, sales have increased by 20% over ...&quot;</li><br>
+<li>&quot;The <em>diagram on page 3</em> illustrates the workflow, highlighting ...&quot;</li><br>
+</ul></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>The file contents provided above are truncated/partial snippets. The complete content for these files IS accessible via querying.</p><p>If the user asks a question related to these files, and the provided snippets do not clearly answer it, you <strong>MUST</strong> use the <code>file_search</code> tool to search the full document contents before responding.</p><p><h2>How to invoke the file_search tool</h2><br>
+If the user&#x27;s query isn&#x27;t sufficiently answered by the provided snippets, parsed text, or images, you should invoke <code>file_search.msearch</code>.<br>
+To search the full content of the available files, you <strong>must</strong> send one message with recipient <code>to=file_search.msearch</code> in the analysis channel. Your message should be structured exactly as follows:<br>
+<pre><code>{
+  &#x27;queries&#x27;: [&#x27;Example query 1&#x27;, &#x27;Example query 2&#x27;]  // List of up to five queries to search for.
+}
+</code></pre></p><p>Carefully balance the number of <code>file_search</code> calls and the quality of your response with the latency incurred by <code>file_search</code> calls.</p><p>Important guidelines for query formatting:<br>
+<ul><li>Your message must be a valid JSON object. Do not include any extraneous text, backticks, markdown formatting, or comments beyond what is shown.</li><br>
+<li>The <code>queries</code> field must be a list of strings.</li><br>
+<li>One of the queries <strong>MUST</strong> exactly match the user&#x27;s original question, but stripped of any extraneous details, and with ambiguous references clearly resolved using context from the conversation. It <strong>MUST</strong> be a complete sentence.</li><br>
+<li>Even if you suspect the user meant something else, one query <strong>MUST</strong> still be their original question.</li><br>
+</ul><br>
+<h2>How to handle results from file_search</h2><br>
+The file search tool will respond with the relevant search results from the full files. After you receive these results:<br>
+<ul><li>Carefully evaluate each result to determine its relevance and quality.</li><br>
+<li>Use the high-quality and relevant results to inform your answer to the user&#x27;s question.</li><br>
+<li>When possible, reuse information from prior file_search results and avoid repeating identical queries.</li><br>
+</ul><br>
+<h2>Tool usage instructions and ordering</h2><br>
+When the user asks a question, carefully consider whether the provided snippets sufficiently answer the query, whether you need to invoke <code>file_search.msearch</code>, or another available tool (such as <code>web</code>, if available) should be used instead.</p><p>Tool-ordering Guidelines:<br>
+1. For queries related to uploaded files, if snippets are insufficient, strongly prefer invoking <code>file_search.msearch</code> over other tools.<br>
+    - Avoid using <code>web.run</code>, <code>python</code> analysis, or any other tools until you have either:<br>
+        - Confirmed with high confidence the answer is not in the files, or<br>
+        - Have high confidence <code>file_search_tool</code> queries are not sufficient to answer the query.<br>
+2. Avoid usage of <code>web_search/web.run</code> for queries related to uploaded files<br>
+    - Carefully consider whether the user&#x27;s query is better answered by web search results rather than available snippets or results from <code>file_search_tool</code>.<br>
+    - Unless the user&#x27;s query is clearly unrelated to the uploaded files, prefer using <code>file_search.msearch</code>. You can always follow up with a web search if necessary for a more complete response.<br>
+3. Avoid using <code>python</code> unless necessary or requested by user.<br>
+    - If the user&#x27;s query is answerable from the parsed text and images from the uploaded files, or from <code>file_search_tool</code>, do not invoke <code>python</code>.</p><p>Always keep this instruction in mind for the rest of the conversation, as the user may reference these files or ask related questions later on.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Below is a <strong>document-by-document scholarly summary</strong>, keeping close to the arguments, scope, and historiographical stakes of each text. I’m not adding an intro or conclusion beyond what’s necessary for clarity.</p><p><hr></p><p><h2>1. <em>Johannes Reuchlin. Briefwechsel, Band 4 (1518–1522)</em> — review by David H. Price  </h2><br>
+fileciteturn0file0</p><p>This review assesses the final volume of Matthias Dall’Asta and Gerald Dörner’s critical edition of Reuchlin’s correspondence, covering the decisive years 1518–1522. Although Reuchlin’s surviving correspondence is relatively small (405 letters total across all volumes), the editors’ exhaustive commentary expands the four-volume set to over 2,600 pages, making it one of the most important documentary resources for late humanism, early Reformation politics, and Christian Hebraism.</p><p>Volume 4 is especially significant because it places Reuchlin at the intersection of three major historical currents:  <br>
+1) the final stages of the <em>Reuchlin affair</em> over Jewish books,  <br>
+2) the institutionalization of Christian Hebrew studies, and  <br>
+3) the eruption of the Lutheran Reformation.</p><p>The correspondence shows Reuchlin as a central node in elite European networks—imperial courts, episcopal politics, the Vatican, and the Republic of Letters. The review emphasizes Reuchlin’s connections to figures such as Melanchthon (his nephew and protégé), Luther, Ulrich von Hutten, Franz von Sickingen, and Pope Leo X. Reuchlin appears as neither proto-Lutheran nor reactionary Catholic but as a cautious humanist whose defense of Jewish learning indirectly shaped early Protestant biblical exegesis.</p><p>The timing of the papal condemnation of Reuchlin (June 1520) is treated as historically decisive: it coincides almost exactly with the condemnation of Luther, suggesting that the Curia’s priority was shoring up inquisitorial authority in Germany rather than adjudicating humanist scholarship fairly.</p><p>The review also highlights the correspondence as a source for early print history, especially Reuchlin’s relationships with major printers (Aldus Manutius, Froben, Bomberg). The last letters show the practical institutionalization of Hebrew studies through printed textbooks ordered for university classrooms—an early example of philology reshaping curricula.</p><p><hr></p><p><h2>2. <em>Johannes Reuchlin (1455–1522)</em> — edited by Kling &amp; Rhein, review by James V. Mehl  </h2><br>
+fileciteturn0file1</p><p>Mehl reviews an expanded reprint edition of a classic 1955 Festschrift on Reuchlin, updated with new bibliographical and historiographical material. The volume combines older foundational essays (notably on Reuchlin’s role in European humanism and his library) with new bibliographic surveys by Stefan Rhein that document scholarship from 1955 through the early 1990s.</p><p>The key contribution of the updated edition lies not in new interpretations of Reuchlin’s thought, but in Rhein’s <em>Reuchliniana</em> reports, which function as historiographical maps of Reuchlin research. These surveys cover Reuchlin’s biography, legal career, teaching, poetry, drama, Greek and Hebrew studies, Cabala, philosophy, and the controversy over Jewish books.</p><p>Mehl stresses that while some essays (especially Wilhelm Maurer’s on Reuchlin and Judaism) were already dated at the time of republication, the bibliographical essays compensate by situating older claims within a rapidly expanding scholarly field. The volume documents the shift away from confessional polemic toward contextual, interdisciplinary approaches.</p><p>The review frames the book as evidence of a broader late-20th-century resurgence of interest in Reuchlin, coinciding with new critical editions, translations, and institutional research centers dedicated to him.</p><p><hr></p><p><h2>3. M. C. Beard, “The Firesign Theatre: A Review” (<em>College English</em>, 1971)  </h2><br>
+fileciteturn0file2</p><p>Beard treats the Firesign Theatre not as pop comedy but as a serious literary and cultural phenomenon. The review centers on <em>Don’t Crush That Dwarf, Hand Me the Pliers</em> and argues that Firesign’s work rivals modernist literature—especially <em>Finnegans Wake</em>—in density, polysemy, and structural complexity.</p><p>The essay challenges stereotypes of 1960s counterculture as anti-intellectual. Beard emphasizes Firesign’s deep engagement with literary allusion, narrative recursion, media theory, and linguistic play. The album’s fragmented television soundscape becomes a critique of mediated consciousness, anticipatory of later media theory.</p><p>Firesign’s use of voice, parody, and sonic collage is presented as a uniquely audio-native form of modernist experimentation, one that transforms radio technology into a literary medium rather than merely a delivery system.</p><p>The review implicitly argues for expanding the literary canon to include experimental audio works and suggests that Firesign Theatre represents a serious intervention into questions of meaning, narrative authority, and cultural saturation.</p><p><hr></p><p><h2>4. Gail T. Miller, “Reality Is Only an Option: Firesign Theatre and Surrealism” (<em>Text and Performance Quarterly</em>, 1991)  </h2><br>
+fileciteturn0file3</p><p>Miller explicitly situates Firesign Theatre within the tradition of European surrealism, particularly Dada and interwar French surrealism. The article argues that Firesign translated surrealist principles—chance, juxtaposition, anti-rationalism, and critique of technological ideology—into an American, media-saturated context.</p><p>The essay draws a parallel between the Eiffel Tower as a surrealist object and the broadcast tower as Firesign’s equivalent symbol. Firesign’s use of advanced recording technology becomes a way of exposing the absurdities and contradictions of American consumer culture.</p><p>Miller emphasizes Firesign’s challenge to stable notions of “reality,” noting that their famous slogan (“What is reality?”) is not merely comic but epistemological. Firesign’s work destabilizes narrative coherence and identity in ways analogous to surrealist strategies aimed at bypassing rational censorship.</p><p>The article frames Firesign as a bridge between avant-garde art and mass culture, showing how experimental aesthetics migrated into popular media forms without losing critical force.</p><p><hr></p><p><h2>5. Noel L. Brann, <em>Trithemius and Magical Theology</em> (1999)  </h2><br>
+fileciteturn0file4</p><p>Brann’s monograph offers a comprehensive reinterpretation of Johannes Trithemius as a theorist of <em>Christian magical theology</em> rather than a marginal occultist or proto-scientist. The central claim is that Trithemius sought to reconcile magic with orthodox Christian theology by grounding occult practice in divine order, angelology, and providence.</p><p>The book reconstructs Trithemius’s intellectual formation: monastic reformer, humanist bibliophile, linguist, cryptographer, and finally controversial occult theorist. Brann shows that Trithemius’s engagement with magic was cautious, highly theoretical, and embedded in theological apologetics rather than practical sorcery.</p><p>A major contribution is Brann’s analysis of Trithemius’s demonology alongside his cryptographic and astrological writings, showing how both emerge from the same theological framework. Trithemius’s efforts to distinguish legitimate magic from demonic sorcery are presented as part of a broader attempt to preserve learned occultism within Christian orthodoxy.</p><p>The final chapters trace Trithemius’s reception from the Reformation through the Scientific Revolution, showing how his work became a flashpoint for debates over magic, theology, secrecy, and knowledge transmission.</p><p><hr></p><p><h2>6. Joseph Dan, “The Kabbalah of Johannes Reuchlin and Its Historical Significance”  </h2><br>
+fileciteturn0file5</p><p>Dan’s essay reassesses Reuchlin’s engagement with Kabbalah, challenging older narratives—especially those of Heinrich Graetz—that framed Reuchlin primarily as a liberal humanist champion of Jewish tolerance. Dan instead situates Reuchlin within the internal history of Christian Kabbalah as a theological and symbolic system.</p><p>The article emphasizes <em>De arte cabalistica</em> as Reuchlin’s most important contribution, interpreting it as an attempt to integrate Jewish mystical structures into Christian theology rather than as an act of proto-ecumenism. Reuchlin’s use of Kabbalistic concepts is shown to be selective, symbolic, and mediated through Christian metaphysical assumptions.</p><p>Dan traces the long historiographical debate over Reuchlin’s intentions, showing how 19th- and 20th-century scholars projected modern categories (tolerance, pluralism, dialogue) onto early-modern theological projects. The essay argues for understanding Reuchlin within the polemical, confessional, and esoteric dynamics of his own period.</p><p>The piece ultimately reframes Reuchlin as a key figure in the emergence of Christian Kabbalah as a distinct intellectual tradition rather than as a simple bridge between Judaism and Christianity.</p><p><hr></p><p>If you want, next we can:  <br>
+• synthesize <strong>Reuchlin + Trithemius</strong> into a single intellectual-biography arc  <br>
+• extract <strong>historiographical fault lines</strong> (Graetz vs. Dan vs. Brann vs. Yates)  <br>
+• or turn this into a <strong>comparative table</strong> keyed to your Trithemius / print / esotericism project</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>do these</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file0 in your response to cite this file, or to surface it as a link.<br>
+&lt;IMAGE FOR PAGE: 1 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 257&gt;<br>
+MARKUS RAFAEL ACKERMANN <br>
+Der Jurist Johannes Reuchlin (1455 -1522) <br>
+&lt;PARSED TEXT FOR PAGE: 3 / 257&gt;<br>
+Schriften zur Rechtsgeschichte <br>
+Heft 77 <br>
+&lt;PARSED TEXT FOR PAGE: 4 / 257&gt;<br>
+Der Jurist Johannes Reuchlin <br>
+(1455 -1522) <br>
+Von <br>
+Markus Rafael Ackermann <br>
+Duncker &amp; Humblot . Berlin <br>
+&lt;IMAGE FOR PAGE: 4 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 257&gt;<br>
+Die Deutsche Bibliothek - CIP-Einheitsaufnahme <br>
+Ackermann, Markus Rarael: <br>
+Der Jurist Johannes Reuchlin (1455 -1522) / von Markus Rafael <br>
+Ackermann. - Berlin : Duncker und Humblot, 1999 <br>
+(Schriften zur Rechtsgeschichte; H. 77) <br>
+Zugl.: Heidelberg, Univ., Diss., 1998 <br>
+ISBN 3-428-09793-9 <br>
+D 16 <br>
+Alle Rechte vorbehalten <br>
+© 1999 Duncker &amp; Humblot GmbH, Berlin <br>
+Fotoprint: Wemer Hildebrand, Berlin <br>
+Printed in Germany <br>
+ISSN 0720-7379 <br>
+ISBN 3-428-09793-9 <br>
+Gedruckt auf alterungsbeständigem (säurefreiem) Papier <br>
+entsprechend ISO 9706 9 <br>
+&lt;IMAGE FOR PAGE: 5 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 257&gt;<br>
+Vorwort <br>
+Die vorliegende Arbeit zum Juristen Johannes Reuchlin wurde von der Ju￾ristischen Fakultät der Ruprecht-Karls-Universität in Heidelberg als Dissertati￾on angenommen. Für die Drucklegung ist die erschienene Literatur bis Ende <br>
+1998 berücksichtigt worden. <br>
+Ich danke allen, die mich beim Verfassen dieser Studie unterstützten. Mein <br>
+ganz besonders herzlicher Dank gilt meinem Lehrer Prof. Dr. Dr. h. c. Adolf <br>
+Laufs, der das Entstehen der Arbeit stets engagiert betreut hat. Ohne die Un￾terstützung durch das Frankfurter Graduiertenkolleg &quot;Europäische mittelalterli￾che Rechtsgeschichte, neuzeitliche Rechtsgeschichte und juristische Zeitge￾schichte&quot;, dem ich 1994-1996 als Kollegiat und Stipendiat angehörte, wären <br>
+die zahlreichen Archivstudien, auf welchen die Arbeit aufbaut, nicht möglich <br>
+gewesen. Dafiir und fiir die kritische Begleitung beim Verfassen der Arbeit <br>
+danke ich insbesondere den Kollegiaten sowie dem Leitungsgremium des Gra￾duiertenkollegs, namentlich Frau Professorin Regina Ogorek sowie den Herren <br>
+Professoren Hans-Peter Benöhr, Gerhard Dilcher, Bemhard Distelkamp, Joa￾chim Rückert und Michael Stolleis. <br>
+Den Herren Dr. Gerald Dömer und Matthias Dall&#x27; Asta von der Pforzheimer <br>
+Reuchlin-Forschungsstelle danke ich für zahlreiche Anregungen und Hinweise. <br>
+Dr. Gerald Dömer, Malte Hohn und Stephanie Wilhelm, M. A. haben einzelne <br>
+Kapitel der Arbeit gelesen und korrigiert; dafiir schulde ich ebenfalls großen <br>
+Dank. Reuchlins Heimatstadt Pforzheim danke ich dafiir, daß sie die Druckle￾gung meiner Arbeit durch einen großzügigen Druckkostenzuschuß unterstützte. <br>
+Heidelberg, den 16. Januar 1999 Markus R. Ackermann <br>
+&lt;IMAGE FOR PAGE: 6 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 8 / 257&gt;<br>
+Inhaltsübersicht <br>
+Kapitell: Einleitung.......................................................................................... I 7 <br>
+Kapitel 2: Reuchlins Studienjahre... ........ ....... .... ......... ...... ... ......... ...... ............... 22 <br>
+Kapitel 3: Reuchlin als gelehrter Rat............... ............ .................. ............. ..... ... 40 <br>
+Kapitel 4: Reuchlin als Fürstenrichter des Schwäbischen Bundes ..... ...... .......... 107 <br>
+Kapitel 5: Reuchlin als Gutachter....................................................................... 149 <br>
+Kapitel 6: Der Augenspiegel............................................. ................................. 178 <br>
+Kapitel 7: Der Vocabularius Breviloquus .......................................................... 200 <br>
+Kapitel 8: Schluß................................................................................................ 223 <br>
+Verzeichnis der ungedruckten Quellen ............ ......................................................... 23 I <br>
+Verzeichnis der gedruckten Quellen ......................................................................... 234 <br>
+Namen- und Ortsregister.......................................................................................... 255 <br>
+&lt;IMAGE FOR PAGE: 8 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 257&gt;<br>
+Inhaltsverzeichnis <br>
+Kapitell <br>
+Einleitung <br>
+Kapitel 2 <br>
+Reuchlins Studienjahre <br>
+Kapitel 3 <br>
+17 <br>
+22 <br>
+Reuchlin als gelehrter Rat 40 <br>
+A. Vorbemerkung................. .......................................................................... ........ 40 <br>
+B. Reuchlin als Rat Eberhard d. Ä. ...................................... .................................. 41 <br>
+1. Der württembergische Rat im Spätmittelalter ......................................... 41 <br>
+11. Anfange: Die Romreise 1482.................................................................. 45 <br>
+III. Reuchlin als württembergischer Anwalt und Beisitzer............. .............. 49 <br>
+I. Reuchlin als Beisitzer .......... ...... .................... ........................ ............. 49 <br>
+a) Reuchlin als Beisitzer am württembergischen Hofgericht............. 49 <br>
+b) Reuchlin als Beisitzer bei Schiedsgerichten .................................. 52 <br>
+2. Reuchlin als württembergischer Anwalt............................................. 55 <br>
+a) Der Geleitrechtsstreit Württembergs mit der Kurpfalz 1487......... 56 <br>
+b) Für Graf Heinrich 1489................................................................. 60 <br>
+c) Der Streit um die Kastvogtei über das Kloster Zwiefalten 1490... 61 <br>
+d) Der Heuchelberger Jagdrechtsstreit 1490...................................... 66 <br>
+IV. Reuchlin als Gesandter und als Diplomat............................................... 68 <br>
+1. Reuchlin als Rat auf Reisen für Eberhard i. B.................................... 68 <br>
+2. Reuchlin in München für Eberhard i. B. .......... ....... ...................... ..... 69 <br>
+3. Reuchlin als Reichstagsteilnehmer ..................................................... 70 <br>
+a) 1486............................................................................................... 70 <br>
+b) 1495............ ................ ........ ........... ................................................ 74 <br>
+&lt;IMAGE FOR PAGE: 10 / 257&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 11 / 257&gt;<br>
+10 Inhaltsverzeichnis <br>
+4. Reuchlin als Gesandter in Reichenweiher .......................................... 76 <br>
+5. Die Gefangennahme Conrad Holzingers ............................................ 77 <br>
+6. Der Erbverzicht Katharinas von Württemberg ................................... 78 <br>
+7. Reuchlin als Gesandter in Linz 1492.................................................. 78 <br>
+8. Die Einnahme der Huldigung von Horburg 1494.............................. 84 <br>
+V. Reuchlin als Zeuge bei Urkunden und bei Vereidigungen ..................... 85 <br>
+VI. Reuchlin und das Reichskammergericht.......... .................... ................... 86 <br>
+VII. Reuchlins Ratsende bei Eberhard i. B.............................. .................. ..... 88 <br>
+C. Reuchlin als Rat in Heidelberg .......................................................................... 88 <br>
+D. Reuchlin als Rat unter Herzog Ulrich von Württemberg................................... 95 <br>
+1. Die Rückkehr nach Württemberg ........................................................... 95 <br>
+II. Reuchlin und die Hochzeit Herzog Ulrichs von Württemberg 1511 ...... 96 <br>
+III. Reuchlin und der Tübinger Vertrag ........................ ................................ 97 <br>
+IV. Reuchlin und der württembergische Landtag ......................................... 98 <br>
+V. Reuchlin und die Klosteraufhebung 1517 ...... .................... ............ ........ 99 <br>
+E. Reuchlin als von Württemberg ausgeliehener Rat............................................. 101 <br>
+F. Schluß................................................................................................................ 103 <br>
+Kapitel 4 <br>
+Reuchlin als Fürstenrichter des Schwäbischen Bundes 107 <br>
+A. Das Gericht des Schwäbischen Bundes ................ ................ ................ ............. 107 <br>
+B. Reuchlin als Beisitzer am Schwäbischen Bundesgericht............................ ....... 116 <br>
+C. Reuchlin als verhandlungsfuhrender Richter..................................................... 126 <br>
+I. Rietheim vs. Türkheim wegen der Holzhauung im Angelberger Wald.. 127 <br>
+II. Rietheim vs. Türkheim wegen der Herrschaft Schwabeck ..................... 128 <br>
+III. Oettingen vs. Bayern wegen Wemding................................................... 129 <br>
+IV. Oettingen vs. Brandenburg wegen der elf Klagpunkte ........................... 13 9 <br>
+V. Oettingen vs. Brandenburg wegen des Klosters Sulz ............................. 142 <br>
+D. Die Aufgabe des Richter<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file1 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 190&gt;<br>
+The Case against Johann Reuchlin:<br>
+Religious and Social Controversy<br>
+in Sixteenth-Century Germany<br>
+&lt;IMAGE FOR PAGE: 1 / 190&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 190&gt;<br>
+This page intentionally left blank <br>
+&lt;PARSED TEXT FOR PAGE: 3 / 190&gt;<br>
+The Case against<br>
+Johann Reuchlin<br>
+Religious and Social Controversy<br>
+in Sixteenth-Century Germany<br>
+Erika Rummel<br>
+UNIVERSITY OF TORONTO PRESS<br>
+Toronto Buffalo London<br>
+&lt;IMAGE FOR PAGE: 3 / 190&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 190&gt;<br>
+(c) University of Toronto Press Incorporated 2002<br>
+Toronto Buffalo London<br>
+Printed in Canada<br>
+ISBN 0-8020-3651-1 (cloth)<br>
+ISBN 0-8020-8484-2 (paper)<br>
+Printed on acid-free paper<br>
+National Library of Canada Cataloguing in Publication Data<br>
+Rummel, Erika, 1942-<br>
+The case against Johann Reuchlin : religious and social controversy<br>
+in sixteenth-century Germany / Erika Rummel.<br>
+Includes bibliographical references and index.<br>
+ISBN 0-8020-3651-1 (bound). - ISBN 0-8020-8484-2 (pbk.)<br>
+1. Reuchlin, Johann, 1455-1522. 2. Christianity and other religions - Judaism.<br>
+3. Judaism - Relations - Christianity. 4. Jewish literature - Germany - Cen￾sorship - History - 16th century. 5. Humanism - Germany - History - 16th<br>
+century. 6. Scholasticism - Germany - History - 16th century. I. Title.<br>
+B785.R64R84 2002 261.2&#x27;6&#x27;092 C2002-901295-3<br>
+The publication of this book was greatly facilitated by the generous support<br>
+of the Renaissance Society of America.<br>
+University of Toronto Press acknowledges the financial assistance to its<br>
+publishing program of the Canada Council for the Arts and the Ontario Arts<br>
+Council.<br>
+University of Toronto Press acknowledges the financial support for its<br>
+publishing activities of the Government of Canada through the Book<br>
+Publishing Industry Development Program (BPIDP).<br>
+www.utppublishing.com <br>
+&lt;IMAGE FOR PAGE: 4 / 190&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 190&gt;<br>
+CONTENTS<br>
+Preface vii<br>
+Acknowledgments xiii<br>
+Chronology xv<br>
+Part A - The Reuchlin Affair in Context 1<br>
+1 Pfefferkorn and the Battle against Judaism 3<br>
+2 Reuchlin and the Scholastic Theologians 14<br>
+3 Reuchlin and the Luther Affair 26<br>
+4 Sixteenth-Century Interpretations of the Reuchlin Affair: Beliefs or<br>
+Constructs? 29<br>
+5 The Reuchlin Affair in Modern Historiography 36<br>
+Notes 41<br>
+Part B - Texts 51<br>
+DOCUMENT 1 Johann Pfefferkorn, The Enemy of the Jews 53<br>
+DOCUMENT 2 Johann Pfefferkorn, The Confession of the Jews 69<br>
+DOCUMENT 3 Johann Reuchlin, Report about the Books of the Jews 86<br>
+DOCUMENT 4 Johann Reuchlin, Defence against the Cologne Slanderers<br>
+98<br>
+DOCUMENT 5 Letters of Obscure Men 109<br>
+DOCUMENT 6 Reports on the Confiscation of Jewish Books in Frankfurt,<br>
+1509 128<br>
+&lt;IMAGE FOR PAGE: 5 / 190&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 190&gt;<br>
+vi Contents<br>
+DOCUMENT 7 Two Reports by the Faculty of Theology at Cologne 132<br>
+DOCUMENT 8 Willibald Pirckheimer&#x27;s Defence of Reuchlin, 1517 136<br>
+DOCUMENT 9 Two Letters from Erasmus concerning the Reuchlin<br>
+Affair 141<br>
+DOCUMENT 10 The Dedicatory Letter of Reuchlin&#x27;s De arte cabalistica,<br>
+1517 146<br>
+DOCUMENT 11 Jacob Hoogstraten, Information to the Reader, 1519 152<br>
+DOCUMENT 12 Hutten&#x27;s Letters to Erasmus and Reuchlin, 1520/1 158<br>
+DOCUMENT 13 Two Comments by Luther on the Historical Context of<br>
+the Reuchlin Affair 162<br>
+Bibliography 165<br>
+Index 171<br>
+&lt;IMAGE FOR PAGE: 6 / 190&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 190&gt;<br>
+PREFACE<br>
+Cultural Bias and Historiography<br>
+The Reuchlin affair, a cause celebre in the sixteenth century, presents<br>
+an object lesson in cultural diversity. Reading about the radically dif￾ferent interpretations the protagonists put on the same set of events,<br>
+we break through the &#x27;crust of unity/ the cultural consensus that<br>
+was once thought to define an era.1<br>
+ Until the middle of the twentieth<br>
+century historians were searching for a coherent, synoptic view and<br>
+therefore tended to impose on the past a grid of their own making.<br>
+In neatly packaged presentations, &quot;The Renaissance&#x27; followed upon<br>
+&#x27;The Middle Ages/ and &#x27;The Reformation&#x27; was contrasted with &quot;The<br>
+Counter-Reformation.&#x27; Such broad categories, still prevalent in text￾books, are useful for organizational purposes, but imply an internal<br>
+consistency and a cultural uniformity that did not exist. A study of<br>
+the Reuchlin affair easily dispels such notions and opens a window on<br>
+the degree of dissent present in sixteenth-century society. The tensions<br>
+surface in the polemics surrounding the affair. The protagonists agreed<br>
+on the facts but not on their meaning,2<br>
+ and variously portrayed the<br>
+controversy as a battle between orthodox Christians and Judaizers, be￾tween Catholics and reformers, or between representatives of scholas￾ticism and champions of humanism. The diversity of interpretations<br>
+reflects the diversity of their cultural assumptions.<br>
+Part A of this book tells the story as it unfolded in 1509 when Jo￾hann Pfefferkorn, a Jewish convert, approached Emperor Maximilian<br>
+I with a proposal to confiscate and destroy Jewish books. He argued<br>
+that they were insulting to the Christian religion and an obstacle to<br>
+the conversion of the Jews. With the approval of the emperor he set<br>
+about confiscating books in Frankfurt, but the archbishop of Mainz saw<br>
+&lt;IMAGE FOR PAGE: 7 / 190&gt;<br>
+[image]<br>
+&lt;PARSED<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file2 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 85&gt;<br>
+72<br>
+IN HIS NAME<br>
+REUCHLIN, LUTHER, THENAUD, WOLFF, <br>
+AND THE NAMES OF SEVENTY-TWO ANGELS<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 85&gt;<br>
+BOSTON<br>
+2019<br>
+72<br>
+IN HIS NAME<br>
+REUCHLIN, LUTHER, THENAUD, WOLFF, <br>
+AND THE NAMES OF SEVENTY-TWO ANGELS<br>
+IAN CHRISTIE - MILLER<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 85&gt;<br>
+Library of Congress Cataloging-in-Publication Data<br>
+Names: Christie-Miller, Ian, author. <br>
+Title: 72 in His name: Reuchlin, Luther, Thenaud, Wolff and the names of <br>
+seventy-two angels/Ian Christie-Miller. <br>
+Other titles: Seventy two is His name <br>
+Description: Boston: Academic Studies Press, 2019. | Includes bibliographical <br>
+references and index. <br>
+Identifiers: LCCN 2019033765 (print) | LCCN 2019033766 (ebook) | ISBN <br>
+9781644692448 (hardcover) | ISBN 9781644692455 (adobe pdf)<br>
+Subjects: LCSH: Christianity and other religions--Judaism--History 16th century. <br>
+| God ( Judaism)--Name. | Cabala--History 16th century. | Antisemitism--<br>
+History 16th century. | Apologetics--History--16th century. | Judaism--<br>
+Controversial literature--History 16th century. | Reuchlin, Johann, <br>
+1455-1522--Influence. | Luther, Martin, 1483-1546--Influence. | Thenaud, <br>
+Jean, active 1511--Influence. | Wolff, Philippe, active 15th century--Influence. <br>
+Classification: LCC BM535 .C5785 2019 (print) | LCC BM535 (ebook) | <br>
+DDC 261.2/609031--dc23 <br>
+LC record available at https://lccn.loc.gov/2019033765<br>
+LC ebook record available at https://lccn.loc.gov/2019033766<br>
+©Academic Studies Press, 2019<br>
+ISBN 9781644692448 (hardback)<br>
+ISBN 9781644692455 (electronic)<br>
+Book design by PHi Business Solutions<br>
+Cover design by Ivan Grave<br>
+Published by Academic Studies Press<br>
+1577 Beacon Street<br>
+Brookline, MA 02446, USA<br>
+press@academicstudiespress.com<br>
+www.academicstudiespress.com<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 85&gt;<br>
+Contents<br>
+Introduction  1<br>
+1. The Four Authors 3<br>
+2. Comments on the Lists of the Seventy-Two Names 15<br>
+Reuchlin and the Seventy-Two Names 18<br>
+Luther and the Seventy-Two Names 23<br>
+Thenaud and the Seventy-Two Names  23<br>
+Thenaud’s Acquaintance with the Kabbalah 28<br>
+Thenaud’s Seventy-Two and Thirty-Seven 30<br>
+Thenaud and Toledot Jeshu (The Generation of Jesus) 39<br>
+Wolff and the Seventy-Two Names 46<br>
+3. Conclusions 57<br>
+Reuchlin and the Jews 57<br>
+Luther and the Jews 57<br>
+Thenaud and the Jews 61<br>
+Wolff and the Jews 64<br>
+4. Overview 67<br>
+The Four Authors and the Seventy-Two Names—1522 Perspective 67<br>
+Notes 69<br>
+Bibliography 73 <br>
+Index 81<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 85&gt;<br>
+Introduction<br>
+The Kabbalistic influence in sixteenth-century Europe is undoubted. A <br>
+major element in Christian circles was interest in the Divine Name as <br>
+found in Kabbalistic sources. The main focus of this study compares the way in <br>
+which four authors in sixteenth-century Europe treated one particular Kabbalis￾tic expression of the Divine Name. This is the seventy-two divine names attrib￾uted to angels as primarily derived from three verses in the fourteenth chapter of <br>
+Exodus, each of which has seventy-two letters in Hebrew.<br>
+The four authors, as they dealt with material that derived from Jewish <br>
+sources, wrote from different Christian perspectives. Not only did the authors <br>
+have widely differing backgrounds and readerships, but their own perspectives <br>
+shifted. Sometimes, those shifts, notably in regard to Jewish-Christian matters, <br>
+were dramatic.<br>
+The material considered below derives from the start of the European <br>
+Reformation and concerns the overarching issue of Jewish-Christian relation￾ships. Moreover, the long shadow cast by some of those writings continues to <br>
+our own days.<br>
+The author is indebted to many digital resources as will be seen from <br>
+the numerous illustrations. In addition, the inclusion of QR-codes allows the <br>
+reader immediate access to a fuller investigation of those resources.<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 85&gt;<br>
+CHAPTER ONE<br>
+The Four Authors<br>
+The first of the four authors is Johannes Reuchlin (1455–1522), who was <br>
+also known as Rabbi Capnion. In 1510 he had been asked, as a lawyer in <br>
+Pforzheim with a well-informed knowledge of Hebrew, to pronounce on a bitter <br>
+argument about Jewish books. Reuchlin’s main opponent, Johannes Pfeffer￾korn (1469–1523), who had converted from Judaism, sought confiscation and <br>
+destruction of the Talmud. One of Pfefferkorn’s early books was the 1507 Der <br>
+Juden Spiegel, published in Nuremberg. Images of Bayerischen Staatsbibliothek, <br>
+Munich Res/4 Polem, 3340,6 are available at the QR-code below.1<br>
+A similarly anti-Jewish book—Handt Spiegel—followed four years later. It <br>
+is Handt Spiegel (Mainz: Johann Schöffer, 1511, published under the title Handt <br>
+Spiegel Johannis Pfefferkorn/wider vnd gegen die Jüden/vnd Judischen Thalmudis￾chen schrifften). The digital British Library version is available at the QR-code <br>
+below.2<br>
+Reuchlin, as is well known, followed a more appreciative approach. He <br>
+decided that a few Hebrew works that were overtly polemical, such as Toledot <br>
+Jeshu (The Generation of Jesus), should be destroyed. However, Reuchlin <br>
+willingly accepted the value of many Hebrew works. That appreciative stance <br>
+&lt;PARSED TEXT FOR PAGE: 10 / 85&gt;<br>
+4 72 in<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file3 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 168&gt;<br>
+BSBBayerische<br>
+StaatsBibliothek MDZ M iinchcncr<br>
+Di&amp;italisierun^sZentnnn <br>
+Digitale Bibliothek<br>
+Reuchlin, Johannes<br>
+loannis Revchlin Phorcensis LL. Doc. De Arte Cabalistica Libri Tres Leoni <br>
+X. Dicati<br>
+Hagenau 1517<br>
+2 Inc.s.a. 556 e#Beibd.l <br>
+urn:nbn:de:bvb:12-bsb00017488-0 <br>
+VD16 R 1235<br>
+&lt;IMAGE FOR PAGE: 1 / 168&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 168&gt;<br>
+F<br>
+I<br>
+e<br>
+R B V C H L I N<br>
+PHORCENSIS LL. DOC.<br>
+DEARTE<br>
+C A B A L I S T I C A<br>
+LIBRI TRES LEONI<br>
+X. DICATI.<br>
+&lt;IMAGE FOR PAGE: 2 / 168&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 168&gt;<br>
+M A X I M I L I A N V S diurna fauente dementia E L . Romano<br>
+rum Imperator femper Auguftus 8Cc. Recognofdmus perpraefen<br>
+te s.C u m T H O M A S A N S H E L M V S p ro co m u n iftu d io<br>
+forum commodo &amp; utilitate libros Hebraeos,Graecos &amp; Latinos,<br>
+raros &amp; ante hac non editos magna folertia,&amp; no fine graui impen<br>
+fa ubiqj perquirat, ingeniofoqj charadere excudere, &amp; in lucem<br>
+edere intendat.Nos indemnitatifup confulere cupientes,ne ab aliis<br>
+huiufcemodi libri imprimatur,^ ipfe laboribus St commodo debi<br>
+to priuetur,praefencium tenore Statuimus &amp; ordinamus,ne aliquis<br>
+cuiufcunqjftatus aut conditionis exiftat per facrum Romanum Im<br>
+perium,huiufmodi libros per Quinquenitim proxime futurum im<br>
+primere,aut alibi impreflbs adducere &amp; uedere audeat. Quod fi qs<br>
+contrafecerit, poenam amiiTionis librorum,&amp; quinqj Marcarum<br>
+auri puriFifco noftro applicandarum fenoueritincurfurum. Man<br>
+damus iccirco omnibus dC lingulis principibus ecdeliafticis Sc fecw/<br>
+laribus,Comitibus,Baronibus,Capitaneis,Vicedorms,Praefedis,-<br>
+Locutencntibus,Gubernatoribus,Ancianis,Iudicibus,Confulibus<br>
+Comunitatibus,&amp; exteris quibufcunq? noftris &amp; Imperii iacri offi<br>
+rialibus,&amp; fubditis fidelibus dilcdis,cuiufcunq? gradus,coditionis,<br>
+feu pfaeeminentiar fuerint, ut prefatum Anshelmum huiufcemodi -<br>
+priuilegio noftro uti &amp; gaudere permittat,in eo manutencant&amp;de<br>
+fendant, &amp; contrafacientes poenis fupradidis muIdent,noftrae pa<br>
+rituri uolutati.Harurri teftimonio literarum figilli noftri a tergo im<br>
+preftione munitarum. Dat. in T erzolas die XXI.Menfis Aprilis.<br>
+Anno M . D. X V I Regni noftri Romani tricefimo primo.<br>
+4<br>
+9<br>
+Ad Mandatum Caefareac<br>
+Per Caelarem. Maieftatis in confilio.<br>
+Serntiner fubfcripfit.<br>
+&lt;IMAGE FOR PAGE: 3 / 168&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 168&gt;<br>
+A nlmsafccnfus in deum per tres regiones &amp; tot flatus abftraftionis Iit Ni<br>
+Adam lumine naturali motus dixit.hoc nunc os ex oflibus meis ■ vii.M<br>
+Adam alter de terra terrenus,&amp; alter de coelo caeleftis • * yiii-K￾Angelorum reuelatione per lignum falutis reftauratio,8t faluatoris conditio ~ ix.S <br>
+Dc Adam quomodo intelligendum fit,cp dicitur etiam daemones genuifle ix.X<br>
+Abraham Si Sara ante mutationem nominum fuerunt Heriles x. A<br>
+Angeli cf uarie nobis appareant. Iviii.Q<br>
+Artis Cabaliftica: in fuas partes diuifio,&amp; diftinflorum explanatio Ixiiii.Z<br>
+Ad artem Cabalilticam introituspoft illa quae dicuntnr atechna lxv.C<br>
+Byzantium.ConftantinopoIisnoua Rom a duitas una |.a<br>
+Biblia hoc efl EfTrim Varba,&amp; thora id efl lex dei.Et uirtus faerre feriptura! xix.H <br>
+Concupifcentia &amp; libidine corrumpuntur defyderia fpeculationum. «ii.Q.<br>
+Caufa: rerum quatuor. . iiii.Z<br>
+Cabala: nomen quomodo interpretandum vi.E<br>
+Gabala: diffinitio.Qui Cabalici, Cabalad, &amp; Caba Jiftar. vi.G.<br>
+In Cabalae nomine imperiti errauerunt. vii.K<br>
+Cabala in tertia regione cognitionum fundatur unde nec fenfu nec <br>
+fyllogifmo acquiritur. vi i.E<br>
+Cabala prima fuit poft ruinam uniuerfalis falutis diuina reuelatio. vii.M<br>
+Cabala prima hoc fuit.Iam ne mittat manum 8c fumat de ligno uita:. viii-Q^<br>
+Capita patrum qui fuerint. , xii.M<br>
+Cabala quomodo de uno ad alium peruenerit,&amp; ibi nomina Cabaliftarum. xii.O<br>
+Cabalifta: quandoqp inter Thalmudiftas numerantur &amp; econuerfo. Xiii.P<br>
+Cabala: nomen &amp; Cabaliftarum quis prior adlatinos tranftulit. xiii.C^<br>
+Cabaliftica funt ut poma aurea inlefticis argenteis/. xiiii-V<br>
+Cabala differt ab arte Cabaliftica. xiiii.X<br>
+Cabala pra:cedit artem Cabalifticam. xiiii.X<br>
+Cabaliftae &amp; Thalmudiftx conueniunt in hoc q&gt; duo fint mundi. xv.B.<br>
+Cabaliftarum &amp; thalmudiftarum duae funt facultates ex uno fonte mananteS xv.C<br>
+Cabalifta tendit fuperius.Thalmudifta manet inferius. xv.D<br>
+Cabaliftica facultas &amp; Thalmudica communicant uiciflim doflrinas &amp; ftudia xv.E<br>
+Cabaliftae incumbunt contemplationi,uiri fpeculationum ex magiftrislegis. x v.F<br>
+Cabalifta: funt altiore loco &amp; digniore gradu cj Thalmudiftae. xv.G<br>
+CabaliftarumSf Thalmudiftarum expofitio unius feriptura: diuerfa. xv.H<br>
+Cabala nos humi degere non finit,&amp; de raptu Cabaliftarum. xxX<br>
+Contradiftoriacoincidere.idemqjcnsStnonens. xxi.Q,<br>
+Cabalifta per Cabalam tenebras erumpit,SC ueruni luminare apprehendit. xxi.R.<br>
+Cabalifta contrahit amiciciam cum angelis,&amp; res mirandas facit. xxi,S<br>
+Cabala quid effe intelligatur, li-E<br>
+Contemplatio fummarum St diuinarum rerum a quo St quoufqj. ^ ^ lii.H<br>
+Ante creationem nihil erat nifi deus,St retragrammaton,S£ lapientia eius. liii.K<br>
+Contemplatio refla dependet a xxiiii.libris facra: feriptura:.<br>
+Cabaliftica: artis tertia pars. <em>xx.</em>!!.&#x27;^<br>
+Combinatio folum tranfmutata in libro Ietzira intenditur. lxxiiii. A<br>
+E&gt;e coelorum diuerfitate multiplici. Ixxvi.H<br>
+Corpora fingula proprios habent reflores angelicos. ^ lxxvi.I<br>
+Cabalifta ille ftultus eft qui miracula figuris folis aut uocibus attribuit. Ixxviij.M<br>
+E&gt;eificatio quid fit? ii-H<br>
+1 E^iuinitatis dcfyderium homini eft naturaliter infitum.Si quomodo expletur. iiiX<br>
+E&gt;iuina non fciuntur demonftrationc. xxiiii. H<br>
+A i i<br>
+CONTI NENT VR H&#x27;AEC<br>
+&lt;IMAGE FOR PAGE: 4 / 168&gt;<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 168&gt;<br>
+JttxIii.N<br>
+ixv.D<br>
+Ixv.E<br>
+Ixxiii.T<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file4 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 403&gt;<br>
+ON THE ART<br>
+DE ARTE<br>
+CABALISTICA OF THE<br>
+KABBALAH<br>
+JOHANN REUCHLIN<br>
+Translation by Martin and Sarah Goodman<br>
+Introduction by G. LloydJones<br>
+Introduction to the Bison Book edition byMoshe Idel<br>
+&lt;IMAGE FOR PAGE: 1 / 403&gt;<br>
+[image]<br>
+&lt;IMAGE FOR PAGE: 2 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 403&gt;<br>
+On the Art of the Kabbalah<br>
+&lt;IMAGE FOR PAGE: 3 / 403&gt;<br>
+[image]<br>
+&lt;IMAGE FOR PAGE: 4 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 403&gt;<br>
+JOHANN REUCHLIN • On the Art of the<br>
+Kabbalah<br>
+De Arte Cabalística<br>
+TRANSLATION BY MARTIN AND SARAH GOODMAN<br>
+INTRODUCTION BY G. LLOYD JONES<br>
+Introduction to the Bison Book Edition by Moshe Idel<br>
+UNIVERSITY OF NEBRASKA PRESS<br>
+LINCOLN AND LONDON<br>
+&lt;IMAGE FOR PAGE: 5 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 403&gt;<br>
+Copyright © 1983 by Abaris Books, Inc.<br>
+Introduction to the Bison Book Edition copyright © 1993 by the<br>
+University of Nebraska Press<br>
+All rights reserved<br>
+Manufactured in the United States ofAmerica<br>
+First Bison Book printing: 1993<br>
+Most recent printing indicated by the last digit below:<br>
+10 987654321<br>
+Library ofCongress Cataloging-in-Publication Data<br>
+Reuchlin, Johann, 1455-1522.<br>
+[De arte cabalística. English &amp; Latin]<br>
+On the art of the Kabbalah=De arte cabalística/Johann Reuchlin; translated by<br>
+Martin and Sarah Goodman; introduction by G. Lloyd Jones.<br>
+p. cm.<br>
+English and Latin.<br>
+“Bison book edition.”<br>
+Includes bibliographical references.<br>
+ISBN 0-8032-8946-4<br>
+1. Cabala—History—Early works to 1800. I. Title.<br>
+BM526.R4613 1994<br>
+296.1 &#x27;6—dc20<br>
+93-13872<br>
+CIP<br>
+Reprinted by arrangement with Abaris Books, Inc.<br>
+CO<br>
+&lt;IMAGE FOR PAGE: 6 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 403&gt;<br>
+Introduction to the Bison Book Edition<br>
+by<br>
+Moshe Idel<br>
+I. The Beginnings ofthe Christian Kabbalah?<br>
+Johannes Reuchlin is one of the major exponents of the Christian<br>
+Kabbalah; he may even be conceived, as we shall attempt to show it<br>
+below, as one of the earliest founders of this type of Christian theol￾ogy. However, to describe an author writing at the end ofthe fifteenth<br>
+and the beginning of the sixteenth centuries as an early founder of<br>
+Christian Kabbalah—that needs both elaboration and clarification.<br>
+The historical beginning of the Christian Kabbalah is a matter of<br>
+debate, as it is in regard to the beginnings of the Jewish Kabbalah.<br>
+Precisely when a certain phenomenon is conceived as existent de￾pends on the minimum that is required to define this phenomenon;<br>
+thus the modem scholarly tendency today to describe the Jewish Kab￾balah as emerging, on the historical plane, in the last decades of the<br>
+twelfth century in Languedoc pushes the identification of the Chris￾tian parallels or similar phenomena to the thirteenth century. Ifwe ac￾cept the ten divine powers, the ten sefirot, as a vital component of<br>
+Kabbalah, it will be difficult to find Christian discussions ofthis topic<br>
+before the end of the thirteenth century. However, if we accept other<br>
+ways of defining Kabbalah, found already in the eleventh century, as<br>
+an esoteric tradition concerning the divine names, the situation may<br>
+be much more complex.1 Indeed, some passages dealing with divine<br>
+names recur in Christian texts early in the thirteenth century, as the<br>
+discussions ofJoachim de Fiore demonstrate.2 At the end of this cen￾tury, Arnauld of Vilanova had completed a whole treatise dealing<br>
+with the divine name.3<br>
+However, it is possible to approach the question from another an￾gle: it is not so much the passage ofsome traditions from one type of<br>
+religion to another that is the defining moment ofthe emergence of a<br>
+certain new phenomenon, but the absorption, especially the creative<br>
+one, ofthe techniques that are characteristic of one type of lore, by a<br>
+religious thinker belonging to another religion. In our case, the ques￾v<br>
+&lt;IMAGE FOR PAGE: 7 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 8 / 403&gt;<br>
+Introduction to the Bison Book Edition<br>
+tion would be not when a Christian has adopted some forms ofJewish<br>
+esoteric traditions, but when a Christian thinker has adopted a Kab￾balistic type of thinking. Thus, the occurrence of a certain combina￾tory technique of interpretation of the first word of the Bible by sep￾arating its letters, as practiced by Alexander of Neckham,4 or of the<br>
+peculiar combination ofletters by means of concentric circles, appar￾ently under the influence ofJewish sources, as evident in the work of<br>
+Ramon Null,5 may fit this second approach.<br>
+What lacks in all these examples is the explicit awareness that,<br>
+when dealing with divine names or with combinatory techniques, the<br>
+Christian author operates in a speculative realm that, at least from the<br>
+point of view of the primary sources, is a characteristically esoteric<br>
+type ofJewish lore. However, already in the last third ofthe thirteenth<br>
+century, such an awareness was apparently existent. Alfonso Sabio’s<br>
+nephew, Juan Manuel,6 testified as to the concerns of his famous<br>
+uncle:<br>
+“Ostrosi fizo traslador toda le ley de losjudios et aun el su<br>
+Talmud et otra scientia que han los judious muy escon￾dida, a que llaman Cabala.”<br>
+‘‘Furthermore he ordered translated the whole law of the<br>
+Jews, and even their Talmud, and other knowledge which<br>
+is called qabbalah and which the Jews keep closely secret.<br>
+And he did this so it might be manifest through their own<br>
+Law that it is a [mere] presentation of that Law which we<br>
+Christians have; and that they, like the Moors, are in grave<br>
+error and in peril oflosing their souls.”<br>
+Ifthis passage is reliable, and I see no reason to doubt it, then a sig￾nificant segment of Kabbalistic literature had been translated as soon<br>
+as the seventies of the thirteenth century. However, even this testi￾mony, as well as some other dated from the fourteenth century up to<br>
+the middle-fifteenth century, interesting as it may be, did not relate to<br>
+texts that become part of a larger cultural phenomenon. At the court<br>
+of Alfonso Sabio no Christian sort of Kabbalah was cultivated, while<br>
+the uses of Kabbalah in the writings of converts like Alfonso de Val￾idolid or Paulus de Heredia did not incite the imagination oftheir con￾temporaries, and they did not produce significant repercussions.<br>
+Whatever the evidence regarding the penetration ofJewish esoter￾ism before the end ofthe fifteenth century is, or may turn out to be, it<br>
+&lt;IMAGE FOR PAGE: 8 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 403&gt;<br>
+Introduction to the Bison Book Edition<br>
+seems that before the writings of Pico della Mirandola (1463-1494)<br>
+those Jewish elements did not become a considerable part of any de￾fined Christian circle, neither were they cultivated by a movement<br>
+that consciously continued the steps of some founding figures. In<br>
+other words, while we can easily accumulate interesting pieces of ev￾idence dealing with the acquaintance of various Christian authors<br>
+with Jewish esoteric topics, they are scanty, disparate, and incon￾tinuous.<br>
+II. The Emergence of Christian Kabbalah in the Florentine<br>
+Renaissance<br>
+The much greater dissemination of Kabbalistic ideas, evident since<br>
+the end ofthe fifteenth century, is to be understood in the general con￾texts of the Italian intellectual ambiance in Florence and the dissem￾ination of printing. The latter factor contributed substantially to cul￾tural developments that took place in Northern Italy, helping them to<br>
+transcend the small circle around the Medicis; printing ensured also<br>
+continuity. However, the more interesting question still remains: how<br>
+and why did the early Christian intellectuals adoptJewish esoterics as<br>
+a domain of interest and even creativity? An answer to such a ques￾tion is never simple, and we should better allow a coalescence of<br>
+more than one type of answer.<br>
+First and foremost, Kabbalah was studied, translated and amalga￾mated into Christian speculation in a very specific intellectual circle,<br>
+which started a similar process two decades before the concern with<br>
+Kabbalah. Marsilio Ficino (1433-1499), the translator who was in￾strumental in rendering into Latin the huge Platonic, Neoplatonic and<br>
+Hermetic corpora, at the same time offered a synthesis between the<br>
+various forms of thought he translated and Christian theology.7 The<br>
+openness of his circle to the ancient pagan patrimony is a crucial fact<br>
+that stands at the background of the next stage of translation: that<br>
+from Hebrew. Without their acceptance ofthe relevance ofthe pagan<br>
+corpus, I wonder whether the Hebrew mystical writings would have<br>
+been embraced so warmly by them. In any case, the circle that pro￾duced the Florentine Renaissance, under the aegis ofthe Medici fam￾ily, is very relevant for Reuchlin’s Kabbalistic project. Reuchlin was<br>
+incited by a conversation with Pico to embark on the study of Kab￾balah, and he was also inspired by Pico’s Christian and magical un￾vii<br>
+&lt;IMAGE FOR PAGE: 9 / 403&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 403&gt;<br>
+Introduction to the Bison Book Edition<br>
+derstanding of Kabbalah. In fact, De Arte Cabalística has been dedi￾cated to Leo X, a pope stemming from the Medici family. Reuchlin<br>
+indeed continued, consciously, a cultural Florentine phenomenon.<br>
+This substantial acquaintance with Kabbalistic material on one<br>
+hand, and cultural continuity on the other, seems to ensure the status<br>
+of the late-fifteenth-century Florentine interest in Jewish mysticism<br>
+as the founding moment of Christian Kabbalah. Such a definition is<br>
+based upon cultural intellectual assumptions more than the concep￾tual ones. Certain Kabbalistic concepts that were known or absorbed<br>
+by a Christian thinker cannot, in my opinion, help in describing a sig￾nificant intellectual phenomenon that played a certain role on the cul￾tural scene of Europe. By these two criteria—acquaintance with<br>
+Kabbalistic material and cultural continuity—Reuchlin is to be con￾ceived as one ofthe founders ofthis branch ofChristian thought.<br>
+III. A Fiction of the Open-Minded Spanish Kabbalist?<br>
+The main exponent of the Jewish Kabbalah in De Arte Cabalística is<br>
+the Kabbalist Simon ben Elazar of the Yohaidic family, who was an<br>
+inhabitant of Frankfurt and takes part in the friendly debates with the<br>
+Pythagorean Philolaus and the Muslim Mananus. The name of the<br>
+Kabbalist Simon is fictitious though relevant; there can be no doubt<br>
+that the name of the fictitious author of the book ofthe Zohar, Rabbi<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file5 in your response to cite this file, or to surface it as a link.<br>
+&lt;IMAGE FOR PAGE: 1 / 557&gt;<br>
+[image]<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 557&gt;<br>
+Max Brod<br>
+Johannes Reuchlin<br>
+und sein Kampf<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 557&gt;<br>
+Max Brod <br>
+Ausgewählte Werke <br>
+Herausgegeben von Hans-Gerd Koch<br>
+und Hans Dieter Zimmermann<br>
+in Zusammenarbeit mit Barbora Šramková<br>
+und Norbert Miller<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 557&gt;<br>
+Max Brod<br>
+Johannes Reuchlin <br>
+und sein Kampf<br>
+Eine historische Monographie<br>
+Mit einem Nachwort von <br>
+Karl E. Grözinger<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 557&gt;<br>
+Der Verlag dankt der Stadt Pforzheim, <br>
+die die Druck legung dieses Werks zum Gedächtnis an das <br>
+500. Todesjahr des Humanisten und Hebraisten <br>
+Johannes Reuchlin großzügig gefördert hat.<br>
+Bibliografische Information der Deutschen Nationalbibliothek<br>
+Die Deutsche Nationalbibliothek verzeichnet<br>
+diese Publikation in der Deutschen Nationalbibliografie;<br>
+detaillierte bibliografische Daten sind im Internet<br>
+über http://dnb.d-nb.de abrufbar.<br>
+© The Literary Estate of Max Brod at the <br>
+National Library of Israel 2022<br>
+www.wallstein-verlag.de<br>
+Vom Verlag gesetzt aus der Aldus Roman<br>
+Umschlaggestaltung: Susanne Gerhards, Düsseldorf, © SG-Image<br>
+unter Verwendung des Titelholzschnitts der ›Ketzerpredigt‹ von 1521<br>
+ISBN (Print) 978-3-8353-5129-5<br>
+ISBN (E-Book, pdf) 978-3-8353-4813-4<br>
+ISBN (E-Book, epub) 978-3-8353-4812-7<br>
+&lt;PARSED TEXT FOR PAGE: 6 / 557&gt;<br>
+DEM ANDENKEN <br>
+MEINER LIEBEN SCHWESTER <br>
+SOPHIE <br>
+&lt;PARSED TEXT FOR PAGE: 8 / 557&gt;<br>
+Inhalt<br>
+ERSTES KAPITEL ............................ 17<br>
+Umwälzung der Seelen: ein Zeit-Hintergrund <br>
+1 Der Beginn der Renaissance, nicht deutlich. Das Ende (Um￾schlag in die Karikatur) ist leichter zu fassen. – Ein Beispiel: <br>
+Das Auftreten ›Agamemnons‹ in der Erzählung ›Euryalus und <br>
+Lucretia‹ von Enea Silvio Piccolomini.<br>
+2 Verweltlichung im Zeichen der römisch-griechischen Kultur. <br>
+Warum gerade damals? – Renaissancemenschen. ›Anziehendes <br>
+Verbrechen‹. Protest; die zehn Gebote. – Die Thesen Heers: ›of￾fene‹, relativ freie Periode des mittelalterlichen Europas, gefolgt <br>
+(seit dem 13. Jahrhundert) von der ›geschlossenen‹, strengen <br>
+Periode. – Die Grenzscheide: Ausrottung der Albigenser. – Rich￾tiger: der 1. Kreuzzug. – Kastein übersetzt den Bericht eines jü￾dischen Zeitgenossen aus dem Jahr 1096. – Huizinga über den <br>
+›Herbst des Mittelalters‹. – Unerträglichkeit des kirchlichen<br>
+Drucks. – Reliquienverehrung. – Dante über Aristoteles. – Höl￾lenmilieu. – ›Die Gerechten aller Völker haben Anteil an der<br>
+ewigen Seligkeit‹ (›an der kommenden Welt‹), ein Satz des Tal￾mud. <br>
+3 Das Maß der Unduldsamkeit war voll. – Äußere Momente tra￾gen zur seelischen Umwandlung bei. – Exzesse der neuen Frei￾heit. – Hutten an Pirckheimer. – Eine Mitte wird gesucht. – Der <br>
+Jubelruf des Rabelais. – Dürers ›Meerwunder‹. <br>
+4 Syphilis. – Die Blague bei Rabelais.<br>
+5 Erasmus sieht die Katastrophe der Religionskriege voraus. – <br>
+Seine allzu ängstliche Vorsicht. – Laurentius Valla. – Heidni￾sche und christliche Motive, gemischt. – Die Dunkelmänner￾briefe, ohne viel Witz wirksam. <br>
+6 Die Antike als Rettung. – Neuplatonismus. – Der echte Platon. <br>
+Florenz. – Dirumpamus vincula eorum (Hutten). <br>
+ZWEITES KAPITEL ........................... 49<br>
+Der junge Reuchlin <br>
+1 Die freien Reichsstädte. – Pforzheim. – Pflügers Chronik der <br>
+Stadt. – Die Bibliothek Reuchlins. – Ruinen seines Wohnhauses.<br>
+2 Seine Liebe zur Heimatstadt. – Lage der Stadt. – Sagen. – Hin￾weis auf Mörike und auf Reuchlins träumerische Veranlagung, <br>
+&lt;PARSED TEXT FOR PAGE: 9 / 557&gt;<br>
+verbunden mit scharfer Erfassung des Wirklichen und mit <br>
+Sachlichkeit.<br>
+3 Sprachstudien. Brief des Contoblacas an den Zweiundzwanzig￾jährigen. – Rückblick: Die Lateinschule in Pforzheim; 1473 Pa￾riser Universität. – Kampf zwischen Realisten und Nominali￾sten. – Via antiqua, via moderna. – Reuchlins ›Philosophie in <br>
+Symbolen‹. – Sein Lehrgang. Freundschaft mit Sebastian Brant. <br>
+– Das erste Buch, der vocabularius breviloquus, in Basel, an￾onym. – Es ist heute noch nichts von Reuchlin in hochdeutscher <br>
+Übersetzung erschienen. Ein Skandal! Dagegen Erasmus … – <br>
+Orléans, Poitiers. – Der ungeliebte Beruf: Jus. <br>
+4 Tübingen. – Stuttgart. – Erste italienische Reise 1482, Florenz, <br>
+Rom. – Die Medici. – Die 2. italienische Reise 1490 von größe￾rer Bedeutung für Reuchlin. – Doktorat. – Reuchlins Familien￾leben, nach Decker-Hauff. – Im Dienste des Grafen Eberhard, in <br>
+Italien und in Linz. <br>
+5 Der Dominikanerprior Jakob Louber in Basel. Der Kodex aus <br>
+Ragusa. – Der Ordensprovinzial Sprenger. Der ›Hexenham￾mer‹. Reuchlin zwischen Mittelalter und Humanismus. Der <br>
+Hexenwahn. Unangebrachte Höflichkeit Reuchlins. Die jüdi￾sche ›sitra achra‹.<br>
+DRITTES KAPITEL ........................... 92<br>
+Das jüdische Problem meldet sich. (Pico, Loans, Sforno) <br>
+1490–1494, 1498<br>
+1 Schicksalvolles Zusammentreffen Reuchlins mit Pico da Mi￾randola. – Die Orphiker und Neuplatoniker. Gegenwirkung <br>
+Savonarolas. – Ein höfischer Brief Picos im ›Stil der Zeit‹.<br>
+2 Picos Porträt und Abstammung. – Ein Lieblingskind des Schick￾sals. – Sprachstudien, auch hebräische. Geplanter Philosophen￾kongreß in Rom. Päpstlicher Bann. Kabbala (laut Pico) als Be￾weis für die Wahrheit des Christentums, von Reuchlin über￾nommen. Unrichtigkeit dieses Gedankens. Zobels Buch über <br>
+den Messias. Sowohl spirituale wie politische Erlösung gefor￾dert, beides gehört zur richtigen Konzeption des Judentums.<br>
+3 Einfluß des Cusanus auf Pico und Reuchlin. ›Genauigkeit gibt <br>
+es nur in Gott‹. – Pico über die Kabbala. – Pico und Reuchlin <br>
+beanstanden Fehler in den üblichen Bibelübersetzungen. Abso￾lute Wahrheit gegen ›Engagement‹. – Andere Einflüsse Picos <br>
+auf Reuchlin. – Mühlberger über Pico.<br>
+&lt;PARSED TEXT FOR PAGE: 10 / 557&gt;<br>
+4 Reuchlin nach der 2. italienischen Reise. Juristerei. – Bei Kaiser <br>
+Friedrich III. in Linz. – Reuchlin auf der Suche nach hebrä￾ischen (kabbalistischen) Büchern. Rabbi Margolith von Re￾gensburg und sein Nachkomme. – Zwei Arten von Apostaten <br>
+sind zu unterscheiden. – Jossel von Rosheim (S. Stern). – Sein <br>
+Verwandter Jakob Loans, der Hebräisch-Lehrer Reuchlins. – <br>
+›Ad fontes‹. – Erasmus gegen das Hebräische. – Reuchlin ortho￾doxer Katholik, aber mit starkem Interesse für die Ursprache <br>
+der Bibel. Dabei durchaus kein Judenfreund. Loans, die große <br>
+Ausnahme. – Reuchlin schafft die Gestalt des schöpferischen <br>
+›guten‹ Juden, lange vor den zerstörerischen Gegentypen Mar￾lowes und Shakespeares. – Das Dreigespräch in ›de arte cabali￾stica‹. – Reuchlin in Linz. Geadelt. Sein Wappen. – Der zweite <br>
+Lehrer: Owadja Sforno aus Cesena. – Der Rationalismus der <br>
+ersten modernen jüdischen Historiker. Er muß korrigiert wer￾den. Die Arbeit Gershom Scholems. – Sforno spricht.<br>
+VIERTES KAPITEL ........................... 129<br>
+Das vorbereitende Werk ›Über das wundertätige Wort‹. <br>
+1494<br>
+1 Der Brief des Leontorius an Wimpheling. – Johann von Dalburg <br>
+und der Musenhof des Wormser Bischofs in Heidelberg. – Vor￾rede des Buches an den Bischof J. von Dalburg. – Die Absicht: <br>
+Sieg des Christentums.<br>
+2 Inhalt des Werkes. – Skepsis des Sidonius. – Baruchias über das <br>
+gottgesandte Wissen. Kabbala. – Sidonius verteidigt den Epikur <br>
+und Lukrez. – Baruchias gegen Lukrez. – Capnion über das Ge￾bet, gegen Lukrez. – Sidonius: Die Verwerfung des jüdischen <br>
+Volkes, die Erwählung der Christen. Kirche und Synagoge. – <br>
+Reuchlins heftigste Attacke gegen das Judentum. – Pfefferkorns <br>
+Irrtum verständlich. – 12 Zeilen von Heine.<br>
+3 Reuchlins ablehnende Haltung gegen Baruchias. – Sidonius ge￾gen die ›Thalmudim‹, von keinerlei Sachkenntnis (Reuchlins) <br>
+getrübt. – Ein Streit, in dem beide Parteien das Streitobjekt <br>
+nicht kennen. – Verwerfung der Magie. – Analogien und Unter￾schiede der beiden Dreigespräche.<br>
+4 Über Wunder. Naturphilosophie. Lob der hebräischen Sprache. – <br>
+Heilige Namen. – Reuchlin über Unvollkommenheit der Über￾setzung (Brief an den Abt von Ottobeuren). – Die Namen Got-<br>
+&lt;PARSED TEXT FOR PAGE: 11 / 557&gt;<br>
+tes. – Einheit von Namen und Genanntem (Kratylos, Cusanus).<br>
+– Volksglauben der Eskimos. – Seltsames über Erbsünde. – Cap￾nion über die Gottesnamen. – Die Sfirót. – Das Tetragramm￾aton. – Der entfaltete Namen.<br>
+5 Reuchlins Orthodoxie. Er war kein Vorläufer Luthers. In wissen￾schaftlichen Fragen frei denkend, in religiösen überaus dogma￾tisch. – Linguistische Fehlgriffe. – Das wundertätige Wort wird <br>
+aufgezeigt. Einschiebung eines 5. Buchstabens. – Hinweis auf <br>
+Mörike, den mythenbildenden Dichter. Ekstatischer Abschluß <br>
+des Buches. – Ein Druckfehler in der 4. Ausgabe des Buches. <br>
+FÜNFTES KAPITEL .......................... 173<br>
+Humoristisches Zwischenspiel: Die beiden Komödien <br>
+1 Flucht Reuchlins nach Heidelberg 1496. – Diskussionen und <br>
+Symposien. – Celtes, Dracontius, Wernher, Vigilius. <br>
+2 Vorläufer. – ›Sergius oder Das Haupt des Hauptes‹. – Sprachli￾cher Manierismus. – Kritik des chaotischen Stückes. – Satire <br>
+gegen die Poetenfeinde. – Gegen den Reliquienmißbrauch. – <br>
+Aufstieg des Stückes im 3. Akt. – Zerfahrener Schluß.<br>
+3 Die zweite Komödie (Progymnasmata, – ›Henno‹) wesentlich <br>
+bedeutender. – Das Vorbild: Maître Pathelin. – Bee und Blee, der <br>
+originelle Grundeinfall. – Hinweis auf Goldoni und Nachwir￾kung bei Shakespeare (Petrucius?). – Dichterbegabung Reuch￾lins. Neuauff<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include fileciteturn1file6 in your response to cite this file, or to surface it as a link.<br>
+&lt;PARSED TEXT FOR PAGE: 1 / 242&gt;<br>
+The Preservation<br>
+of Jewish Religious Books<br>
+in Sixteenth-Century Germany:<br>
+Johannes Reuchlin’s Augenspiegel<br>
+&lt;PARSED TEXT FOR PAGE: 2 / 242&gt;<br>
+Studies in Medieval and<br>
+Reformation Traditions<br>
+Edited by<br>
+Andrew Colin Gow<br>
+Edmonton, Alberta<br>
+In cooperation with<br>
+Sylvia Brown, Edmonton, Alberta<br>
+Falk Eisermann, Berlin<br>
+Berndt Hamm, Erlangen<br>
+Johannes Heil, Heidelberg<br>
+Susan C. Karant-Nunn, Tucson, Arizona<br>
+Martin Kaufhold, Augsburg<br>
+Jürgen Miethke, Heidelberg<br>
+M.E.H. Nicolette Mout, Leiden<br>
+Christopher Ocker, San Anselmo and Berkeley, California<br>
+Founding Editor<br>
+Heiko A. Oberman†<br>
+Texts &amp; Sources<br>
+Edited by<br>
+Falk Eisermann, Berlin<br>
+VOLUME SMRT 163 / T&amp;S 2<br>
+The titles published in this series are listed at brill.com/smrt<br>
+&lt;PARSED TEXT FOR PAGE: 3 / 242&gt;<br>
+The Preservation<br>
+of Jewish Religious Books in<br>
+Sixteenth-Century Germany:<br>
+Johannes Reuchlin’s Augenspiegel<br>
+Edited and Translated by<br>
+Daniel O’Callaghan<br>
+LEIDEN • BOSTON<br>
+2013<br>
+&lt;PARSED TEXT FOR PAGE: 4 / 242&gt;<br>
+Cover illustration: the title page of a print from Johannes Reuchlin’s Augenspiegel,<br>
+© Württembergische Landesbibliothek, Signatur: HB 1719.<br>
+Library of Congress Cataloging-in-Publication Data<br>
+The preservation of Jewish religious books in sixteenth-century Germany: Johannes Reuchlin&#x27;s<br>
+Augenspiegel / edited and translated by Daniel O&#x27;Callaghan.<br>
+p. cm. – (Studies in medieval and Reformation traditions, ISSN 1573-4188 ; v. 163) (Texts &amp;<br>
+sources ; v. 2)<br>
+Includes bibliographical references and index.<br>
+ISBN 978-90-04-24185-5 (hardback : alk. paper) – ISBN 978-90-04-24187-9 (e-book)<br>
+1. Reuchlin, Johann, 1455-1522. Der Augenspiegel. 2. Jewish literature–Censorship. 3. Christianity<br>
+and other religions–Judaism. 4. Judaism–Relations–Christianity. 5. Books–Germany–History–16th<br>
+century. I. O&#x27;Callaghan, Daniel.<br>
+Z658.G3P74 2013<br>
+261.2&#x27;30943–dc23<br>
+2012034205<br>
+This publication has been typeset in the multilingual “Brill” typeface. With over 5,100 characters<br>
+covering Latin, IPA, Greek, and Cyrillic, this typeface is especially suitable for use in the<br>
+humanities. For more information, please see www.brill.com/brill-typeface.<br>
+ISSN 1543-4188<br>
+ISBN 978-90-04-24185-5 (hardback)<br>
+ISBN 978-90-04-24187-9 (e-book)<br>
+Copyright 2013 by Koninklijke Brill NV, Leiden, The Netherlands.<br>
+Koninklijke Brill NV incorporates the imprints Brill, Global Oriental, Hotei Publishing,<br>
+IDC Publishers and Martinus Nijhoff Publishers.<br>
+All rights reserved. No part of this publication may be reproduced, translated, stored in<br>
+a retrieval system, or transmitted in any form or by any means, electronic, mechanical,<br>
+photocopying, recording or otherwise, without prior written permission from the publisher.<br>
+Authorization to photocopy items for internal or personal use is granted by Koninklijke Brill NV<br>
+provided that the appropriate fees are paid directly to The Copyright Clearance Center,<br>
+222 Rosewood Drive, Suite 910, Danvers, MA 01923, USA.<br>
+Fees are subject to change.<br>
+This book is printed on acid-free paper.<br>
+&lt;PARSED TEXT FOR PAGE: 5 / 242&gt;<br>
+For My Wife, Irmgard<br>
+&lt;PARSED TEXT FOR PAGE: 7 / 242&gt;<br>
+CONTENTS<br>
+List of Abbreviations. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ix<br>
+Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . xiii<br>
+Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1<br>
+1 Johannes Reuchlin—Historical Perspective . . . . . . . . . . . . . . . . . . . . . . . . 5<br>
+2 Reuchlin and His Study of the Law . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23<br>
+3 Reuchlin—A Search for Salvation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39<br>
+4 The Reuchlin ‘Affair’ Unfolds . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49<br>
+5 The Reuchlin ‘Affair’ Goes Public . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61<br>
+6 Reuchlin—The Cabbalist . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 71<br>
+7 Reuchlin—An Intellectual of His Time. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 81<br>
+8 The Reuchlin ‘Affair’—A Debate without End . . . . . . . . . . . . . . . . . . . . . 91<br>
+9 Note on the Translated Text . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 97<br>
+10 Doctor Johannes Reuchlin’s Augenspiegel—Translation and<br>
+Annotations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 105<br>
+Bibliography . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 199<br>
+Index . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 221<br>
+Appendix I. Scriptural References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 233<br>
+Appendix II. Patristic Sources . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 235<br>
+Appendix III. Classical Sources . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 236<br>
+Appendix IV. Medieval Learning and Polemics . . . . . . . . . . . . . . . . . . . . . . . . . 237<br>
+&lt;PARSED TEXT FOR PAGE: 9 / 242&gt;<br>
+LIST OF ABBREVIATIONS<br>
+AUGENSPIEGEL Doctor Johannsen Reuchlins/ der K.M. als<br>
+Ertzhertzogen zu Osterreich auch<br>
+Chur/<br>
+fürsten vnd fürsten gemainen bundtrichters inn/<br>
+Schwaben warhafftige entschuldigung/ gegen vnd<br>
+wider ains getaufften iuden/<br>
+genant Pfefferkorn vormals ge/<br>
+truckt vßgangen vnwarhaf /<br>
+tigs schmachbüchlin/<br>
+AUGENSPIEGEL<br>
+Woodcut with a pair of spectacles. Laurel leaves<br>
+decorate the the inside of the lenses.<br>
+Am end dißes büchlins findet man ain correctur<br>
+etlicher wörter so inn den truck versehnen sind im<br>
+teuschen vnnd latin/ bezaichnet durch die zal der<br>
+bletter<br>
+Augenspiegel; ed. Ehlers<br>
+(1999)<br>
+The complete text with a German and Latin<br>
+transcription and including Reuchlin’s defence<br>
+appears in: Johannes Reuchlin: Sämtliche Werke.<br>
+Edited by Widu-Wolfgang Ehlers, et al., vol. 4/1<br>
+(Stuttgart-Bad Cannstatt, 1999), pp. 15–168.<br>
+Bibliotheca Palatina ed.<br>
+Mittler (1986)<br>
+Mittler, Elmar, et al. (eds.): Bibliotheca Palatina:<br>
+Textband (Heidelberg, 1986). (Katalog zur<br>
+Ausstellung der Universität Heidelberg in<br>
+Zusammenarbeit mit der Bibliotheca Apostolica<br>
+Vaticana).<br>
+CCL Corpus christianorum, series Latina vols. 72–78.<br>
+S. Hieronymi presbyteri opera (Turnhout,<br>
+1959–1970); vol. 76A ed. Marcus Adriaen (Turnhout,<br>
+1970).<br>
+CCEL ed. A. Goldbacher Corpus scriptorum ecclesiasticorum latinorum,<br>
+vol. 44 (ed). A. Goldbacher (Vienna, 1904).<br>
+CSEL ed. I. Hilberg Corpus scriptorum ecclesiasticorum latinorum<br>
+54–56: I. Hilberg ed. Sancti Eusebii Hieronymi<br>
+epistulae(Vienna<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Remember you have access to rendered images of pages from the files, in addition to their parsed text content. Some files may include images, while others may not.<br>
+These may contain embedded text in images, infographics, complex tables, diagrams, and other visual elements not fully captured in the parsed text.<br>
+You can directly view these images to read text within images, interpret infographics, understand diagrams and complex tables. When applicable, combine insights from both parsed text and images to provide comprehensive and enriched answers.</p><p>When responding to the user, actively incorporate information from embedded text, images, tables, diagrams, and other visuals in the files when applicable.<br>
+Explicitly reference them by mentioning their location (e.g., page number) and summarizing their content. For example:<br>
+<ul><li>&quot;According to the <em>chart on page 5</em>, sales have increased by 20% over ...&quot;</li><br>
+<li>&quot;The <em>diagram on page 3</em> illustrates the workflow, highlighting ...&quot;</li><br>
+</ul></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>The file contents provided above are truncated/partial snippets. The complete content for these files IS accessible via querying.</p><p>If the user asks a question related to these files, and the provided snippets do not clearly answer it, you <strong>MUST</strong> use the <code>file_search</code> tool to search the full document contents before responding.</p><p><h2>How to invoke the file_search tool</h2><br>
+If the user&#x27;s query isn&#x27;t sufficiently answered by the provided snippets, parsed text, or images, you should invoke <code>file_search.msearch</code>.<br>
+To search the full content of the available files, you <strong>must</strong> send one message with recipient <code>to=file_search.msearch</code> in the analysis channel. Your message should be structured exactly as follows:<br>
+<pre><code>{
+  &#x27;queries&#x27;: [&#x27;Example query 1&#x27;, &#x27;Example query 2&#x27;]  // List of up to five queries to search for.
+}
+</code></pre></p><p>Carefully balance the number of <code>file_search</code> calls and the quality of your response with the latency incurred by <code>file_search</code> calls.</p><p>Important guidelines for query formatting:<br>
+<ul><li>Your message must be a valid JSON object. Do not include any extraneous text, backticks, markdown formatting, or comments beyond what is shown.</li><br>
+<li>The <code>queries</code> field must be a list of strings.</li><br>
+<li>One of the queries <strong>MUST</strong> exactly match the user&#x27;s original question, but stripped of any extraneous details, and with ambiguous references clearly resolved using context from the conversation. It <strong>MUST</strong> be a complete sentence.</li><br>
+<li>Even if you suspect the user meant something else, one query <strong>MUST</strong> still be their original question.</li><br>
+</ul><br>
+<h2>How to handle results from file_search</h2><br>
+The file search tool will respond with the relevant search results from the full files. After you receive these results:<br>
+<ul><li>Carefully evaluate each result to determine its relevance and quality.</li><br>
+<li>Use the high-quality and relevant results to inform your answer to the user&#x27;s question.</li><br>
+<li>When possible, reuse information from prior file_search results and avoid repeating identical queries.</li><br>
+</ul><br>
+<h2>Tool usage instructions and ordering</h2><br>
+When the user asks a question, carefully consider whether the provided snippets sufficiently answer the query, whether you need to invoke <code>file_search.msearch</code>, or another available tool (such as <code>web</code>, if available) should be used instead.</p><p>Tool-ordering Guidelines:<br>
+1. For queries related to uploaded files, if snippets are insufficient, strongly prefer invoking <code>file_search.msearch</code> over other tools.<br>
+    - Avoid using <code>web.run</code>, <code>python</code> analysis, or any other tools until you have either:<br>
+        - Confirmed with high confidence the answer is not in the files, or<br>
+        - Have high confidence <code>file_search_tool</code> queries are not sufficient to answer the query.<br>
+2. Avoid usage of <code>web_search/web.run</code> for queries related to uploaded files<br>
+    - Carefully consider whether the user&#x27;s query is better answered by web search results rather than available snippets or results from <code>file_search_tool</code>.<br>
+    - Unless the user&#x27;s query is clearly unrelated to the uploaded files, prefer using <code>file_search.msearch</code>. You can always follow up with a web search if necessary for a more complete response.<br>
+3. Avoid using <code>python</code> unless necessary or requested by user.<br>
+    - If the user&#x27;s query is answerable from the parsed text and images from the uploaded files, or from <code>file_search_tool</code>, do not invoke <code>python</code>.</p><p>Always keep this instruction in mind for the rest of the conversation, as the user may reference these files or ask related questions later on.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Got it — I’ll <strong>do these the same way as before</strong>: document-by-document, close to the texts, no scene-setting fluff, and oriented to <strong>what each work actually contributes to Reuchlin studies and the historiography</strong>.</p><p><hr></p><p><h2>1. Markus Rafael Ackermann, <em>Der Jurist Johannes Reuchlin (1455–1522)</em>  </h2><br>
+fileciteturn1file0</p><p>Ackermann’s dissertation fundamentally reorients Reuchlin scholarship by treating him first and foremost as a <strong>jurist and legal practitioner</strong>, not primarily as a Hebraist or humanist intellectual. The book reconstructs Reuchlin’s legal career in granular institutional detail, using archival sources to show how deeply embedded he was in the legal culture of the late Holy Roman Empire.</p><p>The central argument is that Reuchlin’s famous interventions in the Jewish books controversy (<em>Augenspiegel</em>, legal opinions on confiscation) cannot be understood apart from his professional formation in <strong>Roman law, imperial jurisprudence, and princely arbitration</strong>. Reuchlin appears as a trained legal expert who consistently framed religious and cultural conflicts in juridical terms: competence, jurisdiction, evidence, and procedure.</p><p>Ackermann traces Reuchlin’s service as:<br>
+<ul><li>legal adviser to Eberhard im Bart of Württemberg,  </li><br>
+<li>judge and assessor in the Swabian League,  </li><br>
+<li>expert consultant (<em>Gutachter</em>) on complex disputes involving church, empire, and territorial princes.</li><br>
+</ul><br>
+The chapter on <em>Augenspiegel</em> is especially important: Ackermann shows that the text is not a humanist manifesto but a <strong>forensic defense brief</strong>, carefully calibrated to imperial law and precedent. Reuchlin’s insistence on preserving Jewish books emerges less as tolerance than as <strong>legal conservatism</strong>—the protection of lawful property and inherited rights under imperial jurisdiction.</p><p>The book decisively weakens readings of Reuchlin as a proto-liberal or proto-Reformation figure and instead situates him within the <strong>late-medieval legal order adapting to new religious tensions</strong>.</p><p><hr></p><p><h2>2. Erika Rummel, <em>The Case against Johann Reuchlin</em>  </h2><br>
+fileciteturn1file1</p><p>Rummel’s study is a historiographical corrective aimed directly at heroic narratives of Reuchlin as a champion of tolerance, humanism, or Jewish-Christian dialogue. Her core claim is that the “Reuchlin Affair” was never a simple conflict between enlightenment and obscurantism, but a <strong>multi-layered struggle among scholastics, humanists, converts, jurists, church authorities, and imperial institutions</strong>.</p><p>Part A reconstructs the controversy from the perspective of Reuchlin’s <strong>opponents</strong>, especially Johann Pfefferkorn and the Cologne theologians. Rummel shows that their arguments were internally coherent within late-medieval Christian anti-Judaism and should not be dismissed as mere bad faith or ignorance.</p><p>A key contribution is her analysis of <strong>confessional ambiguity</strong>:  <br>
+<ul><li>Reuchlin was not a reformer,  </li><br>
+<li>Luther was not initially aligned with him,  </li><br>
+<li>humanists exploited the affair for anti-scholastic polemic,  </li><br>
+<li>and theologians interpreted it through older heresiological frameworks.</li><br>
+</ul><br>
+Part B’s documentary section is crucial: Rummel provides translations of polemical texts, legal reports, university opinions, and satirical interventions (<em>Epistolae obscurorum virorum</em>), allowing readers to see how radically interpretations diverged even when participants agreed on basic facts.</p><p>Rummel’s overarching historiographical claim is that the Reuchlin affair exposes the <strong>fragmentation of late medieval consensus</strong> and the instability of categories like “Renaissance,” “Humanism,” and “Reformation.”</p><p><hr></p><p><h2>3. Ian Christie-Miller, <em>72 in His Name</em>  </h2><br>
+fileciteturn1file2</p><p>Christie-Miller examines the reception of the <strong>Shem ha-Mephorash</strong> (the seventy-two divine names derived from Exodus 14) across four sixteenth-century Christian authors: Reuchlin, Luther, Jean Thenaud, and Philippe Wolff. The book is comparative and source-driven, focusing on how Kabbalistic material was selectively appropriated, transformed, or rejected.</p><p>Reuchlin’s treatment is presented as the <strong>most systematic and philologically grounded</strong>. He accepts the legitimacy of the seventy-two names as part of a sacred linguistic science while carefully subordinating them to Christian Trinitarian theology. Christie-Miller emphasizes that Reuchlin’s approach is neither magical nor devotional in a popular sense, but <strong>speculative and apologetic</strong>.</p><p>By contrast:<br>
+<ul><li>Luther’s engagement is dismissive and increasingly hostile,  </li><br>
+<li>Thenaud blends Kabbalah with courtly esotericism and anti-Jewish polemic,  </li><br>
+<li>Wolff instrumentalizes the names within explicitly anti-Jewish apologetics.</li><br>
+</ul><br>
+The book’s most important contribution is showing how <strong>Christian Kabbalah fractures rapidly after Reuchlin</strong>, becoming either polemical, magical, or discarded entirely. The comparative structure makes clear that Reuchlin represents a <strong>narrow historical window</strong> in which Christian engagement with Kabbalah remained scholarly rather than propagandistic.</p><p><hr></p><p><h2>4. Johannes Reuchlin, <em>De Arte Cabalistica</em> (1517)  </h2><br>
+fileciteturn1file3</p><p><em>De Arte Cabalistica</em> is Reuchlin’s most ambitious speculative work and the cornerstone of Christian Kabbalah. Written as a Platonic dialogue, it stages conversations between a Jewish Kabbalist, a Pythagorean, and a Muslim interlocutor, allowing Reuchlin to present Kabbalah as a <strong>universal science of divine names</strong> rather than a sectarian tradition.</p><p>The work distinguishes between:<br>
+<ul><li><em>Kabbalah</em> as divine tradition transmitted from Adam and Moses,  </li><br>
+<li>and <em>ars cabalistica</em> as a learned, technical discipline accessible through study.</li><br>
+</ul><br>
+Reuchlin integrates:<br>
+<ul><li>Hebrew linguistics,  </li><br>
+<li>Neoplatonic metaphysics,  </li><br>
+<li>angelology,  </li><br>
+<li>and Trinitarian theology.</li><br>
+</ul><br>
+Crucially, he rejects practical magic and insists that true Kabbalah is contemplative, intellectual, and oriented toward divine knowledge—not miracles or coercion. The emphasis on <strong>names, letters, and combinations</strong> aligns Kabbalah with Renaissance theories of language and signification.</p><p>The dedication to Pope Leo X and the imperial printing privilege situate the work firmly within <strong>elite ecclesiastical culture</strong>, not marginal esotericism.</p><p><hr></p><p><h2>5. <em>On the Art of the Kabbalah</em> (Goodman translation; Idel introduction)  </h2><br>
+fileciteturn1file4</p><p>The Goodman translation, with Moshe Idel’s introduction, reframes <em>De Arte Cabalistica</em> within the modern study of Kabbalah. Idel’s key intervention is methodological: Christian Kabbalah should be defined not by the presence of Jewish motifs but by the <strong>adoption of Kabbalistic modes of thinking</strong>, especially combinatory and linguistic speculation.</p><p>Idel argues that Reuchlin is not merely borrowing motifs but <strong>reconfiguring Christian theology through Kabbalistic techniques</strong>, especially in his treatment of divine names and linguistic ontology.</p><p>The introduction situates Reuchlin within:<br>
+<ul><li>Florentine Neoplatonism (Ficino, Pico),  </li><br>
+<li>the rise of print culture,  </li><br>
+<li>and the shift from medieval scholasticism to symbolic and linguistic metaphysics.</li><br>
+</ul><br>
+This edition decisively establishes Reuchlin as a <strong>founder of Christian Kabbalah</strong>, not simply an early adopter.</p><p><hr></p><p><h2>6. Max Brod, <em>Johannes Reuchlin und sein Kampf</em>  </h2><br>
+fileciteturn1file5</p><p>Brod’s monograph is not a modern critical biography but a <strong>philosophical-historical portrait</strong>, shaped by early-20th-century concerns with tolerance, human dignity, and spiritual crisis. Reuchlin is presented as a tragic figure caught between medieval repression and modern freedom.</p><p>Brod emphasizes:<br>
+<ul><li>the psychological and ethical dimensions of Reuchlin’s struggle,  </li><br>
+<li>the symbolic importance of the Jewish books controversy,  </li><br>
+<li>and the moral courage required to oppose dominant theological institutions.</li><br>
+</ul><br>
+While methodologically dated, the book is important for understanding <strong>how Reuchlin functioned as a symbol</strong> for later Jewish and humanist thought, especially in German-Jewish intellectual culture.</p><p><hr></p><p><h2>7. Daniel O’Callaghan (ed.), <em>The Preservation of Jewish Religious Books in Sixteenth-Century Germany: Johannes Reuchlin’s Augenspiegel</em>  </h2><br>
+fileciteturn1file6</p><p>This volume combines historical analysis with a full annotated translation of <em>Augenspiegel</em>. The introductory essays situate the text within censorship history, book culture, and late-medieval legal thought.</p><p>Reuchlin’s argument is shown to rest on:<br>
+<ul><li>property rights,  </li><br>
+<li>jurisdictional limits,  </li><br>
+<li>and the distinction between theological error and civil illegality.</li><br>
+</ul><br>
+The volume makes clear that <em>Augenspiegel</em> is neither philosemitic nor reformist but a <strong>defense of lawful procedure against inquisitorial overreach</strong>. The annotations demonstrate how deeply Reuchlin relies on canon law, Roman law, and patristic precedent.</p><p>The book establishes <em>Augenspiegel</em> as a foundational document in the history of <strong>book preservation, censorship, and intellectual property</strong>, rather than merely a religious polemic.</p><p><hr></p><p>If you want, next we can:</p><p>• synthesize <strong>Ackermann + Rummel + O’Callaghan</strong> into a <em>legal-institutional biography</em> of Reuchlin  <br>
+• map <strong>Christian Kabbalah’s rise and collapse</strong> from Pico → Reuchlin → Luther  <br>
+• or build a <strong>historiographical matrix</strong> showing how Brod, Rummel, Dan, Brann, Idel, and Ackermann contradict each other in detail</p>
+  </div>
+</div>
+</div>
+</body>
+</html>

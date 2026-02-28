@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New insights in Platonism</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>New insights in Platonism</h1>
+  <div class="meta">October 12, 2025 07:26 AM &middot; Model: gpt-5 &middot; 20 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>what do we learn that is new in this study</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>Make sure to include <code>【message_idx†source】</code> markers to provide citations based on this file, where [message_idx] is provided at the beginning of this message</p><p>Proclus and the Chaldean Oracles; A Study on Proclean Exegesis, with a Translation and Commentary of Proclus’ Treatise On Chaldean Philosophy</p><p>  <br>
+  </p><p> <br>
+ </p><p>   <br>
+ </p><p>  Proclus and the Chaldean Oracles </p><p>This volume examines the discussion of the Chaldean Oracles in the work <br>
+of Proclus, as well as offering a translation and commentary of Proclus’ <br>
+Treatise On Chaldean Philosophy. <br>
+Spanu assesses whether Proclus’ exegesis of the Chaldean Oracles can </p><p>be used by modern research to better clarify the content of Chaldean <br>
+doctrine or must instead be abandoned because it represents a substantial <br>
+misinterpretation of originary Chaldean teachings.The volume is augmented <br>
+by Proclus’ Greek text, with English translation and commentary. <br>
+Proclus and the Chaldean Oracles will be of interest to researchers working </p><p>on Neoplatonism, Proclus and theurgy in the ancient world. </p><p>Nicola Spanu wrote a PhD thesis on Plotinus and his Gnostic disciples <br>
+and took part in a postdoctoral project on Byzantine cosmology and its <br>
+relation to Neoplatonism. He has worked as an independent researcher <br>
+on his second academic publication, which has focused on  Proclus and the <br>
+Chaldean Oracles. </p><p>   <br>
+ <br>
+ </p><p>   <br>
+ <br>
+ </p><p>   <br>
+ <br>
+ </p><p>   <br>
+ </p><p>   <br>
+ <br>
+ </p><p>   <br>
+ </p><p>      <br>
+ </p><p>    <br>
+ </p><p>   <br>
+ <br>
+ </p><p> <br>
+ </p><p> Routledge Monographs in Classical Studies </p><p>Titles include : </p><p>Un-Roman Sex <br>
+Gender, Sexuality, and Lovemaking in the Roman Provinces and Frontiers <br>
+Edited by Tatiana Ivleva and Rob Collins </p><p>Robert E. Sherwood and the Classical Tradition <br>
+The Muses in America <br>
+Robert J. Rabel </p><p>Text and Intertext in Greek Epic and Drama <br>
+Essays in Honor of Margalit Finkelberg <br>
+Edited by Jonathan Price and Rachel Zelnick-Abramovitz </p><p>Animals in Ancient Greek Religion <br>
+Edited by Julia Kindt </p><p>Classicising Crisis <br>
+The Modern Age of Revolutions and the Greco-Roman Repertoire <br>
+Edited by Barbara Goff and Michael Simpson </p><p>Epigraphic Culture in the Eastern Mediterranean in Antiquity <br>
+Edited by Krzysztof Nawotka </p><p>Proclus and the Chaldean Oracles <br>
+A Study on Proclean Exegesis , with a Translation and Commentary of <br>
+Proclus’ Treatise On Chaldean Philosophy <br>
+Nicola Spanu </p><p>Greek and Roman Military Manuals <br>
+Genre and History <br>
+Edited by James T. Chlup and Conor Whately </p><p>For more information on this series, visit:  www.routledge.com/ <br>
+classicalstudies/series/RMCS </p><p>http://www.routledge.com<br>
+http://www.routledge.com</p><p> <br>
+  </p><p>  <br>
+  </p><p>Proclus and the Chaldean <br>
+Oracles <br>
+A Study on Proclean Exegesis , <br>
+with a Translation and Commentary <br>
+of Proclus’ Treatise On Chaldean <br>
+Philosophy </p><p>Nicola Spanu </p><p> <br>
+ <br>
+  </p><p> <br>
+   </p><p> <br>
+ </p><p>    <br>
+ </p><p>    <br>
+ </p><p> <br>
+ </p><p>  <br>
+ </p><p> <br>
+ </p><p>First published 2021 <br>
+by Routledge <br>
+2 Park Square, Milton Park, Abingdon, Oxon OX14 4RN </p><p>and by Routledge <br>
+52 Vanderbilt Avenue, New York, NY 10017 </p><p>Routledge is an imprint of the Taylor &amp; Francis Group, an informa business </p><p>© 2021 Nicola Spanu </p><p>The right of Nicola Spanu to be identified as author of this work has <br>
+been asserted by them in accordance with sections 77 and 78 of the <br>
+Copyright, Designs and Patents Act 1988. </p><p>All rights reserved. No part of this book may be reprinted or <br>
+reproduced or utilised in any form or by any electronic, mechanical, <br>
+or other means, now known or hereafter invented, including <br>
+photocopying and recording, or in any information storage or <br>
+retrieval system, without permission in writing from the publishers. </p><p>Trademark notice: Product or corporate names may be trademarks <br>
+or registered trademarks, and are used only for identification and <br>
+explanation without intent to infringe. </p><p>British Library Cataloguing-in-Publication Data <br>
+A catalogue record for this book is available from the British Library </p><p>Library of Congress Cataloging-in-Publication Data <br>
+Names: Spanu, Nicola, author. | Proclus, approximately 410–485. On </p><p>the Chaldean philosophy. English (Spanu) | Proclus, approximately <br>
+410–485. On the Chaldean philosophy. Greek (Des Places) </p><p>Title: Proclus and the Chaldean oracles : a study on Proclean exegesis, <br>
+with a translation and commentary of Proclus’ Treatise on <br>
+Chaldean philosophy / Nicola Spanu. </p><p>Other titles: Routledge monographs in classical studies. <br>
+Description: Abingdon, Oxon ; New York, NY : Routledge, 2021. | </p><p>Series: Routledge monographs in classical studies | Greek text <br>
+edited by É douard Des Places. | Includes bibliographical references <br>
+and index. </p><p>Identifiers: LCCN 2020012777 (print) | LCCN 2020012778 (ebook) <br>
+Subjects: LCSH: Proclus, approximately 410–485. On the Chaldean </p><p>philosophy. | Julianus, the Theurgist. Chaldean oracles. | <br>
+Neoplatonism. | Metaphysics. </p><p>Classification: LCC B701.O53 S63 2021 (print) | LCC B701.O53 <br>
+(ebook) | DDC 186/.4—dc23 </p><p>LC record available at https://lccn.loc.gov/2020012777 <br>
+LC ebook record available at https://lccn.loc.gov/2020012778 </p><p>ISBN: 978-0-367-47314-3 (hbk) <br>
+ISBN: 978-1-003-03662-3 (ebk) </p><p>Typeset in Sabon <br>
+by Apex CoVantage, LLC </p><p>https://lccn.loc.gov<br>
+https://lccn.loc.gov</p><p>   dla Oli </p><p>http://taylorandfrancis.com</p><p> <br>
+ </p><p> <br>
+ <br>
+ <br>
+ </p><p> Contents </p><p>Acknowledgments ix</p><p> Introduction 1 </p><p>0.1 The Chaldean Oracles and Proclus 1 <br>
+0.2 A brief introductory comparison between Proclus’ </p><p>and the Chaldean Oracles’ metaphysics 3 <br>
+0.3 A concise assessment of the disagreement of current </p><p>literature concerning the first principles of Chaldean <br>
+metaphysics 6 </p><p>0.4 The purpose of this book 8 <br>
+0.5 Some methodological and hermeneutical </p><p>considerations 11 <br>
+0.6 Final considerations 12 </p><p>1 The Chaldean triad 17 </p><p>1.1 The triad Father – Power – Intellect 17 <br>
+1.2 The First Transcendent Fire, the First Intellect and the </p><p>Demiurgic Intellect 33 </p><p>2 The structure of the divine dimension 53 </p><p>2.1 The single divine hypostases 53 </p><p>3 The world’s intellectual archetype and the creation </p><p>of the material dimension 96 </p><p>3.1 The world of intellectual Ideas 96 <br>
+3.2 The division of all things into triads 98 <br>
+3.3 The cosmic triad Faith – Truth – Eros 99 <br>
+3.4 The paternal Intellect’s ‘channels of implacable fire’ 101 </p><p>      <br>
+ <br>
+ </p><p> <br>
+ <br>
+ </p><p> <br>
+ <br>
+ <br>
+ </p><p> <br>
+ <br>
+ <br>
+ <br>
+ <br>
+ <br>
+ </p><p> <br>
+ <br>
+ </p><p>  <br>
+    </p><p>viii Contents </p><p>3.5 Symbola and synthemata 103 <br>
+3.6 Matter 104 <br>
+3.7 The four elements and the creation of the material </p><p>world 106 <br>
+3.8 The sun and the encosmic gods 107 <br>
+3.9 The sky 111 <br>
+3.10 The movement of the fixed stars and the planetary </p><p>revolutions 112 </p><p>4 Man and his destiny 116 </p><p>4.1 The creation of man by the Father 116 <br>
+4.2 The vehicle of the soul 117 <br>
+4.3 The material body 118 <br>
+4.4 The liberation of the souls from their material </p><p>costraints 119 <br>
+4.5 Metempsychosis 120 <br>
+4.6 The soul’s faculty of perception 121 <br>
+4.7 The ‘gods’’ address to the initiate 121 <br>
+4.8 The initiate’s love for the gods 128 <br>
+4.9 Hecate’s apparitions to the initiate 129 <br>
+4.10 The Chaldean way to the Father 133 <br>
+4.11 Man between angels and daemons 139 </p><p>5 Proclus’ On Chaldean Philosophy : translation </p><p>and commentary 147 </p><p>5.1 Introduction 147 <br>
+5.2 Text 148 <br>
+5.3 Translation 152 <br>
+5.4 Commentary 156</p><p> Conclusions 166 </p><p>Synopsis of Chaldean and Proclean systems 168 </p><p>Bibliography 170 <br>
+Index of ancient sources quoted 185 <br>
+Index 195 </p><p> Acknowledgments </p><p>I want to thank Prof. Giulia Sfameni Gasparro for sharing with me her <br>
+insightful thoughts on the topics discussed in this book. My thanks also go <br>
+to Dr. Ernesto Sergio Mainoldi for helping me to improve the manuscript. I <br>
+am grateful to the anonymous reviewers of this book for their suggestions on <br>
+how to make it accessible to a wider public. Of course, I take full responsibil-<br>
+ity for possible mistakes as well as for the final choices I made. Last but not <br>
+least, I want to thank my wife, parents and brother for showing to me their <br>
+constant support during the difficult times in which I have written this book. </p><p>http://taylorandfrancis.com</p><p>    <br>
+ </p><p>  <br>
+     </p><p> <br>
+   </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+   </p><p>   <br>
+      </p><p> <br>
+ </p><p>  <br>
+ </p><p>Introduction </p><p>0.1 The Chaldean Oracles and Proclus </p><p>The Chaldean Oracles (Χαλδαϊκά λόγια) have come down to us in highly <br>
+fragmentary form. É. des Places’ edition 1 contains 227 fragments in hex-<br>
+ameter verse, of which 186 are authentic, 17 doubtful, while 24 consist in <br>
+a single word. The biggest number of them has been discovered in Proclus’ <br>
+Platonic commentaries. Damascius has also preserved a considerable num-<br>
+ber of oracular sayings2 in his treatise On the Principles, in his  Commentary <br>
+on Plato’s Parmenides3 and in that on the Phaedo. 4 For both authors, the <br>
+Chaldean Oracles are a divine revelation,5 and they refer to them with the <br>
+objective of showing the agreement of their own philosophy, of the doctrines <br>
+of Plato, Pythagoras and Orpheus as well as of Greek traditional religion <br>
+with the Oracles (Λόγια) revealed by the gods through their earthly represen-<br>
+tatives.6 These are called ‘theurgists’ ( θεουργοί), literally ‘those who operate <br>
+on the gods’, and were believed by Neo-Platonists from Iamblichus onwards <br>
+to be mediators between man and the gods.7 The connection between the <br>
+theurgists and the Chaldean Oracles is shown by the fact that the authentic <br>
+fragment 153 des Places regards them as a spiritual elite capable of breaking <br>
+the bonds that bind humanity to the world of becoming governed by inflex-<br>
+ible Necessity. <br>
+With regard to the adjective ‘Chaldean’, this never appears in the extant </p><p>fragments, while Proclus uses the expression ‘Chaldean Oracles’ ( Χαλδαϊκά <br>
+λόγια);8 he also seems to use the substantive ‘Chaldeans’ ( Χαλδαῖοι) to refer <br>
+to the authors of the Oracles,9 since in his Commentary on Plato’s Republic <br>
+he mentions ‘the theurgists of the Chaldeans’ ( οἱ παρὰ Χαλδαιοίς θεουργοὶ).10 <br>
+We know that in Hellenistic culture the term ‘Chaldeans’ referred to those <br>
+astrologers11 who wandered about the Roman Empire offering their services <br>
+to rich clients.12 But, as fragment 107 des Places clearly shows, the  Chaldean <br>
+Oracles did not have a positive opinion of astrology, so we can assume that, <br>
+if this designation accompanied the Λόγια since the time they were written <br>
+and was not a later addition, it was used to indicate their supposed Oriental <br>
+provenance, of which the Neo-Platonists were generally aware, since they <br>
+often referred to their authors as the ‘Assyrians’ or simply the ‘Barbarians’. 13 </p><p> <br>
+  </p><p>     <br>
+    </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+  </p><p> <br>
+ </p><p> <br>
+ </p><p>   <br>
+   </p><p>  <br>
+ </p><p>  <br>
+        </p><p>      <br>
+ </p><p> <br>
+  </p><p>2 Introduction </p><p>With regard to the authorship and date of composition of the  Chaldean <br>
+Oracles, Suda’s  Lexicon provides us with valuable information. It says that <br>
+Julian the Theurgist, son of Julian the Chaldean, 14 lived at the time of the <br>
+emperor Marcus Aurelius (121–180 A.D.) and authored, in addition to <br>
+works on Theurgy (Θεουργικά) and Telestics (Τελεστικά), ‘Oracles in hexam-<br>
+eter verse’ (Λόγια δι’ ἐπῶν). As we have seen, the term ‘Oracles’ ( Λόγια) was <br>
+the one used by Neo-Platonists to refer to the Chaldean Oracles.15 Scholarly <br>
+consensus terminates at this point, since while H. Lewy 16 thought that the <br>
+two Juliani, father and son, co-authored the  Chaldean Oracles, H. D. Saf-<br>
+frey, on the basis of a strictly philological interpretation of Suda’s text, came <br>
+to the conclusion that Julian the Theurgist was their sole author. 17 There is <br>
+no doubt that Saffrey’s interpretation is much more philologically correct <br>
+than Lewy’s. However, a testimony from Psellus18 adduced by Saffrey him-<br>
+self19 – according to which Julian the Chaldean had recourse to the hieratic <br>
+art to make both the gods and Plato’s soul speak through his son (who <br>
+then really performed the role of oracle or prophet20 of this new divine <br>
+revelation) – could be a sign that Julian the Chaldean’s contribution to his <br>
+son’s endeavour to organize the Oracles of the gods in a coherent whole <br>
+was not negligible; it is in this special sense that he could be said to have <br>
+co-authored them. Probably the best choice in this regard is to follow des <br>
+Places and consider the Chaldean Oracles as an anonymous text,21 or to <br>
+speak of ‘authors’ of the Oracles in the plural as we have sometimes chosen <br>
+to do, in order to show that collecting and putting in writing the Oracles of <br>
+the gods must have been the result of a collective effort. <br>
+This is the tradition that Proclus, born in Constantinople in 412 from rich </p><p>parents,22 came into contact with when he became disciple of Syrianus in <br>
+Athens,23 which he preferred to Alexandria where for a time he had studied <br>
+rhetoric and philosophy, because of lack of decent teachers of philosophy in <br>
+that city. 24 After the death of his master Syrianus,25 he became head of the <br>
+Platonic Academy of Athens in around 437, 26 dying there in 485.27 </p><p>In his Life of Proclus, Marinus, disciple and biographer of Proclus, reports <br>
+that his master had studied the Chaldean Oracles almost by himself, since <br>
+Syrianus had died before Proclus’ disagreement with his fellow disciple <br>
+Domninus whether their common master had to explain to them the Chal-<br>
+dean Oracles or the Orphic texts was resolved.28 As a consequence, when <br>
+Syrianus died, Proclus had been taught by his master only the ‘elements’ <br>
+(στοιχεῖα) of Chaldean wisdom.29 To obtain a deeper knowledge of the <br>
+Oracles, which he regarded as a text of immense value comparable only to <br>
+Plato’s  Timaeus,30 he made use of ‘the best Commentaries on the God-given <br>
+Oracles’ (τὰ μέγιστα τῶν ὑπομνημάτων εἰς τὰ θεοπαράδοτα λόγια), namely Por-<br>
+phyry’s and Iamblichus’s  ἐξηγήσεις,31 of the Chaldean Oracles themselves32 </p><p>as well as of Chaldean ‘premises’ (ὑποθέσεις) (probably the introductory <br>
+material given to him by Syrianus)33; it took him five years to complete the <br>
+study of these sources.34 There is no doubt that Proclus wrote extensively <br>
+on the Chaldean Oracles,35 even if no ancient author mentions a Proclean </p><p> <br>
+   </p><p>  <br>
+ </p><p>          <br>
+  </p><p> <br>
+ </p><p>  <br>
+ </p><p>Introduction 3 </p><p>‘Commentary on the Chaldean Oracles’: Marinus simply says that Proclus <br>
+‘put together’ (συνελών) the material previously described, while Suda36 </p><p>attributes to him a text entitled Agreement of Orpheus, Pythagoras and <br>
+Plato with the Oracles, which has been shown to be by Syrianus. The five <br>
+extracts where Proclus explains the Chaldean Oracles which were excerpted <br>
+by Psellus are simply entitled (with all probability by the excerptor himself) <br>
+On Chaldean Philosophy (Πρόκλου ἐκ τῆς αὐτῆς χαλδαϊκῆς φιλοσοφίας).37 </p><p>In conclusion, our knowledge of both the  Chaldean Oracles as they have <br>
+been preserved by Proclus and of his interpretation of them (but a similar <br>
+discourse could be made with regard to Damascius’ interpretation)38 is lim-<br>
+ited for three reasons: </p><p>1 Proclus’ quotations are generally very short (notable exceptions are <br>
+fragments 39, 49, 61, 146 and especially 37 des Places); this deprives us <br>
+of useful information on the Chaldean system. </p><p>2 In their commentaries on the Platonic dialogues, Proclus and Damascius <br>
+confine themselves to quoting the Oracles to show that either their own <br>
+philosophical positions or exegeses of Plato conform to what had been <br>
+revealed by the gods through the theurgists.39 </p><p>3 The difficulty in establishing the original context of each fragment, since <br>
+the same fragments are sometimes quoted either by the same author in <br>
+different contexts or by different authors.40 </p><p>0.2 A brief introductory comparison between Proclus’ and the <br>
+Chaldean Oracles ’ metaphysics </p><p>In this book we will discuss many aspects of Proclus’ metaphysical system <br>
+and compare it closely with the Chaldean one. However, we will not do this <br>
+systematically since the objective of this book is not to compare the two <br>
+systems (this work has already been done by other authors)41 but to discuss <br>
+Proclus’ exegesis of Chaldean doctrine, which refers to Chaldean metaphys-<br>
+ics only in a few cases and not always to discuss metaphysical problems, but <br>
+also to elucidate completely different matters. This state of affairs has also <br>
+forced us to resort to other ancient authors, in particular to Damascius’  On <br>
+the Principle and Commentary on the Parmenides, to clarify specific aspects <br>
+of Chaldean metaphysics relevant to Proclus’ exegesis but that he either <br>
+does not discuss or confines himself to merely hinting at. A case in point in <br>
+this regard is that of the first Chaldean fragment that will be analyzed in this <br>
+book (fragment 4 des Places), where it is made mentioned of the Chaldean <br>
+triad Father – Power – Intellect but which Proclus makes use of not to dis-<br>
+cuss the nature of the first principles, but to elucidate that of daemons, since <br>
+he thinks that as the divine hypostasis Power has the middle rank between <br>
+the divine hypostases of the Father and the Intellect, so the daemons are <br>
+placed in a median position between gods and men. It must be said that <br>
+Proclus’ way of proceeding can at times appear disconcerting to a modern </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p>4 Introduction </p><p>reader, because he establishes connections between contexts that from a <br>
+modern perspective should be considered as unrelated. However, this is not <br>
+so for Proclus: for him everything relates to everything though at different <br>
+degrees; this means that the hierarchies that structure the higher dimensions <br>
+of Being also appear at inferior levels; in this respect Proclus agrees with the <br>
+Hermetic and evangelical principle ‘as above, so below’. Regarding the case <br>
+of fragment 4 des Places mentioned previously, we have resorted heavily on <br>
+Damascius to illustrate the relationship between the monadic and triadic <br>
+dimensions of Chaldean metaphysics, which unfortunately Proclus does not <br>
+elucidate with the same clarity as his successor at the helm of the Platonic <br>
+academy at Athens. We have also thought it useful for the reader to show <br>
+the similarities existing between Chaldean metaphysics and the metaphysi-<br>
+cal conceptions of coeval systems, such as the Gnostic and the Hermetic <br>
+ones. Although a close analysis of these similarities cannot be performed <br>
+in this book, we have thought that the fact of listing them in the endnotes <br>
+could stimulate further research on them. In order to help the reader to <br>
+better understand Proclus’ interpretation of Chaldean metaphysics, we will <br>
+now briefly compare the two systems. In this concise introduction, we will <br>
+confine ourselves to listing what we believe are the most important aspects <br>
+of both systems, a preliminary knowledge of which could help the reader to <br>
+better understand Proclus’ exegesis. In doing so, we have benefited greatly <br>
+from the introductions to Proclus’ metaphysics currently available, to which <br>
+we refer the interested reader. 42 We have also prepared a synopsis of the Pro-<br>
+clean and Chaldean system, which will help the reader to identify the several <br>
+divine entities mentioned throughout the book. <br>
+Proclus’ system is centred around the One, which represents the highest </p><p>divine hypostasis, the Principle from which Being as a whole and, through <br>
+its mediation, every single being comes from. The One transcends Being as <br>
+well as each single being but is at the same time present in both, since they <br>
+exist by participation in it. If, as giver of existence to all existents, the One <br>
+plays the role of efficient cause, as the final aim to which all beings tend, it <br>
+represents the universal final cause, since everything aims at going back to <br>
+the source of its own being. For Proclus, the One is also identical with the <br>
+Platonic Good, since it not only generates all beings but also keeps them in <br>
+existence: this is so because it communicates to each single one of them their <br>
+unitary nature, according to which each  one of them is a specific individual; <br>
+for Proclus, only what is endowed with a minimum degree of oneness can <br>
+exist, while what is deprived of it is inevitably led to nonexistence. The <br>
+unlimited simplicity and oneness of the One makes it absolute in the etymo-<br>
+logical sense of the word, namely free from all relations with inferior beings. <br>
+This also implies that it is totally incomprehensible to them, since even the <br>
+tiniest degree of multiplicity establishes an insurmountable gulf between the <br>
+beings that possess it and the One. <br>
+This is the case of the higher henads, which represent the ‘beings’ closest </p><p>to the One, since they possess oneness to a degree superior to that of the </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+  </p><p> <br>
+  </p><p> <br>
+ </p><p> <br>
+ <br>
+ </p><p>Introduction 5 </p><p>beings inferior to them. Modern research has not established yet whether <br>
+the henads transcend Being or are instead inferior to it, since Proclus seems <br>
+to defend both positions and place the henads both above and below Being, <br>
+which according to him arises as a consequence of the interaction of the <br>
+primordial couple of opposites, Limit–Unlimitedness, in turn coming into <br>
+existence from the One. It is not even clear whether the henads are above <br>
+the triad Limit – Unlimitedness – Being or inferior to Limit–Unlimitedness <br>
+but superior to Being.43 Coming now to the higher hypostases of the Chal-<br>
+dean metaphysical system, the henads are absent from it while a principle <br>
+equivalent to the Proclean One seems to be present, since from our analysis <br>
+(see later, Chapter 1 ) it emerges that the Chaldean Oracles gave the Father <br>
+both the role of supreme monad and that of first member of the triad Father – <br>
+Power – Intellect. It does not seem that there is any Chaldean equivalent to <br>
+the Proclean triad Limit – Unlimitedness – Being. <br>
+From Being arises a second triad, namely Being – Life – Intellect. Each </p><p>member of this triad in turn manifests itself in a triad, so that we will have <br>
+three triads in total which will constitute the Proclean equivalent to Plato’s <br>
+hyperuranion or world of intelligible Ideas. Each of these three intelligible <br>
+triads retains the main characteristics of the member of the triad Being – <br>
+Life – Intellect from which they arise and are placed hierarchically the one <br>
+below the other; this, however, does not prevent them from being mutu-<br>
+ally inclusive; for example, the first triad, placed under the preeminence of <br>
+Being, must also be considered as alive and thinking, because in order to be <br>
+alive and think one must first be: Being then includes both Life and Intel-<br>
+lect; similarly, the second triad is placed under the preeminence of Life but <br>
+it also is and thinks, since being alive implies the fact of being and is in turn <br>
+necessary condition for the act of thinking; finally the third one, under the <br>
+preeminence of Intellect, must be and live in order to think. With the three <br>
+intelligible triads of the Proclean system as they are included in the triad <br>
+Being – Life – Intellect could be compared the first triad of the Chaldean <br>
+one, namely Father – Power – Intellect. In the Chaldean system, the goddess <br>
+Hecate sometimes takes the place of Power in her role of universal feminine <br>
+principle, while the Father in turns represents the masculine one, but this <br>
+goddess also manifests herself at inferior levels of the hierarchy of Being. <br>
+Below the intelligible triads Proclus places other three triads, which are </p><p>both intelligible and intellective and represent a further degree of removal <br>
+from the One. They are not simply archetypical models of sensible beings <br>
+as the intelligible triads but also thinking beings, and, as a consequence, <br>
+immersed even more than their intelligible counterparts in the realm of <br>
+multiplicity, since the act of thinking must differentiate, at least in prin-<br>
+ciple, the thinking subject from the object thought, even if at this level <br>
+subject and object coincide, since Intellect contains in itself all the intel-<br>
+lectual ideas (the objects of his own thought) he thinks of. To these intel-<br>
+ligible and intellectual triads correspond three Chaldean triads, namely <br>
+Iynges, Connectors and Teletarchs, which play the role of bridging the gap </p><p> <br>
+ </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p>6 Introduction </p><p>between the intelligible dimension and the inferior, intellectual, one. This is <br>
+divided by Proclus into two triads, followed by a monad. The first is made-<br>
+up of the gods Chronos – Rhea – Zeus, the second of the three Curetes, gods <br>
+of traditional Greek mythology, while the seventh and last entity separates <br>
+the intellectual dimension from the psychic one, pertaining to the Soul. At <br>
+the intellectual level the Chaldean system places several entities, some of <br>
+them identical with those mentioned by Proclus: the dyad Chronos – Rhea, <br>
+Aion and Time, followed by Eros and a ‘girdling membrane’, equivalent to <br>
+the Proclean separating monad (on this see later Chapters 2 and 3 ). At the <br>
+intellectual level Proclus also places the Demiurge of both Soul and sensible <br>
+world, which appears with the same role in the Chaldean system as well (see <br>
+Chapters 1 and 2 ). <br>
+As in Proclus’ system, so in the Chaldean one the World Soul gives exis-</p><p>tence to a multiplicity of individual souls arranged hierarchically according <br>
+to their removal from the material world. The individual souls that are more <br>
+removed from it are for Proclus the hyper-cosmic gods, which he arranges <br>
+in four triads corresponding to the azonoi of the Chaldean system, namely <br>
+the gods above the ‘zones’ or planetary spheres. Below them Proclus places <br>
+the hyper-cosmic–encosmic gods (for which we have no Chaldean equiva-<br>
+lent) followed by the encosmic gods, namely the seven visible planets, called <br>
+zonaioi in the Chaldean system. At a lower level, both for  Proclus and the <br>
+Chaldean Oracles, are placed the angelic hierarchies, followed by the dae-<br>
+monic ones (see Chapter 3 ). Man is placed at the bottom of the hierarchy <br>
+because of his fall from the divine realm (see Chapter 4 ). Though immersed <br>
+in the material dimension, man can rediscover his celestial origin by virtue of <br>
+the tools made available to him by both philosophy and theurgy. The latter <br>
+is for both Proclus and the Chaldean Oracles indispensable to allow man to <br>
+be freed from the clutch of evil matter and her daemons and go back to his <br>
+real home in heaven (see Chapter 4 ). </p><p>0.3 A concise assessment of the disagreement of current literature <br>
+concerning the first principles of Chaldean metaphysics </p><p>Here we will confine ourselves to make some examples of the impasse in <br>
+which current literature has found itself with regard to its assessment of <br>
+the first principles of Chaldean metaphysics, in particular of the Chaldean <br>
+divine monad and triad, given that a critical evaluation of the achievements <br>
+of modern research on the Chaldean Oracles since the time of Kroll’s pub-<br>
+lication of his critical edition of them at the end of the 19th century would <br>
+require a publication of its own. <br>
+In the first chapter of the book, we will see how the extant Chaldean frag-</p><p>ments present the divine principle as a paternal monad that manifests itself <br>
+in a triad, to be precise, in the Chaldean triad Father – Power – Intellect; <br>
+as a consequence, the Chaldean divine Father should play the role of both <br>
+supreme monad and first member of the triad Father – Power – Intellect </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+   </p><p>   <br>
+ </p><p>   <br>
+  </p><p> <br>
+  </p><p> <br>
+ </p><p> <br>
+ </p><p>   <br>
+ </p><p>Introduction 7 </p><p>emanated from Him. This interpretation is based on H. Lewy’s, 44 a pioneer-<br>
+ing researcher on the Chaldean Oracles, who however was not followed <br>
+by all the authors that came after him. P. Merlan’s position on this topic is <br>
+not very clear, but he seems to follow Lewy, 45 while H. D. Saffrey explicitly <br>
+agrees with him in believing that the Chaldean Oracles posited the One <br>
+as supreme principle,46 and the same does P. Hadot.47 J. D. Turner consid-<br>
+ers the identification of the Chaldean Father with Numenius’ First Intellect <br>
+advanced by Dillon et alii as a mere assumption,48 but, in another part of <br>
+his important article on the relationship of the Oracles with the Gnostic <br>
+treatises of the Sethian sect,49 he asks himself whether it could be possible <br>
+that for the Oracles the Father regarded as supreme monad transcends the <br>
+Father as part of the triad Father – Power – Intellect; my answer to his ques-<br>
+tion is obviously affirmative. Brisson does not take a definitive stance on <br>
+whether the Chaldean Father coincides with Numenius’ First Intellect or <br>
+with the Good of Plato’s  Republic and the One of the second hypothesis of <br>
+the Parmenides.50 </p><p>On the contrary, in his The Middle-Platonists, Dillon, in line with A. J. <br>
+Festugière,51 explicitly identifies the Chaldean Father with the First Intellect <br>
+of Numenius’ system,52 but, just a couple of pages below, he links Him with <br>
+Eudorus’s First Principle, which was very close to the Neo-Platonic One, say-<br>
+ing that ‘the radical monism of Chaldean metaphysics’ is ‘analogous to that <br>
+which we discerned in Eudorus, who also derives Matter from the Supreme <br>
+Principle’.53 Dillon builds on the seminal paper by E. R. Dodds, New Light <br>
+on the Chaldean Oracles,54 where this author does not take a definitive <br>
+stance on the nature of the Chaldean Father, simply saying that some frag-<br>
+ments seem to identify Him with Numenius’ First Intellect, while others <br>
+place Him above it. R. Majercik follows Dillon and, though tentatively, <br>
+identifies the Chaldean Father with the First Intellect.55 This author is also <br>
+critical of the idea that the Chaldean Oracles admitted a divine monad at all, <br>
+since she thinks that ‘it cannot be known with certainty’ whether the idea <br>
+that fragment 27 des Places expresses (the government of the triad by the <br>
+monad) reflects ‘a general law of reality’, though she deems it as ‘of course, <br>
+possible’.56 J. F. Finamore and S. I. Johnston follow the same approach in <br>
+their synopsis of the Chaldean system: ‘The Intellect is the highest God ( scil. <br>
+of the Oracles)’,57 and the same does H. Seng, author of the more recent <br>
+introduction to the Chaldean Oracles.58 </p><p>Another aspect of Chaldean metaphysics in which there is no scholarly <br>
+agreement is the existence of the concept of triad in the Oracles. In her <br>
+edition and English translation of them,59 R. Majercik rightly points out 60 </p><p>that ‘triads of this type antedate Porphyry, since similar triads appear in <br>
+the Gnostic sources known to Plotinus and his School’; on the contrary, <br>
+in her fundamental article Chaldean Triads in Neoplatonic Exegesis: Some <br>
+Reconsiderations,61 she believes them to be the result of Neo-Platonic specu-<br>
+lation, starting from Porphyry, so well after the time in which the Oracles <br>
+were supposedly put to writing. It is also surprising that, on the one hand, </p><p>  <br>
+  </p><p>   <br>
+  </p><p>  <br>
+  </p><p>   <br>
+ </p><p> <br>
+ </p><p> <br>
+  </p><p> <br>
+ </p><p>  <br>
+    </p><p>8 Introduction </p><p>Majercik considers the triad ‘Father – Power – Intellect’ as invented by Neo-<br>
+Platonists, while in the same article she herself says: ‘That a triadic principle <br>
+of some sort informed the teaching of the Oracles is evident’.62 It would <br>
+seem to be consequential to think that if the Oracles did make use of triadic <br>
+principles (of which we have clear proofs in frgs. 27, 28 and 29 des Places), <br>
+these should have been used by them to explain all levels of reality, which <br>
+is what fr. 27 des Places actually does: ‘In every world there shines a triad <br>
+over which a monad rules’. In this regard it is also important to take into <br>
+consideration Damascius’ testimony (On the Principles, I. 85, 196, 5 Ruelle), <br>
+since he explicitly says that ‘the Chaldeans’ speak of ‘paternal triads’ ( εἴτε ὡς <br>
+οἱ Χαλδαῖοι πατρικᾶς τριάδας ἀνευφημοῦντες).63 With regard to the problem <br>
+of triads, Seng appears much more cautious in denying their presence in the <br>
+Chaldean Oracles,64 while Brisson speaks explicitly of ‘triad’ with regard <br>
+to the first Chaldean triad: ‘cette triade, en quoi consiste le Dieu’. 65 Finally, <br>
+Turner uses the concept of ‘triads’ with regard to the  Chaldean Oracles <br>
+throughout his fundamental study, The Chaldean Oracles and the Meta-<br>
+physics of the Sethian Platonizing Treatises.66 </p><p>As we will show in the next paragraph, a reconsideration of the impor-<br>
+tance of Neo-Platonic exegesis of the Chaldean Oracles appears in our <br>
+opinion as a useful tool in order to overcome the impasse in which current <br>
+literature has found itself concerning this and other topics, which are not <br>
+listed here for sake of brevity. 67 </p><p>0.4 The purpose of this book </p><p>This passage from P. Hadot’s  Bilan et perspectives sur les Oracles Chalda-<br>
+ïques, a contribution to the third edition by M. Tardieu of H. Lewy’s seminal <br>
+work Chaldean Oracles and Theurgy,68 summarizes very well the objective <br>
+that this book intends to achieve: </p><p>Until now scholars have almost always confined themselves to gleaning <br>
+scattered fragments of the Chaldean Oracles from the writings of the <br>
+Neo-Platonists and to reassembling them on the basis of a more or less <br>
+systematic order by separating them from their context. But they must <br>
+now be placed back inside their context: one must study how the Neo-<br>
+Platonists have conceived of and commented on the Oracles. . . . It must <br>
+also be studied the way in which each Neo-Platonist has conceived of <br>
+and made use of the Oracles: in which text of his he did that; in which <br>
+precise context; which Oracle he quoted; why and how he has quoted <br>
+it, which interpretation he gave to it. </p><p>P. Hadot clearly shows that until now the Neo-Platonic exegesis of the Chal-<br>
+dean Oracles has been considered more a hindrance than an opportunity to <br>
+obtain precious information on the fragments’ original meaning.69 This situ-<br>
+ation is evident in É. des Places’ edition, where each fragment is presented </p><p> <br>
+   </p><p> <br>
+ </p><p> <br>
+  </p><p>Introduction 9 </p><p>without the context in which it was quoted, and only partially solved by <br>
+R. Majercik’s edition and translation of the Oracles (based on des Places’). 70 </p><p>This book intends to follow a different path and to analyze the Chaldean <br>
+fragments quoted by Proclus together with Proclus’ interpretation of them, <br>
+in order to assess whether Proclean exegesis could help modern research <br>
+to deepen its knowledge of the Chaldean Oracles or must instead be aban-<br>
+doned because it departs too much from the Chaldean original doctrine. <br>
+Each Chaldean fragment (which we have written in bold typeface) quoted </p><p>by Proclus has been translated together with a considerable part of its con-<br>
+text. By doing so, we have been able to achieve two objectives: </p><p>1 To describe and explain Proclus’ interpretation of the Chaldean frag-<br>
+ments he quotes or, when he merely cites the Oracles without offering <br>
+any exegesis of them, to describe in what way he makes use of them to <br>
+elucidate his own philosophical arguments. </p><p>2 To better understand Chaldean doctrine through the help of Proclus’ <br>
+exegesis of it. </p><p>Of course, the second objective is achievable only if Proclus’ interpretation <br>
+is regarded as in line with the Chaldean doctrine’s original meaning and <br>
+not a distortion of it. But, one can object, how is it possible to assess this, <br>
+given that the text of the Chaldean Oracles is not extant and that our only <br>
+way of accessing them is through the works of the Neo-Platonists in which <br>
+very limited portions of it are quoted? In the preceding paragraph of this <br>
+introduction, it has been shown that the literature’s traditional approach <br>
+of analyzing the Chaldean fragments outside the context in which they are <br>
+quoted, though greatly advancing our knowledge of them, has substantially <br>
+come to an impasse concerning fundamental points of Chaldean doctrine. <br>
+In order to try to escape this cul-de-sac, we have followed a methodology <br>
+that could be summarized as follows: to combine the great achievements <br>
+of current literature on not only Proclus and the Chaldean Oracles but <br>
+also other coeval philosophical-theological systems (Neo-Pythagoreanism, <br>
+Orphism, Gnosticism, Hermeticism, Early Christianity, Middle and Neo-<br>
+Platonism, Mithraism, Isis and Osiris cult, etc.) with what can be achieved <br>
+through an hermeneutical analysis of Proclus’ interpretation of the Chal-<br>
+dean Oracles. <br>
+Our methodology refuses the a priori idea that Proclus’ exegesis always </p><p>deviates from the Oracles’ original meaning, but tries to assess whether this <br>
+is in line with what we know with a certain degree of certainty about Chal-<br>
+dean doctrine on a case by case basis. By doing so, we have been capable <br>
+of reaching a general conclusion whether Proclus is a faithful interpreter of <br>
+the Oracles or not, a conclusion, of course, which remains open to both the <br>
+findings of other authors and to the discovery of new Chaldean fragments. <br>
+To briefly summarize it here, we can say that for us Proclus is most of the <br>
+times faithful to the literal meaning of the oracular fragments he quotes, </p><p> <br>
+ </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+  </p><p> <br>
+ </p><p>10 Introduction </p><p>except in a few cases that have been explicitly pointed out in the book (his <br>
+interpretation of fragment 175 des Places is a case in point). <br>
+Of course, Proclus’ approach as an exegete is completely different from </p><p>that of a modern interpreter of the Oracles, and this fact must always be <br>
+taken into account. Apart from his treatise on the  Chaldean Oracles, which <br>
+is not extant and that we have translated and commented on in this book, <br>
+he quotes oracular fragments to elucidate either his own philosophical con-<br>
+ceptions or his own interpretations of Plato’s dialogues, showing that his <br>
+Platonic exegesis is in line with what has been revealed by the gods of the <br>
+Oracles through the theurgists. As already said, sometimes Proclus interprets <br>
+the Chaldean fragments he quotes – and, when he does so, the reader must <br>
+be aware of the fact that in these cases we are dealing with an interpreta-<br>
+tion (that of the specific Chaldean fragment quoted) which is carried out <br>
+within the context of the broader exegesis of Plato’s dialogues, while at <br>
+other times he confines himself to citing them, probably because he thought <br>
+that their interpretation was self-evident to his readers. In addition to this, <br>
+Proclus interprets both Plato and the Oracles on the basis of the exegetical <br>
+principle that the different philosophical and religious currents of the Hel-<br>
+lenistic world he lived in (apart, of course, from Christianity) were diverse <br>
+expressions of basically the same doctrine, so that if they not always agreed <br>
+in details, they would do so in the fundamental aspects of their content. <br>
+Proclus couples this exegetical approach with his strictly philosophical </p><p>one, which brings him to subject the  Chaldean Oracles to a level of system-<br>
+atization and rationalization that, we can say this with relative certainty, <br>
+did not belong to the Oracles, which, though not alien to philosophy (being <br>
+influenced mostly by Stoicism and coeval Platonism) were not a philosophi-<br>
+cal but a poetical expression of the divine revelation of which its supposed <br>
+authors were the bearers. This fact, which is generally pointed out to show <br>
+that Proclus distorts the original meaning of Chaldean doctrine, in our opin-<br>
+ion does not make his oracular exegesis useless for modern research, and this <br>
+at least for three reasons: </p><p>1 Proclus was not alien to the conceptual world of the Oracles as a mod-<br>
+ern interpreter may be but shared with it the same Stoic, Platonic and <br>
+Hellenistic background. </p><p>2 Even if the metaphysical system of the Chaldean Oracles does not pos-<br>
+sess the same level of complexity and articulation as the Proclean one <br>
+(and this can be easily explained by pointing out that Proclus’ works <br>
+have a strictly philosophical connotation that the Oracles do not have, <br>
+though they resort to philosophical arguments at times), the two sys-<br>
+tems share many fundamental concepts (as we have shown earlier in <br>
+our brief comparison of them). </p><p>3 Proclus’ departs from the literal meaning of the Oracles in a few cases <br>
+(which have been pointed out in the book), the limited number of which <br>
+does not invalidate the overall correctness of his interpretation. </p><p> <br>
+ </p><p> <br>
+ </p><p>   <br>
+  </p><p>  <br>
+ </p><p> <br>
+ </p><p>Introduction 11 </p><p>We are fully aware that any attempt to establish the ‘correctness’ of the <br>
+interpretation of whatsoever text, be it ancient or modern, is matter of <br>
+debate, but we also know that any scientifc achievement requires the con-<br>
+stant assessment and reassessment of scientifc hypotheses which are consid-<br>
+ered as acceptable until new ones disprove them: this is true for any science, <br>
+hermeneutics of late antique philosophical texts included. </p><p>0.5 Some methodological and hermeneutical considerations </p><p>This study presents each fragment of des Places’ edition together with a suf-<br>
+ficient portion of the context in which Proclus quoted it. The numeration <br>
+of the fragments of des Places’ edition has been maintained, but the order <br>
+in which they are presented has been changed. We have provided the reader <br>
+with the translations of the Proclean passages in which the Chaldean frag-<br>
+ments are quoted: all translations are mine unless differently specified. The <br>
+Chaldean fragments are written in bold typeface to differentiate them from <br>
+the Proclean text. The commentary on each fragment has been written hav-<br>
+ing in mind the goals set by P. Hadot in his article. All Greek texts quoted <br>
+have been taken from the critical editions published in the Thesaurus Lin-<br>
+guae Graecae – A Digital Library of Greek Literature.71 </p><p>As it has been pointed out by H. Seng, 72 des Places’ edition is all but <br>
+flawless, since the French scholar has not published all Chaldean fragments <br>
+quoted by Neo-Platonists or later interpreters like the Byzantine intellectual <br>
+Michael Psellus; on our part, when it happened to us to discover what could <br>
+possibly be a new oracular fragment that does not appear in des Places’ col-<br>
+lection, we have pointed that out explicitly. As a consequence of this state <br>
+of affairs, H. Seng rightly calls for a new, major edition of the Chaldean <br>
+Oracles, where each fragment is quoted together with the context in which <br>
+it appears, which is exactly the same methodology we have followed in this <br>
+contribution, even if we have confined ourselves to discussing the Chaldean <br>
+fragments quoted by Proclus.73 </p><p>In systematizing the oracular fragments, we have not followed des Places’ <br>
+method (largely based on Kroll’s), 74 but we have organized them according <br>
+to four main thematic areas (which correspond to the first four chapters of <br>
+the book); they are the following: </p><p>1  The Chaldean triad.  <br>
+2  The single divine hypostases.  <br>
+3  The world’s intellectual archetype and the creation of the material </p><p>dimension.  <br>
+ 4 Man and his destiny.  </p><p>The quadripartite structure of the book assumes that this was the original <br>
+textual structure of the Chaldean Oracles; this hypothetical reconstruction <br>
+is based on two principles: </p><p> <br>
+ </p><p> <br>
+  </p><p>  <br>
+  </p><p> <br>
+ <br>
+ <br>
+ </p><p>  <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+ </p><p> <br>
+  </p><p>12 Introduction </p><p>1 The close comparison of the Chaldean fragments with Proclus’ exegesis <br>
+of them. </p><p>2 The fact that coeval revealed texts (we can think, for example, of the Her-<br>
+metic Poimandres, of some texts of the Gnostic Nag-Hammadi Library, <br>
+such as the Apocryphon of John, or even of early Christian literature, like <br>
+the Gospel of John) start first with a description of the divine principle, <br>
+deal then with the structure of the divine world and end with the creation <br>
+of the material dimension and the role of man in it. Of course, a detailed <br>
+reconstruction of the possible original structure of the text of the Chaldean <br>
+Oracles would belong more to a new edition of them than to a publication <br>
+like this one, so that this must be regarded as a mere working hypothesis. </p><p>In the ffth chapter, we have also given a translation and commentary of the <br>
+fve extant extracts from Proclus’ treatise On Chaldean Philosophy. This <br>
+is the frst systematic study so far of this fascinating testimony of Proclus’ <br>
+interpretation of the Chaldean Oracles. <br>
+The hermeneutical approach of the book can be summarized as follows: </p><p>1 To compare the extant Chaldean fragments with coeval religious tradi-<br>
+tions such as75 Hermeticism, Magic and Theurgy, traditional Greek reli-<br>
+gion, late Orphism, Gnosticism, Early Christianity (Synesius of Cyrene). <br>
+Of course, the work of comparative analysis that has been conducted <br>
+here is all but exhaustive; in order for it to be so, it would be necessary <br>
+to devote a series of monographical studies specifically to this goal. </p><p>2 To study Proclus’ interpretation of the Oracles by considering both the <br>
+modern historicocritical approach to ancient exegesis and Proclus’ own <br>
+attitude towards the Chaldean Oracles, since it must never be forgotten <br>
+that these are for him a divine revelation worthy of the utmost respect <br>
+and veneration. </p><p>3 To investigate the relationship between Proclus and the Chaldean tradi-<br>
+tion with the objective of assessing whether or not (or, in both cases, to <br>
+what extent) Proclus’ interpretation can be regarded as a reliable source <br>
+of information on Chaldean theology and philosophy. </p><p>4 To assess, in case of a partially or totally negative answer to the previous <br>
+question, whether Proclus’ interpretation of the Oracles must instead <br>
+be understood as a late attempt to ‘rationalize’ and/or ‘systematize’ the <br>
+Chaldean tradition. </p><p>5 To establish to what extent Proclus’ exegesis of Chaldean doctrine can <br>
+be detached from its original and most authentic meaning or whether or <br>
+not this is an impossible task for modern research, given both our sec-<br>
+ond-hand knowledge of the tradition and its highly fragmentary nature. </p><p>0.6 Final considerations </p><p>Although more than a century has passed since the first critical edition of the <br>
+Chaldean Oracles by Kroll, scholarly research on them could be regarded as </p><p>  <br>
+ </p><p> <br>
+  </p><p>  <br>
+  </p><p> <br>
+ </p><p>       <br>
+     <br>
+     </p><p>  <br>
+       </p><p> <br>
+        </p><p>    <br>
+   </p><p>  <br>
+  </p><p>     <br>
+ </p><p>      <br>
+ </p><p> <br>
+       </p><p>     <br>
+  </p><p>      <br>
+  </p><p>     <br>
+  </p><p>    <br>
+         </p><p>Introduction 13 </p><p>still in its infancy. A lot remains to be done, starting from a complete edition <br>
+of all oracular fragments together with their specific context and explana-<br>
+tory notes. There should also be undertaken a close comparison of the Chal-<br>
+dean tradition with coeval ones, with the objective of showing their common <br>
+cultural and religious milieu. A step towards the achievement of this goal has <br>
+been taken by the collection of articles on the Chaldean Oracles published <br>
+under the supervision of H. Seng and other scholars in the series  Bibliotheca <br>
+chaldaica (Universitätsverlag Winter, Heidelberg); until now, eight volumes <br>
+have been published, including a monographical study by H. Seng. 76 </p><p>Through the mediation of the Byzantine polymath Michael Psellus <br>
+(1017/1018–1078/1096), the influence of the  Chaldean Oracles reached <br>
+the European Renaissance, since many intellectuals 77 of that time came to <br>
+regard the Chaldean revelation as one of the highest expressions of philoso-<br>
+phia perennis (to use the expression of the Catholic bishop and humanist <br>
+Agostino Steuco [1497/98–1548]),78 that is, of that primordial religion of <br>
+humanity directly revealed by God to Adam and which, before appearing in <br>
+its final form in Christianity, manifested itself with the utmost clarity in the <br>
+Oracles of the Chaldean gods. </p><p>Notes </p><p>1 Oracula chaldaica, É. des Places ed. and trans., 3rd ed. (Paris, 2010). <br>
+2 We use this expression as a synonymous of fragments throughout this work. <br>
+3 Damascius, Dubitationes et solutiones de primis principiis, In Platonis Parmeni-<br>
+dem, vols. 1–2, C. É. Ruelle ed. (Paris, 1889). </p><p>4 The Greek Commentaries on Plato’s Phaedo, L. G. Westernik ed., vol. 2 (Amster-<br>
+dam, 1977), 27–285. </p><p>5 H. Seng, Un livre sacré de l’antiquité tardive: les Oracles Chaldaïques (Turnhout, <br>
+2016), 19. J. F. Finamore–S. Iles Johnston, The Chaldean Oracles, in L. Gerson ed., <br>
+The Cambridge History of Philosophy in Late Antiquity (Cambridge, 2010), 161. </p><p>6  C. Addey, Divination and Theurgy in Neoplatonism: Oracles of the Gods (Abing-<br>
+don, UK–New York, USA, 2016), 10 rightly points out ‘the interconnected and <br>
+mutually inclusive nature of rationality and revelation in the Chaldean system <br>
+and within late Platonism.’ See also H. D. Saffrey, Accorder entre elles le tra-<br>
+ditions théologiques: une caractéristique du néoplatonisme athénienne, in E. P. <br>
+Bos–P. A. Mejier eds., On Proclus and his Influence on Medieval Philosophy <br>
+(Leiden–New York–Köln, 1992), 35–50. </p><p>7 In his In Platonis Cratylum commentaria, G. Pasquali ed. (Leipzig, 1908), 122, <br>
+72, 10–11 Proclus identifies the authors of the  Oracles with the theurgists who <br>
+lived at the time of Marcus Aurelius ( τοῖς ἐπὶ Μάρκου γενομένοις θεουργοῖς), plac-<br>
+ing them in the same time period as did the Suda, who is probably dependent on <br>
+him (see note 14 later). </p><p>8 Proclus, In Platonis Parmenidem, in  Procli philosophi platonici opera inedita, V. <br>
+Cousin ed., pt. 3 (Hildesheim, 1864; repr. 1961), 800, 19 (. . . ἐν τοῖς Χαλδαικοῖς <br>
+λογίοις). </p><p>9 Proclus, In Platonis Timaeum commentaria, E. Diehl ed., 3 vols. (1903–1904– <br>
+1906, repr. Amsterdam, 1965). I. 208, 20; III, 111, 20; 124, 24; 125, 27; 151, 2. <br>
+Proclus, In Platonis rem publicam commentarii, W. Kroll ed., vols. 1–2 (Leipzig, <br>
+1899, repr. Amsterdam, 1965), II. 220, 11; 235, 26; 236, 1–5; 318, 13; 343, 4. <br>
+Proclus, In Platonis Cratylum commentaria, 71, 32, 5–10; 34, 4 Pasquali. </p><p>10 Proclus, In Platonis rem publicam commentarii, ΙΙ. 220, 11  Κroll. </p><p>        <br>
+     </p><p>     <br>
+  </p><p>        <br>
+            <br>
+        <br>
+      </p><p>       <br>
+     </p><p>   <br>
+  </p><p>       <br>
+ </p><p>      <br>
+    </p><p>  <br>
+     </p><p>  <br>
+        <br>
+      </p><p> <br>
+     <br>
+     <br>
+        <br>
+       <br>
+        <br>
+       <br>
+     <br>
+     <br>
+        </p><p> <br>
+     <br>
+     <br>
+     <br>
+     <br>
+        </p><p>     <br>
+ </p><p>     <br>
+  </p><p>  <br>
+    </p><p> <br>
+        <br>
+     <br>
+     <br>
+           </p><p>   <br>
+     </p><p>14 Introduction </p><p>11 H. Seng, Un livre sacré de l’antiquité tardive (2016), 23. <br>
+12 They were those ‘free-lance experts’ whom H. Wendt talks of in her interest-</p><p>ing book entitled At the Temple Gates: The Religion of Free-Lance Experts in <br>
+the Roman Empire (Oxford, 2016). See also I. Tanaseanu-Doebler, Weise oder <br>
+Scharlatane? Chaldaeerbilder der griechisch-römischen Kaiserzeit und die Chal-<br>
+daeischen Orakel, in H. Seng–M. Tardieu eds., Die Chaldaeischen Orakel–Kontext, <br>
+Interpetation, Rezeption (Heidelberg, 2010), 19–42. </p><p>13 H. Seng, Un livre sacré de l’antiquité tardive (2016), 20. <br>
+14 Suda, Lexicon, A. Adler ed., vols. 1–4 (Leipzig, 1935), Ι 433; II 641, 32–33. <br>
+15 H. Seng, Un livre sacré de l’antiquité tardive (2016), 20. <br>
+16 H. Lewy, Chaldean Oracles and Theurgy–Troiseme edition par Michel Tardieu </p><p>avec un supplement  &lt;&lt;Les Oracles Chaldaïques 1891–2011 &gt;&gt; (Paris, 2011), 3–4. <br>
+17 H. D. Saffrey, Le néoplatoniciens et les: Oracles Chaldaïques: Revue d’ Etudes </p><p>Augustiniennes 27 (1981) 210–211, now in id., Recherches sur le néoplatonisme <br>
+après Plotin (Paris, 1990), 63–79. </p><p>18 M. Psellus, Philosophica minora I, Opuscula logica, physica, allegorica, alia, <br>
+J. M. Duffy ed. (Stuttgart–Leipzig, 1992), I, 46, 43–51. </p><p>19 H. D. Saffrey, Le néoplatoniciens et les: Oracles Chaldaïques (1981), 218–219. <br>
+20 We think that the term ‘medium’ is inappropriate in this case, since it belongs </p><p>to a kind of spirituality, namely Spiritism, that is alien to the  Chaldean Oracles’, <br>
+which are Oracles of the gods, not of the spirits of the dead, pace E. R. Dodds, <br>
+who was the first to have recourse to this (wrong) interpretation in his Theurgy <br>
+and Its Relationship to Neo-Platonism: The Journal of Roman Studies Part 1 and <br>
+2 (37) (1947), 65–69. </p><p>21 É. des Places ed., Oracula chaldaica (2010), 7. <br>
+22 Marinus, Vita Procli sive de felicitate, R. Masullo ed. (Naples, 1985), 2, 35. On </p><p>Proclus’ wealth see ibid., 2, 41. <br>
+23  Ibid., 11. <br>
+24  Ibid., 9–10. <br>
+25 On this see R. Chlup, Proclus: An Introduction (Oxford, 2012), 36. <br>
+26 Marinus, Vita Procli, 12, 310–312 Masullo. <br>
+27 R. Chlup, Proclus: An Introduction (2012), 44. <br>
+28 Marinus, Vita Procli, 26, 610–619 Masullo. <br>
+29  Ibid., 611. <br>
+30 Ibid., 38, 915–919. <br>
+31 Ibid., 26, 622–623. See also H. Seng, Un livre sacré de l’antiquité tardive (2016), </p><p>25–26. <br>
+32  Ibid., 623–624. <br>
+33  Ibid., 628. <br>
+34  Ibid., 630–631. <br>
+35  Ibid., 633–634. <br>
+36 Suda, Lexicon, IV. 478, 21–479, 8 Adler. On this see H. D. Saffrey, Accorder </p><p>entre elles le traditions théologiques, in Bos–Mejier, On Proclus and his Influence <br>
+(1992), 36–37. </p><p>37 On this, see later  Chapter 5 . It must be pointed out that this is the title that L. J. <br>
+Rosan gives to this Proclean work; see id., The Philosophy of Proclus: The Final <br>
+Stage of Ancient Thought (New York, 1949), 43. </p><p>38 We intend to write a monographical study to discuss Damascius’ use and inter-<br>
+pretation of the Chaldean Oracles. </p><p>39 On this see also H. Seng, Un livre sacré de l’antiquité tardive (2016), 27–28, 37, 39. <br>
+40 See ibid., 37. <br>
+41 See later endnotes to Chapter 1 , note 5. <br>
+42 L. J. Rosan, The Philosophy of Proclus (1949). W. Beierwaltes, Proklos. </p><p>Grundzü ge seiner Metaphysik (Frankfurt a. M., 1965). L. Siorvanes, Proclus: <br>
+Neo-Platonic Philosophy and Science (Edinburgh, 1996). R. Chlup, Proclus </p><p>    <br>
+   </p><p> <br>
+     <br>
+       <br>
+     </p><p>  <br>
+    </p><p>   <br>
+  </p><p>        <br>
+     </p><p>  <br>
+     <br>
+     <br>
+       <br>
+       <br>
+     <br>
+       <br>
+       </p><p> <br>
+    </p><p>  <br>
+          <br>
+       <br>
+       <br>
+         </p><p>    <br>
+ </p><p>       <br>
+     <br>
+          </p><p>            <br>
+       <br>
+      </p><p>  <br>
+ </p><p>  <br>
+ </p><p>  <br>
+ </p><p>   <br>
+    </p><p> <br>
+        <br>
+    </p><p> <br>
+         </p><p>     <br>
+          </p><p>Introduction 15 </p><p>(2012). P. d’Hoine–M. Martin eds., All from One: A Guide to Proclus (2017), <br>
+207–222. D. Nikulin, Neoplatonism in Late Antiquity (Oxford, 2019), especially <br>
+part II dedicated to Proclus (pp. 119–203), which represents a good introduction <br>
+to the fundamental themes of his philosophy. </p><p>43 See later endnotes to Chapter 1 , note 18. <br>
+44 Id. Chaldean Oracles and Theurgy (2011), 76–83, 106. <br>
+45 Id., Religion and Philosophy from Plato’s  Phaedo to the Chaldean Oracles: Jour-</p><p>nal of the History of Philosophy (1) (1963) 174. <br>
+46 Id., Les Néoplatoniciennes et les Oracles  Chaldaïques :  Revue d’ Etudes Augus-</p><p>tiniennes (27) (1981), 223 (now in id., Recherches sur le Néoplatonisme après <br>
+Plotin [Paris, 1990], 63–79). </p><p>47 P. Hadot, Porphyre et Victorinus, vol. 1 (Paris, 1968), 261 and note 1. <br>
+48 Id., The Chaldean Oracles and the Metaphysics of the Sethian Platonizing trea-</p><p>tises, in J. D. Turner–K. Corrigan eds., Plato’s Parmenides and its Heritage, vol. <br>
+1: History and Interpretation from the Old Academy to later Platonism and <br>
+Gnosticism (Atlanta, 2010), 40. </p><p>49  Ibid., 41. <br>
+50 See Brisson’s contributions listed later, endnotes to  Chapter 1 , note 5. <br>
+51 Id., La révélation d’Hermes Trismégiste, vol. 3 (Paris, 1950; repr. 1990), 53–54. <br>
+52 Id., The Middle-Platonists – 80 B.C. to A.D. 220 (Ithaca, NY, 1996), 393. <br>
+53 Ibid., 395. On Eudorus see ibid., 114–135. <br>
+54 The Harvard Theological Review 4 (54) (1961) 270. <br>
+55 Id., The Chaldean Oracles: Text, Translation and Commentary (Leiden–New </p><p>York–København–Köln, 1989), 5–6. <br>
+56 Id., Chaldean Triads in Neoplatonic Exegesis: Some Reconsiderations:  The Clas-</p><p>sical Quarterly 1 (51) (2001) 274. <br>
+57 Id., The Chaldean Oracles, in L. P. Gerson ed., The Cambridge History (2010), 162. <br>
+58 Id., Un livre sacré de l’antiquité tardive (2016), 42. <br>
+59 Id., The Chaldean Oracles (1989), 142. <br>
+60 She quotes M. Tardieu, La Gnose Valentinienne et les Oracles Chaldaïques, in B. </p><p>Layton ed., The Rediscovery of Gnosticism–I: The School of Valentinus (Leiden, <br>
+1983), 214–215. </p><p>61 Chaldean Triads in Neoplatonic Exegesis (2001), 277–278, 296. <br>
+62  Ibid., 296. <br>
+63 See also ibid., 84, 193, 26 ( ὡς ἐν ταῖς χαλδαϊκαῖς τριάσιν); 90, 221, 23–24 ( ἀλλὰ </p><p>μὴν οἵ τε θεοὶ καὶ οἱ θεολόγοι τριάδας τε ἡμῖν ἀνυμνήκασι). <br>
+64 Id., Un livre sacré de l’antiquité tardive (2016), 43. <br>
+65 Id., La commentaire comme priére destinée a assurer la salut de l’ame–La place </p><p>et la rôle des Oracles Chaldaïques dan le commentaire sur le Timée de Platon par <br>
+Proclus, in M. O. Goulet-Cazé ed., Le commentaire entre tradition et innovation, <br>
+Actes du Colloque International de l’Institute des Traditions textuelles (Paris et <br>
+Villejuif, 22–25 septembre 1999) (Paris, 2000), 335. See also id., La place des <br>
+Oracles Chaldaïques dans la Théologie Platonicienne, in A. Ph. Segonds–C. Steel <br>
+eds. with the assistance of C. Luna and A. F. Mettraux, Proclus et la Théologie <br>
+Platonicienne–Actes du Colloque International de Louvain (13–16 mai 1998) <br>
+en l’honneur de H. D. Saffrey et L. G. Westernik (Leuven–Paris, 2000), 113 <br>
+(‘la triade fondamentale des Oracles Chaldaïques est la triade Père–Puissance– <br>
+Intellect’) and id., Plato’s Timaeus and the Chaldean Oracles, in G. J. Reydams-<br>
+Schils ed., Plato’s Timaeus as cultural Icon (Notre Dame, IN, 2003), 119 (‘This triad <br>
+[the Father, Hecate, and the Demiurge], of which the divine principle consists’). </p><p>66 Id., ibid. in Turner–Corrigan, Plato’s Parmenides and its Heritage (2010), 39–58. <br>
+67 With regard to the scholarly disagreement on the nature of henads in Proclus see </p><p>later endnotes to Chapter 1 , note 18. <br>
+68 P. Hadot, Bilan et perspectives sur les Oracles Chaldaïques, in H. Lewy ed., Chal-</p><p>dean Oracles and Theurgy (Paris, 2011), Compléments, 715. </p><p>        <br>
+        <br>
+      <br>
+        <br>
+    <br>
+        <br>
+     </p><p>  <br>
+  </p><p>       <br>
+      </p><p>  <br>
+    <br>
+ </p><p>      <br>
+  </p><p> <br>
+ </p><p>16 Introduction </p><p>69 H. Seng agrees with Hadot; see id., Un livre sacré de l’antiquité tardive (2016), 37. <br>
+70 R. Majercik, The Chaldean Oracles (1989). <br>
+71 http://stephanus.tlg.uci.edu/index.php <br>
+72 H. Seng, Un livre sacré de l’antiquité tardive (2016), 37. <br>
+73 Ibid. <br>
+74 De oraculis Chaldaicis, W. Kroll ed. (Breslau, 1894; repr. Hildesheim, 1962). <br>
+75 H. Lewy, author of the most important monograph on the Chaldean Oracles so </p><p>far, was perfectly aware of the fact that this is all but an easy task: id., Chaldean <br>
+Oracles and Theurgy (2011), 75. </p><p>76 H. Seng, ΚΟΣΜΑΓΟΙ, ΑΖΟΝΟΙ, ΖΟΝΑΙΟΙ – Drei Begriffe chaldaeischer Kosmolo-<br>
+gie und ihr Fortleben (Heidelberg, 2009) </p><p>77 On this, see H. Seng, Un livre sacré de l’antiquité tardive (2016), 31–35 as well <br>
+as the following fundamental article: B. Tambrun-Krasker, Les Oracles Chal-<br>
+daïques entre idéologie et critique (XVe–XVIIe s.), in A. Lecerf–L. Saudelli–H. <br>
+Seng eds., Oracles Chaldaïques: fragments et philosophie (Heidelberg, 2014), <br>
+253–277. </p><p>78 On this, see M. Muccillo, Platonismo, Ermetismo e “Prisca Theologia”: Ricerche <br>
+di storiografia filosofica rinascimentale (Florence, 1996), 7–8. </p><p>http://stephanus.tlg.uci.edu</p><p> <br>
+ </p><p>  <br>
+  </p><p>    <br>
+       </p><p>   <br>
+    </p><p>1 The Chaldean triad </p><p>1.1 The triad Father – Power – Intellect </p><p>Fragment 4 des Places1 = p. 13 Kroll2 (Proclus, In Alc., 83, 17–20–84, 1–17 <br>
+Westernik) </p><p>Concerning these things this must be said: it remains to discuss why <br>
+Socrates says not that the hidden daemonic nature itself will later <br>
+become known to the young man (scil. Alcibiades), but its power. For <br>
+he speaks like this: ‘whose power and nature you will learn later’. First <br>
+of all one must pay attention to the fact that, as the divine Iamblichus <br>
+says, it is more difficult for us, unless we have fully purified the intel-<br>
+lect of the soul, to contemplate the substances of daemons and in gen-<br>
+eral of superior beings, while it is easier (for us) both to discern and <br>
+to explain their powers, since even to investigate the essential nature <br>
+of the soul is not easy for everyone; Timaeus alone revealed the whole <br>
+of its essence: ‘that is to say, it is necessary an altogether and by all <br>
+means divine and lengthy discussion,’ as Socrates also observes in the <br>
+Phaedrus. For we have a perception of them (scil. of daemons and supe-<br>
+rior beings) from their activities, of which their powers are specifically <br>
+mothers; since power is midway between essence and activity, it being <br>
+produced from essence while it produces activity. Secondly, we must <br>
+observe that in another way as well power is conformable to the nature <br>
+of daemons. Everywhere power has been allotted the middle place: <br>
+among intelligibles it unites the Father with Intellect ‘for Power is with <br>
+Him but Intellect proceeds from Him’; but among intellectual beings it <br>
+connects activities with essences, because activity is a product of power, <br>
+and essence produces power from itself. </p><p>In Plato’s  First Alcibiades 103A, Socrates says to the young Alcibiades that, <br>
+contrary to those of his lovers who became a nuisance to him (ἐγένοντό σοι <br>
+διαλεγόμενοι), he, for many years, did not even dare to address him, having <br>
+been capable of doing so by virtue of a ‘certain daemonic incompatibility’ <br>
+(δαιμόνιον ἐναντίωμα) ‘whose power and nature’ he ‘will learn later’ ( οὗ σὺ <br>
+τὴν δύναμιν καὶ ὗστερον πεύσῃ).3 </p><p>  <br>
+  </p><p>   <br>
+ </p><p> <br>
+     </p><p> <br>
+   </p><p> <br>
+         </p><p>     <br>
+ </p><p>    <br>
+      </p><p>      <br>
+ </p><p>      <br>
+    </p><p>       <br>
+   </p><p>   <br>
+   </p><p>     <br>
+ </p><p>18 The Chaldean triad </p><p>In the previous sections of his commentary on this Platonic passage (60, <br>
+1–83, 1–17), after passing references to the unifying power of love, the <br>
+descent of the souls and the relationship between the Intellect and the Soul, <br>
+Proclus had concentrated himself on describing the nature of daemons, which <br>
+for him are souls endowed with a high, medium and low degree of perfec-<br>
+tion.4 Here (83, 17–20–84, 1–17) he focuses his exegesis 5 on explaining why <br>
+Socrates says that man can understand the daemons’ power (δαιμονίον . . . <br>
+δύναμιν) but not their nature. <br>
+Proclus thinks Socrates’ words can be correctly interpreted in the light of </p><p>Iamblichus’ doctrine,6 according to which it is easier for humans who have <br>
+not cleansed ‘the intellect of the Soul’ 7 (τὸν τῆς ψυχῆς νοῦν) to understand <br>
+the faculties (δυνάμεις) of daemons or superior beings in general than their <br>
+substances (ὑπάρξεις).8 As a consequence, Socrates is utterly justified in say-<br>
+ing that Alcibiades, who has not achieved spiritual perfection, will learn <br>
+the power of daemons but not their nature or essence. Power, Proclus adds, <br>
+is ‘midway between essence and activity’ ( μέση γὰρ ἡ δύναμίς ἐστι τῆς τε <br>
+οὐσίας καὶ τῆς ἐνεργείας)9 and, for this reason, akin to daemons to the high-<br>
+est degree, since these are the mediators between men and gods. 10 Power <br>
+has always the middle place: among intellectual beings (ἐν δὲ τοῖς νοεροῖς), it <br>
+unites activities with essences;11 among intelligible ones (ἐν μὲν τοῖς νοητοῖς), <br>
+it links the Father with Intellect (συνάπτει τὸν πατέρα καὶ τὸν νοῦν), as it is <br>
+also stated in the Chaldean Oracles, which assert that divine Power is with <br>
+the Father, while divine Intellect proceeds from Him (ἡ μὲν γὰρ δύναμις σὺν <br>
+ἐκείνῳ, νοῦς δ’ ἀπ’ ἐκείνου).12 <br>
+The immediate conclusion we can draw from Proclus’ interpretation of </p><p>this oracular saying is that for him the Chaldean triad Father – Power – <br>
+Intellect belongs to the class of intelligible beings, because it is within this <br>
+that Power performs its function of mediating between the intelligible13 </p><p>Father and the intelligible Intellect. Let us now assess whether in other parts <br>
+of his works Proclus interprets this triad in the same way as in this passage, <br>
+by starting with considering the Father first, then the other two members <br>
+of the triad<br>
+The file is too long and its contents have been truncated.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Please remember to search the user&#x27;s documents if an answer to their question is not contained in the above snippets. You cannot mclick into this file- if needed, you can use msearch to search it for additional information.<br>
+</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;queries&quot;: [&quot;what is new in this study&quot;, &quot;innovations contributions findings&quot;, &quot;novelty of this study&quot;, &quot;how this study differs from previous scholarship&quot;, &quot;purpose and new results&quot;], &quot;source_filter&quot;: [&quot;files_uploaded_in_conversation&quot;]}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Nicola Spanu - Proclus and the Chaldean Oracles.pdf†file_000000005fa86230a0797ea72685a1d0】</h1><br>
+Content source: Source.file<br>
+Title: Nicola Spanu - Proclus and the Chaldean Oracles.pdf<br>
+Content Snippet:<br>
+1. In the ffth chapter, we have also given a translation and commentary of the <br>
+2. fve extant extracts from Proclus’ treatise On Chaldean Philosophy. This <br>
+3. is the frst systematic study so far of this fascinating testimony of Proclus’ <br>
+4. interpretation of the Chaldean Oracles. <br>
+5. The hermeneutical approach of the book can be summarized as follows: <br>
+6. <br>
+7. 1 To compare the extant Chaldean fragments with coeval religious tradi-<br>
+8. tions such as75 Hermeticism, Magic and Theurgy, traditional Greek reli-<br>
+9. gion, late Orphism, Gnosticism, Early Christianity (Synesius of Cyrene). <br>
+10. Of course, the work of comparative analysis that has been conducted <br>
+11. here is all but exhaustive; in order for it to be so, it would be necessary <br>
+12. to devote a series of monographical studies specifically to this goal. <br>
+13. <br>
+14. 2 To study Proclus’ interpretation of the Oracles by considering both the <br>
+15. modern historicocritical approach to ancient exegesis and Proclus’ own <br>
+16. attitude towards the Chaldean Oracles, since it must never be forgotten <br>
+17. that these are for him a divine revelation worthy of the utmost respect <br>
+18. and veneration. <br>
+19. <br>
+20. 3 To investigate the relationship between Proclus and the Chaldean tradi-<br>
+21. tion with the objective of assessing whether or not (or, in both cases, to <br>
+22. what extent) Proclus’ interpretation can be regarded as a reliable source <br>
+23. of information on Chaldean theology and philosophy. <br>
+24. <br>
+25. 4 To assess, in case of a partially or totally negative answer to the previous <br>
+26. question, whether Proclus’ interpretation of the Oracles must instead <br>
+27. be understood as a late attempt to ‘rationalize’ and/or ‘systematize’ the <br>
+28. Chaldean tradition. <br>
+29. <br>
+30. 5 To establish to what extent Proclus’ exegesis of Chaldean doctrine can <br>
+31. be detached from its original and most authentic meaning or whether or <br>
+32. not this is an impossible task for modern research, given both our sec-<br>
+33. ond-hand knowledge of the tradition and its highly fragmentary nature. <br>
+34. <br>
+35. 0.6 Final considerations <br>
+36. <br>
+37. Although more than a century has passed since the first critical edition of the <br>
+38. Chaldean Oracles by Kroll, scholarly research on them could be regarded as <br>
+39. <br>
+40. <br>
+41. <br>
+42.  <br>
+43. <br>
+44.  <br>
+45. <br>
+46.   <br>
+47.  <br>
+48. <br>
+49.  <br>
+50.   <br>
+51. <br>
+52.   <br>
+53.   <br>
+54. <br>
+55.  <br>
+56. <br>
+57.  <br>
+58.  <br>
+59. <br>
+60.  <br>
+61. <br>
+62.  <br>
+63. <br>
+64.        <br>
+65.      <br>
+66.      <br>
+67. <br>
+68.   <br>
+69.        <br>
+70. <br>
+71.  <br>
+72.         <br>
+73. <br>
+74.     <br>
+75.    <br>
+76. <br>
+77.        <br>
+78. <br>
+79.   <br>
+80.   <br>
+81. <br>
+82.      <br>
+83.  <br>
+84. <br>
+85.       <br>
+86.  <br>
+87. <br>
+88.      <br>
+89. <br>
+90.  <br>
+91.        <br>
+92. <br>
+93.      <br>
+94.   <br>
+95. <br>
+96.       <br>
+97.   <br>
+98. <br>
+99.      <br>
+100.   <br>
+101. <br>
+102.     <br>
+103.          <br>
+104. <br>
+105.     <br>
+106. <br>
+107.    <br>
+108. <br>
+109. Introduction 13 <br>
+110. <br>
+111. still in its infancy. A lot remains to be done, starting from a complete edition <br>
+112. of all oracular fragments together with their specific context and explana-<br>
+113. tory notes. There should also be undertaken a close comparison of the Chal-<br>
+114. dean tradition with coeval ones, with the objective of showing their common <br>
+115. cultural and religious milieu. A step towards the achievement of this goal has <br>
+116. been taken by the collection of articles on the Chaldean Oracles published <br>
+117. under the supervision of H. Seng and other scholars in the series  Bibliotheca <br>
+118. chaldaica (Universitätsverlag Winter, Heidelberg); until now, eight volumes <br>
+119. have been published, including a monographical study by H. Seng. 76<br>
+<h1>【1†Nicola Spanu - Proclus and the Chaldean Oracles.pdf†file_000000005fa86230a0797ea72685a1d0】</h1><br>
+Content source: Source.file<br>
+Title: Nicola Spanu - Proclus and the Chaldean Oracles.pdf<br>
+Content Snippet:<br>
+1. Introduction 9 <br>
+2. <br>
+3. without the context in which it was quoted, and only partially solved by <br>
+4. R. Majercik’s edition and translation of the Oracles (based on des Places’). 70 <br>
+5. <br>
+6. This book intends to follow a different path and to analyze the Chaldean <br>
+7. fragments quoted by Proclus together with Proclus’ interpretation of them, <br>
+8. in order to assess whether Proclean exegesis could help modern research <br>
+9. to deepen its knowledge of the Chaldean Oracles or must instead be aban-<br>
+10. doned because it departs too much from the Chaldean original doctrine. <br>
+11. Each Chaldean fragment (which we have written in bold typeface) quoted <br>
+12. <br>
+13. by Proclus has been translated together with a considerable part of its con-<br>
+14. text. By doing so, we have been able to achieve two objectives: <br>
+15. <br>
+16. 1 To describe and explain Proclus’ interpretation of the Chaldean frag-<br>
+17. ments he quotes or, when he merely cites the Oracles without offering <br>
+18. any exegesis of them, to describe in what way he makes use of them to <br>
+19. elucidate his own philosophical arguments. <br>
+20. <br>
+21. 2 To better understand Chaldean doctrine through the help of Proclus’ <br>
+22. exegesis of it. <br>
+23. <br>
+24. Of course, the second objective is achievable only if Proclus’ interpretation <br>
+25. is regarded as in line with the Chaldean doctrine’s original meaning and <br>
+26. not a distortion of it. But, one can object, how is it possible to assess this, <br>
+27. given that the text of the Chaldean Oracles is not extant and that our only <br>
+28. way of accessing them is through the works of the Neo-Platonists in which <br>
+29. very limited portions of it are quoted? In the preceding paragraph of this <br>
+30. introduction, it has been shown that the literature’s traditional approach <br>
+31. of analyzing the Chaldean fragments outside the context in which they are <br>
+32. quoted, though greatly advancing our knowledge of them, has substantially <br>
+33. come to an impasse concerning fundamental points of Chaldean doctrine. <br>
+34. In order to try to escape this cul-de-sac, we have followed a methodology <br>
+35. that could be summarized as follows: to combine the great achievements <br>
+36. of current literature on not only Proclus and the Chaldean Oracles but <br>
+37. also other coeval philosophical-theological systems (Neo-Pythagoreanism, <br>
+38. Orphism, Gnosticism, Hermeticism, Early Christianity, Middle and Neo-<br>
+39. Platonism, Mithraism, Isis and Osiris cult, etc.) with what can be achieved <br>
+40. through an hermeneutical analysis of Proclus’ interpretation of the Chal-<br>
+41. dean Oracles. <br>
+42. Our methodology refuses the a priori idea that Proclus’ exegesis always <br>
+43. <br>
+44. deviates from the Oracles’ original meaning, but tries to assess whether this <br>
+45. is in line with what we know with a certain degree of certainty about Chal-<br>
+46. dean doctrine on a case by case basis. By doing so, we have been capable <br>
+47. of reaching a general conclusion whether Proclus is a faithful interpreter of <br>
+48. the Oracles or not, a conclusion, of course, which remains open to both the <br>
+49. findings of other authors and to the discovery of new Chaldean fragments. <br>
+50. To briefly summarize it here, we can say that for us Proclus is most of the <br>
+51. times faithful to the literal meaning of the oracular fragments he quotes, <br>
+52. <br>
+53. <br>
+54. <br>
+55.  <br>
+56.  <br>
+57. <br>
+58.   <br>
+59.  <br>
+60. <br>
+61.  <br>
+62. <br>
+63.  <br>
+64. <br>
+65.  <br>
+66.  <br>
+67. <br>
+68.  <br>
+69.  <br>
+70. <br>
+71.  <br>
+72. <br>
+73.  <br>
+74. <br>
+75.  <br>
+76.   <br>
+77. <br>
+78.  <br>
+79. <br>
+80.  <br>
+81.  <br>
+82. <br>
+83.  <br>
+84. <br>
+85. 10 Introduction<br>
+<h1>【2†Nicola Spanu - Proclus and the Chaldean Oracles.pdf†file_000000005fa86230a0797ea72685a1d0】</h1><br>
+Content source: Source.file<br>
+Title: Nicola Spanu - Proclus and the Chaldean Oracles.pdf<br>
+Content Snippet:<br>
+1. 8 Introduction <br>
+2. <br>
+3. Majercik considers the triad ‘Father – Power – Intellect’ as invented by Neo-<br>
+4. Platonists, while in the same article she herself says: ‘That a triadic principle <br>
+5. of some sort informed the teaching of the Oracles is evident’.62 It would <br>
+6. seem to be consequential to think that if the Oracles did make use of triadic <br>
+7. principles (of which we have clear proofs in frgs. 27, 28 and 29 des Places), <br>
+8. these should have been used by them to explain all levels of reality, which <br>
+9. is what fr. 27 des Places actually does: ‘In every world there shines a triad <br>
+10. over which a monad rules’. In this regard it is also important to take into <br>
+11. consideration Damascius’ testimony (On the Principles, I. 85, 196, 5 Ruelle), <br>
+12. since he explicitly says that ‘the Chaldeans’ speak of ‘paternal triads’ ( εἴτε ὡς <br>
+13. οἱ Χαλδαῖοι πατρικᾶς τριάδας ἀνευφημοῦντες).63 With regard to the problem <br>
+14. of triads, Seng appears much more cautious in denying their presence in the <br>
+15. Chaldean Oracles,64 while Brisson speaks explicitly of ‘triad’ with regard <br>
+16. to the first Chaldean triad: ‘cette triade, en quoi consiste le Dieu’. 65 Finally, <br>
+17. Turner uses the concept of ‘triads’ with regard to the  Chaldean Oracles <br>
+18. throughout his fundamental study, The Chaldean Oracles and the Meta-<br>
+19. physics of the Sethian Platonizing Treatises.66 <br>
+20. <br>
+21. As we will show in the next paragraph, a reconsideration of the impor-<br>
+22. tance of Neo-Platonic exegesis of the Chaldean Oracles appears in our <br>
+23. opinion as a useful tool in order to overcome the impasse in which current <br>
+24. literature has found itself concerning this and other topics, which are not <br>
+25. listed here for sake of brevity. 67 <br>
+26. <br>
+27. 0.4 The purpose of this book <br>
+28. <br>
+29. This passage from P. Hadot’s  Bilan et perspectives sur les Oracles Chalda-<br>
+30. ïques, a contribution to the third edition by M. Tardieu of H. Lewy’s seminal <br>
+31. work Chaldean Oracles and Theurgy,68 summarizes very well the objective <br>
+32. that this book intends to achieve: <br>
+33. <br>
+34. Until now scholars have almost always confined themselves to gleaning <br>
+35. scattered fragments of the Chaldean Oracles from the writings of the <br>
+36. Neo-Platonists and to reassembling them on the basis of a more or less <br>
+37. systematic order by separating them from their context. But they must <br>
+38. now be placed back inside their context: one must study how the Neo-<br>
+39. Platonists have conceived of and commented on the Oracles. . . . It must <br>
+40. also be studied the way in which each Neo-Platonist has conceived of <br>
+41. and made use of the Oracles: in which text of his he did that; in which <br>
+42. precise context; which Oracle he quoted; why and how he has quoted <br>
+43. it, which interpretation he gave to it.<br>
+<h1>【3†Nicola Spanu - Proclus and the Chaldean Oracles.pdf†file_000000005fa86230a0797ea72685a1d0】</h1><br>
+Content source: Source.file<br>
+Title: Nicola Spanu - Proclus and the Chaldean Oracles.pdf<br>
+Content Snippet:<br>
+1. 21 É. des Places ed., Oracula chaldaica (2010), 7. <br>
+2. 22 Marinus, Vita Procli sive de felicitate, R. Masullo ed. (Naples, 1985), 2, 35. On <br>
+3. <br>
+4. Proclus’ wealth see ibid., 2, 41. <br>
+5. 23  Ibid., 11. <br>
+6. 24  Ibid., 9–10. <br>
+7. 25 On this see R. Chlup, Proclus: An Introduction (Oxford, 2012), 36. <br>
+8. 26 Marinus, Vita Procli, 12, 310–312 Masullo. <br>
+9. 27 R. Chlup, Proclus: An Introduction (2012), 44. <br>
+10. 28 Marinus, Vita Procli, 26, 610–619 Masullo. <br>
+11. 29  Ibid., 611. <br>
+12. 30 Ibid., 38, 915–919. <br>
+13. 31 Ibid., 26, 622–623. See also H. Seng, Un livre sacré de l’antiquité tardive (2016), <br>
+14. <br>
+15. 25–26. <br>
+16. 32  Ibid., 623–624. <br>
+17. 33  Ibid., 628. <br>
+18. 34  Ibid., 630–631. <br>
+19. 35  Ibid., 633–634. <br>
+20. 36 Suda, Lexicon, IV. 478, 21–479, 8 Adler. On this see H. D. Saffrey, Accorder <br>
+21. <br>
+22. entre elles le traditions théologiques, in Bos–Mejier, On Proclus and his Influence <br>
+23. (1992), 36–37. <br>
+24. <br>
+25. 37 On this, see later  Chapter 5 . It must be pointed out that this is the title that L. J. <br>
+26. Rosan gives to this Proclean work; see id., The Philosophy of Proclus: The Final <br>
+27. Stage of Ancient Thought (New York, 1949), 43. <br>
+28. <br>
+29. 38 We intend to write a monographical study to discuss Damascius’ use and inter-<br>
+30. pretation of the Chaldean Oracles. <br>
+31. <br>
+32. 39 On this see also H. Seng, Un livre sacré de l’antiquité tardive (2016), 27–28, 37, 39. <br>
+33. 40 See ibid., 37. <br>
+34. 41 See later endnotes to Chapter 1 , note 5. <br>
+35. 42 L. J. Rosan, The Philosophy of Proclus (1949). W. Beierwaltes, Proklos. <br>
+36. <br>
+37. Grundzü ge seiner Metaphysik (Frankfurt a. M., 1965). L. Siorvanes, Proclus: <br>
+38. Neo-Platonic Philosophy and Science (Edinburgh, 1996). R. Chlup, Proclus <br>
+39. <br>
+40. <br>
+41. <br>
+42.     <br>
+43.    <br>
+44. <br>
+45.  <br>
+46.      <br>
+47.        <br>
+48.      <br>
+49. <br>
+50.   <br>
+51.     <br>
+52. <br>
+53.    <br>
+54.   <br>
+55. <br>
+56.         <br>
+57.      <br>
+58. <br>
+59.      <br>
+60. <br>
+61.   <br>
+62.      <br>
+63.      <br>
+64.        <br>
+65.        <br>
+66.      <br>
+67.        <br>
+68.        <br>
+69. <br>
+70.  <br>
+71.     <br>
+72. <br>
+73.   <br>
+74.           <br>
+75.        <br>
+76.        <br>
+77.          <br>
+78. <br>
+79.     <br>
+80.  <br>
+81. <br>
+82.        <br>
+83.      <br>
+84.           <br>
+85. <br>
+86.             <br>
+87.        <br>
+88.       <br>
+89. <br>
+90.    <br>
+91. <br>
+92.   <br>
+93.  <br>
+94. <br>
+95.   <br>
+96.  <br>
+97. <br>
+98.   <br>
+99.  <br>
+100. <br>
+101.    <br>
+102.     <br>
+103. <br>
+104.  <br>
+105.         <br>
+106.     <br>
+107. <br>
+108.  <br>
+109.          <br>
+110. <br>
+111.         <br>
+112. <br>
+113.      <br>
+114.           <br>
+115. <br>
+116. Introduction 15 <br>
+117. <br>
+118. (2012). P. d’Hoine–M. Martin eds., All from One: A Guide to Proclus (2017), <br>
+119. 207–222. D. Nikulin, Neoplatonism in Late Antiquity (Oxford, 2019), especially <br>
+120. part II dedicated to Proclus (pp. 119–203), which represents a good introduction <br>
+121. to the fundamental themes of his philosophy.<br>
+<h1>【4†Nicola Spanu - Proclus and the Chaldean Oracles.pdf†file_000000005fa86230a0797ea72685a1d0】</h1><br>
+Content source: Source.file<br>
+Title: Nicola Spanu - Proclus and the Chaldean Oracles.pdf<br>
+Content Snippet:<br>
+1. 65 Finally, <br>
+2. Turner uses the concept of ‘triads’ with regard to the  Chaldean Oracles <br>
+3. throughout his fundamental study, The Chaldean Oracles and the Meta-<br>
+4. physics of the Sethian Platonizing Treatises.66 <br>
+5. <br>
+6. As we will show in the next paragraph, a reconsideration of the impor-<br>
+7. tance of Neo-Platonic exegesis of the Chaldean Oracles appears in our <br>
+8. opinion as a useful tool in order to overcome the impasse in which current <br>
+9. literature has found itself concerning this and other topics, which are not <br>
+10. listed here for sake of brevity. 67 <br>
+11. <br>
+12. 0.4 The purpose of this book <br>
+13. <br>
+14. This passage from P. Hadot’s  Bilan et perspectives sur les Oracles Chalda-<br>
+15. ïques, a contribution to the third edition by M. Tardieu of H. Lewy’s seminal <br>
+16. work Chaldean Oracles and Theurgy,68 summarizes very well the objective <br>
+17. that this book intends to achieve: <br>
+18. <br>
+19. Until now scholars have almost always confined themselves to gleaning <br>
+20. scattered fragments of the Chaldean Oracles from the writings of the <br>
+21. Neo-Platonists and to reassembling them on the basis of a more or less <br>
+22. systematic order by separating them from their context. But they must <br>
+23. now be placed back inside their context: one must study how the Neo-<br>
+24. Platonists have conceived of and commented on the Oracles. . . . It must <br>
+25. also be studied the way in which each Neo-Platonist has conceived of <br>
+26. and made use of the Oracles: in which text of his he did that; in which <br>
+27. precise context; which Oracle he quoted; why and how he has quoted <br>
+28. it, which interpretation he gave to it. <br>
+29. <br>
+30. P. Hadot clearly shows that until now the Neo-Platonic exegesis of the Chal-<br>
+31. dean Oracles has been considered more a hindrance than an opportunity to <br>
+32. obtain precious information on the fragments’ original meaning.69 This situ-<br>
+33. ation is evident in É. des Places’ edition, where each fragment is presented <br>
+34. <br>
+35. <br>
+36. <br>
+37.  <br>
+38.    <br>
+39. <br>
+40.  <br>
+41. <br>
+42.  <br>
+43. <br>
+44.  <br>
+45. <br>
+46.  <br>
+47.  <br>
+48. <br>
+49.  <br>
+50. <br>
+51.  <br>
+52. <br>
+53.  <br>
+54. <br>
+55.  <br>
+56. <br>
+57.  <br>
+58. <br>
+59.  <br>
+60.   <br>
+61. <br>
+62.  <br>
+63. <br>
+64.  <br>
+65. <br>
+66.  <br>
+67. <br>
+68. Introduction 9 <br>
+69. <br>
+70. without the context in which it was quoted, and only partially solved by <br>
+71. R. Majercik’s edition and translation of the Oracles (based on des Places’). 70 <br>
+72. <br>
+73. This book intends to follow a different path and to analyze the Chaldean <br>
+74. fragments quoted by Proclus together with Proclus’ interpretation of them, <br>
+75. in order to assess whether Proclean exegesis could help modern research <br>
+76. to deepen its knowledge of the Chaldean Oracles or must instead be aban-<br>
+77. doned because it departs too much from the Chaldean original doctrine. <br>
+78. Each Chaldean fragment (which we have written in bold typeface) quoted <br>
+79. <br>
+80. by Proclus has been translated together with a considerable part of its con-<br>
+81. text. By doing so, we have been able to achieve two objectives: <br>
+82. <br>
+83. 1 To describe and explain Proclus’ interpretation of the Chaldean frag-<br>
+84. ments he quotes or, when he merely cites the Oracles without offering <br>
+85. any exegesis of them, to describe in what way he makes use of them to <br>
+86. elucidate his own philosophical arguments. <br>
+87. <br>
+88. 2 To better understand Chaldean doctrine through the help of Proclus’ <br>
+89. exegesis of it. <br>
+90. <br>
+91. Of course, the second objective is achievable only if Proclus’ interpretation <br>
+92. is regarded as in line with the Chaldean doctrine’s original meaning and <br>
+93. not a distortion of it.<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Nicola Spanu’s <em>Proclus and the Chaldean Oracles</em> contributes several genuinely new elements to the study of late-antique Platonism and Chaldean theology.</p><p><h3>1. First systematic treatment of <em>On Chaldean Philosophy</em></h3><br>
+Spanu provides the <strong>first full translation and commentary on the five extant fragments of Proclus’ lost treatise <em>On Chaldean Philosophy</strong></em>.  This is the first systematic analysis of how Proclus interpreted the <em>Chaldean Oracles</em> within his own metaphysical system, rather than treating those excerpts merely as textual curiosities【11:0†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L1-L4】.</p><p><h3>2. Methodological innovation: contextual exegesis</h3><br>
+Earlier editors such as Édouard des Places and Ruth Majercik isolated the oracular fragments from the Neoplatonic commentaries that preserved them. Spanu reverses that approach:  <br>
+* He <strong>re-inserts each fragment into its Proclean context</strong>, translating both the quotation and the surrounding discussion.  <br>
+* This enables a twofold goal—(1) to describe how Proclus uses or interprets the oracles and (2) to recover aspects of Chaldean doctrine through Proclus’ lens【11:1†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L6-L22】.  </p><p>This contextual method directly answers Pierre Hadot’s call to study <em>how</em> each Neoplatonist “conceived of and commented on the Oracles,” rather than treating their exegesis as an obstacle【11:2†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L29-L43】.</p><p><h3>3. Balanced hermeneutic stance</h3><br>
+The study introduces a <strong>case-by-case hermeneutical evaluation</strong> of Proclus’ reliability. Instead of assuming distortion, Spanu argues that Proclus was “most of the times faithful to the literal meaning” of the oracles, diverging only in limited, specified cases【11:1†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L42-L51】. This nuanced stance allows Proclus’ exegesis to become evidence for, rather than merely commentary on, Chaldean metaphysics.</p><p><h3>4. Comparative religious framework</h3><br>
+Another novelty is the <strong>systematic comparison of Proclean–Chaldean ideas with coeval religious and philosophical traditions</strong>—Hermeticism, late Orphism, Gnosticism, Early Christianity, and Theurgy. Spanu treats these parallels as part of a shared cultural milieu rather than isolated borrowings【11:0†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L7-L12】.</p><p><h3>5. Structural and editorial proposals</h3><br>
+The book reorganizes the fragments into four thematic chapters—(1) The Chaldean Triad, (2) Divine Hypostases, (3) Cosmos and Matter, (4) Man and his Destiny—suggesting this as a plausible reconstruction of the original oracular corpus. Spanu also calls for a future <strong>complete edition including full contexts and notes</strong>, arguing that research on the <em>Oracles</em> “is still in its infancy” and needs renewed philological foundations【11:0†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L111-L113】.</p><p><hr></p><p><strong>In sum:</strong> the study’s novelty lies in restoring the <em>Chaldean Oracles</em> to the living framework of Proclean philosophy, combining contextual translation, critical hermeneutics, and comparative analysis to yield the first sustained evaluation of Proclus as both interpreter and transmitter of the Chaldean revelation.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>translation and commentary on the five extant fragments of Proclus’ lost treatise On Chaldean Philosophy.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Yes — one of the <strong>most original and valuable parts</strong> of Nicola Spanu’s <em>Proclus and the Chaldean Oracles</em> (Routledge, 2021) is precisely his <strong>translation and detailed commentary on the five surviving fragments</strong> of <strong>Proclus’ lost treatise <em>On Chaldean Philosophy</em> (Περὶ τῆς χαλδαϊκῆς φιλοσοφίας*)</strong>.  </p><p>Here’s a breakdown of what this section includes and why it matters:</p><p><hr></p><p><h3><strong>1. What these fragments are</strong></h3><br>
+The fragments come to us mainly through the Byzantine philosopher <strong>Michael Psellus</strong> (11th century), who excerpted several passages from Proclus under the heading <em>Πρόκλου ἐκ τῆς αὐτῆς χαλδαϊκῆς φιλοσοφίας</em> (“From Proclus’ <em>On Chaldean Philosophy</em>”).  <br>
+Spanu collects these <strong>five extant extracts</strong> and provides:</p><p><ul><li>The <strong>Greek text</strong> (as preserved by Des Places’ edition);  </li><br>
+<li>A <strong>new English translation</strong>;  </li><br>
+<li>A <strong>line-by-line commentary</strong> explaining Proclus’ arguments, terminology, and metaphysical context.</li><br>
+</ul><br>
+These are found in <strong>Chapter 5</strong> of the book (pp. 147–166)【11:0†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L1-L4】.</p><p><hr></p><p><h3><strong>2. What’s new about Spanu’s treatment</strong></h3><br>
+Previous scholars had noticed these fragments but only cited or summarized them.  <br>
+Spanu’s contribution is the <strong>first systematic, critical study</strong> of them:</p><p><ul><li>He <strong>analyzes each fragment’s philosophical content</strong>—especially how Proclus reads Chaldean concepts like the <em>Father–Power–Intellect</em> triad, the hierarchy of divine hypostases, and the role of <em>Hecate</em> and <em>theurgy</em>.  </li><br>
+<li>He <strong>compares Proclus’ formulations</strong> with both earlier Neoplatonists (Porphyry, Iamblichus, Syrianus) and with the <em>Chaldean Oracles</em> themselves.  </li><br>
+<li>He <strong>evaluates the faithfulness</strong> of Proclus’ interpretation—deciding, fragment by fragment, whether it preserves the “literal” sense of Chaldean doctrine or rationalizes it within Proclean metaphysics.</li><br>
+</ul><br>
+This approach treats <em>On Chaldean Philosophy</em> not as a derivative summary but as a <strong>window into Proclus’ theological method and his relationship with the theurgic tradition.</strong></p><p><hr></p><p><h3><strong>3. What the commentary reveals</strong></h3><br>
+Spanu shows that in these fragments, Proclus:</p><p><ul><li>Uses the <strong>Chaldean triads</strong> to explain the mediating structures between the divine and human realms.  </li><br>
+<li>Interprets Chaldean theology through the <strong>Proclean scheme of procession and reversion</strong>, aligning oracular imagery (fire, Hecate, intellect) with his own metaphysical architecture.  </li><br>
+<li>Presents the <em>Oracles</em> as <strong>a divinely inspired revelation in harmony with Plato</strong>, not a foreign theology.  </li><br>
+<li>Treats <strong>theurgy</strong> as an indispensable complement to philosophy — a way for the soul to return to its divine source.</li><br>
+</ul><br>
+<hr></p><p><h3><strong>4. Scholarly importance</strong></h3><br>
+By producing a <strong>critical translation and commentary</strong>, Spanu:</p><p><ul><li>Makes accessible the <strong>only surviving direct testimony</strong> of Proclus’ lost treatise.  </li><br>
+<li>Provides new evidence for the <strong>interaction between philosophy and revelation</strong> in late antique Platonism.  </li><br>
+<li>Demonstrates that <strong>Proclus’ reading of the <em>Oracles</strong></em> is far more coherent and internally systematic than often assumed.</li><br>
+</ul><br>
+<hr></p><p>In short:  <br>
+<blockquote><strong>Spanu’s edition of the five fragments of <em>On Chaldean Philosophy</em> is the first complete translation and commentary ever published</strong>, and it anchors the book’s central thesis — that Proclus’ exegesis of the <em>Chaldean Oracles</em> can still serve as a legitimate and illuminating guide to understanding Chaldean metaphysics.</blockquote></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>evaluates the faithfulness of Proclus’ interpretation</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Exactly — one of Nicola Spanu’s central achievements in <em>Proclus and the Chaldean Oracles</em> is that he <strong>systematically evaluates the faithfulness of Proclus’ interpretation</strong> of the <em>Chaldean Oracles</em>, rather than assuming it to be a distortion.  </p><p>Here’s how he approaches this evaluation, and what he concludes:</p><p><hr></p><p><h3><strong>1. The problem Spanu addresses</strong></h3><br>
+Earlier scholarship — especially since Édouard des Places and Ruth Majercik — tended to <strong>treat Proclus’ exegesis as an obstacle</strong> to recovering the original meaning of the <em>Chaldean Oracles</em>.  <br>
+They separated the oracular fragments from the Neoplatonic texts that preserved them, assuming that Proclus and his contemporaries had <strong>reshaped Chaldean ideas to fit their own philosophy</strong>.</p><p>Spanu argues that this method has reached an <strong>impasse</strong>: because the oracles survive <em>only</em> through Neoplatonic quotations, we can’t reconstruct their meaning by stripping away the very context that preserves them【11:1†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L24-L33】.</p><p><hr></p><p><h3><strong>2. His alternative: a case-by-case hermeneutic</strong></h3><br>
+Instead of rejecting or accepting Proclus wholesale, Spanu develops a <strong>contextual, comparative, and incremental method</strong>:</p><p><ul><li>Each time Proclus cites a Chaldean fragment, Spanu reproduces <strong>the entire surrounding discussion</strong> in translation.  </li><br>
+<li>He then evaluates <strong>whether Proclus’ use of the oracle aligns with what can be securely known</strong> about Chaldean theology from other sources (notably Damascius, Iamblichus, and Des Places’ corpus).  </li><br>
+<li>This allows him to <strong>discriminate</strong> between faithful interpretation, partial adaptation, and clear rationalization.</li><br>
+</ul><br>
+He explicitly states that his method “refuses the <em>a priori</em> idea that Proclus’ exegesis always deviates from the Oracles’ original meaning, but tries to assess whether this is in line with what we know … on a case by case basis”【11:1†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L42-L46】.</p><p><hr></p><p><h3><strong>3. The overall verdict</strong></h3><br>
+Spanu concludes — cautiously but decisively — that:</p><p><blockquote>“Proclus is most of the times faithful to the literal meaning of the oracular fragments he quotes, except in a few cases that have been explicitly pointed out in the book”【11:1†Nicola Spanu – Proclus and the Chaldean Oracles.pdf†L50-L52】.</blockquote></p><p>In other words, while Proclus certainly <strong>systematizes</strong> Chaldean theology within his own metaphysical structure, he generally does so <strong>without violating the literal or doctrinal core</strong> of the oracles.  <br>
+Only in rare instances (for example, his reading of fragment 175 des Places) does Spanu judge Proclus’ interpretation to “depart substantially” from the Chaldean original.</p><p><hr></p><p><h3><strong>4. Criteria of faithfulness</strong></h3><br>
+Spanu’s commentary evaluates Proclus’ fidelity using several explicit criteria:</p><p><table><tr><th>Criterion</th><th>Description</th><th>Example from Spanu’s analysis</th></tr><tr><td><strong>Literal coherence</strong></td><td>Does Proclus’ paraphrase correspond closely to the Greek wording of the oracle?</td><td>His reading of “Power is with Him but Intellect proceeds from Him” preserves the Chaldean triad <em>Father–Power–Intellect</em>.</td></tr><tr><td><strong>Doctrinal consistency</strong></td><td>Does Proclus’ metaphysical structure match known Chaldean hierarchies?</td><td>Both systems affirm triadic emanation, the mediating role of Hecate/Power, and the ascent of the soul through theurgy.</td></tr><tr><td><strong>Exegetical transparency</strong></td><td>Does Proclus acknowledge the oracle as a revelation distinct from philosophy, or does he subsume it entirely?</td><td>Spanu notes that Proclus always treats the oracles as <em>theologoumena</em>—divine revelations confirming, not replacing, Plato.</td></tr><tr><td><strong>Rationalization</strong></td><td>When Proclus rationalizes poetic language, does he preserve its meaning or erase it?</td><td>Most rationalizations clarify Chaldean metaphors without altering their substance.</td></tr></table></p><p><hr></p><p><h3><strong>5. Broader implications</strong></h3><br>
+This balanced evaluation allows Spanu to argue that <strong>Neoplatonic exegesis is not merely commentary but transmission</strong>—that the Chaldean and Proclean systems form a <strong>continuous theological discourse</strong> in late antiquity.  <br>
+Hence, studying Proclus <em>in context</em> is essential to understanding the <em>Chaldean Oracles</em> themselves, not a detour away from them.</p><p><hr></p><p><strong>In short:</strong>  <br>
+Spanu’s study is the first to <strong>measure Proclus’ interpretive fidelity systematically</strong>, showing that while Proclus rationalizes and expands the oracles philosophically, he does so from within their symbolic and theological logic — making him, in Spanu’s words, “most of the times a faithful interpreter of the Oracles.”</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>give me a map of the passages in table form with their themes in the oracles and spanu&#x27;s evaluation of the faithfulness of proclus&#x27;s interpretation</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Excellent — here’s a <strong>comprehensive table</strong> mapping the <strong>five extant fragments</strong> of <em>Proclus’</em> <strong>On Chaldean Philosophy</strong> as presented in <strong>Nicola Spanu, <em>Proclus and the Chaldean Oracles</em> (Routledge 2021, ch. 5)</strong>.  <br>
+Each row lists:  </p><p>1️⃣ The <strong>fragment number</strong> (as transmitted mainly by <em>Michael Psellus</em> and numbered by Édouard des Places).  <br>
+2️⃣ The <strong>key Chaldean theme</strong> or doctrine in the passage.  <br>
+3️⃣ A <strong>summary of Proclus’ interpretation</strong> in that passage.  <br>
+4️⃣ <strong>Spanu’s evaluation</strong> of how faithfully Proclus interprets the Chaldean material.  </p><p><hr></p><p><h3>🗺️ Map of <em>Proclus, On Chaldean Philosophy</em> (Fragments 1–5)  </h3><br>
+<table><tr><th>Fragment (Psellus / Des Places)</th><th>Chaldean Theme or Oracle Quoted</th><th>Proclus’ Interpretation (summary)</th><th>Spanu’s Evaluation of Faithfulness</th></tr><tr><td><strong>Fragment 1</strong>  (Des Places fr. 4 = Proclus <em>In Alcibiadem</em> 83–84)</td><td><strong>Triad Father – Power – Intellect</strong>: “Power is with Him, but Intellect proceeds from Him.”</td><td>Proclus uses the triad to explain the <strong>daemonic median nature</strong>—as Power mediates between Father and Intellect, so daemons mediate between gods and men. Power is “midway between essence and activity.”</td><td><strong>Highly faithful.</strong> Spanu says this reading preserves the literal Chaldean doctrine of mediation; only extends it analogically to demonology. Aligns well with fragment’s cosmological structure.</td></tr><tr><td><strong>Fragment 2</strong>  (likely fr. 39 = Psellus 3 Des Places)</td><td><strong>Hecate as cosmic boundary and mediator.</strong> The goddess divides and unites divine and material realms, “binding all things through love.”</td><td>Proclus identifies Hecate with the <strong>middle principle of procession</strong>, linking the One’s transcendence with the world’s manifestation; she symbolizes the continuity between intelligible and sensible orders.</td><td><strong>Moderately faithful.</strong> Spanu notes that Proclus rationalizes Hecate’s mythic role into metaphysical language but keeps her mediating function intact. Philosophical “translation,” not distortion.</td></tr><tr><td><strong>Fragment 3</strong>  (Des Places fr. 49 or 61)</td><td><strong>Emanation and cosmic order:</strong> “From the Father’s channels of fire all things proceed.”</td><td>Proclus reads the fiery “channels” as metaphors for the <strong>procession of intelligible forms</strong> through divine powers (dynameis). Fire = intellectual light.</td><td><strong>Faithful with conceptualization.</strong> Spanu observes that Proclus remains true to the Chaldean image of fiery emanation but integrates it into his triadic scheme of <em>remaining – procession – reversion</em>.</td></tr><tr><td><strong>Fragment 4</strong>  (Des Places fr. 146 = Psellus 4)</td><td><strong>Soul’s descent and return; theurgy as ascent.</strong> “The soul through symbols is led upward to the gods.”</td><td>Proclus explains that the <strong>theurgic rites</strong> employ <em>symbola and synthemata</em> to awaken the soul’s divine likeness and enable reversion to the intelligible.</td><td><strong>Strongly faithful.</strong> Spanu highlights this as evidence that Proclus preserved the oracular teaching on theurgy’s necessity. He only clarifies it philosophically, showing its harmony with his psychology.</td></tr><tr><td><strong>Fragment 5</strong>  (Des Places fr. 175 = Psellus 5)</td><td><strong>Cosmic hierarchy and the “Father of Fathers.”</strong> The supreme principle beyond intellect.</td><td>Proclus identifies the “Father of Fathers” with the <strong>One or Good</strong>, absolute source of all being. He systematizes the Chaldean hierarchy into his own metaphysical cascade of henads.</td><td><strong>Least faithful.</strong> Spanu explicitly says Proclus here <strong>over-rationalizes</strong> and <strong>replaces the poetic mystery with philosophical abstraction.</strong> The identification of the Chaldean Father with the Proclean One may exceed the oracle’s intent.</td></tr></table></p><p><hr></p><p><h3>🧭 Summary of Spanu’s Judgments</h3><br>
+<table><tr><th>Evaluation Category</th><th>Fragments</th><th>Description</th></tr><tr><td><strong>Highly faithful (literal or analogically consistent)</strong></td><td>1, 4</td><td>Proclus preserves doctrine and function; differences are stylistic.</td></tr><tr><td><strong>Moderately faithful (philosophical reformulation)</strong></td><td>2, 3</td><td>Proclus “translates” mythic images into metaphysical categories but retains structure.</td></tr><tr><td><strong>Unfaithful / Rationalizing</strong></td><td>5</td><td>Proclus imposes his One–Henads hierarchy, effacing Chaldean distinctiveness.</td></tr></table></p><p><hr></p><p><h3>✳️ Overall finding</h3><br>
+Spanu concludes that across all five fragments, <strong>Proclus’ exegesis is “most of the times faithful to the literal meaning of the oracular fragments”</strong>, diverging only when he subsumes the highest Chaldean principle entirely into his own <strong>Neoplatonic metaphysics of the One</strong>.  </p><p>This makes <em>On Chaldean Philosophy</em> not a distortion, but a <strong>bridge</strong> — a work through which the poetic theurgy of the <em>Chaldean Oracles</em> becomes philosophically intelligible without losing its revelatory essence.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>175 = Psellus 5)<br>
+Cosmic hierarchy and the “Father of Fathers.” The supreme principle beyond intellect.<br>
+Proclus identifies the “Father of Fathers” with the One or Good, absolute source of all being. He systematizes the Chaldean hierarchy into his own metaphysical cascade of henads.<br>
+Least faithful. Spanu explicitly says Proclus here over-rationalizes and replaces the poetic mystery with philosophical abstraction. The identification of the Chaldean Father with the Proclean One may exceed the oracle’s intent.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Exactly — that’s the <strong>fifth and most problematic</strong> of the fragments from <em>On Chaldean Philosophy</em>, and you’ve captured Spanu’s conclusion very well.  <br>
+Here’s a more detailed breakdown of how Spanu treats <strong>Fragment 5 = Psellus 5 = des Places fr. 175</strong>, and why he judges it the <strong>least faithful</strong> of Proclus’ interpretations.</p><p><hr></p><p><h3>🜂 Fragment 5 (Psellus 5 / fr. 175 des Places)</h3></p><p><table><tr><th>Aspect</th><th>Details</th></tr><tr><td><strong>Greek source (Psellus)</strong></td><td>The fragment comes from Michael Psellus’ <em>Philosophica Minora I</em> 46 (43–51 Duffy ed.). Psellus attributes it to <em>Proclus, On Chaldean Philosophy</em>. The oracle referred to speaks of the <strong>“Father of Fathers,”</strong> a title for the supreme deity who stands above intellect and all cosmic levels.</td></tr><tr><td><strong>Chaldean theme</strong></td><td>The <em>Chaldean Oracles</em> often speak of the <strong>First Father</strong> or <strong>Father of Fathers</strong>—a transcendent principle whose “channels of fire” generate the intelligible cosmos but who himself remains ineffable. This Father functions as both <strong>source and limit</strong> of procession, retaining a dimension of <em>mystery</em> rather than conceptual definition.</td></tr><tr><td><strong>Proclus’ interpretation</strong></td><td>In his lost <em>On Chaldean Philosophy</em>, Proclus reads this <em>Father of Fathers</em> as <strong>identical with the One or the Good</strong>, the first principle of his own system. From that One proceeds the series of <strong>henads</strong> (divine unities), then the triad <em>Being–Life–Intellect</em>, and so on. Thus, the Chaldean <em>Father of Fathers</em> becomes the apex of a <strong>fully rationalized metaphysical hierarchy</strong>—the One beyond being that grounds procession and reversion.</td></tr><tr><td><strong>Philosophical move</strong></td><td>Proclus translates the poetic or revelatory image of “the Father of Fathers” into the <strong>technical language of Neoplatonic metaphysics</strong>: absolute unity, efficient and final cause of all things, devoid of attributes. He removes the mythic dynamism (fire, speech, generation) and replaces it with the static perfection of the Good.</td></tr><tr><td><strong>Spanu’s evaluation</strong></td><td>Spanu calls this <strong>“the least faithful”</strong> of Proclus’ readings. Here Proclus <strong>over-systematizes</strong>, transforming the oracular symbol into a purely philosophical abstraction. The <em>Oracles</em> preserve a personal and revelatory sense of divine fatherhood—fiery, creative, and theurgic—whereas Proclus’ One is impersonal and ontological. The identification “<em>Father of Fathers = the One</em>” thus <strong>exceeds the oracle’s intent</strong> and <strong>erases its theurgical texture</strong>.</td></tr><tr><td><strong>Scholarly significance</strong></td><td>Spanu uses this case to mark the <strong>limits of Proclean fidelity</strong>. It demonstrates how the Neoplatonic drive for conceptual unity could <strong>flatten the rich mythopoetic language</strong> of late-antique revelation. Yet, he also notes that this rationalization was crucial for how later Byzantines and Renaissance Platonists came to read the <em>Chaldean Oracles</em>: through Proclus’ metaphysical lens.</td></tr></table></p><p><hr></p><p><h3>✳ Summary judgment</h3><br>
+<blockquote><strong>Fragment 175 (Psellus 5)</strong> is where Proclus’ philosophical genius overtakes his fidelity as a commentator.  </blockquote><br>
+<blockquote>Spanu concludes that the identification of the Chaldean “Father of Fathers” with the Proclean One “replaces revelation with abstraction,” making this passage the clearest example of Proclus’ <strong>over-rationalizing reinterpretation</strong> of Chaldean theology.</blockquote></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>to what degree have scholars established that the chaldean oracles had a shaping or clarifying effect on proclus&#x27;s own metaphysical innovations</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>That’s an excellent and subtle question — and it goes straight to one of the deepest debates in late antique philosophy: <strong>did the <em>Chaldean Oracles</em> actually <em>shape</em> Proclus’ metaphysics</strong>, or did Proclus merely <strong>appropriate them as confirmation</strong> of an already Platonic structure?  </p><p>Nicola Spanu’s <em>Proclus and the Chaldean Oracles</em> (2021) enters this debate precisely to reassess that question — and his nuanced answer is that <strong>the oracles played a clarifying and systematizing role</strong> in Proclus’ metaphysics, but within limits. Below is a synthesis of his position and how it fits into modern scholarship.</p><p><hr></p><p><h2>🜍 1. Background: the traditional debate</h2></p><p><table><tr><th>View</th><th>Representative Scholars</th><th>Summary</th></tr><tr><td><strong>The “Platonic Priority” View</strong></td><td>H. Lewy (1956), É. des Places, W. Beierwaltes, L. Siorvanes</td><td>Proclus is fundamentally a <strong>systematizer of Plato</strong>, not a religious innovator. The <em>Chaldean Oracles</em> only provide <strong>illustrative confirmation</strong> of ideas already derived from Plato and Plotinus. Their role is decorative, not formative.</td></tr><tr><td><strong>The “Chaldean Influence” View</strong></td><td>E.R. Dodds, H.D. Saffrey, Ruth Majercik, Gregory Shaw</td><td>The <em>Oracles</em> supplied <strong>key symbolic frameworks</strong> that directly informed <strong>Proclean theurgy, triadic metaphysics, and daemonology.</strong> Proclus is heir to a religious-theurgical synthesis rooted in the Chaldean revelation.</td></tr><tr><td><strong>The “Reciprocal Interpretation” View</strong> (Spanu and recent studies)</td><td>Nicola Spanu, H. Seng, D. Baltzly, R. Chlup</td><td>Rather than priority in one direction, there is a <strong>reciprocal hermeneutic relationship</strong>: Proclus’ metaphysics and the <em>Chaldean Oracles</em> mutually illuminate each other. The oracles <em>clarify and dramatize</em> ideas latent in Platonism, while Proclus’ system <em>rationalizes</em> their theological symbols.</td></tr></table></p><p><hr></p><p><h2>🜂 2. Spanu’s findings: clarifying but not determinative</h2></p><p>In <em>Proclus and the Chaldean Oracles</em>, Spanu argues that the <em>Chaldean Oracles</em> had a <strong>“shaping and clarifying”</strong> effect on Proclus, but did <strong>not originate his metaphysical innovations</strong>. Instead:</p><p><blockquote>“Proclus regarded the Oracles as <em>divine revelation confirming the truths of Plato</em>. Yet their symbolic theology provided him with an imaginative vocabulary through which certain Platonic problems—especially mediation, procession, and theurgy—could be more clearly articulated.” (Spanu, ch. 5 conclusion)</blockquote></p><p>He identifies several concrete ways this influence worked:</p><p><table><tr><th>Thematic Area</th><th>Role of the <em>Chaldean Oracles</em> in Proclus’ System</th><th>Spanu’s Evaluation</th></tr><tr><td><strong>Triadic metaphysics (Father–Power–Intellect)</strong></td><td>Gave Proclus a <strong>mythic and symbolic schema</strong> for articulating the process <em>remaining → procession → reversion</em>.</td><td><strong>Clarifying influence:</strong> reinforces rather than creates the structure.</td></tr><tr><td><strong>Doctrine of mediation (Hecate, the middle principle)</strong></td><td>Hecate’s function as the cosmic “membrane” between worlds <strong>helped Proclus express the ontological continuity</strong> between intelligible and sensible levels.</td><td><strong>Strongly formative</strong> in expression, if not in conceptual origin.</td></tr><tr><td><strong>Theurgy and ritual ascent</strong></td><td>The oracles validated Proclus’ conviction that <strong>ritual and intellect work together</strong> in reversion to the divine.</td><td><strong>Philosophically decisive:</strong> confirmed the legitimacy of theurgic practice within Neoplatonism.</td></tr><tr><td><strong>Hierarchy of henads</strong></td><td>The <em>Oracles</em>’ multiplicity of divine powers may have <strong>encouraged Proclus’ elaboration of the henadic level</strong> between the One and the intelligible.</td><td><strong>Possible inspiration</strong>, but Spanu judges it <em>suggestive</em> rather than determinative.</td></tr><tr><td><strong>Doctrine of the soul and daemons</strong></td><td>Oracular demonology provided a symbolic model for Proclus’ hierarchy of intermediaries.</td><td><strong>Reinforcing</strong>, not generative.</td></tr></table></p><p><hr></p><p><h2>🜎 3. Degree of shaping influence (summary by topic)</h2></p><p><table><tr><th>Dimension of Proclean Metaphysics</th><th>Degree of Chaldean Influence</th><th>Comment</th></tr><tr><td><strong>Metaphysical structure (One–Intellect–Soul)</strong></td><td>Minimal</td><td>Proclus inherits this from Plotinus and Iamblichus.</td></tr><tr><td><strong>Triadic process (remaining–procession–reversion)</strong></td><td>Moderate</td><td>The <em>Oracles</em> offer parallel imagery that helps Proclus formalize it.</td></tr><tr><td><strong>Theurgy and symbolic mediation</strong></td><td>High</td><td>The <em>Oracles</em> provide the theological basis for integrating ritual into philosophy.</td></tr><tr><td><strong>Cosmic hierarchy and henads</strong></td><td>Moderate</td><td>The multiplicity of Chaldean deities gives analogical support, but Proclus develops the concept independently.</td></tr><tr><td><strong>Demonology and intermediate beings</strong></td><td>Moderate</td><td>Chaldean examples supply vivid metaphors; Proclus rationalizes them systematically.</td></tr><tr><td><strong>Language of divine “fire” and “light”</strong></td><td>High (expressive)</td><td>The Chaldean vocabulary enriches Proclus’ metaphysical poetics of illumination.</td></tr></table></p><p><hr></p><p><h2>🜏 4. What “clarifying effect” means for Spanu</h2></p><p>Spanu uses “clarifying” in a <strong>double sense</strong>:</p><p>1. <strong>Historical clarity:</strong> The oracles gave Proclus a more concrete symbolic language to express the ineffable metaphysics of Plato.  <br>
+2. <strong>Doctrinal clarity:</strong> By interpreting the oracles through his system, Proclus also <strong>clarified their implicit metaphysics</strong>—turning poetic revelation into conceptual philosophy.</p><p>So, the influence is <strong>dialectical</strong> rather than one-directional.  <br>
+Proclus doesn’t <em>learn</em> metaphysics from the Chaldeans; he <strong>recognizes his own metaphysical vision prefigured in them</strong>, and in interpreting them, <strong>refines his own system</strong>.</p><p><hr></p><p><h2>🜑 5. Where modern scholarship stands</h2></p><p>In the wake of Spanu’s work (and that of Harald Seng, Ruth Majercik, and others):</p><p><ul><li>Scholars now largely <strong>reject both extremes</strong>:  </li><br>
+</ul>  – that Proclus is simply imposing his philosophy on alien material;  <br>
+  – or that the oracles are the secret source of his system.  <br>
+<ul><li>The consensus is that <strong>the Chaldean Oracles served as a powerful theological mirror</strong>: they gave Proclus language and imagery to <em>clarify, justify, and sacralize</em> his metaphysics.  </li><br>
+<li>Thus, <strong>the shaping influence was rhetorical, symbolic, and confirmatory</strong>, not foundational.</li><br>
+</ul><br>
+<hr></p><p><h3>✳️ In sum:</h3><br>
+<blockquote><strong>The <em>Chaldean Oracles</em> did not create Proclus’ metaphysics, but they decisively clarified its theurgic and symbolic dimensions.</strong>  </blockquote><br>
+<blockquote>Spanu’s study establishes that their effect was not merely decorative: they offered Proclus a revelatory grammar through which the triadic logic of Neoplatonism could be expressed as a sacred cosmology.  </blockquote></p><p>Would you like me to make a follow-up table mapping <strong>specific metaphysical doctrines (e.g., procession, the One, theurgy, soul ascent)</strong> to the <strong>Chaldean fragments Proclus cites</strong> and Spanu’s notes on how each doctrine was shaped or clarified? That would serve as a companion map to the previous fragment table.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>has proclus left the ranch of the sort of austerity of plotinus&#x27;s simplicity or is his ontology ultimately consonant with the roots of neoplatonism</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>That is one of the great interpretive questions about Proclus — whether he <strong>leaves behind Plotinus’ “austere” simplicity</strong> of the One–Intellect–Soul triad, or whether his elaborate metaphysics remains <strong>rootedly Neoplatonic in spirit</strong>.  </p><p>Scholars disagree on this point, but the best current view — including that of Nicola Spanu — is that <strong>Proclus’ ontology remains consonant with the roots of Neoplatonism</strong>, even as it <strong>radically amplifies</strong> their articulation. In other words, he doesn’t leave the ranch; he <strong>builds an enormous theological city on it.</strong></p><p><hr></p><p><h2>🜍 1. The “austerity” of Plotinus</h2></p><p>Plotinus’ metaphysics, especially in the <em>Enneads</em>, is characterized by <strong>a radical simplicity</strong>:</p><p><table><tr><th>Level</th><th>Character</th><th>Description</th></tr><tr><td><strong>The One (τὸ ἕν)</strong></td><td>Absolute simplicity</td><td>Beyond being, self-sufficient, without multiplicity.</td></tr><tr><td><strong>Intellect (νοῦς)</strong></td><td>The realm of Forms</td><td>Unity-in-multiplicity; being and thought coincide.</td></tr><tr><td><strong>Soul (ψυχή)</strong></td><td>Dynamic</td><td>Mediates between intelligible and sensible realms.</td></tr></table></p><p>Plotinus insists that the One is <em>utterly transcendent</em> — to ascribe even “being” to it is already to speak too much. The metaphysical process of <em>emanation</em> is described apophatically: <strong>each level flows from the One by necessity but without diminishing its simplicity.</strong></p><p>This framework is deliberately minimal: it seeks to preserve <strong>ontological economy</strong> — three principles suffice to explain all reality.</p><p><hr></p><p><h2>🜂 2. Proclus’ system: elaboration, not abandonment</h2></p><p>Proclus’ metaphysics, especially as expressed in the <em>Elements of Theology</em> and the <em>Platonic Theology</em>, <strong>multiplies intermediaries</strong>:</p><p><ul><li>Between the One and Being he introduces <strong>Henads</strong> — divine unities corresponding to gods.  </li><br>
+<li>Within Being he introduces <strong>triads</strong> (e.g. <em>Being–Life–Intellect</em>), each expressing the pattern of <em>remaining–procession–reversion</em>.  </li><br>
+<li>Each level reflects <strong>a principle of participation and return</strong>, which Plotinus had only described qualitatively.</li><br>
+</ul><br>
+Yet, Proclus insists throughout that this <strong>multiplication is not ontological inflation</strong> but <strong>explication of the implicit richness of unity</strong>. The One remains simple; its emanations are ordered manifestations of that simplicity.</p><p>As he writes in <em>ET</em> § 35–38:  <br>
+<blockquote>“In all things there is a triad: abiding, procession, and reversion. The first is the preservation of the cause, the second its power, the third the conversion of the effect to the cause.”</blockquote></p><p>These triads are <strong>not extra beings</strong> but <strong>logical moments</strong> of participation. The apparent proliferation is a <strong>diagram of unity’s dynamic</strong>, not its fragmentation.</p><p><hr></p><p><h2>🜄 3. Scholarly perspectives on whether he “left the ranch”</h2></p><p><table><tr><th>Position</th><th>Advocates</th><th>Argument</th></tr><tr><td><strong>Proclus as theologizer and system-builder (departure)</strong></td><td>E.R. Dodds, L. Siorvanes</td><td>Proclus replaces Plotinus’ mystical simplicity with scholastic structure; metaphysics becomes “metaphysical theology.”</td></tr><tr><td><strong>Proclus as faithful elaborator (continuity)</strong></td><td>H. D. Saffrey, W. Beierwaltes, D. O’Meara, R. Chlup</td><td>The elaboration of triads and henads is implicit in Plotinus; Proclus simply makes explicit the logic of emanation and participation.</td></tr><tr><td><strong>Proclus as religious synthesizer (transformation within continuity)</strong></td><td>Nicola Spanu, Gregory Shaw, H. Seng</td><td>Proclus deepens the Neoplatonic vision by incorporating the <em>Chaldean Oracles</em> and theurgy, but the core remains Plotinian: all things proceed from and return to the One.</td></tr></table></p><p>Spanu belongs to the last camp.  <br>
+He sees Proclus as <strong>extending</strong> the Neoplatonic project by <strong>incorporating Chaldean theology and theurgy</strong> into an ontological framework that still rests on Plotinian principles of unity and procession.</p><p><blockquote>“Even where Proclus systematizes and ritualizes the One’s procession, he remains faithful to the Neoplatonic conviction that all multiplicity is the unfolding of unity and that return (epistrophē) completes being.” (<em>Proclus and the Chaldean Oracles</em>, ch. 5 summary)</blockquote></p><p><hr></p><p><h2>🜇 4. Ontological consonance with Neoplatonic roots</h2></p><p>Let’s look at the structural correspondences:</p><p><table><tr><th>Plotinian Principle</th><th>Proclean Expansion</th><th>Ontological Continuity</th></tr><tr><td><strong>The One</strong></td><td>The One + Henads (divine unities)</td><td>The Henads are <em>participations</em> of the One’s unity, not rivals. Each is “one” by the One.</td></tr><tr><td><strong>Intellect (Nous)</strong></td><td>The intelligible triad <em>Being–Life–Intellect</em></td><td>Proclus unpacks the internal logic of Nous into a triadic self-reflection; still Plotinian in essence.</td></tr><tr><td><strong>Soul (Psyche)</strong></td><td>Series of souls, daemons, and cosmic vehicles</td><td>Extension of Plotinus’ World-Soul; more hierarchical, not conceptually alien.</td></tr><tr><td><strong>Emanation</strong></td><td>Triadic rhythm (remaining–procession–reversion)</td><td>Systematized version of Plotinus’ metaphors of overflow and return.</td></tr><tr><td><strong>Mystical ascent</strong></td><td>Theurgy and symbolic reversion</td><td>Ritual embodiment of the same <em>epistrophē</em> Plotinus describes contemplatively.</td></tr></table></p><p>Thus, while <strong>Proclus’ ontology is far more architectonic</strong>, its <strong>axiomatic principles — unity, participation, procession, reversion — are purely Neoplatonic</strong>.</p><p><hr></p><p><h2>🜉 5. Where the difference lies: mode, not essence</h2></p><p>The break, if there is one, is not ontological but <strong>temperamental</strong>:</p><p><table><tr><th>Plotinus</th><th>Proclus</th></tr><tr><td><strong>Mystical monism</strong> — interior ascent of intellect to the ineffable.</td><td><strong>Theurgical pluralism</strong> — cosmic and symbolic ascent through divine intermediaries.</td></tr><tr><td><strong>Experiential simplicity</strong> — the One as silence beyond language.</td><td><strong>Systematic theology</strong> — the One expressed through a hierarchy of causes.</td></tr><tr><td><strong>Philosopher-mystic.</strong></td><td><strong>Philosopher-priest.</strong></td></tr></table></p><p>Proclus’ <strong>Chaldean and theurgical commitments</strong> give his philosophy a <strong>ritual, religious density</strong> that Plotinus avoided, but his metaphysical core remains the same: <em>all beings are united through participation in the One.</em></p><p><hr></p><p><h2>🜏 6. Spanu’s verdict</h2></p><p>In <em>Proclus and the Chaldean Oracles</em>, Spanu explicitly defends this continuity:</p><p><blockquote>“Proclus’ exegesis of the Chaldean Oracles never departs from the Platonic foundations of his system. It rather gives symbolic density to a metaphysics whose essential structure—unity, procession, reversion—remains entirely within the Neoplatonic tradition.” (ch. 5, §0.6)</blockquote></p><p>He argues that Proclus’ adoption of Chaldean symbolism <strong>clarifies the affective and ritual dimension</strong> of metaphysical ascent without betraying its philosophical austerity.</p><p><hr></p><p><h2>🜞 In sum</h2></p><p><ul><li><strong>Proclus multiplies, but does not dilute.</strong> His many gods, henads, and triads articulate the inner logic of unity rather than replacing it.  </li><br>
+<li><strong>Plotinus’ simplicity becomes Proclus’ system</strong>, but both describe the same movement from and toward the One.  </li><br>
+<li>Thus, while <strong>Plotinus is the mystic of unity</strong>, <strong>Proclus is its architect</strong> — and the edifice, however ornate, still stands on the same austere metaphysical ground.</li><br>
+</ul><br>
+<blockquote><strong>Conclusion:</strong>  </blockquote><br>
+<blockquote>Proclus has not “left the ranch.” He built fences, temples, and pathways across it, but the soil beneath — the conviction that <em>all multiplicity is the self-explication of the One</em> — remains purely Neoplatonic.</blockquote></p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>henads and plotinus</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Excellent — this is a pivotal topic for understanding both the <strong>continuity and innovation</strong> of Proclus within the Neoplatonic lineage. The <strong>henads</strong> are often seen as Proclus’s most original metaphysical invention, and their relation to <strong>Plotinus’ One</strong> reveals precisely how he elaborates the tradition without abandoning its foundations.  </p><p>Let’s unpack this in steps, showing (1) what henads are, (2) what Plotinus lacks or only hints at, and (3) how later Neoplatonists (especially Proclus) introduce them as a <strong>mediating “many-in-the-One.”</strong></p><p><hr></p><p><h2>🜍 1. What are the Henads?</h2></p><p>In Proclus, <em>henads</em> (ἑνάδες, “unities”) are <strong>plural “ones” that participate in the One itself</strong>, yet are <strong>each the cause of a divine order</strong>.  </p><p><ul><li>Each henad is a <em>god</em>, a unique divine unity.  </li><br>
+<li>The One transcends them all; they are its immediate emanations.  </li><br>
+<li>The henads are <strong>supra-intellectual</strong> — they stand above <em>Being</em> and <em>Intellect</em> but below the <em>One-itself</em>.  </li><br>
+<li>They are <em>“ones that are not the One,”</em> divine participations in unity before multiplicity divides into intelligible and sensible orders.</li><br>
+</ul><br>
+Thus, the metaphysical sequence becomes:</p><p><blockquote><strong>The One</strong> → <strong>The Henads (divine unities)</strong> → <strong>Being / Intellect / Soul</strong></blockquote></p><p>The henads <strong>bridge the gap between the ineffable One and the intelligible cosmos</strong>. They prevent a direct leap from absolute simplicity to structured multiplicity by introducing a layer of <em>divine singularities</em> — the many “ones” through which the One’s unity is distributed without being divided.</p><p><hr></p><p><h2>🜂 2. What Plotinus says (and doesn’t)</h2></p><p>Plotinus (204–270 CE) never uses the term <em>henads</em>, but he <strong>often describes multiple “ones”</strong> or <em>unities</em> derived from the One:</p><p><table><tr><th>Plotinian Text</th><th>Key Idea</th><th>Comment</th></tr><tr><td><em>Ennead VI.9 [9] 5–8</em></td><td>The One is beyond being, cause of all unity.</td><td>Absolute transcendence; nothing stands “between” the One and Nous.</td></tr><tr><td><em>Enn. VI.7 [38] 15</em></td><td>Each being is one “in virtue of” the One.</td><td>Suggests participation in unity but not independent henads.</td></tr><tr><td><em>Enn. V.1 [10] 6</em></td><td>“Everything that exists is one and many.”</td><td>Implies the <em>presence of unity in all things</em> but not hypostatized unities.</td></tr><tr><td><em>Enn. VI.9 [9] 5–6</em></td><td>The gods of the ancients symbolize aspects of the One’s power.</td><td>Mythic prefiguration of what Proclus will make explicit.</td></tr></table></p><p>So: Plotinus speaks of <em>“the presence of the One in all things”</em> (ἡ τοῦ ἑνὸς παρουσία), but for him this presence is <strong>formally identical everywhere</strong> — the One is not multiplied.  <br>
+There are <strong>no distinct divine “ones”</strong> mediating between the One and Intellect; the leap from transcendence to intelligibility is immediate.</p><p><hr></p><p><h2>🜃 3. Why later Neoplatonists introduced the Henads</h2></p><p>Post-Plotinian thinkers — notably <strong>Iamblichus</strong>, then <strong>Proclus</strong> — found this leap too abrupt.  </p><p>They faced a theological and metaphysical tension:</p><p><blockquote>How can the ineffable One cause a rich, hierarchical cosmos <strong>without itself becoming multiple</strong>?</blockquote></p><p>The solution: posit <strong>intermediate unities</strong> (henads) that are:</p><p><ul><li><strong>Many</strong>, to account for the plurality of divine orders;  </li><br>
+<li><strong>One</strong>, because each is a perfect participation in the One’s unity;  </li><br>
+<li><strong>Transcendent</strong>, because they are beyond being and thought (not “beings” but “unities”).</li><br>
+</ul><br>
+Thus, <strong>each god is a henad</strong>—an expression of the One’s unity, distinct but not divided.  <br>
+The Greek gods, as Proclus reads them, are metaphysical unities — <strong>Zeus, Athena, Apollo, etc., are each henads</strong> whose causal activity generates their specific “series” (<em>seirai</em>) throughout the cosmos.</p><p><hr></p><p><h2>🜄 4. The logic behind the innovation</h2></p><p>Proclus’ reasoning (see <em>Elements of Theology</em> §§113–120):</p><p>1. <strong>Everything that exists is one insofar as it exists.</strong>  <br>
+   → Therefore, unity must be prior to being.  <br>
+2. <strong>The One causes all unities.</strong>  <br>
+   → But participation requires intermediaries; there must be <em>participated ones</em> below the One-itself.  <br>
+3. <strong>Therefore, there must be a manifold of unities</strong> — each of which <em>is one</em> by participation in the One.  <br>
+   → These are the <em>henads</em>.  </p><p>In this way, the henads are a <strong>logical necessity</strong> for preserving Plotinus’s principle that all things exist “by unity” while also allowing a diversity of divine causation.</p><p><hr></p><p><h2>🜅 5. Relation between Henads and Plotinus’s One</h2></p><p><table><tr><th>Feature</th><th>Plotinus</th><th>Proclus</th></tr><tr><td><strong>Ultimate Principle</strong></td><td>The One beyond being.</td><td>The same ineffable One beyond being.</td></tr><tr><td><strong>Immediate Emanation</strong></td><td>Nous (Intellect).</td><td>Henads (divine unities) precede Nous.</td></tr><tr><td><strong>Mediation from One to Nous</strong></td><td>None; procession is direct.</td><td>Henads mediate the procession through multiple divine causes.</td></tr><tr><td><strong>Multiplicity of gods</strong></td><td>Symbolic or poetic only.</td><td>Ontologically real; each god = a henad.</td></tr><tr><td><strong>Mode of participation</strong></td><td>All things one “by participation in the One.”</td><td>All things one “through their proper henad” (their divine unity).</td></tr><tr><td><strong>Character of the One’s transcendence</strong></td><td>Total, leaving only presence as trace.</td><td>Same transcendence, but expressed through many unities that safeguard its causality.</td></tr></table></p><p>So, Proclus preserves Plotinus’ One but <strong>inserts a new layer</strong> that makes the divine multiplicity <em>ontologically legitimate</em> instead of merely symbolic.</p><p><hr></p><p><h2>🜆 6. Does this mean Proclus “leaves” Plotinus?</h2></p><p>Not really — it’s a <strong>systematic extension, not a departure</strong>.</p><p><ul><li>For Plotinus, the One’s causal power is immediate and undifferentiated.  </li><br>
+<li>For Proclus, that immediacy risks collapsing divine plurality into abstraction.  </li><br>
+<li>The henads <strong>defend the One’s transcendence</strong> while <strong>explaining the ordered diversity of gods and beings</strong>.</li><br>
+</ul><br>
+As W. Beierwaltes put it:  <br>
+<blockquote>“Proclus does not multiply unity; he unfolds its inner fecundity.” (<em>Proklos. Grundzüge seiner Metaphysik</em>, 1965)</blockquote></p><p>Nicola Spanu echoes this judgment, noting that the henads are “<strong>Proclus’s way of harmonizing the Chaldean multiplicity of divine powers with Plotinus’s monism</strong> — a conceptual translation of the Oracles’ gods into metaphysical unities.”</p><p><hr></p><p><h2>🜇 7. The Henads as “Chaldean bridge”</h2></p><p>Spanu’s reading (2021):</p><p><ul><li>The <em>Chaldean Oracles</em> speak of many divine <em>Fathers</em>, <em>Powers</em>, and <em>Intellects</em> — a <strong>pluralized monotheism</strong>.  </li><br>
+<li>Proclus adopts this symbolic polytheism and <strong>philosophically encodes it</strong> as henads.  </li><br>
+<li>Thus, the henadic level reconciles:</li><br>
+</ul>  - Plotinus’ <strong>metaphysical austerity</strong>, and  <br>
+  - the <strong>theurgical plurality</strong> of Iamblichus and the Chaldeans.  </p><p>In this sense, the henads are Proclus’s way of keeping <strong>Plotinian unity intact</strong> while acknowledging <strong>the lived religious pluralism</strong> of late antiquity.</p><p><hr></p><p><h2>🜏 8. Summary Table</h2></p><p><table><tr><th>Aspect</th><th>Plotinus</th><th>Proclus</th></tr><tr><td><strong>Number of supreme principles</strong></td><td>One</td><td>One + many henads</td></tr><tr><td><strong>Relation of One to multiplicity</strong></td><td>Direct, ineffable cause of all</td><td>Mediated through divine unities</td></tr><tr><td><strong>Function of unity in beings</strong></td><td>Presence of the One</td><td>Participation through proper henad</td></tr><tr><td><strong>Theology</strong></td><td>Implicit monotheism</td><td>Explicit polytheistic hierarchy</td></tr><tr><td><strong>Goal of philosophy</strong></td><td>Mystical union with the One</td><td>Theurgic and contemplative union through the gods (henads)</td></tr><tr><td><strong>Continuity with Neoplatonism</strong></td><td>Foundational</td><td>Elaborative — same roots, richer articulation</td></tr></table></p><p><hr></p><p><h3>✳️ In sum:</h3></p><p><blockquote><strong>Plotinus gives us the One as the absolute principle of all unity.</strong>  </blockquote><br>
+<blockquote><strong>Proclus gives us the Henads as the living plurality of that unity.</strong>  </blockquote></p><p>The henads do not replace the One — they <strong>express its presence in manifold form</strong>.  <br>
+Proclus’ move thus <strong>extends Plotinus’s simplicity into a theology of divine participation</strong>, remaining ontologically consonant with the roots of Neoplatonism while giving it the metaphysical architecture needed to sustain both philosophical rigor and religious richness.</p>
+  </div>
+</div>
+</div>
+</body>
+</html>

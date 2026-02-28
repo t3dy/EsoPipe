@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ancient Alchemy Laboratory Image</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --user-bg: #0f3460;
+    --assistant-bg: #1a1a2e;
+    --system-bg: #2a1a3e;
+    --user-accent: #4cc9f0;
+    --assistant-accent: #f72585;
+    --system-accent: #7b2ff7;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --code-bg: #0d1117;
+    --border: #333;
+    --link: #4cc9f0;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .header .meta {
+    margin-top: .3rem;
+    font-size: .8rem;
+    color: var(--text-muted);
+  }
+  .chat {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .msg {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.system { justify-content: center; }
+  .msg.tool { justify-content: flex-start; }
+  .bubble {
+    max-width: 85%;
+    padding: .85rem 1.1rem;
+    border-radius: 16px;
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: var(--user-bg);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant .bubble {
+    background: var(--assistant-bg);
+    border: 1px solid rgba(247, 37, 133, 0.15);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.system .bubble {
+    background: var(--system-bg);
+    border: 1px solid rgba(123, 47, 247, 0.2);
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    max-width: 60%;
+    text-align: center;
+  }
+  .msg.tool .bubble {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .82rem;
+    border-radius: 8px;
+  }
+  .role {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .msg.user .role { color: var(--user-accent); }
+  .msg.assistant .role { color: var(--assistant-accent); }
+  .msg.system .role { color: var(--system-accent); }
+  .msg.tool .role { color: #58a6ff; }
+
+  /* Content styling */
+  .bubble p { margin: .4em 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--link); text-decoration: none; }
+  .bubble a:hover { text-decoration: underline; }
+  .bubble ul, .bubble ol { margin: .5em 0; padding-left: 1.5em; }
+  .bubble li { margin: .2em 0; }
+  .bubble strong { color: #fff; }
+  .bubble em { color: #ccc; }
+  .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+    color: #fff;
+    margin: .8em 0 .3em;
+    line-height: 1.3;
+  }
+  .bubble h1 { font-size: 1.3em; }
+  .bubble h2 { font-size: 1.15em; }
+  .bubble h3 { font-size: 1.05em; }
+  .bubble h4 { font-size: 1em; }
+  .bubble blockquote {
+    border-left: 3px solid var(--text-muted);
+    margin: .5em 0;
+    padding: .2em .8em;
+    color: var(--text-muted);
+  }
+  .bubble table {
+    border-collapse: collapse;
+    margin: .5em 0;
+    font-size: .9em;
+    width: 100%;
+  }
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: .4em .6em;
+    text-align: left;
+  }
+  .bubble th {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+  }
+
+  /* Code blocks */
+  .bubble pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: .5em 0;
+    font-size: .85em;
+    line-height: 1.5;
+  }
+  .bubble code {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: .9em;
+  }
+  .bubble :not(pre) > code {
+    background: rgba(255,255,255,.08);
+    padding: .15em .35em;
+    border-radius: 4px;
+  }
+  .bubble pre code {
+    background: none;
+    padding: 0;
+  }
+  .code-label {
+    display: block;
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-bottom: -.3em;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* Keyword highlighting in code */
+  @media (prefers-color-scheme: dark) {}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Ancient Alchemy Laboratory Image</h1>
+  <div class="meta">February 05, 2025 10:53 PM &middot; Model: gpt-4o &middot; 29 messages</div>
+</div>
+<div class="chat">
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>generate an image of laboratory alchemy in the ancient mediterranean as described in this book</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+Please remember to search the user&#x27;s documents if an answer to their question is not contained in the above snippets.<br>
+</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><pre><span class="code-label">unknown</span><code>msearch([&quot;ancient Mediterranean alchemy laboratory&quot;, &quot;Pseudo-Democritus alchemical workshop&quot;, &quot;description of alchemical practice in ancient Mediterranean&quot;, &quot;alchemy tools and materials in ancient world&quot;])
+</code></pre></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+SOURCES OF ALCHEMY AND CHEMISTRY</p><p>The Four Books of<br>
+Pseudo-Democritus</p><p>Matteo Martelli</p><p>Maney ^<br>
+Publishing<br>
+wvvw.maneypublishing.com</p><p>SOURCES OF ALCHEMY AND CHEMISTRY:</p><p>SIR ROBERT M O N D STUDIES IN THE HISTORY OF EARLY CHEMISTRY</p><p>THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+MATTEO MARTELLI</p><p>AMBIX VOLUME 6O SUPPLEMENT l 2013</p><p>CONTENTS</p><p>General Editors&#x27; Foreword Sv</p><p>Acknowledgments Svi</p><p>Abbreviations Sviii</p><p>INTRODUCTION</p><p>I 1. The Four Books of pseudo-Democritus Si<br>
+1.1. Early modern editions S4<br>
+1.2. Modern scholarship S5</p><p>I 2. Alchemical works by ps.-Democritus: the direct manuscript tradition S7<br>
+2.1. The Physika kai mystika - Natural and Secret Questions (PM) Sn<br>
+2.2. The Peri asemou poieseos - On the Making of Silver (AP) Si2</p><p>§ 3. The structure of the lost Four Books of ps.-Democritus Si3<br>
+I 4. Physika kai mystika and the original books on gold and purple Si8</p><p>4.1. The epitome of the book on purple Si 9<br>
+4.2. The epitome of the book on gold S2i</p><p>I 5. The books on silver and precious stones S23<br>
+I 6. Ps.-Democritus&#x27; Catalogues in the indirect tradition: Synesius&#x27;</p><p>commentary and the so-called Chemistry of Moses S26<br>
+I 7. Dating of ps.-Democritus&#x27;Four ßoo/cs S29<br>
+I 8. Background to the attribution of the alchemical books to Democritus S32</p><p>8.1. The supposed Eastern tradition S32<br>
+8.2. Democritus and the technical arts (technai) S34</p><p>§ 9. Bolos of Mendes S36<br>
+9.1. The problematic meaning of cheirokmeta S44</p><p>S io . A commentary on ps.-Democritus&#x27; alchemical work: the dialogue<br>
+between Synesius and Dioscorus S48<br>
+10.1. Synesius the alchemist and Synesius of Cyrene S52<br>
+10.2. Synesius the alchemist and Synesius of Philadelphia S56</p><p>§ n . The Four Books and the definition of alchemy S57</p><p>I 12. The Egyptian background S63<br>
+I 13. Persian elements: ps.-Democritus and Ostanes S69</p><p>EDITION</p><p>Criteria of edition S75</p><p>Creek texts<br>
+Democritus, On the Making of Purple and Gold: Natural and</p><p>Secret Questions (= PM) S78<br>
+On the Making of Silver (= AP) Si 04<br>
+Excerpts from The Chemistry of Moses: Democritus&#x27; Catalogue</p><p>{=Cat.) Sn6<br>
+The Philosopher Synesius to Dioscorus: Notes on Democritus&#x27; Book (= Syn. Alch.) Si 22<br>
+On Whitening Si 51</p><p>Syriac texts<br>
+Book by Democritus: On the Making of Shiny Gold {= iSyrC) S152<br>
+Second Book by the Philosopher Democritus (= 2SyrC) Si 68<br>
+Again by Democritus: I Greet you Wise Men {= 3SyrC) Si 80<br>
+<h1>【1†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+^&quot;^Prot. rV 48,4-6. See Beretta, Alchemy of Glass, 45.<br>
+&#x27;&quot;* See, in particular, CAAG n T9i,3-t8, where Nilus is said to have performed a procedure for dyeing a Cu-Pb alloy by</p><p>means of the minerals of KcoßaSia (perhaps arsenic sulphides). Zosimus&#x27; writings preserved in the Corpus Syriacum<br>
+include more information on this priest (see, for instance, CMA 11 228). In these works, Zosimus attributed several<br>
+metallurgical techniques to Egyptian priests: see CMA II 226 and 228. In VII 8-ro Mertens, he also claimed to have<br>
+seen a goldsmith&#x27;s oven in the temple of Memphis.</p><p>&#x27; &quot; &#x27;The Corpus alchemicum usually refers to alchemy in this way.<br>
+&quot;°See Berthelot, Origines de l&#x27;alchimie, 29; Alfred Lucas and John Richard Harris, Ancient Egyptian Materials and</p><p>Industries, 4th ed. (London: E. Arnold, T962), t95-269; Paul T. Nicholson and Ian Shaw, Ancient Egyptian<br>
+Materials and Technology (Cambridge: Cambridge University Press, 2000), T48-76.</p><p>INTRODUCTION S67</p><p>from the Middle and Far East.&#x27;^ &#x27; Along with these goods, experts in diverse arts also<br>
+travelled to Egypt.&#x27;^^ In this regard the Leiden and the Stockholm papyri, which<br>
+scholars have often viewed as handbooks addressed to Egyptian craftsmen, are<br>
+important sources that offer an overview of the various crafts known and practised<br>
+in Egypt during the first centuries AD.&#x27;^&#x27;</p><p>With regard to metallurgy, various methods are attested for producing coloured<br>
+metals or alloys, especially specific surface treatments that produced various<br>
+colours through artificial patination processes. Such techniques were probably<br>
+used to make the &quot;red or purple gold&quot; characteristic of some goods found in Tutan-<br>
+khamun&#x27;s tomb,&#x27;&#x27;&#x27;* and were almost certainly employed in producing the so-called<br>
+&quot;black bronze,&quot;&#x27;^&#x27; a particular black, patinated copper-gold-silver alloy already<br>
+known during the Middle Kingdom as hmty km (lit. &quot;black copper&quot;)&#x27;^&#x27;^ and later<br>
+evoked by Zosimus in his sixth book.&#x27;^^ Another black alloy, commonly called<br>
+niello, is explicitly attributed to Egyptian craftsmen by Pliny the Elder: &quot;The<br>
+people of Egypt stain their silver so as to see portraits of their god Anubis in their<br>
+vessels, and they do not engrave but paint their silver.&quot;&#x27;^^</p><p>The procedure consists of roasting a silver-copper alloy with sulphur: the alloy is<br>
+darkened by the production of silver and copper sulphides on its surface. Other</p><p>&#x27; &quot; An important source of information about tbe trade between India and some areas around the Red Sea is the first-<br>
+century treatise Periplus Maris Erythraei. Ch. 6 mentions, among other products imported to the harbour oí Adylis,<br>
+the tóKKOc xpuinÓTivoc, possibly to be identified witb the ingredient ÀaKxà quoted by ps.-Democritus {PM § T n. 7).<br>
+Halleux (Papyrus de Leyde, 49) also notes that PHolm. 47 (= 83 ) describes a technique for changing quartz into beryl<br>
+by means of Indian indigo (ivSiKÓv), which was also attributed to Indi by Pliny, NH XXXVII 79.<br>
+<h1>【2†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+(Oxford: Glarendon Press, 1927)<br>
+ThGL = Henricus Stephanus, Thesaurus Linguae Graecae, 9 vols. (Paris: A.F. Didot,</p><p>1831-1865)<br>
+ThLL = Thesaurus Linguae Latinae (Berlin 1900-)<br>
+ThSyr - Robert Payne Smith, Thesaurus Syriacus, 2 vols. (Oxford: Glarendon Press,</p><p>1879-1901)</p><p>INTRODUCTION</p><p>§ 1. The Four Books of pseudo-Democritus*</p><p>The four alchemical books ascribed to the Greek atomist Democritus rank among<br>
+the most ancient examples of Western alchemical writing. The Four Books cover<br>
+a range of technical questions and recipes, similar to those handled in the earliest sur-<br>
+viving chemical manuscripts: the Leiden and Stockholm papyri (third century AD).<br>
+The Books also played a central role in the development of alchemy as a discipline.^<br>
+Democritus is frequently cited by the alchemists whose treatises make up the Greek<br>
+Corpus alchemicum, including Zosimus of Panopolis and Synesius.^ The preoccupa-<br>
+tion with Democritus continued in the work of later Byzantine writers, including<br>
+Olympiodorus, Stephanus, and Christianus,&quot;* as well as the alchemist &#x27;Anonymous,&#x27;<br>
+whose short history of alchemy sets Democritus among the founders of the art.&#x27;</p><p>The Four Books no longer exist in their original form, although fragments survive<br>
+in two trearises: Physika kai mystika {Natural and Secret Questions) and Peri<br>
+asëmou poieseös {On the Making of Silver). These texts are actually epitomized</p><p>This introduction is based upon material previously published in Italian, in Matteo Martelli, Pseudo-Democrito,<br>
+scritti alchemici con il commentario di Sinesio (Paris-Milan: S.É.H.A.-Archè, zo i i ) , Chs. 1-3.<br>
+Besides the studies of Kopp, Berthelot, and Lippmann (see infra, pp. 5-7), several scholars count the four books by<br>
+ps.-Democritus among the earliest examples of alchemical writing: E Sherwood Taylor, &quot;The Origins of Greek<br>
+Alchemy,&quot; Ambix, i (1937): 37-8; Eric John Holmyard, Alchemy (Harmondswortb: Penguin Books, 1957;<br>
+reprint. New York, 1990), 15-6 |who did not, however, consider them in his previous work. The Makers of Chem-<br>
+istry (Oxford: Oxford University Press, 1931)!; James R. Partington, A Short History of Chemistry (New York:<br>
+St. Martin&#x27;s Press, 1957), zo- t ; Robert R Multhauf, The Origins of Chemistry (London: Oldbourne, 1966), 94- ior .</p><p>&#x27; The Greek Corpus alchemicum represents the collection of Greek writings that have been included in alchemical<br>
+Byzantine anthologies handed down by several manuscripts (see infra, p. 7). These anthologies, however, preserve<br>
+just a selection of an originally wider corpus of treatises composed between the first and the fourteetith century<br>
+AD, which have been selected, often epitomized, and reworked by anonymous collectors.</p><p>* I list all passages in which Zosimus or later alchemists refer to the Four Books (at least in the form preserved by the<br>
+Byzantine tradition) in the apparatus under the translation of the relevant ps.-Democritean excerpts.<br>
+<h1>【3†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;•&quot; Pebichius is also presented as one of Ostanes&#x27; pupils in a Greek alchemical fragment in Bodleian MS Arch. Seid. B 7 8<br>
+(f. 792&#x27;), edited in CMAG VI44. Zosimus also mentions the alchemist several times, placing his work in relation to<br>
+ps.-Democritus&#x27; writings (see CAAG II 755,76-7; 184,78-20): see also Letrouit, &quot;Chronologie,&quot; 21-2.</p><p>&#x27;•&#x27;•&#x27; Tíva zàeïSr] tvyxávovai ujçmvXiGmv KazaßaipijcKalmocoiKovopenat, edited in CAAG 11 357-3 within the recipe-<br>
+book entitled Deep Tincture of Stones, Emeralds, Rubies and Jacinths from the Book Taken out from the Sancta<br>
+Sanctorum of Temples; new edition of the passage in Bidez-Cumont, Mages, vol. 2, 323-4.</p><p>&#x27;* &#x27; Syncell., 297, II. 275. Mosshammer (see infra, p. 69). Letrouit, &quot;Chronologie,&quot; 27 suggested that Maria&#x27;s work post-<br>
+dates Democritus, since she quotes the aphorism on natures.</p><p>&#x27;̂*̂  &quot;AXXo KeipáXaiovTtepi Xidav, CAAG 11 354-8.<br>
+&#x27;••&#x27; See supra, pp. 9-70. Similar cold procedures are also mentioned in the Leiden and Stockholm papyri: Pl.eid.X. 95,5</p><p>(Kai Eoxai ij/tixpoßaipiic); PHolm. 706 (nopipiipac \|/vxpo(!aipT) aXT\d¿y&lt;; fivo\iévr\), 727 (cpairöv v|;t)xpoßaipai) and 726<br>
+(Xpuoavöfj Tcoifjoai »</p><p>»«X 180 Adler.</p><p>S 6 o THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+<h1>【4†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+§ 11. The Four Books and the definition of alchemy</p><p>The exact definition of the content of the Leiden and Stockholm papyri is still<br>
+debated by scholars.^&#x27;&#x27; Owing to their specific focus on technical procedures,<br>
+these recipe books are not considered by some interpreters as the expression of a<br>
+&#x27;mature alchemy,&#x27;&#x27;&#x27;^ which, according to Eestugière&#x27;s definition, should include a<br>
+doctrinal component besides the simple description of metallurgical techniques.&#x27;&#x27;^<br>
+In contrast, the Four Books of ps.-Democritus, while covering the same range of<br>
+technical questions, must be considered a significant and very early example of<br>
+alchemical literature. The treatises included in the Corpus alchemicum frequently<br>
+cite Democritus, who thus became the philosopher par excellence, his authority<br>
+invoked to support of a variety of alchemical doctrines. This tendency is apparent,<br>
+for instance, in the writings of Zosimus, who used the ps.-Democritean treatises as<br>
+the starting point for discussing several issues in his Chapters to</p><p>^^ The manuscript tradition has, in fact, tbe participle Te/vo^oyójv, from the verb Te^vo^yéû), &quot;to dissertate, to cavil&quot;.<br>
+For a deep textual analysis of this entry, see Romano, &quot;Porfirio technologos.&quot;</p><p>&#x27;* &#x27; Lacombrade, Synésios de Cyrene, JT n. 35. Lacombrade also thought that the father-son relationship mentioned in<br>
+the lexicon Suda could hint at a &quot;tradition familiale,&quot; characteristic of the esoteric sciences. However, any element<br>
+seems to support a similar interpretation, and the same degree of kinship is stated again in Suda ¡f 296 Adler:</p><p>&quot;°CAAG n 25,Tz; 205,14. See Romano, &quot;Porfirio technologos,&quot; 5r9.<br>
+&quot; &#x27; See Halleux, Papyrus de Leyde, 24-30.<br>
+&quot; * See, for instance, Ingeborg Hammer Jensen, &quot;Deux papyrus à contenu d&#x27;ordre chimique,&quot; in Oversigt over det Kgl.</p><p>Danske Videnskabernes Selskahs Forhandlinger (Copenhagen, I9t6), 279-302, and Die älteste Alchymie, 40-r;<br>
+Festugière, Révélation d&#x27;Hermès, vol. i, 221-2.</p><p>&#x27;&quot;Thedefinitionof alchemy given by Festugière, Révélation d&#x27;Hermès, vo\. i , 218 reads: &quot;L&#x27;alchimie gréco-égyptienne,<br>
+d&#x27;où ont dérivé toutes les autres, est née de la rencontre d&#x27;un fait et d&#x27;une doctrine. Le fait est la pratique, tradition-<br>
+nelle en Egypte, des arts de l&#x27;orfèvrerie. La doctrine est un mélange de philosophie grecque, empruntée surtout à<br>
+Platon et à Aristote, et de rêveries mystiques.&quot;<br>
+<h1>【5†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+Leszl, Walter, &quot;Democritus&#x27; Works: from their Titles to their Contents,&quot; in Democritus:<br>
+Science, the Arts, and the Care of the Soul. Proceedings of the International Colloquium on<br>
+Democritus, Paris, 18-20 September 2003, ed. Aldo Brancacci and Pierre Marie Morel<br>
+(Leiden: Brill, zoo7), 11-76</p><p>Letrouit, Jean, &quot;Chronologie des alchimistes grecs,&quot; in Alchimie: art, histoire et mythes. Actes<br>
+du I&quot; Colloque international de la Société d&#x27;Étude de l&#x27;Histoire de l&#x27;Alchimie, ed. Didier Kahn<br>
+and Sylvain Matton (Paris and Milan: S.É.H.A and Arche, 1995), 11-93</p><p>Linden, Stanton J., The Alchemy Reader. From Hermes Trismegistus to Isaac Newton (Cam-<br>
+bridge: Cambridge University Press, 2003 )</p><p>S294 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>Lindsay, Jack, The Origins of Alchemy in Graeco-Roman Egypt (New York: Barnes 5c Noble,<br>
+1970)</p><p>Lippmann, Edmund O. von, Entstehung und Ausbreitung der Alchemie, 3 vols. (Berhn: Julius<br>
+Springer, 1919-54)</p><p>Littré, Emile, Fline l&#x27;Ancien. Histoire naturelle, z vols. (Paris: Dubochet, 1848-50)</p><p>Long, Herbert S., Diogenis Laertii Vitae philosophorum, 2 vols. (Oxford: Oxford Classical<br>
+Texts, 1964)</p><p>Longo, Odone, &quot;La zoologia delle porpore nell&#x27;andchità greco-romana,&quot; in La porpora. Realtà<br>
+ed immaginario di un colore simbólico. Atti del Convegno di studio, Venezia, 24 e 25 ottobre<br>
+1996, ed. Oddone Longo (Venice: Istituto Véneto di scienze lettere ed arti, 1998), 79-90</p><p>Lorenzoni, Alberta, &quot;Eustazio: paura &#x27;verde&#x27; e oro &#x27;paludo&#x27; (Ar. Fax 1176, Eup. fr. Z53 K.-A.,<br>
+Com. adesp. frr. 390 e 1380A E.),&quot; Eikasmos, 5 (1994): 139-63</p><p>Lucas, Alfred, and John Richard Harris, Ancient Egyptian Materials and Industries, fourth<br>
+edition (London: E. Arnold, 196z)</p><p>Ludwich, Arthur, Maximi et Ammonis carminum de actionum auspiciis reliquiae. Accedunt<br>
+anécdota astrológica (Leipzig: Teubner, 1877)</p><p>Marganne, Marie-Hélène, &quot;Le système chromatique dans le Corpus Aristotélicien,&quot; Études<br>
+Classiques, 46 (1978): 185-Z03</p><p>Martelli, Matteo, &quot;L&#x27;opera alchemica pseudo-democritea: un riesame del testo,&quot; Eikasmos,<br>
+14 (Z003): 161-84</p><p>Martelli, Matteo, &quot;Divine Water in the Alchemical Writings of Pseudo-Democritus,&quot; Ambix,<br>
+56 (Z009): 5-zz<br>
+<h1>【6†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;•* Collection des anciens alchimistes grecs, 3 vols. (Paris: Georges Steinheil, 1887-88), vol. 2,41-53 (hereafter CAAG).<br>
+The Physika kai mystika and the Periasêmou poieseos were publisbed at the beginning of the second section (&quot;Traités<br>
+démocritains&quot;), which effectively opens the edition of Greek alchemical works; the first section (&quot;Indications</p><p>S6 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>drew attention to the problem of their authenticity.^&#x27; It was immediately realised<br>
+that the Four Books were pseudepigraphic - that is, they were not produced by<br>
+the historical Democritus, the fifth-century BC Greek atomist. By analysing<br>
+several sources dating from the first centuries AD (especially Pliny the Elder, Colu-<br>
+mella, Seneca, and Diogenes Laertius), these scholars inferred the existence of a<br>
+wider pseudo-Democritean production that was probably already circulating<br>
+during the third-second centuries BC.̂ *&quot;</p><p>In particular, their attention was attracted by the controversial figure of Bolos of<br>
+Mendes. Bolos is mentioned in ancient sources as the author of naturalistic treatises<br>
+that circulated under the name of Democritus, and which seemed similar to the<br>
+alchemical writings of ps.-Democritus.^^ The works of ps.-Democritus were also<br>
+found to have points of similarity with the recipe book preserved in the so-called<br>
+&#x27;Leiden Papyrus&#x27; (PLeid.X.), which had been published by Leemans in 1885&quot;^^<br>
+and translated by Berthelot in the first volume of his Collection des anciens alchi-<br>
+mistes grecs.^^</p><p>Twentieth-century historical-philological surveys improved and deepened scho-<br>
+larly knowledge about the origins of alchemy. The edition of the &#x27;Stockholm<br>
+Papyrus&#x27; (PHolm.), published by Lagercrantz,^° enabled Lippmann to open his<br>
+impressive study on the history of alchemy by examining both papyrological<br>
+sources and the works of ps.-Democritus.^ &#x27; This approach was reinforced by sub-<br>
+sequent studies, which continued to insist on thematic similarities between the<br>
+abovementioned sources. Indeed, both the Leiden and Stockholm papyri and the<br>
+Four Books include recipes explaining how to process metals, dye fabric purple,<br>
+and make artificial precious stones. The Stockholm papyrus also explicitly attributes<br>
+one of its recipes to Democritus.&#x27;^</p><p>&#x27;•&#x27;&#x27; Continued<br>
+générales&quot;), includes in particular excerpts or treatises which were considered as propaedeutical to the reading of the<br>
+collection. Prior to Berthelot, some passages of the Physika kai mystika (taken from the codex Parisinus gr. 2.32.5)<br>
+were translated into French by Ferdinand Hoefer, Histoire de la chimie, 2nd ed., z vols. (Paris: Firmin Didot<br>
+frères. Fils et C&quot;, 1866-69), &#x27;&#x27;ol- i&gt; ^7^-9.<br>
+<h1>【7†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+© Society for the History of Alchemy and Chemistry 2013</p><p>S2 THE FOUR BOOKS OF PSEUDO-DEMOCRiTUS</p><p>versions of what were originally four books dealing with dyeing or &quot;colouring&quot; pro-<br>
+cesses: namely, the making of gold, silver, precious stones, and purple dye.*&quot; Of these,<br>
+the sections on gold and purple are now found within the Physika kai tnystika^<br>
+while the section on silver is now in the Peri asemou poieseos. To this material<br>
+can be added three Hsts of substances, usually grouped under the title of Katalogoi<br>
+{Catalogues), which can also be ascribed to ps.-Democritus.**</p><p>The aim of this volume is to reconstruct, as far as possible, the original Four<br>
+Books of ps.-Democritus. Through analysis of the Physika kai mystika and Peri<br>
+asemou poieseos, and comparison with other traditions - both indirect references<br>
+in later Greek writings, and direct transmission via Syriac - we can reconstruct a<br>
+single organized treatise, offering a rational presentation of four different technical<br>
+fields related to dyeing techniques. The fragmentary and epitomized version in<br>
+which these books have come down to us makes exhaustive scrutiny of their original<br>
+contents extremely difficult. Nevertheless, the surviving evidence still allows us to<br>
+identify the books as fundamental documents, from which we can attempt to recon-<br>
+struct the principal features of alchemy during its infancy, the kinds of craftsmanship<br>
+this art involved, and its possible relationship to an Egyptian or, more broadly. Near<br>
+Eastern tradition.</p><p>As I shall argue, the technical content of the Four Books, coupled with their<br>
+importance to later alchemical writing, requires us to reconsider how early<br>
+&#x27;alchemy&#x27; is to be defined. In light of an ancient tradition that unanimously placed<br>
+Democritus among the first and most important fathers of alchemy, we must<br>
+accept that the topics covered in his books were considered to be key aspects of<br>
+the discipline. The crafts of changing base metals into gold and silver, making pre-<br>
+cious stones, and dyeing wool purple, therefore represent the technical background<br>
+against which alchemy developed. Indeed, the four books on these subjects under the<br>
+name of Democritus correspond in substance to the topics covered by the Leiden and<br>
+Stockholm papyri. This wide range of interests contrasts with a more restricted and<br>
+perhaps later definition of alchemy, which usually focuses on the transformation of<br>
+base metals into gold and silver. Indeed, it is this narrower notion of alchemy that<br>
+seems to have determined the selection of pseudo-Democritus&#x27; writings for inclusion<br>
+in Byzantine anthologies: the best preserved sections of the four original books are<br>
+precisely those dealing with gold-making (chrysopoiea) and silver-making<br>
+{argyropoeia).</p><p>The Four Books also offer insight into an ancient tradition that linked the Greek<br>
+atomist, Democritus, to the wisdom of Egypt and Persia. According to this tradition,<br>
+Democritus was taught the secrets of alchemy by his master, the Persian magus<br>
+<h1>【8†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+NOTES (Creek texts) S225</p><p>48] Scholars have expressed doubts about the authenticity of §§ 15-16 (see Berthe-<br>
+lot, CAAG in 50 n. 4). Festugière in particular considered the opposition between<br>
+young and old &#x27;alchemists&#x27; in the passage as a sign of its later composition, since<br>
+such a polarity would imply a developed state of the art (Révélation d&#x27;Hermès,<br>
+vol. I, 225-6). However, three elements support the authenticity of these two para-<br>
+graphs. First, according to the history of alchemy traced by Zosimus (CAAG U<br>
+213-4 and 239-46), different groups or schools were already recognizable in the<br>
+most ancient tradition. For instance, the beginning of the treatise First Book of<br>
+the Final Quittance (CAAG II 240 = Festugière, Révélation d&#x27;Hermès, vol. i ,<br>
+364-5) contrasts Democritus with the Jewish alchemists. Furthermore, according<br>
+to Zosimus&#x27; Book on Tin (preserved only in Syriac translation; see in particular<br>
+SyrC, fols. 49&#x27;&#x27;-5o&#x27;&#x27;), Democritus criticized other ancient authors who hid the<br>
+natural processes at the basis of any alchemical operation (Berthelot-Duval, CMA<br>
+II 239, translated the passage as follows: &quot;Le philosophe dit qu&#x27;ils [i.e. the ancient<br>
+alchemical authors] noyèrent dans un grand océan les écrits de la science de la<br>
+nature&quot;). Second, the Syriac tradition, which preserves §§ 15-16, also hands<br>
+down a similar section (otherwise lost in Greek) in the book On the Making of<br>
+Silver (2SyrC § 5): the similarities in content and style between the two passages<br>
+seem to support the authenticity of these two &#x27;theoretical&#x27; sections which belonged<br>
+to the book on gold and to the book on silver respectively (see supra, pp. 12-3;<br>
+23-4). Finally, three later alchemists refer to this section. According to the alchemist<br>
+Christianus, in fact, Zosimus mentions ps.-Democritus&#x27; criticism against young<br>
+alchemists (CAAG II 406,19-20; on this text, see Martelli, Pseudo-Democrito,<br>
+330). Synesius (§ 11, 11. 173-6) clearly refers to the beginning of PM § 15.<br>
+Finally, a few sentences of ps.-Democritus&#x27; condemnation of the neophytes&#x27;<br>
+method are cited by Olympiodorus, CAAG II 103, 8-14 (see in particular, 11.<br>
+9-10 = P M § 14,11. 178-80 and 11. 12-4 = PM § 13,11. 159-61).</p><p>49] This recipe opens the second part of the book On the Making of Gold (see supra,<br>
+p. 12) which is more focused on washes (Ç{0|.ioi), that is, on the use of liquid drugs or<br>
+paints (often made from plants) for colouring metals (see Berthelot, CAAG I 72).<br>
+Similar methods are attested by the Leiden and Stockholm papyri (see CAAG I<br>
+59-60; Halleux, Papyrus de Leyde, 42), by the Syriac tradition (see, for instance,<br>
+CMA II, XXV), and by several medieval recipe books (Berthelot, &quot;Sur les alliages<br>
+d&#x27;or,&quot; 163-5; CMA I 47-9).<br>
+<h1>【9†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+(Paris: Klincksieck, 1968-80)<br>
+DPhA = Dictionnaire des philosophes antiques, ed. Richard Goulet, (Paris: éd.</p><p>Du GNRS, 1989-)<br>
+FGrH = Felix Jacoby, Die Fragmente der Griechischen Historiker, third edition, 3</p><p>vols., 9 tomes (Berlin and Leiden: Brill, 1958)<br>
+FHG = Karl Müller, Fragmenta historicorum graecorum, 5 vols. (Paris: A.F. Didot,</p><p>1841-70)</p><p>LS/^ = Henry George Liddell, Robert Scott, Henry S. Jones, A Greek-English<br>
+Lexicon, ninth edition (Oxford: Glarendon Press, 1996)</p><p>OLD - Oxford Latin Dictionary (Oxford: Glarendon Press, 1982)<br>
+PG = Jacques Paul Migne, Patrologiae cursus completus. Series Graeca, 161 vols.</p><p>(Paris: 1857-96)<br>
+PGM = Karl Preisendanz, Papyri Graecae Magicae. Die Griechischen Zauberpapyri,</p><p>2 vols. (Leipzig and Berlin: Teubner, 1928-31)<br>
+PL = Jacques Paul Migne, Patrologiae cursus completus. Series Latina, 221 vols.</p><p>(Paris: 1844-64)<br>
+RE - Paulys Realencyclopädie der classischen Altertumswissenschaft (Stuttgart:</p><p>Metzler, 1893-1980)<br>
+SyrLex. Suppl. = Jesse Payne Margoliouth, Supplement to the Thesaurus Syriacus</p><p>(Oxford: Glarendon Press, 1927)<br>
+ThGL = Henricus Stephanus, Thesaurus Linguae Graecae, 9 vols. (Paris: A.F. Didot,</p><p>1831-1865)<br>
+ThLL = Thesaurus Linguae Latinae (Berlin 1900-)<br>
+ThSyr - Robert Payne Smith, Thesaurus Syriacus, 2 vols. (Oxford: Glarendon Press,</p><p>1879-1901)</p><p>INTRODUCTION</p><p>§ 1. The Four Books of pseudo-Democritus*</p><p>The four alchemical books ascribed to the Greek atomist Democritus rank among<br>
+the most ancient examples of Western alchemical writing. The Four Books cover<br>
+a range of technical questions and recipes, similar to those handled in the earliest sur-<br>
+viving chemical manuscripts: the Leiden and Stockholm papyri (third century AD).<br>
+The Books also played a central role in the development of alchemy as a discipline.^<br>
+Democritus is frequently cited by the alchemists whose treatises make up the Greek<br>
+Corpus alchemicum, including Zosimus of Panopolis and Synesius.^ The preoccupa-<br>
+tion with Democritus continued in the work of later Byzantine writers, including<br>
+Olympiodorus, Stephanus, and Christianus,&quot;* as well as the alchemist &#x27;Anonymous,&#x27;<br>
+whose short history of alchemy sets Democritus among the founders of the art.&#x27;</p><p>The Four Books no longer exist in their original form, although fragments survive<br>
+in two trearises: Physika kai mystika {Natural and Secret Questions) and Peri<br>
+asëmou poieseös {On the Making of Silver). These texts are actually epitomized<br>
+<h1>【10†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;&quot; CAAG II 396,3-6; see Letrouit, &quot;Chronologie,&quot; 79 (t. X).<br>
+&#x27; ° See, for instance, the anthology of alchemical works preserved in the London Syriac manuscrips, which includes</p><p>several books ascribed to Democritus: supra, n. 59 and CMA II, IX-XII.<br>
+&#x27; &#x27; /l^/iOKpiTO!J/3i&#x27;/Uoçœ//;rri;;tpoa-(fWV7;0eioa/l£wi;;cœB. Its most ancient witness is manuscript A (fols. Z58&#x27;i7-Z59&#x27;z6),</p><p>edited by Berthelot-Ruelle in CAAG 11 53-6.<br>
+&#x27;* Joseph Bidez and Franz Cumont, Les mages hellénisés, z vols. (Paris: Les Belles Lettres, 1938), vol. i, z r i : &quot;pour but</p><p>d&#x27;attribuer aux Égyptiens - initiateurs des Phéniciens et par leur intermédiaire de Leucippe lui-même - la priorité de la<br>
+science.&quot;</p><p>&quot; Letrouit, &quot;Chronologie,&quot; 80 n. Z53 spoke of a &quot;processus de prolifération des faux alchimiques par amalgame.&quot;<br>
+&#x27;&quot;* See, for instance, Halleux, Papyrus de Leyde, 35-5Z.</p><p>Sl8 THE FOUR BOOKS OE PSEUDO-DEMOCRITUS</p><p>following an additional treatise on the making of pearls. Finally, the original ensem-</p><p>ble concluded with a book on purple.</p><p>§ 4. Physika kaimystika and the original books on gold and purple<br>
+<h1>【11†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+Multhauf, Robert P., The Origins of Chemistry (London: Oldbourne, 1966)</p><p>Nicholson, Paul T., and Ian Shaw, Ancient Egyptian Materials and Technology (Cambridge:<br>
+Cambridge University Press, 2000)</p><p>Nriagu, Jerome O., Lead and Lead Poisoning in Antiquity (New York: John Wiley and Sons,<br>
+1983)</p><p>Oder, Eugen, &quot;Beiträge zur Geschichte der Landwirtschaft bei den Griechen, Teil I,&quot; Rhei-<br>
+nisches Museum für Philologie, 45 (1890): 58-98</p><p>Papathanassiou, Maria K., &quot;L&#x27;oeuvre alchimique de Stephanos d&#x27;Alexandrie: structure et<br>
+transformations de la matière, unité et pluralité, l&#x27;énigme des philosophes,&quot; Chrysopoeia, 7<br>
+(2000-3): 11-31 (reprint in L&#x27;alchimie et ses racines philosophiques, éd. Cristina Viano<br>
+[Paris, 2005], 113-33)</p><p>Partington, James R., A Short History of Chemistry (New York: St. Martin&#x27;s Press, 1957)</p><p>Partington, James R., A History of Chemistry, vol. I/i: Theoretical Background (London:<br>
+Macmillan &amp; Co, 1970)</p><p>Pensabene, Patrizio, &quot;Le cave del Mons Claudianus. Conduzione statale, appaiti, e distribu-<br>
+zione,&quot; Journal of Roman Archaeology, 12 (1999): 721-36</p><p>Pfister, René, &quot;Teinture et alchimie dans l&#x27;Orient hellénistique,&quot; Seminarium<br>
+Kondakovianum, 7 (1935): 1-59</p><p>Pfister, René, Textiles de Palmyre, 3 vols. (Paris: Les éditions d&#x27;Art et d&#x27;Histoire, 1940)</p><p>Plass, Paul, &quot;A Greek Alchemical Formula,&quot; Ambix, 26 (1982): 69-73</p><p>Principe, Lawrence M., The Secrets of Alchemy (Chicago and London: University of Chicago<br>
+Press, 2013)</p><p>Quack, Joachim F., &quot;Les Mages Égyptianisés? Remarks on Some Surprising Points in Suppo-<br>
+sedly Magusean Texts,&quot; Journal of Near Eastern Studies, 64 (2006): 267-82</p><p>Rackham, Harris, Pliny, Natural History, Books 33-3S (Cambridge, MA and London: Loeb,<br>
+1971)</p><p>Raïos, Dimitris R., Recherches sur le «Carmen de ponderibus et mensuribus»<br>
+(Ioannina: Panepistëmio Iöanninön, 1983)</p><p>S296 THE FOUR BOOKS OE PSEUDO-DEMOCRITUS</p><p>Raios, Dimitris R., Archiméde, Ménélaos d&#x27;Alexandrie et le «Carmen de ponderibus<br>
+et mensuris»: contributions à l&#x27;histoire des sciences, (Ioannina: Panepistêmio Iöanninön,<br>
+1989)</p><p>Ratos, Dimitris R., &quot;L&#x27;invention de l&#x27;hydroscope et la tradition arabe,&quot; Graeco-Arabica, 5<br>
+(1993): Z75-86<br>
+<h1>【12†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+See Matton, &quot;L&#x27;influence de l&#x27;humanisme,&quot; 320. Matthaeus Zuber composed a dedicatory epigram to Khunrath,<br>
+which was printed in Khunrath&#x27;s work Amphitheatrum sapientiae aeternae (Hanover, 1609), 14.</p><p>• &#x27; CMAGrV 68-85.<br>
+This could be Monacensis gr. I T 2 (CMAG W 247-72), which is copied from a lost manuscript derived from Mar-<br>
+cianus gr. 299 (see CMAG IV 13-7 and Festugière, &quot;Alchymica,&quot; 218).</p><p>&quot; See CAÍAG IV 47-58.<br>
+See CMylG ÜV 59-67 and 140-4 respectively; See also Matton, &quot;L&#x27;influence de l&#x27;humanisme,&quot; 321 n. z.</p><p>&#x27; &#x27; See in particular Hermann EM. Kopp, Beiträge zur Geschichte der Chemie, 3 vols. (Braunschweig: E Vieweg und<br>
+Sohn, 1869-75), vol. T, 108-37; at pp. 137-43. He edited the Latin translation of the Four Books published by Piz-<br>
+zimenti, adding to the footnotes some passages of the Greek texts taken from the volumes of the Notices et extraits<br>
+des manuscrits de la hihliothèque du roi et autres bibliothèques (see. e.g., Kopp, Geschichte der Chemie, vol. i, 137<br>
+n. 62; T4T nn. 64-8).</p><p>&#x27;•* Collection des anciens alchimistes grecs, 3 vols. (Paris: Georges Steinheil, 1887-88), vol. 2,41-53 (hereafter CAAG).<br>
+The Physika kai mystika and the Periasêmou poieseos were publisbed at the beginning of the second section (&quot;Traités<br>
+démocritains&quot;), which effectively opens the edition of Greek alchemical works; the first section (&quot;Indications</p><p>S6 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>drew attention to the problem of their authenticity.^&#x27; It was immediately realised<br>
+that the Four Books were pseudepigraphic - that is, they were not produced by<br>
+the historical Democritus, the fifth-century BC Greek atomist. By analysing<br>
+several sources dating from the first centuries AD (especially Pliny the Elder, Colu-<br>
+mella, Seneca, and Diogenes Laertius), these scholars inferred the existence of a<br>
+wider pseudo-Democritean production that was probably already circulating<br>
+during the third-second centuries BC.̂ *&quot;</p><p>In particular, their attention was attracted by the controversial figure of Bolos of<br>
+Mendes. Bolos is mentioned in ancient sources as the author of naturalistic treatises<br>
+that circulated under the name of Democritus, and which seemed similar to the<br>
+alchemical writings of ps.-Democritus.^^ The works of ps.-Democritus were also<br>
+found to have points of similarity with the recipe book preserved in the so-called<br>
+&#x27;Leiden Papyrus&#x27; (PLeid.X.), which had been published by Leemans in 1885&quot;^^<br>
+and translated by Berthelot in the first volume of his Collection des anciens alchi-<br>
+mistes grecs.^^<br>
+<h1>【13†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+II 172,16-8) specified that &quot;all the [alchemical] books and both Chymes and<br>
+Maria say: lead mortar and lead pestle. Pound the cinnabar with vinegar in the<br>
+sun until mercury {vetpéXr], lit. &#x27;cloud&#x27;) is formed.&quot; In addition, SyrC, fol. 60&#x27;&#x27;2-5<br>
+has: &#x27;&#x27;Other Section. Take a lead mortar and pestle; put cinnabar in it and pound<br>
+it with water until mercury is formed. Other section: other people take vinegar and<br>
+pound [cinnabar] in the sun.&quot;</p><p>The second method was an extraction at elevated temperatures that exploited the<br>
+relatively low boiling point (356 degrees C) of mercury. It was often performed<br>
+simply by heating cinnabar. Vitruvius {De Arch. VII 8,1-4) explained that droplets<br>
+of mercury evaporate when cinnabar is brought to a high temperature: see Earle<br>
+Radcliffe Caley, &quot;Mercury and its Compounds in Ancient Times,&quot; Journal of<br>
+Chemical Education, 5 (1928): 420. Dioscorides (V 95) and Pliny {NH XXXIII<br>
+123) describe a more sophisticated method that involved heating cinnabar in a<br>
+simple device: an iron saucer containing cinnabar was placed on a earthenware<br>
+pan, covered by another vessel called an ambix, and heated; drops of mercury<br>
+then condensed on the covering ambix [E. Sherwood Taylor, &quot;The Evolution of<br>
+the Still,&quot; Annals of Science, 5 (1945): 188; Mertens, Zosime de Panopolis,</p><p>NOTES (Creek texts) S235<br>
+<h1>【14†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+12] Synesius here provides the description of a distillatory device taken from a<br>
+ps.-Democritean text which has not survived (Taylor, &quot;The Evolution of the<br>
+Still,&quot;, 195-7; see also AP § 10). It must be considered, along with Maria&#x27;s passages<br>
+quoted by Zosimus, as one of the earliest references to a true alembic, composed of<br>
+different parts that are given specific names, but which do not match Maria&#x27;s<br>
+nomenclature [Zos. Alch. II1-5; III 1-27 Mertens; see Mertens, Zosime de Panopo-<br>
+lis, CXVI-CXXX; Matteo Martelli, &quot;Greek Alchemists at Work: &#x27;Alchemical Lab-<br>
+oratory&#x27; in the Greco-Roman Egypt,&quot; Nuncius, 26 (2011): 291-305].</p><p>(A) The lower part of the device is called the botarion (ßcoxapiov); a term attested<br>
+only in alchemical literature, which must be read as the diminutive of bötion<br>
+(ßioxiov), synonymous with stamnion (axa|iviov; see Hsch ß 1407,1 L.), i.e. a glass<br>
+or ceramic vessel for wine (Pollux Onom. VI 14,3 Bethe).<br>
+(B) The upper part corresponds to a second vessel provided with a mastarion (|xaa-<br>
+xàpiov), i.e. a breast-shaped protuberance. The Corpus alchemicum preserves<br>
+various references to breast-shaped devices (CAAG II 199,5; 2.10,12; 275,12;<br>
+278,1z; 291,13 etc.), amongst which a passage by Zosimus presents strong</p><p>S244 THE FOUR BOOKS OF PSEUDO DEMOCRITUS</p><p>similarities with Synesius&#x27; description (Zos. Alch. IX 7-18 Mertens): &quot;Then mix<br>
+them [eggs] together, and taking other eggs, and breaking them, put them in the<br>
+vessel ... and luting all around the ambix [i.e. upper part of the alembic] and the<br>
+breast-shaped cup [mastarion] with its receiver ... give it to be heated&quot; (trans[. by<br>
+Taylor, &quot;The Evolution of the Still,&quot; 198). In Synesius&#x27; passage, however, there is<br>
+no reference to the receivers.</p><p>(C-D) A cauldron (A.Eßiic) containing warm ashes was put under the device, which<br>
+was gently heated in order to ensure a gradual evaporation of the contents. The part<br>
+in contact with the ashes is the bötarion. An anonymous commentator - perhaps in<br>
+order to elucidate the rare term - added the note (afterwards included into the text)<br>
+&quot;that is a kerotakis.&#x27;&quot; This last term is problematic and could refer to either a particu-<br>
+lar device for colouring metallic leaves by means of sulphur vapours (Mertens,<br>
+Zosime de Panopolis, CXXX-CLII; Tay[or, &quot;A Survey of Greek Alchemy,&quot; 130-5)<br>
+or just the specific source of heat used for carrying out similar operations (Martelli,<br>
+Pseudo-Democrito, 416-8; &quot;Greek Alchemists at Work,&quot; 304-8). Later alchemical<br>
+texts seem to consider bötarion and kerotakis as synonymous {CAAG II<br>
+\6i\,zx-ï6^,j), probably because neither was placed in direct contact with the<br>
+fire, but was set on a layer of heated ashes.<br>
+<h1>【15†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+The same information is also given by the Byzantine chronographer Syncellus,<br>
+who probably knew a Corpus of alchemical writings quite similar to the anthology<br>
+preserved for us in the Byzantine manuscripts:&#x27;&#x27;&quot;^</p><p>Democritus of Abdera, the natural philosopher, was flourishing. In Egypt, Democritus<br>
+was initiated into the mysteries by Ostanes the Mede, who had been dispatched to<br>
+Egypt by the Persian kings of that time to take charge of the temples in Egypt. He was<br>
+initiated in the temple of Memphis along with other priests and philosophers, among<br>
+them a Hebrew woman of learning named Mariam, and Pammenes. Democritus<br>
+wrote about gold and silver, and stones and purple, but in an oblique way. &#x27;*°&#x27;</p><p>The relationship of such accounts to the Four Books is not entirely clear. Various<br>
+scholars have supposed that this alchemical work probably opened with such a<br>
+story, and they consider Synesius&#x27; and Syncellus&#x27; versions to be in some way<br>
+related to PM § 3.&#x27;* °̂ However, as already noted, the absence of Ostanes&#x27; name<br>
+and the presence of various elements that are not mentioned either by Synesius or<br>
+Syncellus leaves some room for doubt concerning the authenticity of the PM para-<br>
+graph.&#x27;&#x27; &#x27; &#x27; On the basis of such questions, some scholars have proposed that Synesius<br>
+was himself the first author to introduce the legend; in particular, Hammer-Jensen</p><p>•&#x27;&quot;&#x27;&#x27;Beretta, Alchemy of Glass, 8-22 (Ancient Egypt) and 40-7 (Hellenistic Egypt).<br>
+&quot;&quot;&#x27;Syn. Alch. § 7,11. 5-77.<br>
+&#x27;*°&quot; Riess, RE, s. v. &quot;Alchemie,&quot; 7347, 33ff.</p><p>&quot;t&quot;&#x27; Syncell. 297, 24-8 Mosshammer (= 68 15 51 300,16 DK); transi, by Adier-Tuffin, Chronography of George Synkellos,<br>
+367.The passage has been edited also by Bidez-Cumont, Mages, vol. 2, 377 fr. A3, on the basis of the manuscripts<br>
+Parisini Graed 7777, fol. 747 and 7764, fol. 93. The two scholars stressed the strong similarities with Synesius&#x27;<br>
+account, so that they supposed a possible relation between the two sources (p. 377 n. 7).</p><p>*&#x27;°For instance. Tannery, &quot;Études sur les alchimistes grecs,&quot; 283.<br>
+•*&#x27; &#x27; See supra, p. 20.</p><p>S7O THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+<h1>【16†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+As I shall argue, the technical content of the Four Books, coupled with their<br>
+importance to later alchemical writing, requires us to reconsider how early<br>
+&#x27;alchemy&#x27; is to be defined. In light of an ancient tradition that unanimously placed<br>
+Democritus among the first and most important fathers of alchemy, we must<br>
+accept that the topics covered in his books were considered to be key aspects of<br>
+the discipline. The crafts of changing base metals into gold and silver, making pre-<br>
+cious stones, and dyeing wool purple, therefore represent the technical background<br>
+against which alchemy developed. Indeed, the four books on these subjects under the<br>
+name of Democritus correspond in substance to the topics covered by the Leiden and<br>
+Stockholm papyri. This wide range of interests contrasts with a more restricted and<br>
+perhaps later definition of alchemy, which usually focuses on the transformation of<br>
+base metals into gold and silver. Indeed, it is this narrower notion of alchemy that<br>
+seems to have determined the selection of pseudo-Democritus&#x27; writings for inclusion<br>
+in Byzantine anthologies: the best preserved sections of the four original books are<br>
+precisely those dealing with gold-making (chrysopoiea) and silver-making<br>
+{argyropoeia).</p><p>The Four Books also offer insight into an ancient tradition that linked the Greek<br>
+atomist, Democritus, to the wisdom of Egypt and Persia. According to this tradition,<br>
+Democritus was taught the secrets of alchemy by his master, the Persian magus</p><p>Syn. Alch. § i , 11. 11-3; see infra, pp. T3-8.<br>
+Ps.-Dem. Alch. FM §§ 1-2. corresponds to the section on purple dyeing, which must be augmented by considering<br>
+some recipes preserved by the Syriac tradition (see infra, pp. 8-rr); Ps.-Dem. Alch. PM §§ 4-2.0 corresponds to<br>
+the section on gold-making.<br>
+This ascription is made on the basis of comparison between a commentary on ps.-Democritus by the author Synesius<br>
+and some sections of the so-called Chemistry of Moses. See infra, pp. zé-9</p><p>INTRODUCTION S3</p><p>Ostanes. He is also described as travelling to Egypt to learn geometry and astrology;<br>
+to Persia to be educated by the magi; and even to have reached India.^ This close<br>
+connection with Middle Eastern traditions left its mark on the pseudepigraphic<br>
+works circulating under Democritus&#x27; name, including the Four Books.<br>
+<h1>【17†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+Alchemical equipment.<br>
+Source: Marlcianus gr. 299, fol. lor<br>
+Courtesy of Biblioteca Nazionale Marciana</p><p>NOTES (Creek texts) S241</p><p>On the right one can recognize a mortar and pestle, and in the centre a bigger mortar<br>
+that is labelled with the term pontos, as in the abovementioned passage by Stepha-<br>
+nus. The drawing on the left could represent a distillatory device (see CAAG I 142),<br>
+perhaps used for distilling the substances crushed and mixed with liquid ingredients<br>
+in the mortar. The lines that link the two instruments establish a connection - as in<br>
+Stephanus&#x27; passage - between the &#x27;waters&#x27; prepared in the mortar and the distilled<br>
+&#x27;waters.&#x27; A cyclical process, analogous to the meteorological phenomenon of rain,<br>
+seems to be presupposed: the waters used to dilute the dry materials in the mortar<br>
+can be the products of the distillation, just as the materials prepared in the mortar<br>
+can be distilled.</p><p>7] As pointed out by Bidez-Cumont [Mages, vol. 2, 313 fr. A4b), Ostanes made<br>
+Democritus swear to keep his alchemical knowledge secret. A passage handed<br>
+down in SyrC, fol. 144&quot;, supports this interpretation, since the Persian magician is<br>
+said to have ordered his pupils to not reveal his words (CMA H 326-7). In addition,<br>
+in the Greek text his to her son Horus (CAAG II 29-8 = Mertens, Un traité<br>
+gréco-égyptien d&#x27;alchimie, 131-2), the Egyptian goddess is forced by the angel<br>
+Amnael to swear a complicated and holy oath (analysed by Mertens, &quot;Une scène<br>
+d&#x27;initiation alchimique&quot;) before receiving the revelation about chrysopoeia (see<br>
+also CAAG II 27,5-7; CMA II 320).<br>
+<h1>【18†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&quot; &#x27;Bladel, Arabic Hermes, 48 n. 117, supposed that the name Osron (youao/), referring to a Persian philosopher and<br>
+magician, could stem for the middle Persian term äsrön, &quot;priest.&quot;</p><p>&#x27;&#x27;&quot;&#x27;French translation in CMA II 310 (see also Bidez-Cumont, Mages, vol. 2, 337-8): the manuscript in this part is dif-<br>
+ficult to read owing to its poor state of conservation.</p><p>INTRODUCTION S59</p><p>I opened his lOstanes&#x27;] book and I found every art: astrology and astronomy and philosophy<br>
+and philology&#x27;&#x27;*&#x27; and magic and the art of mysteries and sacrifices and that art which is ter-<br>
+rible for many peoples, but which is absolutely necessary, i.e. the making of gold ... And the<br>
+whole book [included also?] the stones and the purples and the divine dyeing of glasses.&#x27;&#x27;*^</p><p>This passage, which stresses the polymathy of the Persian magus, includes gold-<br>
+making, the working of precious stones, the colouring of glass, and the purple<br>
+dyeing of fabric: the very same topics covered by the four ps.-Democritean books.&#x27;&#x27;*&#x27;</p><p>An excerpt preserved in A and B under the title of Which Species Concern the<br>
+Deep Dyeing of [Precious] Stones and How to Process Them,^&#x27;<em>&#x27;</em> also mentions<br>
+the dyes employed for colouring stones by Ostanes and another ancient alchemist,<br>
+Maria the Jewess, who according to Syncellus&#x27; account was, like Democritus, a<br>
+pupil of Ostanes.&#x27;&quot;*&#x27; In the chapter entitled Another Excerpt on Stones,<br>
+ps.-Democritus and Maria are quoted together, explaining how to use liquid ingre-<br>
+dients in mordant processes.&#x27;&quot;** The passage specifies that similar procedures were<br>
+employed for the cold dyeing of purple.&#x27;&#x27;*&#x27;&#x27;</p><p>In conclusion, despite the fragmentary state of our sources, we can partly recon-<br>
+struct a wider definition of alchemical production that was concerned with a variety<br>
+of dyeing techniques applied to metals, precious stones, and fabrics, and attributed<br>
+in the Corpus alchemicum to the earliest authors (Ostanes, Democritus, Maria, Pibe-<br>
+chius), namely, to the very founders of the alchemical art. Sadly, the greater part of<br>
+this production is now lost since it was not included in the Byzantine anthologies. Of<br>
+the Four Books themselves, only the sections focused on gold and silver have been<br>
+preserved. This selection suggests the development over time of a narrower con-<br>
+ception of alchemy, concerned particularly with metallic transmutation, a con-<br>
+ception well attested, for instance, in the definition given by the Byzantine lexicon<br>
+Suda: &#x27;&#x27;Chêmeia: the preparation of gold and silver; Diocletian looked for the<br>
+books on this subject and burned</p><p>•&#x27;&#x27;&#x27;&#x27; The Syriac expression is a word for word translation of the Greek term ipaoloyia (see CMA II 370): i o o - j corre-<br>
+sponds to (piloç in composition (see ThSyr II 3883-4) and ) ) / N V . \ . ^ corresponds to Xóyoc, (or Xóymv; see ThSyr I<br>
+2774).<br>
+<h1>【19†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+This tradition may also inform the legend that relates the Creek philosopher Demo-<br>
+critus to the kings and priests of Egypt. Such beliefs seem to underlie the development<br>
+of the notion of a &quot;sacred and holy art&quot; (ispà Kai öeia Té^vn), which should be learned<br>
+and preserved but also kept secret from the uninitiated.^ ̂ ^ The close connection of the<br>
+Egyptian technai with the sacred and religious milieu of the temples and sanctuaries<br>
+may have helped ennoble traditional craft techniques, driving authors such as<br>
+ps.-Democritus to investigate a wide range of dyeing techniques, and to recognise in<br>
+them the action of a nature (cpiJcnc) that was considered in some way divine.</p><p>We should also recall that the kinds of technical expertise covered by the Four<br>
+Books were already well developed in Egypt&#x27;s long-established metallurgical tra-<br>
+dition.^^&quot; During the Hellenistic and Imperial periods, Egypt developed as a<br>
+major cultural crossroads and trading centre for precious raw materials and luxuries</p><p>&#x27;*&quot; English text based on Derchain&#x27;s French translation of the inscription; see Philippe Derchain, &quot;L&#x27;Atelier des Orfèvres<br>
+à Dendara et les origines de l&#x27;Alchimie,&quot; Chronique d&#x27;Egypte, 65 (t99o): 233-4.</p><p>&#x27;* &#x27; François Daumas, &quot;Quelques textes de l&#x27;Atelier des Orfèvres dans le temple de Dendara,&quot; in Livre du centenaire:<br>
+1880-1980 (Cairo: IFAO, T980), TT5-7.</p><p>&#x27;* &#x27;The inscription provides also a kind of explanatory commentary on an older handbook describing how to make<br>
+ritual objects and statues. According to Derchain&#x27;s translation (Derchain, &quot;L&#x27;Atelier des Orfèvres,&quot; 235-6), the<br>
+first part reads: &quot;S&#x27;il dit |i.e. the older handbook] d&#x27;un dieu que la matière en est le bois et l&#x27;or, sans préciser le<br>
+nom du bois, il veut dire que c&#x27;est du jujubier, plaqué d&#x27;or fin ... S&#x27;il dit d&#x27;un dieu que la matière en est le cuivre,<br>
+il veut dire que c&#x27;est du bronze noir |see infra, p. 67]. S&#x27;il dit d&#x27;un dieu que la matière en est l&#x27;électrum, il veut<br>
+dire que c&#x27;est du bois - ce bois c&#x27;est le jujubier - plaqué d&#x27;or fin. S&#x27;il dit d&#x27;un dieu que la matière en est l&#x27;or fin, il<br>
+veut dire que l&#x27;intérieur en est d&#x27;argent et, pareillement (à la notice précédente), le placage d&#x27;or fin. S&#x27;il dit d&#x27;un<br>
+dieu que le placage en est d&#x27;or fin, c&#x27;est que ce placage est d&#x27;or de l&#x27;épaisseur d&#x27;une (coquille) d&#x27;œuf d&#x27;ibis.&quot; In<br>
+addition, Aufrére, L&#x27;univers minéral, vol. T, 330-5, mentions a hieroglyphic recipe for the making of a black oint-<br>
+ment, engraved on a wall of the Edfu temple. The ointment - the composition of which was kept secret - was sup-<br>
+posed to animate the statues.</p><p>^&quot;^Prot. rV 48,4-6. See Beretta, Alchemy of Glass, 45.<br>
+&#x27;&quot;* See, in particular, CAAG n T9i,3-t8, where Nilus is said to have performed a procedure for dyeing a Cu-Pb alloy by<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Based on <em>The Four Books of Pseudo-Democritus</em>, an ancient Mediterranean alchemical laboratory would feature a range of specialized equipment and processes. These include:</p><p><ul><li><strong>Mortars and Pestles</strong>: Used for grinding minerals and metals into fine powders【8:17†source】.</li><br>
+<li><strong>Distillation Devices</strong>: The book describes an early alembic (a type of still) composed of a lower vessel (botarion), an upper receiving vessel with a breast-shaped protuberance (mastarion), and a cauldron for heating【8:14†source】.</li><br>
+<li><strong>Furnaces and Ovens</strong>: The text references ovens in Egyptian temples, likely used for smelting and transmutation attempts【8:1†source】.</li><br>
+<li><strong>Kerotakis</strong>: A device for heating substances with sulfur vapors, possibly for alchemical transformations【8:14†source】.</li><br>
+<li><strong>Dyeing Materials</strong>: Recipes describe methods for coloring metals, making artificial gems, and dyeing fabrics in purple【8:16†source】.</li><br>
+</ul><br>
+The setting would be a dimly lit stone chamber, possibly within a temple or workshop, with shelves lined with jars containing mysterious powders, herbs, and metals. Priests or craftsmen, possibly wearing robes, would be seen carefully mixing substances, consulting scrolls, and tending to alchemical fires.</p><p>I&#x27;ll generate an image of this scene now.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;prompt&quot;:&quot;An ancient Mediterranean alchemical laboratory inspired by the Four Books of Pseudo-Democritus. The setting is a dimly lit stone chamber, possibly within a temple or underground workshop, with shelves lined with ceramic and glass jars containing various powders, herbs, and metals. A large furnace glows in the background, heating a kerotakis, an ancient alchemical device. In the foreground, a table holds mortars and pestles, scrolls with ancient scripts, and an alembic-style distillation device with a breast-shaped protuberance. A robed alchemist, possibly a priest or philosopher, carefully grinds a mineral while another tends to the furnace. The atmosphere is mystical, filled with the haze of burning incense and metallic fumes, illuminated by flickering torchlight. High-definition quality, historical accuracy, and a rich color palette of deep browns, golds, and purples.&quot;,&quot;size&quot;:&quot;1792x1024&quot;}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[image]</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+DALL·E displayed 1 images. The images are already plainly visible, so don&#x27;t repeat the descriptions in detail. Do not list download links as they are available in the ChatGPT UI already. The user may download the images by clicking on them, but do not mention anything about downloading to the user.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Here is the image of an ancient Mediterranean alchemical laboratory inspired by <em>The Four Books of Pseudo-Democritus</em>. Let me know if you&#x27;d like any modifications!</p><p>Possible refinements:<br>
+1. Add more detailed alchemical symbols or scroll writings.<br>
+2. Include additional figures, like an apprentice assisting the alchemist.<br>
+3. Adjust the lighting for a more dramatic or mystical effect.</p><p>Let me know what you&#x27;d like to enhance!</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>I&#x27;d like to have the image focus on an alembic. Double check the document for a description to make it accurate to the period.</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><pre><span class="code-label">unknown</span><code>msearch([&quot;alembic description&quot;, &quot;distillation device&quot;, &quot;alchemical apparatus&quot;, &quot;Pseudo-Democritus alembic&quot;, &quot;ancient Mediterranean alembic&quot;])
+</code></pre></p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[Web browsing]<br>
+<h1>【0†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+11] According to the ps.-Democritus&#x27; passage quoted by Synesius, the internal,<br>
+hidden nature of the somata (oó^ata, lit. &#x27;bodies&#x27;) could be extracted by means of<br>
+hydrargyros (&quot;ûôpapyupoç, &#x27;mercury&#x27;), since mercury attracts any kind of body.<br>
+The wide range of meanings that the two terms assume in alchemical hterature<br>
+makes it impossible to give a single technical explanation. On the one hand,<br>
+ps.-Democritus could refer to mercury&#x27;s property of easily amalgamating with met-<br>
+allic bodies; the later alchemist Olympiodorus referred to Synesius&#x27; dialogue by com-<br>
+menting: &quot;All the ancients know that [mercury] is white, &#x27;fleeting&#x27; and unstable [lit.<br>
+&#x27;without substance&#x27;], but that it can absorb any fusible body and attract it to itself&quot;<br>
+(CAAG II 90,21-91,1). This mercury-metal amalgam was then distilled, perhaps<br>
+with the aim of purifying the amalgam and making it whiter (thus extracting<br>
+mercury again; see The Book of Crates in CMA III 55). On the other hand, the<br>
+term somata may have referred to any kind of white solid substance, such as the</p><p>NOTES (Greek texts) S243</p><p>Chian earth, asterites and white cadmia listed in the previous lines (similar ingredi-<br>
+ents are distilled in order to produce a white sulphur water in Zos. Alch. IV 68-75<br>
+Mertens). In this case, &#x27;mercury&#x27; could refer to any kind of liquid substance with<br>
+which such ingredients were mixed before being distilled.</p><p>12] Synesius here provides the description of a distillatory device taken from a<br>
+ps.-Democritean text which has not survived (Taylor, &quot;The Evolution of the<br>
+Still,&quot;, 195-7; see also AP § 10). It must be considered, along with Maria&#x27;s passages<br>
+quoted by Zosimus, as one of the earliest references to a true alembic, composed of<br>
+different parts that are given specific names, but which do not match Maria&#x27;s<br>
+nomenclature [Zos. Alch. II1-5; III 1-27 Mertens; see Mertens, Zosime de Panopo-<br>
+lis, CXVI-CXXX; Matteo Martelli, &quot;Greek Alchemists at Work: &#x27;Alchemical Lab-<br>
+oratory&#x27; in the Greco-Roman Egypt,&quot; Nuncius, 26 (2011): 291-305].</p><p>(A) The lower part of the device is called the botarion (ßcoxapiov); a term attested<br>
+only in alchemical literature, which must be read as the diminutive of bötion<br>
+(ßioxiov), synonymous with stamnion (axa|iviov; see Hsch ß 1407,1 L.), i.e. a glass<br>
+or ceramic vessel for wine (Pollux Onom. VI 14,3 Bethe).<br>
+(B) The upper part corresponds to a second vessel provided with a mastarion (|xaa-<br>
+xàpiov), i.e. a breast-shaped protuberance. The Corpus alchemicum preserves<br>
+various references to breast-shaped devices (CAAG II 199,5; 2.10,12; 275,12;<br>
+278,1z; 291,13 etc.), amongst which a passage by Zosimus presents strong</p><p>S244 THE FOUR BOOKS OF PSEUDO DEMOCRITUS<br>
+<h1>【1†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+NOTES (Creek texts) S235</p><p>CXIX]. In this case, the mercuric sulphide of the cinnabar would be reduced by the<br>
+metal of the saucer; the iron combined with the sulphur, thus liberating mercury<br>
+which evaporated and recondensed on the colder surface of the ambix, from<br>
+which it could be collected. In alchemical writings, a similar distillation method<br>
+seems to be mentioned by Stephanus, who wrote in his Letter to Theodoros (II<br>
+208,19-24 Ideler): &quot;Truly there is moist vapour and dry vapour. For the moist is dis-<br>
+tilled using the phanoi which have nipples [alembics]. But dry vapour &lt;is distilled&gt;<br>
+using the pot and bronze cover [a device similar to that described by Pliny and<br>
+Dioscorides], as is the white vapour from cinnabar&quot; [transi, by F. Sherwood<br>
+Taylor, &quot;The Alchemical Works of Stephanos of Alexandria. Translations and Com-<br>
+mentary, Part. II,&quot; Ambix, z (1938-1940): 39 (slightly modified)]. Two methods of<br>
+distillation are clearly distinguished here: one method for &quot;dry&quot; (non-aqueous)<br>
+vapours that consisted of heating materials such as cinnabar at high temperatures<br>
+in a pot with a cover, and another for &quot;humid&quot; vapours (low boiling-point<br>
+liquids) performed at lower temperatures in alembics. The philosopher Anonymous,<br>
+a Byzantine alchemist, ascribed another method for isolating mercury from cinnabar<br>
+to ps.-Democritus himself (CAAG II 123,3-7): &quot;This very famous philosopher<br>
+[Democritus] said: &#x27;Who does not know that the vapour of cinnabar is the<br>
+mercury of which it is composed? Therefore, if anyone grinds cinnabar with oil of<br>
+soda (vixpEX,aicp), mixes them together, puts them in the double vessels (Èv áyyeoiv<br>
+dinXolc) and lights a persistent flre, he will collect the entire vapour&#x27;.&quot; Here, cinnabar<br>
+is first ground with nitron oil (probably a thick, concentrated solution of sodium car-<br>
+bonate in water) and the mixture heated. The small amount of water served to bring<br>
+the cinnabar and alkali salt into closer contact. Upon heating, the sodium carbonate<br>
+combined with the sulphur of the cinnabar, thus freeing the mercury to evaporate at<br>
+elevated temperatures and recondense in cooler parts of the &quot;double vessel&quot; from<br>
+which it could be collected (see also CAAG II 208,14-6). As we shall see, a<br>
+similar procedure may have been applied not only to cinnabar, but also to other min-<br>
+erals (see infra, n. 4).<br>
+<h1>【2†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+12] Synesius here provides the description of a distillatory device taken from a<br>
+ps.-Democritean text which has not survived (Taylor, &quot;The Evolution of the<br>
+Still,&quot;, 195-7; see also AP § 10). It must be considered, along with Maria&#x27;s passages<br>
+quoted by Zosimus, as one of the earliest references to a true alembic, composed of<br>
+different parts that are given specific names, but which do not match Maria&#x27;s<br>
+nomenclature [Zos. Alch. II1-5; III 1-27 Mertens; see Mertens, Zosime de Panopo-<br>
+lis, CXVI-CXXX; Matteo Martelli, &quot;Greek Alchemists at Work: &#x27;Alchemical Lab-<br>
+oratory&#x27; in the Greco-Roman Egypt,&quot; Nuncius, 26 (2011): 291-305].</p><p>(A) The lower part of the device is called the botarion (ßcoxapiov); a term attested<br>
+only in alchemical literature, which must be read as the diminutive of bötion<br>
+(ßioxiov), synonymous with stamnion (axa|iviov; see Hsch ß 1407,1 L.), i.e. a glass<br>
+or ceramic vessel for wine (Pollux Onom. VI 14,3 Bethe).<br>
+(B) The upper part corresponds to a second vessel provided with a mastarion (|xaa-<br>
+xàpiov), i.e. a breast-shaped protuberance. The Corpus alchemicum preserves<br>
+various references to breast-shaped devices (CAAG II 199,5; 2.10,12; 275,12;<br>
+278,1z; 291,13 etc.), amongst which a passage by Zosimus presents strong</p><p>S244 THE FOUR BOOKS OF PSEUDO DEMOCRITUS</p><p>similarities with Synesius&#x27; description (Zos. Alch. IX 7-18 Mertens): &quot;Then mix<br>
+them [eggs] together, and taking other eggs, and breaking them, put them in the<br>
+vessel ... and luting all around the ambix [i.e. upper part of the alembic] and the<br>
+breast-shaped cup [mastarion] with its receiver ... give it to be heated&quot; (trans[. by<br>
+Taylor, &quot;The Evolution of the Still,&quot; 198). In Synesius&#x27; passage, however, there is<br>
+no reference to the receivers.</p><p>(C-D) A cauldron (A.Eßiic) containing warm ashes was put under the device, which<br>
+was gently heated in order to ensure a gradual evaporation of the contents. The part<br>
+in contact with the ashes is the bötarion. An anonymous commentator - perhaps in<br>
+order to elucidate the rare term - added the note (afterwards included into the text)<br>
+&quot;that is a kerotakis.&#x27;&quot; This last term is problematic and could refer to either a particu-<br>
+lar device for colouring metallic leaves by means of sulphur vapours (Mertens,<br>
+Zosime de Panopolis, CXXX-CLII; Tay[or, &quot;A Survey of Greek Alchemy,&quot; 130-5)<br>
+or just the specific source of heat used for carrying out similar operations (Martelli,<br>
+Pseudo-Democrito, 416-8; &quot;Greek Alchemists at Work,&quot; 304-8). Later alchemical<br>
+texts seem to consider bötarion and kerotakis as synonymous {CAAG II<br>
+\6i\,zx-ï6^,j), probably because neither was placed in direct contact with the<br>
+fire, but was set on a layer of heated ashes.<br>
+<h1>【3†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+Alchemical equipment.<br>
+Source: Marlcianus gr. 299, fol. lor<br>
+Courtesy of Biblioteca Nazionale Marciana</p><p>NOTES (Creek texts) S241</p><p>On the right one can recognize a mortar and pestle, and in the centre a bigger mortar<br>
+that is labelled with the term pontos, as in the abovementioned passage by Stepha-<br>
+nus. The drawing on the left could represent a distillatory device (see CAAG I 142),<br>
+perhaps used for distilling the substances crushed and mixed with liquid ingredients<br>
+in the mortar. The lines that link the two instruments establish a connection - as in<br>
+Stephanus&#x27; passage - between the &#x27;waters&#x27; prepared in the mortar and the distilled<br>
+&#x27;waters.&#x27; A cyclical process, analogous to the meteorological phenomenon of rain,<br>
+seems to be presupposed: the waters used to dilute the dry materials in the mortar<br>
+can be the products of the distillation, just as the materials prepared in the mortar<br>
+can be distilled.</p><p>7] As pointed out by Bidez-Cumont [Mages, vol. 2, 313 fr. A4b), Ostanes made<br>
+Democritus swear to keep his alchemical knowledge secret. A passage handed<br>
+down in SyrC, fol. 144&quot;, supports this interpretation, since the Persian magician is<br>
+said to have ordered his pupils to not reveal his words (CMA H 326-7). In addition,<br>
+in the Greek text his to her son Horus (CAAG II 29-8 = Mertens, Un traité<br>
+gréco-égyptien d&#x27;alchimie, 131-2), the Egyptian goddess is forced by the angel<br>
+Amnael to swear a complicated and holy oath (analysed by Mertens, &quot;Une scène<br>
+d&#x27;initiation alchimique&quot;) before receiving the revelation about chrysopoeia (see<br>
+also CAAG II 27,5-7; CMA II 320).<br>
+<h1>【4†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+S244 THE FOUR BOOKS OF PSEUDO DEMOCRITUS</p><p>similarities with Synesius&#x27; description (Zos. Alch. IX 7-18 Mertens): &quot;Then mix<br>
+them [eggs] together, and taking other eggs, and breaking them, put them in the<br>
+vessel ... and luting all around the ambix [i.e. upper part of the alembic] and the<br>
+breast-shaped cup [mastarion] with its receiver ... give it to be heated&quot; (trans[. by<br>
+Taylor, &quot;The Evolution of the Still,&quot; 198). In Synesius&#x27; passage, however, there is<br>
+no reference to the receivers.</p><p>(C-D) A cauldron (A.Eßiic) containing warm ashes was put under the device, which<br>
+was gently heated in order to ensure a gradual evaporation of the contents. The part<br>
+in contact with the ashes is the bötarion. An anonymous commentator - perhaps in<br>
+order to elucidate the rare term - added the note (afterwards included into the text)<br>
+&quot;that is a kerotakis.&#x27;&quot; This last term is problematic and could refer to either a particu-<br>
+lar device for colouring metallic leaves by means of sulphur vapours (Mertens,<br>
+Zosime de Panopolis, CXXX-CLII; Tay[or, &quot;A Survey of Greek Alchemy,&quot; 130-5)<br>
+or just the specific source of heat used for carrying out similar operations (Martelli,<br>
+Pseudo-Democrito, 416-8; &quot;Greek Alchemists at Work,&quot; 304-8). Later alchemical<br>
+texts seem to consider bötarion and kerotakis as synonymous {CAAG II<br>
+\6i\,zx-ï6^,j), probably because neither was placed in direct contact with the<br>
+fire, but was set on a layer of heated ashes.</p><p>13] The process called sepsis (crrîv|nç), &#x27;fermentation,&#x27; referred to any procedure<br>
+whereby a solid or liquid substance was treated with reactive liquors (often vinegar)<br>
+and changed in colour. In CAAG II 23,1 it is related to the iosis (ïcomç) process, a<br>
+way of treating metals to produce a kind of &#x27;rust.&#x27; Copper, for instance, was processed<br>
+with vinegar in order to produce green copper acetates (Diosc. V 91; Plin. NH XXXIV<br>
+I lof.). Olympiodorus explicitly claimed: &quot;sepsis cannot happen without a liquid sub-<br>
+stance&quot; (CAAG II 90,9). In our text, the fermented ingredient is liquid (namely the<br>
+product of the distillation) and must be macerated by adding another liquid substance:<br>
+the philosopher Anonymous explains that Synesius intended to prepare the dyeing<br>
+compound &quot;by adding one liquid to another one&quot; (CAAG II 440,6-9). After proces-<br>
+sing, the liquor probably changed colour: it is called, in fact, &#x27;Aminaios wine,&#x27; i.e. a<br>
+wine often associated by alchemists with yellow liquid substances {CAAG II 19,18;<br>
+339,16). This liquid, after being macerated, could of course be used for macerating<br>
+other substances: Synesius himself seems to refer to similar procedures at § 13,<br>
+1. 208, where gold is macerated in an unspecified liquor.<br>
+<h1>【5†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+SOURCES OF ALCHEMY AND CHEMISTRY</p><p>The Four Books of<br>
+Pseudo-Democritus</p><p>Matteo Martelli</p><p>Maney ^<br>
+Publishing<br>
+wvvw.maneypublishing.com</p><p>SOURCES OF ALCHEMY AND CHEMISTRY:</p><p>SIR ROBERT M O N D STUDIES IN THE HISTORY OF EARLY CHEMISTRY</p><p>THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+MATTEO MARTELLI</p><p>AMBIX VOLUME 6O SUPPLEMENT l 2013</p><p>CONTENTS</p><p>General Editors&#x27; Foreword Sv</p><p>Acknowledgments Svi</p><p>Abbreviations Sviii</p><p>INTRODUCTION</p><p>I 1. The Four Books of pseudo-Democritus Si<br>
+1.1. Early modern editions S4<br>
+1.2. Modern scholarship S5</p><p>I 2. Alchemical works by ps.-Democritus: the direct manuscript tradition S7<br>
+2.1. The Physika kai mystika - Natural and Secret Questions (PM) Sn<br>
+2.2. The Peri asemou poieseos - On the Making of Silver (AP) Si2</p><p>§ 3. The structure of the lost Four Books of ps.-Democritus Si3<br>
+I 4. Physika kai mystika and the original books on gold and purple Si8</p><p>4.1. The epitome of the book on purple Si 9<br>
+4.2. The epitome of the book on gold S2i</p><p>I 5. The books on silver and precious stones S23<br>
+I 6. Ps.-Democritus&#x27; Catalogues in the indirect tradition: Synesius&#x27;</p><p>commentary and the so-called Chemistry of Moses S26<br>
+I 7. Dating of ps.-Democritus&#x27;Four ßoo/cs S29<br>
+I 8. Background to the attribution of the alchemical books to Democritus S32</p><p>8.1. The supposed Eastern tradition S32<br>
+8.2. Democritus and the technical arts (technai) S34</p><p>§ 9. Bolos of Mendes S36<br>
+9.1. The problematic meaning of cheirokmeta S44</p><p>S io . A commentary on ps.-Democritus&#x27; alchemical work: the dialogue<br>
+between Synesius and Dioscorus S48<br>
+10.1. Synesius the alchemist and Synesius of Cyrene S52<br>
+10.2. Synesius the alchemist and Synesius of Philadelphia S56</p><p>§ n . The Four Books and the definition of alchemy S57</p><p>I 12. The Egyptian background S63<br>
+I 13. Persian elements: ps.-Democritus and Ostanes S69</p><p>EDITION</p><p>Criteria of edition S75</p><p>Creek texts<br>
+Democritus, On the Making of Purple and Gold: Natural and</p><p>Secret Questions (= PM) S78<br>
+On the Making of Silver (= AP) Si 04<br>
+Excerpts from The Chemistry of Moses: Democritus&#x27; Catalogue</p><p>{=Cat.) Sn6<br>
+The Philosopher Synesius to Dioscorus: Notes on Democritus&#x27; Book (= Syn. Alch.) Si 22<br>
+On Whitening Si 51</p><p>Syriac texts<br>
+Book by Democritus: On the Making of Shiny Gold {= iSyrC) S152<br>
+Second Book by the Philosopher Democritus (= 2SyrC) Si 68<br>
+Again by Democritus: I Greet you Wise Men {= 3SyrC) Si 80<br>
+<h1>【6†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+S24O THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>6] The ps-Democritean expression &#x27;rhubarb from Pontus&#x27; (IIOVTIOÇ pâ; see also PM §<br>
+17; on the specific meaning of the adj. Pontios, &#x27;from Pontus&#x27; rather than &#x27;of the sea,&#x27;<br>
+see Martelli, Pseudo-Democrito, 395) was allegorically interpreted by Synesius, who<br>
+folk-etymologized both the adjective and the name (see also § 16, 11. 256-8). The<br>
+term rhä (pâ) was read as stemming from the verb katarrheö (Kaxappéco), &#x27;to now<br>
+down, stream down&#x27; (LSJ^ 909), and the adj. Pontios (Jlóvnoc) was related to the<br>
+currents of the sea. The expression would thus have hinted at the dissolution of min-<br>
+erals, which were ground up, mixed in a liquid and perhaps distilled. Analogous alle-<br>
+gorical readings are attested by other alchemical writings. First of all, the term<br>
+&#x27;rivers&#x27; (7ioxa|a.oi) seems to have been used as a code name for mercury and<br>
+sulphur water (CAAG II 14,15 and 18; II 20,1). In addition, the Byzantine alchemist<br>
+Stephanus provided a detailed explanation of the same expression &#x27;rhubarb from<br>
+Pontus&#x27; in his seventh Lecture on Chysopoeia (II 234,16-25 Ideler = M, fol. 31&quot;̂ ;<br>
+B, fol. 70^-71&#x27;; A, fol. 64&quot;; V, fols. 46&#x27;&#x27;-47&#x27;&#x27;): &quot;In fact rhubarb comes from Pontus;<br>
+for the sea is called &#x27;pontos&#x27; by them [i.e. ancient alchemists]. Rhubarb from<br>
+Pontus is very valued, [it means] that the [dyeing] compound has been entirely<br>
+worked in a mortar: in fact they gave to the metal of the mortar the name of<br>
+&#x27;pontos,&#x27; since it is ocean colour, and to the &#x27;sea&#x27; [i.e. the water] that appears in<br>
+the mortar the name of &#x27;rha&#x27; ... How could waters overflow without the ocean<br>
+[read ûrcâpxovxoç BAV&quot;^, rather than ûjcâpxovxa]? How could rain [read öußpwv<br>
+V, rather than oyKcov] come down if clouds do not suck (âvaoTtâto) dewy rainwater<br>
+from it [i.e. the ocean]?&quot; The alchemist clearly refers to specific devices (mortars)<br>
+employed for crushing substances and making them Hquid. Moreover, the meteoro-<br>
+logical explanation at the end of the passage seems to hint at distilling processes: the<br>
+dewy rainwater and the cloud could correspond to the vapours that were &#x27;sucked&#x27; by<br>
+the upper part of the alembic. We could read the picture handed down by M, fol. io&quot;,<br>
+between the first and the second Lectures of Stephanus (texts that seem to have<br>
+nothing to do with the picture; see CAAG I 141-2) in the light of such procedures:</p><p>Alchemical equipment.<br>
+Source: Marlcianus gr. 299, fol. lor<br>
+Courtesy of Biblioteca Nazionale Marciana</p><p>NOTES (Creek texts) S241<br>
+<h1>【7†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;•&quot;^ All references to hydrometer date from after the fourth century: see Dimitris R. Rafos, &quot;L&#x27;invention de I&#x27;hydroscope et<br>
+la tradition arabe,&quot; Graeco-Arahica, 5 (7993): 275-86. Besides the abovementioned letter by Synesius, we mention<br>
+the Carmen de ponderibus et mensuris (vv. 103-6) by Remmius Favinus, which probably dates back to the fourth<br>
+century: see D.R. Raïos, Recherches sur le «Carmen de ponderibus et mensuribus» (Ioannina: Panepistemio<br>
+Iöanninön, T983), 27-45; and Ch. 7 of the first lecture of the Kitäb Mizân al-hikma {Book of the Baiana; of<br>
+Wisdom) by al-Häzim, in which the invention of this device is attributed to the philosopher (^.ajjll (j.«ájí]l<br>
+(al-füfus al-rüm7), usually identified with the Greek mathematician Pappus of Alexandria: see, for instance,<br>
+Nicolas Khanikoff, &quot;Analysis and Extracts of the Book of the Balance of Wisdom, An Arabic Work on the Water-<br>
+Balance Written by &#x27;Al-Khàzini in the Twelfth Century,&quot; Journal of the American Oriental Society, 6 (1858): 40;<br>
+more recently Raïos, &quot;L&#x27;invention de I&#x27;hydroscope,&quot; 281-2, has proposed the Greek physician Rufus. Finally, we<br>
+can recognize another reference to the hydrometer in the prose version of the Carmen de ponderihus (preserved in<br>
+mss. Parisini lat. 7530 and 11478), dating to the seventh/eighth century: see D.R. RaVos, &quot;Autour de la paraphrase<br>
+du «Carmen de ponderibus et mensuris»,&quot; in Science antique, science médiévale (Autour du manuscrit d&#x27;Avranches<br>
+235). Actes du Colloque international, Mont-Saint-Michel, 4-7 septembre 1998, ed. Louis Callebat and Olivier Des-<br>
+bordes (Hildesheim, Zürich, New York: Olms-Weidmann, 2000), 297-318.<br>
+<h1>【8†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+© Society for the History of Alchemy and Chemistry 2013</p><p>S2 THE FOUR BOOKS OF PSEUDO-DEMOCRiTUS</p><p>versions of what were originally four books dealing with dyeing or &quot;colouring&quot; pro-<br>
+cesses: namely, the making of gold, silver, precious stones, and purple dye.*&quot; Of these,<br>
+the sections on gold and purple are now found within the Physika kai tnystika^<br>
+while the section on silver is now in the Peri asemou poieseos. To this material<br>
+can be added three Hsts of substances, usually grouped under the title of Katalogoi<br>
+{Catalogues), which can also be ascribed to ps.-Democritus.**</p><p>The aim of this volume is to reconstruct, as far as possible, the original Four<br>
+Books of ps.-Democritus. Through analysis of the Physika kai mystika and Peri<br>
+asemou poieseos, and comparison with other traditions - both indirect references<br>
+in later Greek writings, and direct transmission via Syriac - we can reconstruct a<br>
+single organized treatise, offering a rational presentation of four different technical<br>
+fields related to dyeing techniques. The fragmentary and epitomized version in<br>
+which these books have come down to us makes exhaustive scrutiny of their original<br>
+contents extremely difficult. Nevertheless, the surviving evidence still allows us to<br>
+identify the books as fundamental documents, from which we can attempt to recon-<br>
+struct the principal features of alchemy during its infancy, the kinds of craftsmanship<br>
+this art involved, and its possible relationship to an Egyptian or, more broadly. Near<br>
+Eastern tradition.</p><p>As I shall argue, the technical content of the Four Books, coupled with their<br>
+importance to later alchemical writing, requires us to reconsider how early<br>
+&#x27;alchemy&#x27; is to be defined. In light of an ancient tradition that unanimously placed<br>
+Democritus among the first and most important fathers of alchemy, we must<br>
+accept that the topics covered in his books were considered to be key aspects of<br>
+the discipline. The crafts of changing base metals into gold and silver, making pre-<br>
+cious stones, and dyeing wool purple, therefore represent the technical background<br>
+against which alchemy developed. Indeed, the four books on these subjects under the<br>
+name of Democritus correspond in substance to the topics covered by the Leiden and<br>
+Stockholm papyri. This wide range of interests contrasts with a more restricted and<br>
+perhaps later definition of alchemy, which usually focuses on the transformation of<br>
+base metals into gold and silver. Indeed, it is this narrower notion of alchemy that<br>
+seems to have determined the selection of pseudo-Democritus&#x27; writings for inclusion<br>
+in Byzantine anthologies: the best preserved sections of the four original books are<br>
+precisely those dealing with gold-making (chrysopoiea) and silver-making<br>
+{argyropoeia).</p><p>The Four Books also offer insight into an ancient tradition that linked the Greek<br>
+atomist, Democritus, to the wisdom of Egypt and Persia. According to this tradition,<br>
+Democritus was taught the secrets of alchemy by his master, the Persian magus<br>
+<h1>【9†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+NOTES (Creek texts) S225</p><p>48] Scholars have expressed doubts about the authenticity of §§ 15-16 (see Berthe-<br>
+lot, CAAG in 50 n. 4). Festugière in particular considered the opposition between<br>
+young and old &#x27;alchemists&#x27; in the passage as a sign of its later composition, since<br>
+such a polarity would imply a developed state of the art (Révélation d&#x27;Hermès,<br>
+vol. I, 225-6). However, three elements support the authenticity of these two para-<br>
+graphs. First, according to the history of alchemy traced by Zosimus (CAAG U<br>
+213-4 and 239-46), different groups or schools were already recognizable in the<br>
+most ancient tradition. For instance, the beginning of the treatise First Book of<br>
+the Final Quittance (CAAG II 240 = Festugière, Révélation d&#x27;Hermès, vol. i ,<br>
+364-5) contrasts Democritus with the Jewish alchemists. Furthermore, according<br>
+to Zosimus&#x27; Book on Tin (preserved only in Syriac translation; see in particular<br>
+SyrC, fols. 49&#x27;&#x27;-5o&#x27;&#x27;), Democritus criticized other ancient authors who hid the<br>
+natural processes at the basis of any alchemical operation (Berthelot-Duval, CMA<br>
+II 239, translated the passage as follows: &quot;Le philosophe dit qu&#x27;ils [i.e. the ancient<br>
+alchemical authors] noyèrent dans un grand océan les écrits de la science de la<br>
+nature&quot;). Second, the Syriac tradition, which preserves §§ 15-16, also hands<br>
+down a similar section (otherwise lost in Greek) in the book On the Making of<br>
+Silver (2SyrC § 5): the similarities in content and style between the two passages<br>
+seem to support the authenticity of these two &#x27;theoretical&#x27; sections which belonged<br>
+to the book on gold and to the book on silver respectively (see supra, pp. 12-3;<br>
+23-4). Finally, three later alchemists refer to this section. According to the alchemist<br>
+Christianus, in fact, Zosimus mentions ps.-Democritus&#x27; criticism against young<br>
+alchemists (CAAG II 406,19-20; on this text, see Martelli, Pseudo-Democrito,<br>
+330). Synesius (§ 11, 11. 173-6) clearly refers to the beginning of PM § 15.<br>
+Finally, a few sentences of ps.-Democritus&#x27; condemnation of the neophytes&#x27;<br>
+method are cited by Olympiodorus, CAAG II 103, 8-14 (see in particular, 11.<br>
+9-10 = P M § 14,11. 178-80 and 11. 12-4 = PM § 13,11. 159-61).</p><p>49] This recipe opens the second part of the book On the Making of Gold (see supra,<br>
+p. 12) which is more focused on washes (Ç{0|.ioi), that is, on the use of liquid drugs or<br>
+paints (often made from plants) for colouring metals (see Berthelot, CAAG I 72).<br>
+Similar methods are attested by the Leiden and Stockholm papyri (see CAAG I<br>
+59-60; Halleux, Papyrus de Leyde, 42), by the Syriac tradition (see, for instance,<br>
+CMA II, XXV), and by several medieval recipe books (Berthelot, &quot;Sur les alliages<br>
+d&#x27;or,&quot; 163-5; CMA I 47-9).<br>
+<h1>【10†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;•&quot; Pebichius is also presented as one of Ostanes&#x27; pupils in a Greek alchemical fragment in Bodleian MS Arch. Seid. B 7 8<br>
+(f. 792&#x27;), edited in CMAG VI44. Zosimus also mentions the alchemist several times, placing his work in relation to<br>
+ps.-Democritus&#x27; writings (see CAAG II 755,76-7; 184,78-20): see also Letrouit, &quot;Chronologie,&quot; 21-2.</p><p>&#x27;•&#x27;•&#x27; Tíva zàeïSr] tvyxávovai ujçmvXiGmv KazaßaipijcKalmocoiKovopenat, edited in CAAG 11 357-3 within the recipe-<br>
+book entitled Deep Tincture of Stones, Emeralds, Rubies and Jacinths from the Book Taken out from the Sancta<br>
+Sanctorum of Temples; new edition of the passage in Bidez-Cumont, Mages, vol. 2, 323-4.</p><p>&#x27;* &#x27; Syncell., 297, II. 275. Mosshammer (see infra, p. 69). Letrouit, &quot;Chronologie,&quot; 27 suggested that Maria&#x27;s work post-<br>
+dates Democritus, since she quotes the aphorism on natures.</p><p>&#x27;̂*̂  &quot;AXXo KeipáXaiovTtepi Xidav, CAAG 11 354-8.<br>
+&#x27;••&#x27; See supra, pp. 9-70. Similar cold procedures are also mentioned in the Leiden and Stockholm papyri: Pl.eid.X. 95,5</p><p>(Kai Eoxai ij/tixpoßaipiic); PHolm. 706 (nopipiipac \|/vxpo(!aipT) aXT\d¿y&lt;; fivo\iévr\), 727 (cpairöv v|;t)xpoßaipai) and 726<br>
+(Xpuoavöfj Tcoifjoai »</p><p>»«X 180 Adler.</p><p>S 6 o THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+<h1>【11†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+6] This recipe - not preserved in the Byzantine tradition - employs a difficult<br>
+nomenclature that is not always understandable. An allegorical description of the<br>
+process, which probably involves Decknamen, opens the text. In particular, the<br>
+term v^oa^ {yqdkwn), which I have proposed to translate as &#x27;snake&#x27; by following<br>
+Berthelot-Duval&#x27;s interpretation (CMA II 273), is neither attested by léxica nor<br>
+matches the transcription of any Creek word, although the mention of &#x27;his bones&#x27;<br>
+(1. 2) could suggest that it refers to a living being (see CAAG 11 22,12-6 which<br>
+directs that the flesh be stripped off a snake; similar allegories involving human<br>
+beings are attested by Zos. Alch. X-XII Mertens). It is impossible to give a sure<br>
+interpretation of the term. It might be related to the claim of few later alchemists<br>
+(Phil. Anon. Alch. CAAG II 121,10-5; i^5,5; 2.63,5-6; Steph. Alch. II 236,35<br>
+Ideler), who often refer to the currents of the Nile as the place to find a specific<br>
+stone that was supposed to have a pneuma. The so-called philosopher Anonymous<br>
+(CAAG II 121,14-5) claimed that alchemists had to take the &#x27;heart&#x27; (kardia,<br>
+KapSia) out of the stone, and this stone is explicitly described as a snake (or ouro-<br>
+boros) by the iambic poem (II 331,26-332,23 Ideler = vv. 135-57 Goldschmidt)<br>
+ascribed to the alchemist Theophrastus (sixth/seventh century?; see Letrouit,<br>
+&quot;Chronologie,&quot; 82-3): &quot;Though not a stone, it yet is made a stone / from metal,<br>
+having three hypostases, / for which the stone is prized and widely known; /<br>
+yet all the ignorant search everywhere / as though the prize were not close by at<br>
+hand. / Deprived of honor yet the stone is found / to have within a sacred<br>
+mystery, / a treasure hidden and yet free to all. / A dragon springs therefrom<br>
+which, when exposed / in horse&#x27;s excrement for twenty days [dubious text; see Cold-<br>
+smith&#x27;s edition] / devours his tail till naught thereof remains. / This dragon, whom<br>
+they Ouroboros call, / is white in looks and spotted in his skin / ... He swims and<br>
+comes unto a place within / the currents of the Nile; his gleaming skin / and all<br>
+the bands which girdle him around / are bright as gold and shine with points of<br>
+light.&quot; Translation by Charles A. Browne, &quot;The Poem of the Philosopher Theo-<br>
+phrastos upon the Sacred Art: A Metrical Translation with Comments upon the<br>
+History of Alchemy,&quot; Scientific Monthly, 11 (1920): 204.</p><p>7] The three ingredients mentioned in this sentence are difficult to interpret. The<br>
+first term, yo.̂ .ii.;a/ (&#x27;prslywn) could be read as a misspelling for x^ai-i^^i&#x27; (see B.B. I</p><p>S262 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+<h1>【12†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;•* Collection des anciens alchimistes grecs, 3 vols. (Paris: Georges Steinheil, 1887-88), vol. 2,41-53 (hereafter CAAG).<br>
+The Physika kai mystika and the Periasêmou poieseos were publisbed at the beginning of the second section (&quot;Traités<br>
+démocritains&quot;), which effectively opens the edition of Greek alchemical works; the first section (&quot;Indications</p><p>S6 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>drew attention to the problem of their authenticity.^&#x27; It was immediately realised<br>
+that the Four Books were pseudepigraphic - that is, they were not produced by<br>
+the historical Democritus, the fifth-century BC Greek atomist. By analysing<br>
+several sources dating from the first centuries AD (especially Pliny the Elder, Colu-<br>
+mella, Seneca, and Diogenes Laertius), these scholars inferred the existence of a<br>
+wider pseudo-Democritean production that was probably already circulating<br>
+during the third-second centuries BC.̂ *&quot;</p><p>In particular, their attention was attracted by the controversial figure of Bolos of<br>
+Mendes. Bolos is mentioned in ancient sources as the author of naturalistic treatises<br>
+that circulated under the name of Democritus, and which seemed similar to the<br>
+alchemical writings of ps.-Democritus.^^ The works of ps.-Democritus were also<br>
+found to have points of similarity with the recipe book preserved in the so-called<br>
+&#x27;Leiden Papyrus&#x27; (PLeid.X.), which had been published by Leemans in 1885&quot;^^<br>
+and translated by Berthelot in the first volume of his Collection des anciens alchi-<br>
+mistes grecs.^^</p><p>Twentieth-century historical-philological surveys improved and deepened scho-<br>
+larly knowledge about the origins of alchemy. The edition of the &#x27;Stockholm<br>
+Papyrus&#x27; (PHolm.), published by Lagercrantz,^° enabled Lippmann to open his<br>
+impressive study on the history of alchemy by examining both papyrological<br>
+sources and the works of ps.-Democritus.^ &#x27; This approach was reinforced by sub-<br>
+sequent studies, which continued to insist on thematic similarities between the<br>
+abovementioned sources. Indeed, both the Leiden and Stockholm papyri and the<br>
+Four Books include recipes explaining how to process metals, dye fabric purple,<br>
+and make artificial precious stones. The Stockholm papyrus also explicitly attributes<br>
+one of its recipes to Democritus.&#x27;^</p><p>&#x27;•&#x27;&#x27; Continued<br>
+générales&quot;), includes in particular excerpts or treatises which were considered as propaedeutical to the reading of the<br>
+collection. Prior to Berthelot, some passages of the Physika kai mystika (taken from the codex Parisinus gr. 2.32.5)<br>
+were translated into French by Ferdinand Hoefer, Histoire de la chimie, 2nd ed., z vols. (Paris: Firmin Didot<br>
+frères. Fils et C&quot;, 1866-69), &#x27;&#x27;ol- i&gt; ^7^-9.<br>
+<h1>【13†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+Leszl, Walter, &quot;Democritus&#x27; Works: from their Titles to their Contents,&quot; in Democritus:<br>
+Science, the Arts, and the Care of the Soul. Proceedings of the International Colloquium on<br>
+Democritus, Paris, 18-20 September 2003, ed. Aldo Brancacci and Pierre Marie Morel<br>
+(Leiden: Brill, zoo7), 11-76</p><p>Letrouit, Jean, &quot;Chronologie des alchimistes grecs,&quot; in Alchimie: art, histoire et mythes. Actes<br>
+du I&quot; Colloque international de la Société d&#x27;Étude de l&#x27;Histoire de l&#x27;Alchimie, ed. Didier Kahn<br>
+and Sylvain Matton (Paris and Milan: S.É.H.A and Arche, 1995), 11-93</p><p>Linden, Stanton J., The Alchemy Reader. From Hermes Trismegistus to Isaac Newton (Cam-<br>
+bridge: Cambridge University Press, 2003 )</p><p>S294 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>Lindsay, Jack, The Origins of Alchemy in Graeco-Roman Egypt (New York: Barnes 5c Noble,<br>
+1970)</p><p>Lippmann, Edmund O. von, Entstehung und Ausbreitung der Alchemie, 3 vols. (Berhn: Julius<br>
+Springer, 1919-54)</p><p>Littré, Emile, Fline l&#x27;Ancien. Histoire naturelle, z vols. (Paris: Dubochet, 1848-50)</p><p>Long, Herbert S., Diogenis Laertii Vitae philosophorum, 2 vols. (Oxford: Oxford Classical<br>
+Texts, 1964)</p><p>Longo, Odone, &quot;La zoologia delle porpore nell&#x27;andchità greco-romana,&quot; in La porpora. Realtà<br>
+ed immaginario di un colore simbólico. Atti del Convegno di studio, Venezia, 24 e 25 ottobre<br>
+1996, ed. Oddone Longo (Venice: Istituto Véneto di scienze lettere ed arti, 1998), 79-90</p><p>Lorenzoni, Alberta, &quot;Eustazio: paura &#x27;verde&#x27; e oro &#x27;paludo&#x27; (Ar. Fax 1176, Eup. fr. Z53 K.-A.,<br>
+Com. adesp. frr. 390 e 1380A E.),&quot; Eikasmos, 5 (1994): 139-63</p><p>Lucas, Alfred, and John Richard Harris, Ancient Egyptian Materials and Industries, fourth<br>
+edition (London: E. Arnold, 196z)</p><p>Ludwich, Arthur, Maximi et Ammonis carminum de actionum auspiciis reliquiae. Accedunt<br>
+anécdota astrológica (Leipzig: Teubner, 1877)</p><p>Marganne, Marie-Hélène, &quot;Le système chromatique dans le Corpus Aristotélicien,&quot; Études<br>
+Classiques, 46 (1978): 185-Z03</p><p>Martelli, Matteo, &quot;L&#x27;opera alchemica pseudo-democritea: un riesame del testo,&quot; Eikasmos,<br>
+14 (Z003): 161-84</p><p>Martelli, Matteo, &quot;Divine Water in the Alchemical Writings of Pseudo-Democritus,&quot; Ambix,<br>
+56 (Z009): 5-zz<br>
+<h1>【14†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+(Oxford: Glarendon Press, 1927)<br>
+ThGL = Henricus Stephanus, Thesaurus Linguae Graecae, 9 vols. (Paris: A.F. Didot,</p><p>1831-1865)<br>
+ThLL = Thesaurus Linguae Latinae (Berlin 1900-)<br>
+ThSyr - Robert Payne Smith, Thesaurus Syriacus, 2 vols. (Oxford: Glarendon Press,</p><p>1879-1901)</p><p>INTRODUCTION</p><p>§ 1. The Four Books of pseudo-Democritus*</p><p>The four alchemical books ascribed to the Greek atomist Democritus rank among<br>
+the most ancient examples of Western alchemical writing. The Four Books cover<br>
+a range of technical questions and recipes, similar to those handled in the earliest sur-<br>
+viving chemical manuscripts: the Leiden and Stockholm papyri (third century AD).<br>
+The Books also played a central role in the development of alchemy as a discipline.^<br>
+Democritus is frequently cited by the alchemists whose treatises make up the Greek<br>
+Corpus alchemicum, including Zosimus of Panopolis and Synesius.^ The preoccupa-<br>
+tion with Democritus continued in the work of later Byzantine writers, including<br>
+Olympiodorus, Stephanus, and Christianus,&quot;* as well as the alchemist &#x27;Anonymous,&#x27;<br>
+whose short history of alchemy sets Democritus among the founders of the art.&#x27;</p><p>The Four Books no longer exist in their original form, although fragments survive<br>
+in two trearises: Physika kai mystika {Natural and Secret Questions) and Peri<br>
+asëmou poieseös {On the Making of Silver). These texts are actually epitomized</p><p>This introduction is based upon material previously published in Italian, in Matteo Martelli, Pseudo-Democrito,<br>
+scritti alchemici con il commentario di Sinesio (Paris-Milan: S.É.H.A.-Archè, zo i i ) , Chs. 1-3.<br>
+Besides the studies of Kopp, Berthelot, and Lippmann (see infra, pp. 5-7), several scholars count the four books by<br>
+ps.-Democritus among the earliest examples of alchemical writing: E Sherwood Taylor, &quot;The Origins of Greek<br>
+Alchemy,&quot; Ambix, i (1937): 37-8; Eric John Holmyard, Alchemy (Harmondswortb: Penguin Books, 1957;<br>
+reprint. New York, 1990), 15-6 |who did not, however, consider them in his previous work. The Makers of Chem-<br>
+istry (Oxford: Oxford University Press, 1931)!; James R. Partington, A Short History of Chemistry (New York:<br>
+St. Martin&#x27;s Press, 1957), zo- t ; Robert R Multhauf, The Origins of Chemistry (London: Oldbourne, 1966), 94- ior .</p><p>&#x27; The Greek Corpus alchemicum represents the collection of Greek writings that have been included in alchemical<br>
+Byzantine anthologies handed down by several manuscripts (see infra, p. 7). These anthologies, however, preserve<br>
+just a selection of an originally wider corpus of treatises composed between the first and the fourteetith century<br>
+AD, which have been selected, often epitomized, and reworked by anonymous collectors.</p><p>* I list all passages in which Zosimus or later alchemists refer to the Four Books (at least in the form preserved by the<br>
+Byzantine tradition) in the apparatus under the translation of the relevant ps.-Democritean excerpts.<br>
+<h1>【15†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+As I shall argue, the technical content of the Four Books, coupled with their<br>
+importance to later alchemical writing, requires us to reconsider how early<br>
+&#x27;alchemy&#x27; is to be defined. In light of an ancient tradition that unanimously placed<br>
+Democritus among the first and most important fathers of alchemy, we must<br>
+accept that the topics covered in his books were considered to be key aspects of<br>
+the discipline. The crafts of changing base metals into gold and silver, making pre-<br>
+cious stones, and dyeing wool purple, therefore represent the technical background<br>
+against which alchemy developed. Indeed, the four books on these subjects under the<br>
+name of Democritus correspond in substance to the topics covered by the Leiden and<br>
+Stockholm papyri. This wide range of interests contrasts with a more restricted and<br>
+perhaps later definition of alchemy, which usually focuses on the transformation of<br>
+base metals into gold and silver. Indeed, it is this narrower notion of alchemy that<br>
+seems to have determined the selection of pseudo-Democritus&#x27; writings for inclusion<br>
+in Byzantine anthologies: the best preserved sections of the four original books are<br>
+precisely those dealing with gold-making (chrysopoiea) and silver-making<br>
+{argyropoeia).</p><p>The Four Books also offer insight into an ancient tradition that linked the Greek<br>
+atomist, Democritus, to the wisdom of Egypt and Persia. According to this tradition,<br>
+Democritus was taught the secrets of alchemy by his master, the Persian magus</p><p>Syn. Alch. § i , 11. 11-3; see infra, pp. T3-8.<br>
+Ps.-Dem. Alch. FM §§ 1-2. corresponds to the section on purple dyeing, which must be augmented by considering<br>
+some recipes preserved by the Syriac tradition (see infra, pp. 8-rr); Ps.-Dem. Alch. PM §§ 4-2.0 corresponds to<br>
+the section on gold-making.<br>
+This ascription is made on the basis of comparison between a commentary on ps.-Democritus by the author Synesius<br>
+and some sections of the so-called Chemistry of Moses. See infra, pp. zé-9</p><p>INTRODUCTION S3</p><p>Ostanes. He is also described as travelling to Egypt to learn geometry and astrology;<br>
+to Persia to be educated by the magi; and even to have reached India.^ This close<br>
+connection with Middle Eastern traditions left its mark on the pseudepigraphic<br>
+works circulating under Democritus&#x27; name, including the Four Books.<br>
+<h1>【16†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+II 172,16-8) specified that &quot;all the [alchemical] books and both Chymes and<br>
+Maria say: lead mortar and lead pestle. Pound the cinnabar with vinegar in the<br>
+sun until mercury {vetpéXr], lit. &#x27;cloud&#x27;) is formed.&quot; In addition, SyrC, fol. 60&#x27;&#x27;2-5<br>
+has: &#x27;&#x27;Other Section. Take a lead mortar and pestle; put cinnabar in it and pound<br>
+it with water until mercury is formed. Other section: other people take vinegar and<br>
+pound [cinnabar] in the sun.&quot;</p><p>The second method was an extraction at elevated temperatures that exploited the<br>
+relatively low boiling point (356 degrees C) of mercury. It was often performed<br>
+simply by heating cinnabar. Vitruvius {De Arch. VII 8,1-4) explained that droplets<br>
+of mercury evaporate when cinnabar is brought to a high temperature: see Earle<br>
+Radcliffe Caley, &quot;Mercury and its Compounds in Ancient Times,&quot; Journal of<br>
+Chemical Education, 5 (1928): 420. Dioscorides (V 95) and Pliny {NH XXXIII<br>
+123) describe a more sophisticated method that involved heating cinnabar in a<br>
+simple device: an iron saucer containing cinnabar was placed on a earthenware<br>
+pan, covered by another vessel called an ambix, and heated; drops of mercury<br>
+then condensed on the covering ambix [E. Sherwood Taylor, &quot;The Evolution of<br>
+the Still,&quot; Annals of Science, 5 (1945): 188; Mertens, Zosime de Panopolis,</p><p>NOTES (Creek texts) S235<br>
+<h1>【17†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+&#x27;&quot; CAAG II 396,3-6; see Letrouit, &quot;Chronologie,&quot; 79 (t. X).<br>
+&#x27; ° See, for instance, the anthology of alchemical works preserved in the London Syriac manuscrips, which includes</p><p>several books ascribed to Democritus: supra, n. 59 and CMA II, IX-XII.<br>
+&#x27; &#x27; /l^/iOKpiTO!J/3i&#x27;/Uoçœ//;rri;;tpoa-(fWV7;0eioa/l£wi;;cœB. Its most ancient witness is manuscript A (fols. Z58&#x27;i7-Z59&#x27;z6),</p><p>edited by Berthelot-Ruelle in CAAG 11 53-6.<br>
+&#x27;* Joseph Bidez and Franz Cumont, Les mages hellénisés, z vols. (Paris: Les Belles Lettres, 1938), vol. i, z r i : &quot;pour but</p><p>d&#x27;attribuer aux Égyptiens - initiateurs des Phéniciens et par leur intermédiaire de Leucippe lui-même - la priorité de la<br>
+science.&quot;</p><p>&quot; Letrouit, &quot;Chronologie,&quot; 80 n. Z53 spoke of a &quot;processus de prolifération des faux alchimiques par amalgame.&quot;<br>
+&#x27;&quot;* See, for instance, Halleux, Papyrus de Leyde, 35-5Z.</p><p>Sl8 THE FOUR BOOKS OE PSEUDO-DEMOCRITUS</p><p>following an additional treatise on the making of pearls. Finally, the original ensem-</p><p>ble concluded with a book on purple.</p><p>§ 4. Physika kaimystika and the original books on gold and purple<br>
+<h1>【18†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+The same information is also given by the Byzantine chronographer Syncellus,<br>
+who probably knew a Corpus of alchemical writings quite similar to the anthology<br>
+preserved for us in the Byzantine manuscripts:&#x27;&#x27;&quot;^</p><p>Democritus of Abdera, the natural philosopher, was flourishing. In Egypt, Democritus<br>
+was initiated into the mysteries by Ostanes the Mede, who had been dispatched to<br>
+Egypt by the Persian kings of that time to take charge of the temples in Egypt. He was<br>
+initiated in the temple of Memphis along with other priests and philosophers, among<br>
+them a Hebrew woman of learning named Mariam, and Pammenes. Democritus<br>
+wrote about gold and silver, and stones and purple, but in an oblique way. &#x27;*°&#x27;</p><p>The relationship of such accounts to the Four Books is not entirely clear. Various<br>
+scholars have supposed that this alchemical work probably opened with such a<br>
+story, and they consider Synesius&#x27; and Syncellus&#x27; versions to be in some way<br>
+related to PM § 3.&#x27;* °̂ However, as already noted, the absence of Ostanes&#x27; name<br>
+and the presence of various elements that are not mentioned either by Synesius or<br>
+Syncellus leaves some room for doubt concerning the authenticity of the PM para-<br>
+graph.&#x27;&#x27; &#x27; &#x27; On the basis of such questions, some scholars have proposed that Synesius<br>
+was himself the first author to introduce the legend; in particular, Hammer-Jensen</p><p>•&#x27;&quot;&#x27;&#x27;Beretta, Alchemy of Glass, 8-22 (Ancient Egypt) and 40-7 (Hellenistic Egypt).<br>
+&quot;&quot;&#x27;Syn. Alch. § 7,11. 5-77.<br>
+&#x27;*°&quot; Riess, RE, s. v. &quot;Alchemie,&quot; 7347, 33ff.</p><p>&quot;t&quot;&#x27; Syncell. 297, 24-8 Mosshammer (= 68 15 51 300,16 DK); transi, by Adier-Tuffin, Chronography of George Synkellos,<br>
+367.The passage has been edited also by Bidez-Cumont, Mages, vol. 2, 377 fr. A3, on the basis of the manuscripts<br>
+Parisini Graed 7777, fol. 747 and 7764, fol. 93. The two scholars stressed the strong similarities with Synesius&#x27;<br>
+account, so that they supposed a possible relation between the two sources (p. 377 n. 7).</p><p>*&#x27;°For instance. Tannery, &quot;Études sur les alchimistes grecs,&quot; 283.<br>
+•*&#x27; &#x27; See supra, p. 20.</p><p>S7O THE FOUR BOOKS OF PSEUDO-DEMOCRITUS<br>
+<h1>【19†Matteo Martelli_ Lawrence M. Principe_ Jennifer M. Rampling - The Four Books of Pseudo-Democritus_ Sources of Alchemy and Chemistry_ Sir Robert Mond Studies in the History of Early Chemistry_ Sources .pdf†file-Bb31ZqvxfLDtigSy98tWdf】</h1><br>
+See Matton, &quot;L&#x27;influence de l&#x27;humanisme,&quot; 320. Matthaeus Zuber composed a dedicatory epigram to Khunrath,<br>
+which was printed in Khunrath&#x27;s work Amphitheatrum sapientiae aeternae (Hanover, 1609), 14.</p><p>• &#x27; CMAGrV 68-85.<br>
+This could be Monacensis gr. I T 2 (CMAG W 247-72), which is copied from a lost manuscript derived from Mar-<br>
+cianus gr. 299 (see CMAG IV 13-7 and Festugière, &quot;Alchymica,&quot; 218).</p><p>&quot; See CAÍAG IV 47-58.<br>
+See CMylG ÜV 59-67 and 140-4 respectively; See also Matton, &quot;L&#x27;influence de l&#x27;humanisme,&quot; 321 n. z.</p><p>&#x27; &#x27; See in particular Hermann EM. Kopp, Beiträge zur Geschichte der Chemie, 3 vols. (Braunschweig: E Vieweg und<br>
+Sohn, 1869-75), vol. T, 108-37; at pp. 137-43. He edited the Latin translation of the Four Books published by Piz-<br>
+zimenti, adding to the footnotes some passages of the Greek texts taken from the volumes of the Notices et extraits<br>
+des manuscrits de la hihliothèque du roi et autres bibliothèques (see. e.g., Kopp, Geschichte der Chemie, vol. i, 137<br>
+n. 62; T4T nn. 64-8).</p><p>&#x27;•* Collection des anciens alchimistes grecs, 3 vols. (Paris: Georges Steinheil, 1887-88), vol. 2,41-53 (hereafter CAAG).<br>
+The Physika kai mystika and the Periasêmou poieseos were publisbed at the beginning of the second section (&quot;Traités<br>
+démocritains&quot;), which effectively opens the edition of Greek alchemical works; the first section (&quot;Indications</p><p>S6 THE FOUR BOOKS OF PSEUDO-DEMOCRITUS</p><p>drew attention to the problem of their authenticity.^&#x27; It was immediately realised<br>
+that the Four Books were pseudepigraphic - that is, they were not produced by<br>
+the historical Democritus, the fifth-century BC Greek atomist. By analysing<br>
+several sources dating from the first centuries AD (especially Pliny the Elder, Colu-<br>
+mella, Seneca, and Diogenes Laertius), these scholars inferred the existence of a<br>
+wider pseudo-Democritean production that was probably already circulating<br>
+during the third-second centuries BC.̂ *&quot;</p><p>In particular, their attention was attracted by the controversial figure of Bolos of<br>
+Mendes. Bolos is mentioned in ancient sources as the author of naturalistic treatises<br>
+that circulated under the name of Democritus, and which seemed similar to the<br>
+alchemical writings of ps.-Democritus.^^ The works of ps.-Democritus were also<br>
+found to have points of similarity with the recipe book preserved in the so-called<br>
+&#x27;Leiden Papyrus&#x27; (PLeid.X.), which had been published by Leemans in 1885&quot;^^<br>
+and translated by Berthelot in the first volume of his Collection des anciens alchi-<br>
+mistes grecs.^^<br>
+Visible: 0% - 100%</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>The alembic described in <em>The Four Books of Pseudo-Democritus</em> consists of several distinct parts:</p><p>1. <strong>Botarion (Βοτάριον)</strong>: The lower vessel, often made of glass or ceramic, similar to wine containers used in antiquity【17:2†source】.<br>
+2. <strong>Mastarion (Μαστάριον)</strong>: A breast-shaped protuberance on the upper receiving vessel, which was used to condense vapors【17:2†source】.<br>
+3. <strong>Ambix (Άμβιξ)</strong>: The uppermost collecting component, which facilitated the distillation process【17:4†source】.<br>
+4. <strong>Heat Source</strong>: A cauldron containing warm ashes was placed beneath the device, ensuring a slow, controlled evaporation【17:2†source】.</p><p>The process involved heating substances gently to extract and condense their essence. Some later texts link this alembic with devices like the kerotakis, which was used to subject materials to sulfur vapors【17:2†source】.</p><p>I&#x27;ll now generate an image with a focus on this historically accurate alembic.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;prompt&quot;:&quot;A detailed depiction of an ancient Mediterranean alembic, based on the descriptions in The Four Books of Pseudo-Democritus. The distillation apparatus consists of a botarion (a ceramic or glass lower vessel), a mastarion (a breast-shaped protuberance on the upper receiving vessel), and an ambix (a condensation chamber). The alembic is set on a cauldron filled with warm ashes, providing gentle heat. The background is a dimly lit alchemical workshop with shelves of scrolls, jars of powdered minerals, and ancient tools. A robed alchemist carefully tends to the alembic, observing the slow distillation process as vapor rises and condenses. The scene is illuminated by the glow of torches and the warm light of the furnace, creating a mystical, historical atmosphere.&quot;,&quot;size&quot;:&quot;1024x1024&quot;}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[image]</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+DALL·E displayed 1 images. The images are already plainly visible, so don&#x27;t repeat the descriptions in detail. Do not list download links as they are available in the ChatGPT UI already. The user may download the images by clicking on them, but do not mention anything about downloading to the user.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Here is the image focusing on the ancient Mediterranean alembic, based on historical descriptions from <em>The Four Books of Pseudo-Democritus</em>. Let me know if you&#x27;d like any adjustments!</p><p>Possible refinements:<br>
+1. Increase focus on the mastarion (breast-shaped protuberance) for accuracy.<br>
+2. Add additional tools or inscriptions to highlight the alchemist’s work.<br>
+3. Adjust the lighting for a more dramatic contrast.</p><p>Let me know how you&#x27;d like it enhanced!</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>write a description in more detail</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>This image depicts an ancient Mediterranean alchemical laboratory, focusing on a historically accurate alembic as described in <em>The Four Books of Pseudo-Democritus</em>. The scene is set in a dimly lit stone chamber, possibly within a temple or underground workshop, filled with the mystical glow of flickering torchlight and the smoldering heat of a furnace. Shadows dance across the walls, adorned with shelves containing ceramic and glass jars of powdered minerals, dried herbs, and mysterious metallic compounds.</p><p>At the center of the composition stands an elaborate alembic, a key alchemical device used for distillation. The alembic consists of three distinct parts:</p><p><ul><li><strong>Botarion (Βοτάριον)</strong>: A round-bottomed lower vessel, crafted from thick ceramic or blown glass, holds the raw alchemical ingredients. Warm ashes from a small cauldron below provide gentle, controlled heat to prevent sudden evaporation.  </li><br>
+<li><strong>Mastarion (Μαστάριον)</strong>: The upper receiving vessel features a distinctive breast-shaped protuberance, a key feature mentioned in ancient texts. This shape facilitates the condensation of vapors as they rise from the heated substances below.  </li><br>
+<li><strong>Ambix (Άμβιξ)</strong>: The final condensation chamber captures and channels the purified essence of the distillate, collecting the transformed liquid into a receiving vessel.  </li><br>
+</ul><br>
+A robed alchemist, possibly a philosopher or temple priest, is seen carefully observing the device, ensuring the heat remains steady. His hands rest near a worn parchment covered in cryptic symbols and alchemical formulas. Nearby, a second figure—perhaps an apprentice—stirs the embers beneath the cauldron, releasing fragrant plumes of steam infused with metallic and herbal essences.</p><p>The atmosphere is thick with the haze of burning incense and evaporating solutions, lending the space an aura of secrecy and sacred knowledge. This setting reflects the deep connection between alchemy, philosophy, and ritual in the ancient world, blending natural observation with mystical traditions.</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>make the image.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;prompt&quot;:&quot;An ancient Mediterranean alchemical laboratory with a detailed focus on a historically accurate alembic, as described in The Four Books of Pseudo-Democritus. The alembic consists of a botarion (a ceramic or glass lower vessel), a mastarion (a breast-shaped protuberance on the upper receiving vessel), and an ambix (a condensation chamber). The alembic is heated by warm ashes in a small cauldron. A robed alchemist, possibly a philosopher or temple priest, carefully observes the device, while an apprentice tends to the embers. The background features a dimly lit stone chamber with shelves of ceramic and glass jars filled with powdered minerals, dried herbs, and metallic compounds. Parchments covered in ancient alchemical symbols lie scattered on the table. The scene is illuminated by flickering torchlight, with mist and fumes rising from the heated substances, creating an aura of secrecy and mystical discovery.&quot;,&quot;size&quot;:&quot;1024x1024&quot;}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[image]</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+DALL·E displayed 1 images. The images are already plainly visible, so don&#x27;t repeat the descriptions in detail. Do not list download links as they are available in the ChatGPT UI already. The user may download the images by clicking on them, but do not mention anything about downloading to the user.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Here is the image of an ancient Mediterranean alchemical laboratory, focusing on a historically accurate alembic inspired by <em>The Four Books of Pseudo-Democritus</em>. Let me know if you&#x27;d like any modifications or refinements!</p>
+  </div>
+</div>
+<div class="msg user">
+  <div class="bubble">
+    <div class="role">User</div>
+    <p>make it look more like a woodcut with black and white inked lines and minimalist brush strokes. Label the parts.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>{&quot;prompt&quot;:&quot;A black and white woodcut-style illustration of an ancient Mediterranean alchemical laboratory, focusing on a historically accurate alembic as described in The Four Books of Pseudo-Democritus. The alembic consists of a botarion (a ceramic or glass lower vessel), a mastarion (a breast-shaped protuberance on the upper receiving vessel), and an ambix (a condensation chamber). The alembic is heated by warm ashes in a small cauldron. The illustration is crafted in a traditional woodcut style, with bold inked lines and minimalist brush strokes. Labels in an elegant handwritten style identify the alembic parts. The background features a dimly lit stone chamber with shelves of jars and scrolls. The scene captures the essence of ancient alchemy, with rising vapors and intricate details of early distillation techniques.&quot;,&quot;size&quot;:&quot;1024x1024&quot;}</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p>[image]</p>
+  </div>
+</div>
+<div class="msg tool">
+  <div class="bubble">
+    <div class="role">Tool</div>
+    <p><br>
+DALL·E displayed 1 images. The images are already plainly visible, so don&#x27;t repeat the descriptions in detail. Do not list download links as they are available in the ChatGPT UI already. The user may download the images by clicking on them, but do not mention anything about downloading to the user.</p>
+  </div>
+</div>
+<div class="msg assistant">
+  <div class="bubble">
+    <div class="role">Assistant</div>
+    <p>Here is a woodcut-style black and white illustration of an ancient Mediterranean alchemical laboratory, focusing on a historically accurate alembic. The image features bold inked lines, minimalist brush strokes, and labeled parts of the alembic. Let me know if you&#x27;d like any refinements!</p>
+  </div>
+</div>
+</div>
+</body>
+</html>
