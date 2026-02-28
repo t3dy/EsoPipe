@@ -114,6 +114,58 @@ export const LessonSchema = z.object({
 });
 export type Lesson = z.infer<typeof LessonSchema>;
 
+// ─── Scholarly Table ───────────────────────────────────────────────────────
+
+/**
+ * Column types map to visual styling in the table renderer:
+ *   concept       – neutral/bold header cell
+ *   tradition     – coloured by tradition (muted blue)
+ *   contributions – warm amber (positive)
+ *   challenges    – warm rose (tension)
+ *   quotation     – italic, muted, smaller font
+ *   takeaway      – researcher-voice: slightly highlighted
+ *   lacunae       – dim/faded (absence / unknown)
+ *   figure        – bold name + bio
+ *   works         – bibliographic list
+ *   methodology   – process-oriented
+ *   content       – neutral summary
+ *   context       – historical framing
+ */
+export const ColTypeSchema = z.enum([
+  'concept', 'tradition', 'contributions', 'challenges',
+  'quotation', 'takeaway', 'lacunae', 'figure', 'works',
+  'methodology', 'content', 'context', 'notes',
+]);
+export type ColType = z.infer<typeof ColTypeSchema>;
+
+export const TableTemplateSchema = z.enum([
+  'philosophical-comparison',
+  'scholar-profile',
+  'inventory',
+  'evidence-audit',
+  'article-decomposition',
+]);
+export type TableTemplate = z.infer<typeof TableTemplateSchema>;
+
+export const TableColumnSchema = z.object({
+  id:    z.string(),
+  label: z.string(),
+  type:  ColTypeSchema,
+  width: z.string().default('auto'),   // css % or 'auto'
+});
+export type TableColumn = z.infer<typeof TableColumnSchema>;
+
+export const ScholarlyTableSchema = z.object({
+  id:          z.string(),
+  template:    TableTemplateSchema,
+  title:       z.string(),
+  description: z.string().default(''),
+  tags:        z.array(z.string()).default([]),
+  columns:     z.array(TableColumnSchema),
+  rows:        z.array(z.record(z.string(), z.string())),
+});
+export type ScholarlyTable = z.infer<typeof ScholarlyTableSchema>;
+
 // ─── App Data ──────────────────────────────────────────────────────────────
 
 export interface AppData {
@@ -121,6 +173,7 @@ export interface AppData {
   entities: Entity[];
   edges: Edge[];
   timelines: Timeline[];
+  tables: ScholarlyTable[];
 }
 
 export interface ValidationError {

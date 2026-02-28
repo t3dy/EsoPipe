@@ -4,6 +4,7 @@ import {
   EntitySchema,
   EdgeSchema,
   TimelineSchema,
+  ScholarlyTableSchema,
   type AppData,
   type ValidationError,
 } from '../types';
@@ -44,17 +45,19 @@ export async function loadAppData(): Promise<LoadResult> {
 
   const base = import.meta.env.BASE_URL;
 
-  const [lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw] = await Promise.all([
+  const [lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw] = await Promise.all([
     fetch(`${base}data/lessons.json`).then(r => r.json()),
     fetch(`${base}data/entities.json`).then(r => r.json()),
     fetch(`${base}data/edges.json`).then(r => r.json()),
     fetch(`${base}data/timelines.json`).then(r => r.json()),
+    fetch(`${base}data/tables.json`).then(r => r.json()),
   ]);
 
-  const lessons = parseArray(lessonsRaw, LessonSchema, 'lessons.json', errors);
-  const entities = parseArray(entitiesRaw, EntitySchema, 'entities.json', errors);
-  const edges = parseArray(edgesRaw, EdgeSchema, 'edges.json', errors);
-  const timelines = parseArray(timelinesRaw, TimelineSchema, 'timelines.json', errors);
+  const lessons   = parseArray(lessonsRaw,   LessonSchema,        'lessons.json',   errors);
+  const entities  = parseArray(entitiesRaw,  EntitySchema,        'entities.json',  errors);
+  const edges     = parseArray(edgesRaw,     EdgeSchema,          'edges.json',     errors);
+  const timelines = parseArray(timelinesRaw, TimelineSchema,      'timelines.json', errors);
+  const tables    = parseArray(tablesRaw,    ScholarlyTableSchema,'tables.json',    errors);
 
-  return { data: { lessons, entities, edges, timelines }, errors };
+  return { data: { lessons, entities, edges, timelines, tables }, errors };
 }

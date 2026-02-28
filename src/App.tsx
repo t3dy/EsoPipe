@@ -5,7 +5,7 @@ import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Lessons } from './pages/Lessons';
 import { LessonDetail } from './pages/LessonDetail';
-import { Tables } from './pages/Tables';
+import Tables from './pages/Tables';
 import { Timelines } from './pages/Timelines';
 import { Graph } from './pages/Graph';
 import { Schema } from './pages/Schema';

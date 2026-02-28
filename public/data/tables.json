@@ -1,0 +1,270 @@
+[
+  {
+    "id": "table_neoplatonic_concepts",
+    "template": "philosophical-comparison",
+    "title": "Neoplatonic Concepts Across the Tradition",
+    "description": "Key metaphysical and psychological concepts traced from Plato through the Renaissance, showing transmission, transformation, and originality at each node.",
+    "tags": ["neoplatonism", "metaphysics", "tradition-comparison"],
+    "columns": [
+      { "id": "concept",    "label": "Concept",    "type": "concept",   "width": "14" },
+      { "id": "plato",      "label": "Plato",       "type": "tradition", "width": "13" },
+      { "id": "plotinus",   "label": "Plotinus",    "type": "tradition", "width": "13" },
+      { "id": "iamblichus", "label": "Iamblichus",  "type": "tradition", "width": "13" },
+      { "id": "proclus",    "label": "Proclus",     "type": "tradition", "width": "13" },
+      { "id": "ficino",     "label": "Ficino",      "type": "tradition", "width": "13" },
+      { "id": "quotation",  "label": "Quotation",   "type": "quotation", "width": "21" }
+    ],
+    "rows": [
+      {
+        "concept":    "The One / το Ἕν",
+        "plato":      "The Good beyond Being in Republic VI; the source of all reality, knowable only by the highest part of the soul.",
+        "plotinus":   "First hypostasis: absolutely simple, beyond being and intellect, generating Nous by overflow (ἀπόρροια). Known only by union, not discursive thought.",
+        "iamblichus": "Splits the One into an ineffable First One and a secondary One-that-participates, preserving divine transcendence more rigorously than Plotinus.",
+        "proclus":    "Systematises the One as the apex of a strict triadic procession (μονή → πρόοδος → ἐπιστροφή). All henads depend on it.",
+        "ficino":     "Identifies the One with the Christian God; the Platonic Good = the Biblical Creator. The soul's ascent is simultaneously philosophical and theological.",
+        "quotation":  "\"The One is perfect because it seeks nothing, has nothing, and needs nothing.\" — Plotinus, Enneads V.2.1"
+      },
+      {
+        "concept":    "Emanation / ἀπόρροια",
+        "plato":      "Implicitly present in Timaeus: Demiurge produces cosmos from overflow of goodness; Good 'gives' being to Forms.",
+        "plotinus":   "The central cosmological mechanism: each hypostasis generates the next without diminution, as light from a flame or warmth from fire.",
+        "iamblichus": "Qualified: soul does not fully emanate; it remains in higher realm while projecting a lower image. Sharper ontological gap between soul and body.",
+        "proclus":    "Formalises as triadic procession: Remaining (μονή), Procession (πρόοδος), Reversion (ἐπιστροφή) applies at every level of the hierarchy.",
+        "ficino":     "Adapted into Christian creation: God's love overflows into a chain of being. Furnishes the metaphysics behind the Renaissance concept of dignitas.",
+        "quotation":  "\"In its self-sufficiency it overflows, as it were, and its superabundance makes something other than itself.\" — Plotinus, Enneads V.2.1"
+      },
+      {
+        "concept":    "World Soul / ψυχὴ τοῦ κόσμου",
+        "plato":      "Timaeus 34b–37c: Demiurge crafts World Soul before the body; it moves the heavens and mediates between the intelligible and sensible.",
+        "plotinus":   "Third hypostasis after the One and Nous. Has an upper part (contemplating Nous) and lower part (governing matter). Individual souls are portions of it.",
+        "iamblichus": "World Soul is subordinate to a class of divine souls and inaccessible to theurgic operations directly — only higher vehicles mediate.",
+        "proclus":    "Multiple world souls arranged hierarchically. The Demiurge is distinct from and superior to the World Soul.",
+        "ficino":     "Rehabilitates the World Soul as the copula mundi — the 'knot of the universe' binding spirit to matter. Central to his astrological magic.",
+        "quotation":  "\"She is the bond of all things and the knot of the world.\" — Ficino, Theologia Platonica IV.1"
+      },
+      {
+        "concept":    "Theurgy / θεουργία",
+        "plato":      "No explicit doctrine, but Phaedrus on divine madness and Symposium on the ascent through beauty provide the philosophical background.",
+        "plotinus":   "Sceptical: true union with the One is achieved through intellect alone, not ritual. Theurgy works on the lower soul at best.",
+        "iamblichus": "Fundamental reorientation: theurgy surpasses philosophy. Divine symbols (συνθήματα) embedded in matter enable the soul's ascent. De Mysteriis.",
+        "proclus":    "Fully integrates theurgy into his system. The Chaldean Oracles are treated as revelation equal to Plato. Theurgic rites activate henads.",
+        "ficino":     "Translates theurgic ideas into Renaissance natural magic: planetary images, music, and talismans draw astral influences into the spiritus.",
+        "quotation":  "\"The theurgic art... does not draw the divine to itself but makes the man, who practises it, fit for divine reception.\" — Iamblichus, De Mysteriis II.11"
+      },
+      {
+        "concept":    "Intellect / Νοῦς",
+        "plato":      "Timaeus: Nous persuades Necessity; the rational ordering principle. Separate from and superior to the generated cosmos.",
+        "plotinus":   "Second hypostasis: the Nous thinks itself and in doing so generates the multiplicity of Forms. Identical with its objects.",
+        "iamblichus": "Tripartite: Father-Intellect, Demiurge-Intellect, and a third Intellect that includes the soul. The Chaldean triad replaces Plotinus's simpler scheme.",
+        "proclus":    "Divided into a vast hierarchy: intelligible, intelligible-and-intellectual, and intellectual gods, each with internal triads.",
+        "ficino":     "Identifies Plotinian Nous with the Augustinian divine mind containing Ideas. The second rank in his 'five substances': God, Mind, Soul, Quality, Body.",
+        "quotation":  "\"Intellectual-Principle, to its own, is beautiful, and the most beautiful of all; situated in pure light and pure radiance.\" — Plotinus, Enneads I.6.9"
+      },
+      {
+        "concept":    "Imagination / φαντασία",
+        "plato":      "Lowest cognitive level in the Divided Line (Republic); produces εἰκασία, knowledge of images of sensible things. Generally distrusted.",
+        "plotinus":   "Rehabilitated: the higher soul uses imagination to form the inner images that enable intellectual vision. Bridge between sensory and intellectual.",
+        "iamblichus": "Theurgic imagination: the practitioner visualises divine forms to attract their presence. Imagination is the vehicle of theurgy.",
+        "proclus":    "Gives imagination a middle position: it can receive impressions from Intellect above or from matter below. The theurge uses it correctly.",
+        "ficino":     "Key faculty in his medical-magical psychology: images formed in the imagination affect the spiritus and thence the body. Astrological images work here.",
+        "quotation":  "\"The imagination is the mirror of the soul, reflecting its innermost condition.\" — Ficino, De Vita III.6"
+      },
+      {
+        "concept":    "Henads / ἑνάδες",
+        "plato":      "Not explicitly named, but Parmenides provides the logical analysis of the One and Many from which henads are derived.",
+        "plotinus":   "Not systematically developed; the One is simple and produces Nous without intermediate principles.",
+        "iamblichus": "Introduces divine monads as the first products of the One, linked to Chaldean divine names. The basis for later henology.",
+        "proclus":    "Fully theorised: henads are the direct participants in the One, corresponding to the traditional Greek gods. The backbone of his theology.",
+        "ficino":     "Translates henads implicitly into the Platonic Ideas in the divine mind and the angelic intelligences. Not named as such.",
+        "quotation":  "\"The henads are the gods, both those who are above the world and those who are within it.\" — Proclus, Elements of Theology, prop. 162"
+      }
+    ]
+  },
+  {
+    "id": "table_renaissance_scholars",
+    "template": "scholar-profile",
+    "title": "Renaissance Magic — Scholars and Their Contributions",
+    "description": "Key figures in the historiography of Renaissance learned magic, evaluating their works, contributions to the field, challenges they posed to prevailing views, and scholarly takeaways.",
+    "tags": ["renaissance", "magic", "historiography", "scholar-profile"],
+    "columns": [
+      { "id": "figure",        "label": "Figure",        "type": "figure",        "width": "14" },
+      { "id": "works",         "label": "Works",         "type": "works",         "width": "16" },
+      { "id": "contributions", "label": "Contributions", "type": "contributions", "width": "20" },
+      { "id": "challenges",    "label": "Challenges",    "type": "challenges",    "width": "20" },
+      { "id": "methodology",   "label": "Methodology",   "type": "methodology",   "width": "15" },
+      { "id": "takeaway",      "label": "Takeaway",      "type": "takeaway",      "width": "15" }
+    ],
+    "rows": [
+      {
+        "figure":        "Frances Yates (1899–1981)",
+        "works":         "Giordano Bruno and the Hermetic Tradition (1964); The Art of Memory (1966); The Rosicrucian Enlightenment (1972)",
+        "contributions": "Established Hermeticism as a serious object of historical study. Demonstrated that Renaissance magi drew on a coherent tradition rooted in the Corpus Hermeticum. Gave Bruno a central place in the history of ideas.",
+        "challenges":    "Challenged positivist histories of science that ignored occult elements. Contested the view that the Scientific Revolution was purely rationalist.",
+        "methodology":   "Intellectual history: close reading of texts, identification of influence chains, emphasis on ideas rather than social context.",
+        "takeaway":      "Opened the field but overstated Hermeticism's causal role. Her 'Yates thesis' has been substantially qualified; magic did not straightforwardly cause modern science."
+      },
+      {
+        "figure":        "D.P. Walker (1914–1985)",
+        "works":         "Spiritual and Demonic Magic from Ficino to Campanella (1958); The Ancient Theology (1972)",
+        "contributions": "Detailed study of Ficino's magic as a coherent system of spiritus and planetary influence. Introduced 'prisca theologia' as a scholarly category. More nuanced than Yates on mechanisms.",
+        "challenges":    "Challenged the view that Ficino was a purely philosophical commentator; showed he was also a practising magician.",
+        "methodology":   "Philological and historical: grounding claims in specific passages, distinguishing between types of magic (natural, demonic, spiritual).",
+        "takeaway":      "Still the best single account of Renaissance spirit-magic. His caution about causality makes his work more durable than Yates's bolder claims."
+      },
+      {
+        "figure":        "Brian Copenhaver (b. 1937)",
+        "works":         "Hermetica (1992, translation); Magic in Western Culture (2015); Magic and the Dignity of Man (2019)",
+        "contributions": "Critical edition and translation of the Corpus Hermeticum. Placed Renaissance magic in the long context from antiquity to modernity. Detailed study of Pico's magic and its debts to kabbalah.",
+        "challenges":    "Challenges Yates's dating of Hermetic influence. Argues Pico was more original than previously acknowledged — his synthesis was not simple syncretism.",
+        "methodology":   "Philological rigour combined with broad synthetic narrative. Emphasises primary source translation and close reading.",
+        "takeaway":      "Magic in Western Culture is the most comprehensive single-volume history available. His Pico work is redefining the field."
+      },
+      {
+        "figure":        "Ioan Couliano (1950–1991)",
+        "works":         "Eros and Magic in the Renaissance (1984/1987); Out of This World (1991)",
+        "contributions": "Introduced psycho-social and cognitive frameworks for understanding Renaissance magic: magic as manipulation of the imagination and pneuma. Linked erotic magic to political persuasion.",
+        "challenges":    "Challenged the purely textual approach of Yates and Walker; insisted on the social and psychological functions of magical practice.",
+        "methodology":   "History of religions combined with cognitive science avant la lettre. Structuralist and comparative.",
+        "takeaway":      "Eros and Magic remains provocative and underused. His framework for magic-as-mass-psychology anticipates modern media theory."
+      },
+      {
+        "figure":        "Wouter Hanegraaff (b. 1961)",
+        "works":         "New Age Religion and Western Culture (1996); Esotericism and the Academy (2012); Lothar Knauth Prize essays",
+        "contributions": "Defined Western esotericism as an academic field with its own empirical method. Developed the concept of 'rejected knowledge' as the field's structuring logic. Historicised the category of 'magic' itself.",
+        "challenges":    "Challenges both the perennialist approach (all esotericisms share a core) and reductionist dismissal (esotericism as mere superstition). Insists on historical specificity.",
+        "methodology":   "Empirical-historical: treats esoteric texts as historical documents requiring contextual interpretation, not evaluation of their truth-claims.",
+        "takeaway":      "Esotericism and the Academy is required reading for understanding why the study of magic and occultism was excluded from the academy and how it returned."
+      },
+      {
+        "figure":        "Liana De Girolami Cheney",
+        "works":         "Alchemy and Hermeticism in Art History (various essays); studies on alchemical emblem books",
+        "contributions": "Bridges art history and the history of esotericism, showing how alchemical imagery in 16th–17th century painting and emblem books constitutes a coherent visual language.",
+        "challenges":    "Challenges art-historical formalism that ignores esoteric programmes. Insists emblem book imagery must be decoded with alchemical literacy.",
+        "methodology":   "Iconological and emblem-critical: Panofsky's iconology applied to alchemical visual culture.",
+        "takeaway":      "Opens productive dialogue between art history and the history of science/esotericism. Methodology requires both artistic and alchemical competence."
+      }
+    ]
+  },
+  {
+    "id": "table_alchemy_traditions",
+    "template": "inventory",
+    "title": "Alchemical Traditions — A Comparative Inventory",
+    "description": "Major traditions within the history of alchemy from antiquity through the early modern period, cataloguing key figures, texts, central concepts, and their place in current historiography.",
+    "tags": ["alchemy", "historiography", "tradition-comparison"],
+    "columns": [
+      { "id": "tradition",      "label": "Tradition",      "type": "concept",        "width": "13" },
+      { "id": "period",         "label": "Period",         "type": "context",        "width": "11" },
+      { "id": "figures",        "label": "Key Figures",    "type": "figure",         "width": "16" },
+      { "id": "texts",          "label": "Key Texts",      "type": "works",          "width": "16" },
+      { "id": "concepts",       "label": "Central Concepts","type": "concept",       "width": "18" },
+      { "id": "historiography", "label": "Historiography", "type": "methodology",    "width": "26" }
+    ],
+    "rows": [
+      {
+        "tradition":      "Graeco-Egyptian",
+        "period":         "1st–7th c. CE",
+        "figures":        "Zosimos of Panopolis, Mary the Jewess, Pseudo-Democritus, Stephanos of Alexandria",
+        "texts":          "Leiden and Stockholm papyri; Zosimos's Visions; Chemical Treatises of Pseudo-Democritus",
+        "concepts":       "Tincture (βαφή), sulphur-mercury theory, spiritual transformation of the alchemist alongside the metal, divine mysteries of craft",
+        "historiography": "Field opened by Marcellin Berthelot (19th c.). Recent scholarship (Principe, Newman) emphasises laboratory practice over spiritual allegory. Debate: was ancient alchemy primarily practical chemistry or religious mystery? Zosimos's visions force the question."
+      },
+      {
+        "tradition":      "Islamic",
+        "period":         "8th–13th c.",
+        "figures":        "Jabir ibn Hayyan (Geber), al-Razi, Ibn Sina (Avicenna), al-Tughrai",
+        "texts":          "Jabir corpus (Kitab al-Kimya); al-Razi's Sirr al-Asrar (Secret of Secrets); Ibn Sina's Shifa",
+        "concepts":       "Sulphur-mercury theory of metals, mineral taxonomy, laboratory operations (distillation, calcination, sublimation), elixir, transmutation theory",
+        "historiography": "Jabir corpus is contested: may be a school tradition rather than a single author. Al-Razi definitively moved toward empirical chemistry. Ibn Sina sceptical of transmutation. Newman's work on pseudo-Geber crucial for Latin transmission."
+      },
+      {
+        "tradition":      "Medieval Latin",
+        "period":         "12th–15th c.",
+        "figures":        "Pseudo-Geber, Roger Bacon, Albertus Magnus, Ramon Llull (spurious), Petrus Bonus, Vincent of Beauvais",
+        "texts":          "Summa Perfectionis (pseudo-Geber); Bacon's Opus Maius; Bonus's Pretiosa Margarita Novella; Testamentum (spurious Lull)",
+        "concepts":       "Transmutation, Philosopher's Stone, elixir of life, relationship of alchemy to scholastic natural philosophy, debates on whether transmutation is possible",
+        "historiography": "Principe and Newman's Alchemy Tried in the Fire (2002) distinguishes chrysopoeia (practical gold-making) from spiritual alchemy. The 'Lull' corpus is now definitively shown to be spurious (Pereira). Scholastic alchemy engaged with Aristotelian hylomorphism."
+      },
+      {
+        "tradition":      "Paracelsian / Chymical Medicine",
+        "period":         "16th–17th c.",
+        "figures":        "Paracelsus (Theophrastus von Hohenheim), Oswald Croll, Joseph Duchesne (Quercetanus), Jan Baptist van Helmont",
+        "texts":          "Paracelsus's Opus Paramirum; Croll's Basilica Chymica (1609); van Helmont's Ortus Medicinae (1648)",
+        "concepts":       "Tria Prima (sulphur, mercury, salt), arcana, signatures, iatrochemistry, the inner alchemist (Vulcan within the body), spiritual body",
+        "historiography": "Hiro Hirai's work on spiritual alchemy and van Helmont crucial. Paracelsus is now understood as a radical reformer of medicine, not just an eccentric mystic. Debate on whether Paracelsianism represents a break with or continuation of medieval alchemy."
+      },
+      {
+        "tradition":      "Emblem / Spiritual",
+        "period":         "16th–18th c.",
+        "figures":        "Heinrich Khunrath, Michael Maier, Jakob Böhme, Robert Fludd, Thomas Vaughan",
+        "texts":          "Khunrath's Amphitheatrum Sapientiae Aeternae (1595); Maier's Atalanta Fugiens (1617); Fludd's Utriusque Cosmi Historia",
+        "concepts":       "Philosopher's Stone as Christ, alchemical rebirth as spiritual regeneration, music of the spheres, Rosicrucian alchemy, Sophia",
+        "historiography": "Yates overemphasised the Rosicrucian connection. More recent work (Tilton, Nummedal) distinguishes spiritual alchemy as a literary-devotional genre from laboratory practice. Khunrath is now seen as a bridge figure between Paracelsian and emblematic traditions."
+      },
+      {
+        "tradition":      "Chymistry / Early Modern Science",
+        "period":         "17th–18th c.",
+        "figures":        "Robert Boyle, Isaac Newton, Johann Joachim Becher, Georg Ernst Stahl",
+        "texts":          "Boyle's Sceptical Chymist (1661); Newton's alchemical MSS (unpublished in his lifetime); Stahl's Zymotechnia Fundamentalis",
+        "concepts":       "Corpuscularianism, phlogiston theory, the transition from 'alchemy' to 'chemistry' as a disciplinary boundary, Newton's pursuit of the Philosopher's Stone",
+        "historiography": "B.J.T. Dobbs's Newton scholarship (Foundations of Newton's Alchemy, 1975) established that Newton took chrysopoeia seriously. Principe's The Secrets of Alchemy (2013) recuperates laboratory alchemy as real proto-chemistry. The alchemy/chemistry divide is now seen as historically constructed."
+      }
+    ]
+  },
+  {
+    "id": "table_ikhwan_argument",
+    "template": "evidence-audit",
+    "title": "Ikhwān al-Ṣafāʾ — Argument Structure and Historiographical Context",
+    "description": "Step-by-step analysis of the Brethren of Purity's synthesis of Pythagorean, Neoplatonic, and Islamic thought in the Rasāʾil, with challenges posed to prevailing scholarship and open lacunae.",
+    "tags": ["ikhwan", "islamic", "neoplatonism", "historiography"],
+    "columns": [
+      { "id": "step",           "label": "Step / Topic",   "type": "concept",        "width": "14" },
+      { "id": "argument",       "label": "Argument",       "type": "content",        "width": "19" },
+      { "id": "contributions",  "label": "Contributions",  "type": "contributions",  "width": "17" },
+      { "id": "challenges",     "label": "Challenges",     "type": "challenges",     "width": "17" },
+      { "id": "lacunae",        "label": "Lacunae",        "type": "lacunae",        "width": "15" },
+      { "id": "takeaway",       "label": "Takeaway",       "type": "takeaway",       "width": "18" }
+    ],
+    "rows": [
+      {
+        "step":          "Authorship and Identity",
+        "argument":      "The Brethren deliberately concealed their identities, making attribution impossible from internal evidence alone. The 52 epistles were compiled c.961–980 CE in Basra.",
+        "contributions": "Nader El-Bizri's critical edition (2008–) provides the first modern Arabic text. Establishes firm compositional date range against earlier speculation.",
+        "challenges":    "Challenges Ismaili attribution (de Callataÿ and others contest exclusive Ismaili identity). The Brethren's sect remains contested: Mu'tazilite? Ismaili? Autonomous?",
+        "lacunae":       "No historical record names any member. No manuscript explicitly identifies the group with any sect. External sources (al-Tawhidi) are indirect and partial.",
+        "takeaway":      "The anonymity is structural, not accidental. The Brethren modelled the wise man as hidden — their concealment is itself a philosophical statement about esoteric knowledge."
+      },
+      {
+        "step":          "Pythagorean Framework",
+        "argument":      "The Rasāʾil open with mathematics and music (the Pythagorean quadrivium) as the gateway to all knowledge. Number is the ontological ground of reality.",
+        "contributions": "Shows that Islamic philosophy absorbed Pythagorean number-mysticism via Nicomachus's Introduction to Arithmetic (translated into Arabic by Thabit ibn Qurra).",
+        "challenges":    "Challenges the view that Pythagoreanism was marginal in Islamic thought. The Brethren made it structurally foundational, not ornamental.",
+        "lacunae":       "The exact Pythagorean sources available to the Brethren beyond Nicomachus are unclear. How they accessed the pseudo-Pythagorean texts is unresolved.",
+        "takeaway":      "Studying the Rasāʾil requires Pythagorean literacy. Their number-mysticism is not decorative — it is the epistemological scaffolding for everything that follows."
+      },
+      {
+        "step":          "Neoplatonic Cosmology",
+        "argument":      "The Rasāʾil adopt a modified Plotinian emanation scheme: from the Creator → Universal Intellect → Universal Soul → Prime Matter → Nature → Body. Soul is the pivot.",
+        "contributions": "Demonstrates how Neoplatonism was assimilated into an Islamic monotheist framework: the One becomes Allah, but the emanative structure is preserved.",
+        "challenges":    "Challenges the assumption that Islamic philosophy was primarily Aristotelian. The Brethren show a strongly Neoplatonic alternative current within Islamic thought.",
+        "lacunae":       "Which Neoplatonic texts they read directly (versus through doxographic summaries like the Theology of Aristotle) is often unclear. Attribution of sources is speculative.",
+        "takeaway":      "The Rasāʾil are a key document for the Islamicate reception of Neoplatonism, alongside al-Farabi and Ibn Sina. They show a third path: encyclopaedic synthesis."
+      },
+      {
+        "step":          "Magic and Talismanic Theory",
+        "argument":      "Epistle 52 (On Magic) presents a full theory of sympathetic magic, talismans, and astral influence. The practitioner draws planetary forces through appropriate materials, images, and timings.",
+        "contributions": "Establishes that a coherent talismanic magic theory existed in 10th-century Islamic thought, preceding the Latin Picatrix by at least a century. Directly influences al-Buni.",
+        "challenges":    "Challenges the periodisation that locates 'learned magic' primarily in the Latin West. The Islamic East had an equally systematic tradition earlier.",
+        "lacunae":       "The relationship between Epistle 52 and the slightly later Ghāyat al-Ḥakīm (Picatrix) remains underexplored. Direct textual influence vs. shared source?",
+        "takeaway":      "Any account of Renaissance natural magic that does not trace the Arabic precedents is incomplete. The Brethren are an important node in the transmission chain."
+      },
+      {
+        "step":          "Encyclopaedic Method",
+        "argument":      "The 52 epistles form a complete curriculum: mathematics → natural sciences → psychology → theology → magic. Each level builds on the last. The form is the argument.",
+        "contributions": "The Rasāʾil exemplify Islamic adab encyclopaedism as a vehicle for esoteric philosophy. The form — moral education toward enlightenment — is as important as the content.",
+        "challenges":    "Challenges readings that treat the Rasāʾil as a disorganised miscellany. The structure is deliberate and pedagogically sophisticated.",
+        "lacunae":       "The complete reception history of the Rasāʾil in both Islamic and Jewish contexts (via Hebrew translation) needs further mapping.",
+        "takeaway":      "Reading the Rasāʾil in sequence is essential. Dipping into individual epistles misses the cumulative pedagogical architecture that is their distinguishing achievement."
+      }
+    ]
+  }
+]

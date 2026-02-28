@@ -283,3 +283,312 @@ body {
 }
 .react-flow__attribution { display: none !important; }
 .react-flow__background { --rf-background-color: var(--bg-surface) !important; }
+
+/* ─── Scholarly Tables Page ─────────────────────────────────────────────── */
+
+/* Page layout: sidebar + main */
+.tables-page {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Left sidebar nav ── */
+.table-list-nav {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.table-list-header {
+  padding: .65rem 1rem;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.table-group { border-bottom: 1px solid var(--border); }
+.table-group-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .45rem .8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.table-group-btn:hover { color: var(--primary); }
+.table-nav-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .4rem .9rem .4rem 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-left: 2px solid transparent;
+  transition: background .15s, border-color .15s;
+}
+.table-nav-item:hover { background: var(--bg-hover); }
+.table-nav-item.active {
+  background: var(--bg-hover);
+  border-left-color: var(--primary);
+}
+.table-nav-title {
+  font-size: .82rem;
+  color: var(--text);
+  line-height: 1.3;
+}
+.table-nav-item.active .table-nav-title { color: var(--primary); font-weight: 600; }
+.table-nav-tags { display: flex; flex-wrap: wrap; gap: .2rem; }
+
+/* column type legend at bottom of sidebar */
+.col-legend {
+  margin-top: auto;
+  padding: .8rem;
+  border-top: 1px solid var(--border);
+}
+.col-legend-title {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: .4rem;
+}
+.col-legend-row { margin-bottom: .25rem; }
+
+/* ── Main content ── */
+.tables-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tables-page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tables-page-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--text-heading);
+  font-weight: 700;
+}
+.compact-toggle {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ── Table wrapper ── */
+.scholar-table-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+/* toolbar above the table */
+.table-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .6rem .8rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.table-meta { display: flex; flex-direction: column; gap: .2rem; flex: 1; }
+.table-template-label {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--primary);
+  font-weight: 700;
+}
+.table-description {
+  font-size: .83rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+.table-actions { display: flex; gap: .5rem; flex-shrink: 0; }
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .3rem .65rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .78rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.toolbar-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* column key (type pills) */
+.col-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  align-items: center;
+}
+.col-key-item {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+.col-key-label { color: var(--text); }
+
+/* ── Scrollbar guard ── no horizontal scroll ── */
+.table-scroll-guard {
+  width: 100%;
+  overflow-x: auto;   /* allow horizontal scroll only when truly needed */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ── The scholarly table ── */
+.scholarly-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .83rem;
+  table-layout: fixed;  /* respect width percentages, prevent overflow */
+}
+.scholarly-table.compact { font-size: .78rem; }
+
+/* ── Column type HEADERS ── */
+.scholarly-table th {
+  padding: .55rem .7rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: .75rem;
+  letter-spacing: .04em;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  word-wrap: break-word;
+}
+
+/* Each column type header gets its own colour */
+.col-concept       { background: var(--bg-sidebar);  color: var(--text-heading); border-bottom-color: var(--border-strong); }
+.col-tradition     { background: #dbeafe22;           color: #1e40af; }
+.col-contributions { background: #fef3c722;           color: #92400e; }
+.col-challenges    { background: #ffe4e122;           color: #9f1239; }
+.col-quotation     { background: #f0fdf422;           color: #166534; }
+.col-takeaway      { background: #faf5ff22;           color: #6b21a8; }
+.col-lacunae       { background: var(--bg-surface);   color: var(--text-muted); }
+.col-figure        { background: var(--bg-sidebar);   color: var(--text-heading); border-bottom-color: var(--border-strong); }
+.col-works         { background: var(--bg-surface);   color: var(--text); }
+.col-methodology   { background: #ecfdf522;           color: #065f46; }
+.col-content       { background: var(--bg-surface);   color: var(--text); }
+.col-context       { background: var(--bg-surface);   color: var(--text-muted); }
+.col-notes         { background: var(--bg-surface);   color: var(--text-muted); }
+
+/* dark-academia overrides for header colours */
+:root[data-theme="dark-academia"] .col-contributions { background: #78350f33; color: #fcd34d; }
+:root[data-theme="dark-academia"] .col-challenges    { background: #7f1d1d33; color: #fca5a5; }
+:root[data-theme="dark-academia"] .col-tradition     { background: #1e3a5f33; color: #93c5fd; }
+:root[data-theme="dark-academia"] .col-takeaway      { background: #4c1d9533; color: #d8b4fe; }
+:root[data-theme="dark-academia"] .col-quotation     { background: #14532d33; color: #86efac; }
+
+/* ── Row alternation ── */
+.row-even { background: var(--bg); }
+.row-odd  { background: var(--bg-surface); }
+.scholarly-table tr:hover td { background: var(--bg-hover); }
+
+/* ── Cells ── */
+.scholarly-table td {
+  padding: .6rem .7rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+.scholarly-table.compact td { padding: .35rem .55rem; line-height: 1.35; }
+
+/* Cell type treatments */
+.cell-concept    { font-weight: 700; color: var(--text-heading); }
+.cell-figure     { font-weight: 700; color: var(--text-heading); }
+.cell-contributions { color: var(--text); }
+.cell-challenges    { color: var(--text); }
+.cell-quotation  {
+  font-style: italic;
+  font-size: .81rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border-strong);
+  padding-left: .8rem;
+}
+.cell-takeaway   { color: var(--text); font-style: italic; }
+.cell-lacunae    { color: var(--text-muted); font-style: italic; opacity: .85; }
+.cell-tradition  { color: var(--text); }
+.cell-works      { color: var(--text-muted); font-size: .8rem; }
+.cell-methodology{ color: var(--text); }
+.cell-content    { color: var(--text); }
+.cell-context    { color: var(--text-muted); }
+.cell-notes      { color: var(--text-muted); font-size: .8rem; }
+
+/* ── Contributions / Challenges border accent ── */
+.cell-contributions { border-left: 3px solid #d97706; padding-left: .65rem; }
+.cell-challenges    { border-left: 3px solid #e11d48; padding-left: .65rem; }
+
+/* ── Column type badge pills ── */
+.col-type-badge {
+  display: inline-block;
+  padding: .1rem .4rem;
+  border-radius: 3px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.col-type-concept       { background: var(--tag-bg);    color: var(--tag-text);  border: 1px solid var(--tag-border); }
+.col-type-tradition     { background: #dbeafe44;         color: #1e40af;          border: 1px solid #93c5fd66; }
+.col-type-contributions { background: #fef3c744;         color: #92400e;          border: 1px solid #fcd34d66; }
+.col-type-challenges    { background: #ffe4e144;         color: #9f1239;          border: 1px solid #fca5a566; }
+.col-type-quotation     { background: #f0fdf444;         color: #166534;          border: 1px solid #86efac66; }
+.col-type-takeaway      { background: #faf5ff44;         color: #6b21a8;          border: 1px solid #d8b4fe66; }
+.col-type-lacunae       { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border); opacity: .8; }
+.col-type-figure        { background: var(--tag-bg);    color: var(--tag-text);  border: 1px solid var(--tag-border); }
+.col-type-works         { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border); }
+.col-type-methodology   { background: #ecfdf544;         color: #065f46;          border: 1px solid #6ee7b766; }
+.col-type-content       { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border); }
+.col-type-context       { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border); }
+.col-type-notes         { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* Mac80s table overrides */
+:root[data-theme="mac80s"] .scholarly-table th { background: #000; color: #fff; }
+:root[data-theme="mac80s"] .col-contributions  { background: #000; color: #fff; }
+:root[data-theme="mac80s"] .col-challenges     { background: #000; color: #fff; }
+:root[data-theme="mac80s"] .scholarly-table td { border-bottom: 1px solid #000; }
+:root[data-theme="mac80s"] .cell-contributions { border-left: 3px solid #000; }
+:root[data-theme="mac80s"] .cell-challenges    { border-left: 3px solid #000; }
