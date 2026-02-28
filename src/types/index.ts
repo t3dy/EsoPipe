@@ -148,23 +148,67 @@ export const TableTemplateSchema = z.enum([
 export type TableTemplate = z.infer<typeof TableTemplateSchema>;
 
 export const TableColumnSchema = z.object({
-  id:    z.string(),
+  id: z.string(),
   label: z.string(),
-  type:  ColTypeSchema,
+  type: ColTypeSchema,
   width: z.string().default('auto'),   // css % or 'auto'
 });
 export type TableColumn = z.infer<typeof TableColumnSchema>;
 
 export const ScholarlyTableSchema = z.object({
-  id:          z.string(),
-  template:    TableTemplateSchema,
-  title:       z.string(),
+  id: z.string(),
+  template: TableTemplateSchema,
+  title: z.string(),
   description: z.string().default(''),
-  tags:        z.array(z.string()).default([]),
-  columns:     z.array(TableColumnSchema),
-  rows:        z.array(z.record(z.string(), z.string())),
+  tags: z.array(z.string()).default([]),
+  columns: z.array(TableColumnSchema),
+  rows: z.array(z.record(z.string(), z.string())),
 });
 export type ScholarlyTable = z.infer<typeof ScholarlyTableSchema>;
+
+// ─── Artifacts \u0026 Provenance ───────────────────────────────────────────────
+
+export const ArtifactSourceSchema = z.object({
+  source_type: z.enum(['turn', 'table', 'entity', 'pdf_chunk']),
+  source_id: z.string(),
+  weight: z.number().default(1.0),
+});
+export type ArtifactSource = z.infer<typeof ArtifactSourceSchema>;
+
+export const WhosWhoPayloadSchema = z.object({
+  title: z.string(),
+  summary: z.string(),
+  key_contributions: z.array(z.string()).optional(),
+  core_texts: z.array(z.string()).optional(),
+});
+
+export const PamphletPayloadSchema = z.object({
+  title: z.string(),
+  author: z.string().default('EsoPipe 2.0'),
+  panels: z.array(z.object({
+    heading: z.string(),
+    content: z.string(),
+  })).length(3).optional(),
+});
+
+export const AuditPayloadSchema = z.object({
+  claim: z.string(),
+  verdict: z.enum(['verified', 'refuted', 'ambiguous', 'unsupported']),
+  evidence_summary: z.string(),
+});
+
+export const ArtifactSchema = z.object({
+  id: z.string(),
+  type: z.enum(['whois', 'pamphlet', 'audit', 'video']),
+  schema_version: z.string(),
+  payload: z.union([WhosWhoPayloadSchema, PamphletPayloadSchema, AuditPayloadSchema, z.any()]),
+  payload_markdown: z.string().optional(),
+  context_snapshot: z.any().optional(),
+  revision_number: z.number().default(1),
+  created_at: z.string(),
+  sources: z.array(ArtifactSourceSchema).default([]),
+});
+export type Artifact = z.infer<typeof ArtifactSchema>;
 
 // ─── App Data ──────────────────────────────────────────────────────────────
 
@@ -174,6 +218,7 @@ export interface AppData {
   edges: Edge[];
   timelines: Timeline[];
   tables: ScholarlyTable[];
+  artifacts: Artifact[];
 }
 
 export interface ValidationError {

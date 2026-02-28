@@ -1,18 +1,20 @@
 import { NavLink } from 'react-router-dom';
 import {
-  Home, BookOpen, Table2, CalendarDays, Network, Database, Info, FileText,
+  Home, BookOpen, Table2, CalendarDays, Network, Database, Info, FileText, Zap,
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const NAV = [
-  { to: '/',          label: 'Home',      icon: Home },
-  { to: '/lessons',   label: 'Lessons',   icon: BookOpen },
-  { to: '/tables',    label: 'Tables',    icon: Table2 },
+  { to: '/', label: 'Home', icon: Home },
+  { to: '/artifacts', label: 'Library', icon: BookOpen },
+  { to: '/lessons', label: 'Lessons', icon: FileText },
+  { to: '/tables', label: 'Tables', icon: Table2 },
   { to: '/timelines', label: 'Timelines', icon: CalendarDays },
-  { to: '/graph',     label: 'Graph',     icon: Network },
-  { to: '/schema',    label: 'Schema',    icon: Database },
-  { to: '/reports',   label: 'Reports',   icon: FileText },
-  { to: '/about',     label: 'About',     icon: Info },
+  { to: '/graph', label: 'Graph', icon: Network },
+  { to: '/schema', label: 'Schema', icon: Database },
+  { to: '/reports', label: 'Reports', icon: FileText },
+  { to: '/debug/retrieval', label: 'Retrieval', icon: Zap },
+  { to: '/about', label: 'About', icon: Info },
 ];
 
 export function Sidebar() {
@@ -57,8 +59,7 @@ export function Sidebar() {
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors no-underline ${
-                isActive ? 'active-nav' : ''
+              `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors no-underline ${isActive ? 'active-nav' : ''
               }`
             }
             style={({ isActive }) => ({
@@ -91,7 +92,7 @@ export function Sidebar() {
         className="px-4 py-3 text-xs"
         style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
-        v0.1.0-alpha
+        v0.2.0-alpha
       </div>
     </aside>
   );

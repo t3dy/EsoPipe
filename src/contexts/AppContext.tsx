@@ -117,3 +117,6 @@ export function useApp() {
   if (!ctx) throw new Error('useApp must be used inside AppProvider');
   return ctx;
 }
+
+// Alias for pages that were scaffolded with this name
+export const useAppContext = useApp;

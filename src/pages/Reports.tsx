@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, BarChart2, Table2, BookOpen } from 'lucide-react';
+import { FileText, Download, BarChart2, Table2, BookOpen, Layers } from 'lucide-react';
 
 // ── Report manifest ────────────────────────────────────────────────────────────
 interface ReportMeta {
@@ -59,6 +59,19 @@ const REPORTS: ReportMeta[] = [
       'Every conversation turn where a table was explicitly requested, ' +
       'grouped by conversation. Used to derive the five EsoPipe table templates ' +
       'and the 13-type column vocabulary.',
+  },
+  {
+    id: 'topic_distillation',
+    title: 'Topic Distillation',
+    subtitle: 'Everything learned about the 50 most-studied topics',
+    filename: 'topic_distillation.md',
+    type: 'text',
+    icon: Layers,
+    description:
+      'A synthesis of 249 conversations: the 50 most-studied topics ranked by ' +
+      'mention frequency × conversational breadth × request-type diversity. ' +
+      'Each entry covers what the topic is, what was studied, key connections, and open questions. ' +
+      'Total: ~15,000 words across Neoplatonism, alchemy, Renaissance magic, Kabbalah, and Islamic esotericism.',
   },
 ];
 

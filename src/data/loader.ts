@@ -5,6 +5,7 @@ import {
   EdgeSchema,
   TimelineSchema,
   ScholarlyTableSchema,
+  ArtifactSchema,
   type AppData,
   type ValidationError,
 } from '../types';
@@ -45,27 +46,31 @@ export async function loadAppData(): Promise<LoadResult> {
 
   const base = import.meta.env.BASE_URL;
 
-  const [lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw, minedTablesRaw] = await Promise.all([
+  const [lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw, artifactsRaw, minedTablesRaw] = await Promise.all([
     fetch(`${base}data/lessons.json`).then(r => r.json()),
     fetch(`${base}data/entities.json`).then(r => r.json()),
     fetch(`${base}data/edges.json`).then(r => r.json()),
     fetch(`${base}data/timelines.json`).then(r => r.json()),
     fetch(`${base}data/tables.json`).then(r => r.json()),
-    // tables_mined.json may not exist yet; fall back to empty array
+    // artifacts.json and tables_mined.json may not exist yet; fall back to empty array
+    fetch(`${base}data/artifacts.json`)
+      .then(r => r.ok ? r.json() : [])
+      .catch(() => []),
     fetch(`${base}data/tables_mined.json`)
       .then(r => r.ok ? r.json() : [])
       .catch(() => []),
   ]);
 
-  const lessons      = parseArray(lessonsRaw,     LessonSchema,        'lessons.json',        errors);
-  const entities     = parseArray(entitiesRaw,    EntitySchema,        'entities.json',       errors);
-  const edges        = parseArray(edgesRaw,        EdgeSchema,          'edges.json',          errors);
-  const timelines    = parseArray(timelinesRaw,   TimelineSchema,      'timelines.json',      errors);
-  const handTables   = parseArray(tablesRaw,      ScholarlyTableSchema,'tables.json',         errors);
-  const minedTables  = parseArray(minedTablesRaw, ScholarlyTableSchema,'tables_mined.json',   errors);
+  const lessons = parseArray(lessonsRaw, LessonSchema, 'lessons.json', errors);
+  const entities = parseArray(entitiesRaw, EntitySchema, 'entities.json', errors);
+  const edges = parseArray(edgesRaw, EdgeSchema, 'edges.json', errors);
+  const timelines = parseArray(timelinesRaw, TimelineSchema, 'timelines.json', errors);
+  const handTables = parseArray(tablesRaw, ScholarlyTableSchema, 'tables.json', errors);
+  const minedTables = parseArray(minedTablesRaw, ScholarlyTableSchema, 'tables_mined.json', errors);
+  const artifacts = parseArray(artifactsRaw, ArtifactSchema, 'artifacts.json', errors);
 
   // Hand-authored tables appear first; mined tables follow
   const tables = [...handTables, ...minedTables];
 
-  return { data: { lessons, entities, edges, timelines, tables }, errors };
+  return { data: { lessons, entities, edges, timelines, tables, artifacts }, errors };
 }

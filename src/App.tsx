@@ -11,6 +11,9 @@ import { Graph } from './pages/Graph';
 import { Schema } from './pages/Schema';
 import { About } from './pages/About';
 import { Reports } from './pages/Reports';
+import { Artifacts } from './pages/Artifacts';
+import { ArtifactDetail } from './pages/ArtifactDetail';
+import { RetrievalDebugger } from './pages/RetrievalDebugger';
 
 export default function App() {
   return (
@@ -26,6 +29,9 @@ export default function App() {
               <Route path="timelines" element={<Timelines />} />
               <Route path="graph" element={<Graph />} />
               <Route path="schema" element={<Schema />} />
+              <Route path="artifacts" element={<Artifacts />} />
+              <Route path="artifacts/:id" element={<ArtifactDetail />} />
+              <Route path="debug/retrieval" element={<RetrievalDebugger />} />
               <Route path="reports" element={<Reports />} />
               <Route path="about" element={<About />} />
             </Route>
