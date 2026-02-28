@@ -305,14 +305,61 @@ body {
   gap: 0;
 }
 .table-list-header {
-  padding: .65rem 1rem;
+  padding: .65rem 1rem .5rem;
   font-size: .72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
 }
+.table-list-counts {
+  font-size: .68rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: .6;
+}
+
+/* ── Sidebar search ── */
+.table-search-wrap {
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.table-search-icon { color: var(--text-muted); flex-shrink: 0; }
+.table-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: .8rem;
+  color: var(--text);
+  font-family: inherit;
+}
+.table-search-input::placeholder { color: var(--text-muted); opacity: .7; }
+.table-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: .1rem;
+  display: flex;
+  align-items: center;
+}
+.table-search-clear:hover { color: var(--text); }
+.table-search-empty {
+  padding: .8rem 1rem;
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .table-group { border-bottom: 1px solid var(--border); }
 .table-group-btn {
   width: 100%;
@@ -331,6 +378,14 @@ body {
   letter-spacing: .06em;
 }
 .table-group-btn:hover { color: var(--primary); }
+.table-group-count {
+  margin-left: auto;
+  font-size: .68rem;
+  font-weight: 400;
+  opacity: .6;
+  text-transform: none;
+  letter-spacing: 0;
+}
 .table-nav-item {
   width: 100%;
   display: flex;
@@ -349,6 +404,7 @@ body {
   background: var(--bg-hover);
   border-left-color: var(--primary);
 }
+.table-nav-item.mined { opacity: .85; }
 .table-nav-title {
   font-size: .82rem;
   color: var(--text);
@@ -356,6 +412,33 @@ body {
 }
 .table-nav-item.active .table-nav-title { color: var(--primary); font-weight: 600; }
 .table-nav-tags { display: flex; flex-wrap: wrap; gap: .2rem; }
+.table-show-more {
+  width: 100%;
+  padding: .3rem .9rem .3rem 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .75rem;
+  color: var(--primary);
+  text-align: left;
+  opacity: .7;
+}
+.table-show-more:hover { opacity: 1; }
+
+/* "from chats" badge next to template label */
+.table-mined-badge {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: .05rem .4rem;
+  border-radius: 4px;
+  font-size: .65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
+  opacity: .8;
+}
 
 /* column type legend at bottom of sidebar */
 .col-legend {

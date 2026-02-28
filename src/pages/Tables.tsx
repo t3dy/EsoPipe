@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useApp } from '../contexts/AppContext';
-import { Download, Copy, Check, ChevronDown, ChevronRight } from 'lucide-react';
+import { Download, Copy, Check, ChevronDown, ChevronRight, Search, X } from 'lucide-react';
 import type { ScholarlyTable, ColType } from '../types';
 
-// ── Template labels ──────────────────────────────────────────────────────────
+// ── Template labels ───────────────────────────────────────────────────────────
 const TEMPLATE_LABELS: Record<string, string> = {
   'philosophical-comparison': 'Tradition Comparison',
   'scholar-profile':          'Scholar Profile',
@@ -12,40 +12,23 @@ const TEMPLATE_LABELS: Record<string, string> = {
   'article-decomposition':    'Article Decomposition',
 };
 
-// ── Column type → css class segments ────────────────────────────────────────
+// ── Column type → css class ───────────────────────────────────────────────────
 const COL_HEADER_CLASS: Record<ColType, string> = {
-  concept:       'col-concept',
-  tradition:     'col-tradition',
-  contributions: 'col-contributions',
-  challenges:    'col-challenges',
-  quotation:     'col-quotation',
-  takeaway:      'col-takeaway',
-  lacunae:       'col-lacunae',
-  figure:        'col-figure',
-  works:         'col-works',
-  methodology:   'col-methodology',
-  content:       'col-content',
-  context:       'col-context',
-  notes:         'col-notes',
+  concept: 'col-concept', tradition: 'col-tradition', contributions: 'col-contributions',
+  challenges: 'col-challenges', quotation: 'col-quotation', takeaway: 'col-takeaway',
+  lacunae: 'col-lacunae', figure: 'col-figure', works: 'col-works',
+  methodology: 'col-methodology', content: 'col-content', context: 'col-context',
+  notes: 'col-notes',
 };
-
 const COL_CELL_CLASS: Record<ColType, string> = {
-  concept:       'cell-concept',
-  tradition:     'cell-tradition',
-  contributions: 'cell-contributions',
-  challenges:    'cell-challenges',
-  quotation:     'cell-quotation',
-  takeaway:      'cell-takeaway',
-  lacunae:       'cell-lacunae',
-  figure:        'cell-figure',
-  works:         'cell-works',
-  methodology:   'cell-methodology',
-  content:       'cell-content',
-  context:       'cell-context',
-  notes:         'cell-notes',
+  concept: 'cell-concept', tradition: 'cell-tradition', contributions: 'cell-contributions',
+  challenges: 'cell-challenges', quotation: 'cell-quotation', takeaway: 'cell-takeaway',
+  lacunae: 'cell-lacunae', figure: 'cell-figure', works: 'cell-works',
+  methodology: 'cell-methodology', content: 'cell-content', context: 'cell-context',
+  notes: 'cell-notes',
 };
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function exportCSV(table: ScholarlyTable) {
   const headers = table.columns.map(c => `"${c.label.replace(/"/g, '""')}"`).join(',');
   const rows = table.rows.map(row =>
@@ -68,7 +51,7 @@ function ColBadge({ type }: { type: ColType }) {
   return <span className={`col-type-badge col-type-${type}`}>{SHORT[type]}</span>;
 }
 
-// ── Table renderer ───────────────────────────────────────────────────────────
+// ── Table renderer ────────────────────────────────────────────────────────────
 function ScholarTable({ table, compact }: { table: ScholarlyTable; compact: boolean }) {
   const [copied, setCopied] = useState(false);
 
@@ -80,12 +63,17 @@ function ScholarTable({ table, compact }: { table: ScholarlyTable; compact: bool
     setTimeout(() => setCopied(false), 1800);
   }, [table.id]);
 
+  const isMined = table.tags.includes('mined');
+
   return (
     <div className="scholar-table-wrap">
-      {/* toolbar — above the table, not a title on the table itself */}
+      {/* toolbar */}
       <div className="table-toolbar">
         <div className="table-meta">
-          <span className="table-template-label">{TEMPLATE_LABELS[table.template] ?? table.template}</span>
+          <span className="table-template-label">
+            {TEMPLATE_LABELS[table.template] ?? table.template}
+            {isMined && <span className="table-mined-badge">from chats</span>}
+          </span>
           <p className="table-description">{table.description}</p>
         </div>
         <div className="table-actions">
@@ -109,7 +97,7 @@ function ScholarTable({ table, compact }: { table: ScholarlyTable; compact: bool
         ))}
       </div>
 
-      {/* The table — no outer title, no index column */}
+      {/* The table */}
       <div className="table-scroll-guard">
         <table className={`scholarly-table ${compact ? 'compact' : 'detailed'}`}>
           <thead>
@@ -142,7 +130,9 @@ function ScholarTable({ table, compact }: { table: ScholarlyTable; compact: bool
   );
 }
 
-// ── Sidebar list ─────────────────────────────────────────────────────────────
+// ── Sidebar list ──────────────────────────────────────────────────────────────
+const GROUP_SHOW_DEFAULT = 8;   // items visible before "show more"
+
 function TableList({
   tables, selectedId, onSelect,
 }: {
@@ -150,40 +140,111 @@ function TableList({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const [query, setQuery]       = useState('');
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [expanded, setExpanded]   = useState<Record<string, boolean>>({});
+
+  const toggle = (g: string) => setCollapsed(c => ({ ...c, [g]: !c[g] }));
+  const toggleExpand = (g: string) => setExpanded(e => ({ ...e, [g]: !e[g] }));
+
+  // Filter tables by query
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return tables;
+    return tables.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q) ||
+      t.tags.some(tag => tag.toLowerCase().includes(q)) ||
+      (TEMPLATE_LABELS[t.template] ?? t.template).toLowerCase().includes(q)
+    );
+  }, [tables, query]);
+
+  // Group filtered tables by template
   const groups: Record<string, ScholarlyTable[]> = {};
-  tables.forEach(t => {
+  filtered.forEach(t => {
     const g = TEMPLATE_LABELS[t.template] ?? t.template;
     (groups[g] ??= []).push(t);
   });
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const toggle = (g: string) => setCollapsed(c => ({ ...c, [g]: !c[g] }));
+
+  const totalMined = tables.filter(t => t.tags.includes('mined')).length;
+  const totalHand  = tables.length - totalMined;
 
   return (
     <nav className="table-list-nav">
-      <div className="table-list-header">Tables</div>
+      <div className="table-list-header">
+        Tables
+        <span className="table-list-counts">
+          {totalHand} curated · {totalMined} from chats
+        </span>
+      </div>
 
-      {Object.entries(groups).map(([grp, items]) => (
-        <div key={grp} className="table-group">
-          <button className="table-group-btn" onClick={() => toggle(grp)}>
-            {collapsed[grp] ? <ChevronRight size={11}/> : <ChevronDown size={11}/>}
-            {grp}
+      {/* Search */}
+      <div className="table-search-wrap">
+        <Search size={12} className="table-search-icon" />
+        <input
+          className="table-search-input"
+          type="text"
+          placeholder="Filter tables…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
+        {query && (
+          <button className="table-search-clear" onClick={() => setQuery('')}>
+            <X size={11}/>
           </button>
-          {!collapsed[grp] && items.map(t => (
-            <button
-              key={t.id}
-              className={`table-nav-item ${selectedId === t.id ? 'active' : ''}`}
-              onClick={() => onSelect(t.id)}
-            >
-              <span className="table-nav-title">{t.title}</span>
-              <span className="table-nav-tags">
-                {t.tags.slice(0, 2).map(tag => (
-                  <span key={tag} className="th-tag">{tag}</span>
-                ))}
-              </span>
+        )}
+      </div>
+
+      {filtered.length === 0 && (
+        <p className="table-search-empty">No tables match "{query}"</p>
+      )}
+
+      {Object.entries(groups).map(([grp, items]) => {
+        const isCollapsed = collapsed[grp] ?? false;
+        const isExpanded  = expanded[grp] ?? false;
+        const visibleItems = isExpanded ? items : items.slice(0, GROUP_SHOW_DEFAULT);
+        const hiddenCount  = items.length - GROUP_SHOW_DEFAULT;
+
+        return (
+          <div key={grp} className="table-group">
+            <button className="table-group-btn" onClick={() => toggle(grp)}>
+              {isCollapsed ? <ChevronRight size={11}/> : <ChevronDown size={11}/>}
+              {grp}
+              <span className="table-group-count">{items.length}</span>
             </button>
-          ))}
-        </div>
-      ))}
+
+            {!isCollapsed && (
+              <>
+                {visibleItems.map(t => (
+                  <button
+                    key={t.id}
+                    className={`table-nav-item ${selectedId === t.id ? 'active' : ''} ${t.tags.includes('mined') ? 'mined' : ''}`}
+                    onClick={() => onSelect(t.id)}
+                  >
+                    <span className="table-nav-title">{t.title}</span>
+                    <span className="table-nav-tags">
+                      {t.tags.filter(tag => tag !== 'mined').slice(0, 2).map(tag => (
+                        <span key={tag} className="th-tag">{tag}</span>
+                      ))}
+                    </span>
+                  </button>
+                ))}
+
+                {!isExpanded && hiddenCount > 0 && (
+                  <button className="table-show-more" onClick={() => toggleExpand(grp)}>
+                    Show {hiddenCount} more…
+                  </button>
+                )}
+                {isExpanded && hiddenCount > 0 && (
+                  <button className="table-show-more" onClick={() => toggleExpand(grp)}>
+                    Show fewer
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        );
+      })}
 
       {/* column type legend */}
       <div className="col-legend">
@@ -198,7 +259,7 @@ function TableList({
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function Tables() {
   const { data, loading } = useApp();
   const [selectedId, setSelectedId] = useState<string | null>(null);
