@@ -1,11 +1,16 @@
 import { NavLink } from 'react-router-dom';
 import {
   Home, BookOpen, Table2, CalendarDays, Network, Database, Info, FileText, Zap,
+  MessageSquare, FlaskConical, Layers, Search,
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const NAV = [
   { to: '/', label: 'Home', icon: Home },
+  { to: '/conversations', label: 'Conversations', icon: MessageSquare },
+  { to: '/topics', label: 'Topics', icon: Layers },
+  { to: '/alchemy', label: 'Alchemy', icon: FlaskConical },
+  { to: '/search', label: 'Search', icon: Search },
   { to: '/artifacts', label: 'Library', icon: BookOpen },
   { to: '/lessons', label: 'Lessons', icon: FileText },
   { to: '/tables', label: 'Tables', icon: Table2 },
@@ -52,7 +57,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2">
+      <nav className="flex-1 py-2 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
@@ -92,7 +97,7 @@ export function Sidebar() {
         className="px-4 py-3 text-xs"
         style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
-        v0.2.0-alpha
+        v0.3.0-alpha
       </div>
     </aside>
   );

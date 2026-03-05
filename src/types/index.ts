@@ -219,6 +219,10 @@ export interface AppData {
   timelines: Timeline[];
   tables: ScholarlyTable[];
   artifacts: Artifact[];
+  conversations: ConversationMeta[];
+  alchemyConcepts: AlchemyConcept[];
+  topics: Topic[];
+  entityDetails: EntityDetailsMap;
 }
 
 export interface ValidationError {
@@ -240,6 +244,67 @@ export interface SearchResult {
   tags: string[];
   href: string;
 }
+
+// ─── Conversations ─────────────────────────────────────────────────────────
+
+export interface ConversationMeta {
+  id: number;
+  title: string;
+  date: string;
+  model: string;
+  turn_count: number;
+  word_count: number;
+  entity_ids: string[];
+  request_types: string[];
+}
+
+export interface ConvTurn {
+  id: number;
+  turn_index: number;
+  role: 'user' | 'assistant';
+  content: string;
+  word_count: number;
+  request_types: string[];
+}
+
+export interface ConversationDetail {
+  id: number;
+  title: string;
+  date: string;
+  turns: ConvTurn[];
+}
+
+// ─── Alchemy Concepts ──────────────────────────────────────────────────────
+
+export interface AlchemyConcept {
+  id: string;
+  term: string;
+  category: string;
+  definition: string;
+  body: string;
+}
+
+// ─── Topics ────────────────────────────────────────────────────────────────
+
+export interface Topic {
+  rank: number;
+  name: string;
+  meta: string;
+  what_it_is: string;
+  what_studied: string;
+  connections: string[];
+  open_questions: string;
+}
+
+// ─── Entity Details ────────────────────────────────────────────────────────
+
+export interface EntityDetail {
+  conversation_ids: number[];
+  mention_count: number;
+  co_entities: { id: string; shared: number }[];
+}
+
+export type EntityDetailsMap = Record<string, EntityDetail>;
 
 // ─── Theme ─────────────────────────────────────────────────────────────────
 

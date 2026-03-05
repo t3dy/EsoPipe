@@ -8,6 +8,10 @@ import {
   ArtifactSchema,
   type AppData,
   type ValidationError,
+  type ConversationMeta,
+  type AlchemyConcept,
+  type Topic,
+  type EntityDetailsMap,
 } from '../types';
 
 function parseArray<T>(
@@ -46,19 +50,22 @@ export async function loadAppData(): Promise<LoadResult> {
 
   const base = import.meta.env.BASE_URL;
 
-  const [lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw, artifactsRaw, minedTablesRaw] = await Promise.all([
+  const [
+    lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw,
+    artifactsRaw, minedTablesRaw,
+    conversationsRaw, alchemyRaw, topicsRaw, entityDetailsRaw,
+  ] = await Promise.all([
     fetch(`${base}data/lessons.json`).then(r => r.json()),
     fetch(`${base}data/entities.json`).then(r => r.json()),
     fetch(`${base}data/edges.json`).then(r => r.json()),
     fetch(`${base}data/timelines.json`).then(r => r.json()),
     fetch(`${base}data/tables.json`).then(r => r.json()),
-    // artifacts.json and tables_mined.json may not exist yet; fall back to empty array
-    fetch(`${base}data/artifacts.json`)
-      .then(r => r.ok ? r.json() : [])
-      .catch(() => []),
-    fetch(`${base}data/tables_mined.json`)
-      .then(r => r.ok ? r.json() : [])
-      .catch(() => []),
+    fetch(`${base}data/artifacts.json`).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(`${base}data/tables_mined.json`).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(`${base}data/conversations.json`).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(`${base}data/alchemy_concepts.json`).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(`${base}data/topics.json`).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(`${base}data/entity_details.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
   ]);
 
   const lessons = parseArray(lessonsRaw, LessonSchema, 'lessons.json', errors);
@@ -72,5 +79,13 @@ export async function loadAppData(): Promise<LoadResult> {
   // Hand-authored tables appear first; mined tables follow
   const tables = [...handTables, ...minedTables];
 
-  return { data: { lessons, entities, edges, timelines, tables, artifacts }, errors };
+  const conversations = (conversationsRaw as ConversationMeta[]) ?? [];
+  const alchemyConcepts = (alchemyRaw as AlchemyConcept[]) ?? [];
+  const topics = (topicsRaw as Topic[]) ?? [];
+  const entityDetails = (entityDetailsRaw as EntityDetailsMap) ?? {};
+
+  return {
+    data: { lessons, entities, edges, timelines, tables, artifacts, conversations, alchemyConcepts, topics, entityDetails },
+    errors,
+  };
 }

@@ -14,6 +14,12 @@ import { Reports } from './pages/Reports';
 import { Artifacts } from './pages/Artifacts';
 import { ArtifactDetail } from './pages/ArtifactDetail';
 import { RetrievalDebugger } from './pages/RetrievalDebugger';
+import { Conversations } from './pages/Conversations';
+import { ConversationDetail } from './pages/ConversationDetail';
+import { AlchemyConcepts } from './pages/AlchemyConcepts';
+import { Topics } from './pages/Topics';
+import { SearchPage } from './pages/SearchPage';
+import { EntityDetail } from './pages/EntityDetail';
 
 export default function App() {
   return (
@@ -23,11 +29,17 @@ export default function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<Home />} />
+              <Route path="conversations" element={<Conversations />} />
+              <Route path="conversations/:id" element={<ConversationDetail />} />
+              <Route path="entities/:id" element={<EntityDetail />} />
               <Route path="lessons" element={<Lessons />} />
               <Route path="lessons/:id" element={<LessonDetail />} />
               <Route path="tables" element={<Tables />} />
               <Route path="timelines" element={<Timelines />} />
               <Route path="graph" element={<Graph />} />
+              <Route path="alchemy" element={<AlchemyConcepts />} />
+              <Route path="topics" element={<Topics />} />
+              <Route path="search" element={<SearchPage />} />
               <Route path="schema" element={<Schema />} />
               <Route path="artifacts" element={<Artifacts />} />
               <Route path="artifacts/:id" element={<ArtifactDetail />} />
