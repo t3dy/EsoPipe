@@ -202,7 +202,7 @@ export const ArtifactSchema = z.object({
   type: z.enum(['whois', 'pamphlet', 'audit', 'video']),
   schema_version: z.string(),
   payload: z.union([WhosWhoPayloadSchema, PamphletPayloadSchema, AuditPayloadSchema, z.any()]),
-  payload_markdown: z.string().optional(),
+  payload_markdown: z.string().nullable().optional(),
   context_snapshot: z.any().optional(),
   revision_number: z.number().default(1),
   created_at: z.string(),
