@@ -59,6 +59,9 @@ The five scholarly table templates derived from analysing 547 table-building req
 ### Timelines
 Interactive chronological display of key events across the Neoplatonic transmission, Renaissance revival, and Islamic esoteric tradition.
 
+### Semantic Linking
+Every piece of reader prose (topic descriptions, entity blurbs, conversation turns) is a traversable network. Recognized entity names, alchemy terms, and topic names are automatically underlined. Hovering shows a Wikipedia-style preview card with blurb, co-occurring figures, and navigation actions. Clicking navigates to the full entity or topic page. Ambiguous terms (e.g. "Mercury" = element or planet) open a disambiguation popover. Toggle linkification per-page with the Links button. See [`docs/semantic-linking.md`](docs/semantic-linking.md) for the full system description, stoplist, editorial controls, and configuration.
+
 ### Graph
 Force-directed knowledge graph of thinkers, texts, and concepts — with edges based on co-occurrence mining across all 249 conversations.
 

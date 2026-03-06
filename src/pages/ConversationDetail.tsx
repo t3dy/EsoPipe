@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { ArrowLeft, User, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTrail } from '../contexts/TrailContext';
+import { ArrowLeft, User, Bot, ChevronDown, ChevronUp, Link2, Link2Off } from 'lucide-react';
+import { LinkifyText } from '../components/LinkifyText';
 import type { ConversationDetail as ConvDetailType, ConvTurn } from '../types';
+
+const LINK_MAX_CHARS = 2000;
 
 export function ConversationDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { data } = useAppContext();
+    const { addEntry } = useTrail();
     const [conv, setConv] = useState<ConvDetailType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set());
+    const [linkingOn, setLinkingOn] = useState(false);
 
     const meta = data?.conversations.find(c => String(c.id) === id);
 
@@ -24,7 +30,12 @@ export function ConversationDetail() {
                 if (!r.ok) throw new Error('Not found');
                 return r.json();
             })
-            .then(d => { setConv(d); setLoading(false); })
+            .then(d => {
+                setConv(d);
+                setLoading(false);
+        const title = d.title ?? meta?.title ?? `Conversation ${id}`;
+                addEntry(`/conversations/${id}`, title);
+            })
             .catch(e => { setError(e.message); setLoading(false); });
     }, [id]);
 
@@ -66,7 +77,19 @@ export function ConversationDetail() {
                         )}
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
+                    <button
+                        onClick={() => setLinkingOn(v => !v)}
+                        className="flex items-center gap-1 px-2 py-1 text-xs border rounded transition-colors"
+                        style={{
+                            color: linkingOn ? 'var(--primary)' : 'var(--text-muted)',
+                            borderColor: linkingOn ? 'var(--primary)' : 'var(--border)',
+                        }}
+                        title="Toggle topic auto-linking (first 2000 chars per turn)"
+                    >
+                        {linkingOn ? <Link2 size={11} /> : <Link2Off size={11} />}
+                        Links
+                    </button>
                     <button
                         onClick={expandAll}
                         className="flex items-center gap-1 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)] rounded transition-colors"
@@ -98,6 +121,7 @@ export function ConversationDetail() {
                                 index={i}
                                 expanded={expandedTurns.has(i)}
                                 onToggle={() => toggleTurn(i)}
+                                linkingOn={linkingOn}
                             />
                         ))}
                     </div>
@@ -109,15 +133,16 @@ export function ConversationDetail() {
 
 const PREVIEW_CHARS = 300;
 
-function TurnBlock({ turn, index, expanded, onToggle }: {
+function TurnBlock({ turn, index, expanded, onToggle, linkingOn }: {
     turn: ConvTurn;
     index: number;
     expanded: boolean;
     onToggle: () => void;
+    linkingOn: boolean;
 }) {
     const isUser = turn.role === 'user';
     const long = turn.content.length > PREVIEW_CHARS;
-    const preview = long && !expanded ? turn.content.slice(0, PREVIEW_CHARS) + '…' : turn.content;
+    const displayText = long && !expanded ? turn.content.slice(0, PREVIEW_CHARS) + '…' : turn.content;
 
     return (
         <div className={`flex gap-3 ${isUser ? '' : 'flex-row-reverse'}`}>
@@ -146,7 +171,10 @@ function TurnBlock({ turn, index, expanded, onToggle }: {
                     </div>
                 </div>
                 <p className="whitespace-pre-wrap text-[var(--text)] leading-relaxed text-xs">
-                    {preview}
+                    {linkingOn
+                        ? <LinkifyText text={displayText} maxChars={LINK_MAX_CHARS} />
+                        : displayText
+                    }
                 </p>
                 {long && (
                     <button className="mt-2 text-[10px] text-[var(--primary)] hover:underline">

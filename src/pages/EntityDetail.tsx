@@ -1,16 +1,27 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { ArrowLeft, MessageSquare, Users, ExternalLink } from 'lucide-react';
+import { useTrail } from '../contexts/TrailContext';
+import { ArrowLeft, MessageSquare, Users, ExternalLink, Network } from 'lucide-react';
+import { LinkifyText } from '../components/LinkifyText';
+import { SemanticBreadcrumbs } from '../components/SemanticBreadcrumbs';
+import { RelationChips } from '../components/RelationChips';
+import { MoreLikeThis } from '../components/MoreLikeThis';
 
 export function EntityDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { data } = useAppContext();
+    const { addEntry } = useTrail();
 
     if (!id || !data) return null;
 
     const entity = data.entities.find(e => e.id === id);
     const detail = data.entityDetails[id];
+
+    useEffect(() => {
+        if (entity) addEntry(`/entities/${entity.id}`, entity.label);
+    }, [entity?.id]);
 
     if (!entity) {
         return (
@@ -51,8 +62,10 @@ export function EntityDetail() {
                 >
                     <ArrowLeft size={18} />
                 </button>
-                <div>
-                    <div className="flex items-center gap-2 mb-0.5">
+                <div className="flex-1 min-w-0">
+                    {/* Breadcrumbs */}
+                    <SemanticBreadcrumbs tags={entity.tags} label={entity.label} />
+                    <div className="flex items-center gap-2 mt-1 mb-0.5">
                         <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold ${typeColor[entity.type] ?? 'text-[var(--text-muted)] bg-[var(--bg-card)]'}`}>
                             {entity.type}
                         </span>
@@ -64,19 +77,35 @@ export function EntityDetail() {
                         </p>
                     )}
                 </div>
+                {/* Open in graph */}
+                <button
+                    onClick={() => navigate(`/graph?node=${entity.id}&hops=1`)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded border transition-colors hover:border-[var(--primary)]"
+                    style={{ color: 'var(--text-muted)', borderColor: 'var(--border)' }}
+                    title="Focus in Knowledge Graph (1-hop)"
+                >
+                    <Network size={12} />
+                    Graph
+                </button>
             </header>
 
             <div className="flex-1 overflow-auto flex">
                 {/* Main column */}
                 <main className="flex-1 p-8 overflow-auto">
                     <div className="max-w-2xl mx-auto space-y-8">
-                        {/* Blurb */}
+
+                        {/* Blurb — linkified */}
                         {entity.blurb && (
                             <section>
                                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">About</h2>
-                                <p className="text-sm text-[var(--text)] leading-relaxed">{entity.blurb}</p>
+                                <p className="text-sm text-[var(--text)] leading-relaxed">
+                                    <LinkifyText text={entity.blurb} />
+                                </p>
                             </section>
                         )}
+
+                        {/* Relation chips */}
+                        <RelationChips entityId={entity.id} />
 
                         {/* Tags */}
                         {entity.tags.length > 0 && (
@@ -84,7 +113,13 @@ export function EntityDetail() {
                                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">Tags</h2>
                                 <div className="flex flex-wrap gap-2">
                                     {entity.tags.map(tag => (
-                                        <span key={tag} className="text-xs bg-[var(--bg-card)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-muted)]">{tag}</span>
+                                        <button
+                                            key={tag}
+                                            onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
+                                            className="text-xs bg-[var(--bg-card)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-muted)] hover:border-[var(--primary)] transition-colors"
+                                        >
+                                            {tag}
+                                        </button>
                                     ))}
                                 </div>
                             </section>
@@ -122,7 +157,7 @@ export function EntityDetail() {
                                         >
                                             <div className="min-w-0">
                                                 <p className="text-sm font-medium text-[var(--text-heading)] truncate">{c.title}</p>
-                                                <p className="text-xs text-[var(--text-muted)]">{c.date} · {c.turn_count} turns · {c.word_count.toLocaleString()} words</p>
+                                                <p className="text-xs text-[var(--text-muted)]">{c.date} · {c.turn_count} turns · {c.word_count?.toLocaleString()} words</p>
                                             </div>
                                             <ArrowLeft size={12} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 rotate-180 shrink-0 ml-2" />
                                         </div>
@@ -133,6 +168,9 @@ export function EntityDetail() {
                                 </div>
                             </section>
                         )}
+
+                        {/* More like this */}
+                        <MoreLikeThis entityId={entity.id} limit={6} />
                     </div>
                 </main>
 
@@ -152,7 +190,7 @@ export function EntityDetail() {
                                 >
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-[var(--text-heading)] truncate">{ce.entity!.label}</span>
-                                        <span className="text-[10px] text-[var(--text-muted)] ml-2 shrink-0">{ce.shared} shared</span>
+                                        <span className="text-[10px] text-[var(--text-muted)] ml-2 shrink-0">{ce.shared}×</span>
                                     </div>
                                     <span className="text-[10px] text-[var(--text-muted)] uppercase">{ce.entity!.type}</span>
                                 </div>

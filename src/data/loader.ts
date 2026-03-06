@@ -6,12 +6,14 @@ import {
   TimelineSchema,
   ScholarlyTableSchema,
   ArtifactSchema,
+  ArgumentSchema,
   type AppData,
   type ValidationError,
   type ConversationMeta,
   type AlchemyConcept,
   type Topic,
   type EntityDetailsMap,
+  type Argument,
 } from '../types';
 
 function parseArray<T>(
@@ -53,7 +55,7 @@ export async function loadAppData(): Promise<LoadResult> {
   const [
     lessonsRaw, entitiesRaw, edgesRaw, timelinesRaw, tablesRaw,
     artifactsRaw, minedTablesRaw,
-    conversationsRaw, alchemyRaw, topicsRaw, entityDetailsRaw,
+    conversationsRaw, alchemyRaw, topicsRaw, entityDetailsRaw, argumentsRaw,
   ] = await Promise.all([
     fetch(`${base}data/lessons.json`).then(r => r.json()),
     fetch(`${base}data/entities.json`).then(r => r.json()),
@@ -66,6 +68,7 @@ export async function loadAppData(): Promise<LoadResult> {
     fetch(`${base}data/alchemy_concepts.json`).then(r => r.ok ? r.json() : []).catch(() => []),
     fetch(`${base}data/topics.json`).then(r => r.ok ? r.json() : []).catch(() => []),
     fetch(`${base}data/entity_details.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+    fetch(`${base}data/arguments.json`).then(r => r.ok ? r.json() : []).catch(() => []),
   ]);
 
   const lessons = parseArray(lessonsRaw, LessonSchema, 'lessons.json', errors);
@@ -75,6 +78,10 @@ export async function loadAppData(): Promise<LoadResult> {
   const handTables = parseArray(tablesRaw, ScholarlyTableSchema, 'tables.json', errors);
   const minedTables = parseArray(minedTablesRaw, ScholarlyTableSchema, 'tables_mined.json', errors);
   const artifacts = parseArray(artifactsRaw, ArtifactSchema, 'artifacts.json', errors);
+  const argumentsList = parseArray(
+    Array.isArray(argumentsRaw) ? argumentsRaw : [],
+    ArgumentSchema, 'arguments.json', errors
+  ) as Argument[];
 
   // Hand-authored tables appear first; mined tables follow
   const tables = [...handTables, ...minedTables];
@@ -85,7 +92,11 @@ export async function loadAppData(): Promise<LoadResult> {
   const entityDetails = (entityDetailsRaw as EntityDetailsMap) ?? {};
 
   return {
-    data: { lessons, entities, edges, timelines, tables, artifacts, conversations, alchemyConcepts, topics, entityDetails },
+    data: {
+      lessons, entities, edges, timelines, tables, artifacts,
+      conversations, alchemyConcepts, topics, entityDetails,
+      arguments: argumentsList,
+    },
     errors,
   };
 }

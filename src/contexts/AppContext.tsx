@@ -1,15 +1,20 @@
 import {
-  createContext, useContext, useEffect, useState, useCallback,
+  createContext, useContext, useEffect, useState, useCallback, useMemo,
   type ReactNode,
 } from 'react';
 import MiniSearch from 'minisearch';
 import { loadAppData } from '../data/loader';
-import type { AppData, ValidationError, SearchResult, Entity } from '../types';
+import { buildLinkableIndex } from '../lib/LinkableIndex';
+import type {
+  AppData, ValidationError, SearchResult, Entity, LinkableIndex,
+} from '../types';
 
 interface AppCtx {
   data: AppData | null;
   errors: ValidationError[];
   loading: boolean;
+  isDesktop: boolean;
+  linkableIndex: LinkableIndex | null;
   search: (query: string) => SearchResult[];
   selectedEntity: Entity | null;
   setSelectedEntity: (e: Entity | null) => void;
@@ -27,6 +32,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [miniSearch, setMiniSearch] = useState<MiniSearch | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Detect desktop mode by pinging the FastAPI backend
+  useEffect(() => {
+    fetch('http://127.0.0.1:3000/health', { signal: AbortSignal.timeout(1500) })
+      .then(r => { if (r.ok) setIsDesktop(true); })
+      .catch(() => { /* static mode — no backend */ });
+  }, []);
 
   useEffect(() => {
     loadAppData().then(({ data: d, errors: e }) => {
@@ -34,7 +47,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setErrors(e);
       setLoading(false);
 
-      // Build search index
+      // ── Extended MiniSearch index ───────────────────────────────────────
+      // Covers all searchable content types so SearchPage gets unified results
       const ms = new MiniSearch({
         fields: ['label', 'summary', 'tags_str'],
         storeFields: ['label', 'summary', 'tags', 'type', 'href'],
@@ -43,8 +57,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const docs: Array<Record<string, unknown>> = [];
 
+      // Lessons
       d.lessons.forEach(l => docs.push({
-        id: l.id,
+        id: `lesson_${l.id}`,
         label: l.title,
         summary: l.summary,
         tags: l.tags,
@@ -53,19 +68,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
         href: `/lessons/${l.id}`,
       }));
 
+      // Entities
       d.entities.forEach(en => docs.push({
-        id: en.id,
+        id: `entity_${en.id}`,
         label: en.label,
         summary: en.blurb,
         tags: en.tags,
         tags_str: en.tags.join(' '),
         type: 'entity',
-        href: `/graph?node=${en.id}`,
+        href: `/entities/${en.id}`,
       }));
 
+      // Timeline events
       d.timelines.forEach(tl =>
         tl.events.forEach(ev => docs.push({
-          id: ev.id,
+          id: `tl_${ev.id}`,
           label: ev.title,
           summary: ev.description_md.replace(/[#*`]/g, '').slice(0, 120),
           tags: ev.tags,
@@ -75,15 +92,54 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }))
       );
 
+      // Conversations
+      d.conversations.forEach(c => docs.push({
+        id: `conv_${c.id}`,
+        label: c.title,
+        summary: c.entity_ids.slice(0, 8).join(', '),
+        tags: c.request_types,
+        tags_str: c.request_types.join(' '),
+        type: 'conversation',
+        href: `/conversations/${c.id}`,
+      }));
+
+      // Alchemy concepts
+      d.alchemyConcepts.forEach(ac => docs.push({
+        id: `alch_${ac.id}`,
+        label: ac.term,
+        summary: ac.definition.slice(0, 120),
+        tags: [ac.category],
+        tags_str: ac.category,
+        type: 'alchemy',
+        href: `/alchemy#${ac.id}`,
+      }));
+
+      // Topics
+      d.topics.forEach(t => docs.push({
+        id: `topic_${t.rank}`,
+        label: t.name,
+        summary: t.what_it_is ? t.what_it_is.slice(0, 120) : '',
+        tags: t.connections.slice(0, 6),
+        tags_str: t.connections.join(' '),
+        type: 'topic',
+        href: `/topics#${t.rank}`,
+      }));
+
       ms.addAll(docs);
       setMiniSearch(ms);
     });
   }, []);
 
+  // ── LinkableIndex ─────────────────────────────────────────────────────────
+  const linkableIndex = useMemo<LinkableIndex | null>(
+    () => (data ? buildLinkableIndex(data) : null),
+    [data]
+  );
+
   const search = useCallback(
     (query: string): SearchResult[] => {
       if (!miniSearch || !query.trim()) return [];
-      return miniSearch.search(query).slice(0, 12).map(r => ({
+      return miniSearch.search(query).slice(0, 30).map(r => ({
         id: String(r.id),
         type: r.type as SearchResult['type'],
         label: r.label as string,
@@ -102,7 +158,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      data, errors, loading, search,
+      data, errors, loading, isDesktop, linkableIndex, search,
       selectedEntity, setSelectedEntity,
       drawerOpen, setDrawerOpen,
       openEntityDrawer,

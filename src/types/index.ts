@@ -13,6 +13,12 @@ export const EntitySchema = z.object({
   blurb: z.string().default(''),
   tags: z.array(z.string()).default([]),
   links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
+  // Editorial control: set false to exclude this entity from autolinking entirely.
+  linkable: z.boolean().optional(),
+  // Optional bibliographic fields for citation builder
+  pub_date: z.string().optional(),
+  author: z.string().optional(),
+  publisher: z.string().optional(),
 });
 export type Entity = z.infer<typeof EntitySchema>;
 
@@ -28,6 +34,7 @@ export const EdgeSchema = z.object({
   type: EdgeTypeSchema,
   weight: z.number().default(1),
   notes: z.string().default(''),
+  provenance: z.any().optional(), // Provenance object — loosely typed for back-compat
 });
 export type Edge = z.infer<typeof EdgeSchema>;
 
@@ -166,7 +173,7 @@ export const ScholarlyTableSchema = z.object({
 });
 export type ScholarlyTable = z.infer<typeof ScholarlyTableSchema>;
 
-// ─── Artifacts \u0026 Provenance ───────────────────────────────────────────────
+// ─── Artifacts ─────────────────────────────────────────────────────────────
 
 export const ArtifactSourceSchema = z.object({
   source_type: z.enum(['turn', 'table', 'entity', 'pdf_chunk']),
@@ -210,6 +217,75 @@ export const ArtifactSchema = z.object({
 });
 export type Artifact = z.infer<typeof ArtifactSchema>;
 
+// ─── Provenance ────────────────────────────────────────────────────────────
+
+export interface Provenance {
+  source_conv_id?: number;
+  source_turn_ids?: number[];
+  extraction_script?: string;
+  extraction_date?: string;
+  confidence?: 'high' | 'medium' | 'low';
+  notes?: string;
+}
+
+// ─── Argument ──────────────────────────────────────────────────────────────
+
+export const ArgumentSchema = z.object({
+  id: z.string(),
+  claim: z.string(),
+  evidence: z.array(z.string()).default([]),
+  sources: z.array(z.string()).default([]),
+  challenges: z.array(z.string()).default([]),
+  lacunae: z.array(z.string()).default([]),
+  entities: z.array(z.string()).default([]),
+  extracted_by: z.enum(['llm', 'manual']).default('manual'),
+  reviewed: z.boolean().default(false),
+  created_at: z.string().default(''),
+});
+export type Argument = z.infer<typeof ArgumentSchema>;
+
+// ─── Annotation ────────────────────────────────────────────────────────────
+
+export interface Annotation {
+  id: string;
+  target_id: string;
+  target_type: 'entity' | 'conversation' | 'topic' | 'alchemy' | 'table' | 'edge';
+  text: string;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// ─── Concept Lineage ───────────────────────────────────────────────────────
+
+export interface ConceptLineageEdge {
+  id: string;
+  from_id: string;
+  to_id: string;
+  relation: string;
+  concept_focus?: string;
+  date_approx?: string;
+  confidence: number;
+  note?: string;
+  source_conv_ids?: number[];
+}
+
+// ─── Link Index ────────────────────────────────────────────────────────────
+
+export interface LinkTarget {
+  id: string;
+  label: string;
+  type: 'entity' | 'alchemy' | 'topic';
+  entityType?: string; // thinker | text | concept | term | tool
+  route: string;
+  blurb?: string;
+}
+
+export interface LinkableIndex {
+  termMap: Map<string, LinkTarget[]>;
+  sortedTerms: string[];
+}
+
 // ─── App Data ──────────────────────────────────────────────────────────────
 
 export interface AppData {
@@ -223,6 +299,7 @@ export interface AppData {
   alchemyConcepts: AlchemyConcept[];
   topics: Topic[];
   entityDetails: EntityDetailsMap;
+  arguments: Argument[];
 }
 
 export interface ValidationError {
@@ -234,7 +311,13 @@ export interface ValidationError {
 
 // ─── Search ────────────────────────────────────────────────────────────────
 
-export type SearchResultType = 'lesson' | 'entity' | 'timeline_event';
+export type SearchResultType =
+  | 'lesson'
+  | 'entity'
+  | 'timeline_event'
+  | 'conversation'
+  | 'alchemy'
+  | 'topic';
 
 export interface SearchResult {
   id: string;
