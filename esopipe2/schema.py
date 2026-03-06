@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS entities (
     metadata_json TEXT -- aliases, tags, etc.
 );
 
+CREATE TABLE IF NOT EXISTS alchemy_concepts (
+    id TEXT PRIMARY KEY,
+    term TEXT NOT NULL,
+    category TEXT,
+    definition TEXT,
+    body TEXT
+);
+
 CREATE TABLE IF NOT EXISTS intent_labels (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     turn_id INTEGER NOT NULL REFERENCES turns(id) ON DELETE CASCADE,
@@ -103,6 +111,13 @@ CREATE VIRTUAL TABLE IF NOT EXISTS tables_fts USING fts5(
 CREATE VIRTUAL TABLE IF NOT EXISTS entities_fts USING fts5(
     label, blurb, metadata_json,
     content='entities',
+    content_rowid='rowid',
+    tokenize='unicode61'
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS alchemy_concepts_fts USING fts5(
+    term, definition, body,
+    content='alchemy_concepts',
     content_rowid='rowid',
     tokenize='unicode61'
 );
