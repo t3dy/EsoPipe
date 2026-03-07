@@ -1,0 +1,1259 @@
+{
+  "AbrahamAbulafiaOverview.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: overview$",
+    "path": "E:\\pdf\\esoteric studies chats\\AbrahamAbulafiaOverview.pdf"
+  },
+  "AbulafiaandYogaInfluence.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: and[a-z]+influence",
+    "path": "E:\\pdf\\esoteric studies chats\\AbulafiaandYogaInfluence.pdf"
+  },
+  "Agrippa.pdf": {
+    "category": "primary",
+    "reason": "filename matches primary source: ^agrippa\\b",
+    "path": "E:\\pdf\\esoteric studies chats\\Agrippa.pdf"
+  },
+  "Agrippa_1.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\Agrippa_1.pdf"
+  },
+  "AgrippaandMagicalLanguage.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AgrippaandMagicalLanguage.pdf"
+  },
+  "AgrippaandMagicalLanguage_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AgrippaandMagicalLanguage_1.pdf"
+  },
+  "AgrippaandMagicalLanguage_2.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AgrippaandMagicalLanguage_2.pdf"
+  },
+  "AlbertiThesisWeller.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: weller",
+    "path": "E:\\pdf\\esoteric studies chats\\AlbertiThesisWeller.pdf"
+  },
+  "AlberttheGreattwinsmonsters.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlberttheGreattwinsmonsters.pdf"
+  },
+  "AlBuniGardiner.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: gardiner",
+    "path": "E:\\pdf\\esoteric studies chats\\AlBuniGardiner.pdf"
+  },
+  "AlchemiaMedicaSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemiaMedicaSummary.pdf"
+  },
+  "AlchemicalEmblemPuzzleIdeas.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: ideas$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalEmblemPuzzleIdeas.pdf"
+  },
+  "AlchemicalEmblemsQuiz.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalEmblemsQuiz.pdf"
+  },
+  "AlchemicalEmblemsSummaryRequest.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalEmblemsSummaryRequest.pdf"
+  },
+  "AlchemicalEmojiRanking.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalEmojiRanking.pdf"
+  },
+  "AlchemicalExegesisSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalExegesisSummary.pdf"
+  },
+  "AlchemicalIllustrationsandMaterialsScience.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalIllustrationsandMaterialsScience.pdf"
+  },
+  "AlchemicalIllustrationsCourseDesign.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalIllustrationsCourseDesign.pdf"
+  },
+  "AlchemicalImageryinSonnets.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalImageryinSonnets.pdf"
+  },
+  "AlchemicalPoemInterpretation.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalPoemInterpretation.pdf"
+  },
+  "AlchemicalTextsMethodologyInsights.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalTextsMethodologyInsights.pdf"
+  },
+  "AlchemicalTextSummaries.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalTextSummaries.pdf"
+  },
+  "Alchemicaltextsummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemicaltextsummary.pdf"
+  },
+  "AlchemicalTextSummaryRequest.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemicalTextSummaryRequest.pdf"
+  },
+  "AlchemistsBlackHoleRevelation.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemistsBlackHoleRevelation.pdf"
+  },
+  "Alchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemy.pdf"
+  },
+  "AlchemyAlKhwarizmi.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyAlKhwarizmi.pdf"
+  },
+  "AlchemyAlKhwarizmi_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyAlKhwarizmi_1.pdf"
+  },
+  "AlchemyAncientByzantine.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyAncientByzantine.pdf"
+  },
+  "AlchemyAncientByzantine_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyAncientByzantine_1.pdf"
+  },
+  "AlchemyandApocalypticDiscourse.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandApocalypticDiscourse.pdf"
+  },
+  "AlchemyandApocalypticDiscourse_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandApocalypticDiscourse_1.pdf"
+  },
+  "AlchemyandAuthoritySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandAuthoritySummary.pdf"
+  },
+  "AlchemyandAuthoritySummary_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandAuthoritySummary_1.pdf"
+  },
+  "AlchemyandGnosticismExplained.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandGnosticismExplained.pdf"
+  },
+  "AlchemyandGnosticismExplained_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandGnosticismExplained_1.pdf"
+  },
+  "AlchemyandMathematics.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandMathematics.pdf"
+  },
+  "AlchemyandMathematics_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandMathematics_1.pdf"
+  },
+  "AlchemyandPhotographyOrigins.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPhotographyOrigins.pdf"
+  },
+  "AlchemyandPhotographyOrigins_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPhotographyOrigins_1.pdf"
+  },
+  "AlchemyandPhysicsBeauty.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPhysicsBeauty.pdf"
+  },
+  "AlchemyandPhysicsBeauty_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPhysicsBeauty_1.pdf"
+  },
+  "AlchemyandPsychologicalInterpretation.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPsychologicalInterpretation.pdf"
+  },
+  "AlchemyandPsychologicalInterpretation_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyandPsychologicalInterpretation_1.pdf"
+  },
+  "AlchemyArabicTreatiseSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyArabicTreatiseSummary.pdf"
+  },
+  "AlchemyArabicTreatiseSummary_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyArabicTreatiseSummary_1.pdf"
+  },
+  "AlchemyArchitectureandPlay.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyArchitectureandPlay.pdf"
+  },
+  "AlchemyArchitectureandPlay_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyArchitectureandPlay_1.pdf"
+  },
+  "AlchemyBible.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyBible.pdf"
+  },
+  "AlchemyBible_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyBible_1.pdf"
+  },
+  "AlchemyBoardGameCodeFix.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyBoardGameCodeFix.pdf"
+  },
+  "Alchemybookreviewsummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemybookreviewsummary.pdf"
+  },
+  "AlchemyChemistrysummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyChemistrysummary.pdf"
+  },
+  "AlchemyChemistrysummary_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyChemistrysummary_1.pdf"
+  },
+  "AlchemyColoringBookIntroduction.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: introduction$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyColoringBookIntroduction.pdf"
+  },
+  "AlchemyColoringBookIntroduction_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyColoringBookIntroduction_1.pdf"
+  },
+  "AlchemyColoringProjectOutline.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: outline$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyColoringProjectOutline.pdf"
+  },
+  "AlchemyColoringProjectOutline_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyColoringProjectOutline_1.pdf"
+  },
+  "AlchemyGameMechanics.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyGameMechanics.pdf"
+  },
+  "AlchemyGameTutorialDesign.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyGameTutorialDesign.pdf"
+  },
+  "AlchemyHiroHiraiBodiesInternalPowers.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHiroHiraiBodiesInternalPowers.pdf"
+  },
+  "AlchemyHiroHiraiBodiesInternalPowers_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHiroHiraiBodiesInternalPowers_1.pdf"
+  },
+  "AlchemyHistoriographySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHistoriographySummary.pdf"
+  },
+  "AlchemyHistoriographySummary_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHistoriographySummary_1.pdf"
+  },
+  "AlchemyHistoriographySummary_2.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHistoriographySummary_2.pdf"
+  },
+  "AlchemyHistoriographySummary_3.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyHistoriographySummary_3.pdf"
+  },
+  "AlchemyIllustrationsTweetIdeas.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: ideas$",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyIllustrationsTweetIdeas.pdf"
+  },
+  "AlchemyIllustrationsTweetIdeas_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyIllustrationsTweetIdeas_1.pdf"
+  },
+  "AlchemyinByzantium.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyinByzantium.pdf"
+  },
+  "AlchemyinByzantium_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyinByzantium_1.pdf"
+  },
+  "AlchemyinGraecoRomanEgypt.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyinGraecoRomanEgypt.pdf"
+  },
+  "AlchemyinGraecoRomanEgypt_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyinGraecoRomanEgypt_1.pdf"
+  },
+  "AlchemyinMusicandMonteverdi.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyinMusicandMonteverdi.pdf"
+  },
+  "AlchemyKhunrathOberstallLab.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyKhunrathOberstallLab.pdf"
+  },
+  "AlchemyKhunrathOberstallLab_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyKhunrathOberstallLab_1.pdf"
+  },
+  "AlchemyLabBoardGame.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyLabBoardGame.pdf"
+  },
+  "AlchemyLabcfineart.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyLabcfineart.pdf"
+  },
+  "AlchemyLabcfineart_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyLabcfineart_1.pdf"
+  },
+  "Alchemymaterialslist.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemymaterialslist.pdf"
+  },
+  "AlchemyMendicantOrders.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMendicantOrders.pdf"
+  },
+  "AlchemyMendicantOrders_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMendicantOrders_1.pdf"
+  },
+  "AlchemyMichelspacherCabala.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMichelspacherCabala.pdf"
+  },
+  "AlchemyMichelspacherCabala_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMichelspacherCabala_1.pdf"
+  },
+  "AlchemyMSdeknamen.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMSdeknamen.pdf"
+  },
+  "AlchemyMSdeknamen_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyMSdeknamen_1.pdf"
+  },
+  "AlchemyPeriodicTableCreation.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPeriodicTableCreation.pdf"
+  },
+  "AlchemyPetrusBonus.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPetrusBonus.pdf"
+  },
+  "AlchemyPetrusBonus_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPetrusBonus_1.pdf"
+  },
+  "AlchemyPinballGameConcept.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPinballGameConcept.pdf"
+  },
+  "AlchemyPinballGameMechanics.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPinballGameMechanics.pdf"
+  },
+  "Alchemypracticalexegesis.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemypracticalexegesis.pdf"
+  },
+  "Alchemypracticalexegesis_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemypracticalexegesis_1.pdf"
+  },
+  "AlchemyPuzzleGameCode.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: puzzle",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPuzzleGameCode.pdf"
+  },
+  "AlchemyPuzzleGameDesign.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: puzzle",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyPuzzleGameDesign.pdf"
+  },
+  "Alchemyquestforlongevity.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemyquestforlongevity.pdf"
+  },
+  "Alchemyquestforlongevity_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemyquestforlongevity_1.pdf"
+  },
+  "alchemyscholarshipatalantadoc.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\alchemyscholarshipatalantadoc.pdf"
+  },
+  "alchemyscholarshipatalantadoc_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\alchemyscholarshipatalantadoc_1.pdf"
+  },
+  "Alchemytheatermuseum.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemytheatermuseum.pdf"
+  },
+  "Alchemytheatermuseum_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Alchemytheatermuseum_1.pdf"
+  },
+  "AlchemyWine.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyWine.pdf"
+  },
+  "AlchemyWine_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyWine_1.pdf"
+  },
+  "AlchemyZosimosdivineimages.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyZosimosdivineimages.pdf"
+  },
+  "AlchemyZosimosdivineimages_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlchemyZosimosdivineimages_1.pdf"
+  },
+  "AlGhazaliandMagicSquares.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AlGhazaliandMagicSquares.pdf"
+  },
+  "Anatomycalchemychemistry.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Anatomycalchemychemistry.pdf"
+  },
+  "AncientAlchemyLaboratoryImage.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientAlchemyLaboratoryImage.pdf"
+  },
+  "AncientEgyptianAlchemyandScience.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientEgyptianAlchemyandScience.pdf"
+  },
+  "AncientGreekRomanMagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientGreekRomanMagic.pdf"
+  },
+  "AncientMagicEducationalGames.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientMagicEducationalGames.pdf"
+  },
+  "AncientMagicSummaryTable.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientMagicSummaryTable.pdf"
+  },
+  "AncientMagicVocabularyIdeas.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: ideas$",
+    "path": "E:\\pdf\\esoteric studies chats\\AncientMagicVocabularyIdeas.pdf"
+  },
+  "ApuleiusApology.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\ApuleiusApology.pdf"
+  },
+  "ArchaeologyAlchemyearlymodern.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ArchaeologyAlchemyearlymodern.pdf"
+  },
+  "ArchaeologyAlchemyearlymodern_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ArchaeologyAlchemyearlymodern_1.pdf"
+  },
+  "Archaeologyancientmagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Archaeologyancientmagic.pdf"
+  },
+  "Archaeologyancientmagic_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Archaeologyancientmagic_1.pdf"
+  },
+  "ArchaeologyofAlchemySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\ArchaeologyofAlchemySummary.pdf"
+  },
+  "ArchaeologyofAlchemySummary_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ArchaeologyofAlchemySummary_1.pdf"
+  },
+  "AristotlePassagesonAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AristotlePassagesonAlchemy.pdf"
+  },
+  "AristotlePassagesonAlchemy_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\AristotlePassagesonAlchemy_1.pdf"
+  },
+  "AristotleQuotesNeoplatonistInterpretations.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\AristotleQuotesNeoplatonistInterpretations.pdf"
+  },
+  "ArsNotoriaMagicalContext.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ArsNotoriaMagicalContext.pdf"
+  },
+  "ArtandAlchemySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\ArtandAlchemySummary.pdf"
+  },
+  "AstrologyandAlchemySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\AstrologyandAlchemySummary.pdf"
+  },
+  "BalticRosicrucianismAnalysis.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\BalticRosicrucianismAnalysis.pdf"
+  },
+  "Bruno.pdf": {
+    "category": "primary",
+    "reason": "filename matches primary source: ^bruno\\b",
+    "path": "E:\\pdf\\esoteric studies chats\\Bruno.pdf"
+  },
+  "BrunoEgliprotoRCNaples.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\BrunoEgliprotoRCNaples.pdf"
+  },
+  "BrunoEgliprotoRCNaples_1.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\BrunoEgliprotoRCNaples_1.pdf"
+  },
+  "BrunosContractionConcept.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\BrunosContractionConcept.pdf"
+  },
+  "BrunosContractionConcept_1.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\BrunosContractionConcept_1.pdf"
+  },
+  "brunoupsidedown.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\brunoupsidedown.pdf"
+  },
+  "BucklandMuseumOverview.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: overview$",
+    "path": "E:\\pdf\\esoteric studies chats\\BucklandMuseumOverview.pdf"
+  },
+  "BurnettRunes.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: burnett",
+    "path": "E:\\pdf\\esoteric studies chats\\BurnettRunes.pdf"
+  },
+  "BurnettthCenturyRenaissance.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: burnett",
+    "path": "E:\\pdf\\esoteric studies chats\\BurnettthCenturyRenaissance.pdf"
+  },
+  "ChicagoStyleBibliographyAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ChicagoStyleBibliographyAlchemy.pdf"
+  },
+  "CompoundofAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\CompoundofAlchemy.pdf"
+  },
+  "ContributionstoSpiritualAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ContributionstoSpiritualAlchemy.pdf"
+  },
+  "CoulianoandYatesTheories.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: yates",
+    "path": "E:\\pdf\\esoteric studies chats\\CoulianoandYatesTheories.pdf"
+  },
+  "CritiquesofYatessMagic.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: yates",
+    "path": "E:\\pdf\\esoteric studies chats\\CritiquesofYatessMagic.pdf"
+  },
+  "CrowleysMagicalJournalSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\CrowleysMagicalJournalSummary.pdf"
+  },
+  "CustomGPTforMagicDecks.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\CustomGPTforMagicDecks.pdf"
+  },
+  "CuttingedgeinPicostudies.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\CuttingedgeinPicostudies.pdf"
+  },
+  "DigitalSeferYetzirahproject.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\DigitalSeferYetzirahproject.pdf"
+  },
+  "DivinationMagicSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\DivinationMagicSummary.pdf"
+  },
+  "DragonSymbolisminAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\DragonSymbolisminAlchemy.pdf"
+  },
+  "DragonSymbolisminAlchemy_1.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\DragonSymbolisminAlchemy_1.pdf"
+  },
+  "DragonSymbolisminAlchemy_2.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\DragonSymbolisminAlchemy_2.pdf"
+  },
+  "DrerHypnerotomachiaAnalysis.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\DrerHypnerotomachiaAnalysis.pdf"
+  },
+  "EmblematicsinEarlyModernAge.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\EmblematicsinEarlyModernAge.pdf"
+  },
+  "EnochianLanguageRigorMyth.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\EnochianLanguageRigorMyth.pdf"
+  },
+  "EnochianMagicSummaryRequest.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\EnochianMagicSummaryRequest.pdf"
+  },
+  "EroticaandSexualMagic.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: and[a-z]+magic",
+    "path": "E:\\pdf\\esoteric studies chats\\EroticaandSexualMagic.pdf"
+  },
+  "FangerRitualMagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\FangerRitualMagic.pdf"
+  },
+  "FourBooksofAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\FourBooksofAlchemy.pdf"
+  },
+  "FrancesYatesRenaissanceMagic.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: frances",
+    "path": "E:\\pdf\\esoteric studies chats\\FrancesYatesRenaissanceMagic.pdf"
+  },
+  "GamesLearningAlchemyBoardGame.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\GamesLearningAlchemyBoardGame.pdf"
+  },
+  "GiordanoBruno.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBruno.pdf"
+  },
+  "GiordanoBrunoDeUmbrisIdearum.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBrunoDeUmbrisIdearum.pdf"
+  },
+  "GiordanoBrunoOverview.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: overview$",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBrunoOverview.pdf"
+  },
+  "GiordanoBrunoSatireSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBrunoSatireSummary.pdf"
+  },
+  "GiordanoBrunoTableSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBrunoTableSummary.pdf"
+  },
+  "GiordanoBrunoWorksSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GiordanoBrunoWorksSummary.pdf"
+  },
+  "GnosticismvsHermeticismcomparison.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\GnosticismvsHermeticismcomparison.pdf"
+  },
+  "GraecoEgyptianAlchemyinByzantium.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\GraecoEgyptianAlchemyinByzantium.pdf"
+  },
+  "GreekAlchemyLabSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GreekAlchemyLabSummary.pdf"
+  },
+  "GreekAlchemySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GreekAlchemySummary.pdf"
+  },
+  "GreekMagicalTextsSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\GreekMagicalTextsSummary.pdf"
+  },
+  "GrimesAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\GrimesAlchemy.pdf"
+  },
+  "GrowingAcademicMagicChannel.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\GrowingAcademicMagicChannel.pdf"
+  },
+  "GTU Transcripts Hand, Albert Edward.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\GTU Transcripts Hand, Albert Edward.pdf"
+  },
+  "HegelonEriugenaandBruno.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\HegelonEriugenaandBruno.pdf"
+  },
+  "HeinrichKhunrathSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\HeinrichKhunrathSummary.pdf"
+  },
+  "HermeticaIIOverview.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: overview$",
+    "path": "E:\\pdf\\esoteric studies chats\\HermeticaIIOverview.pdf"
+  },
+  "HermeticAlchemyandEnoch.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\HermeticAlchemyandEnoch.pdf"
+  },
+  "HermeticisminIamblichusMysteries.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\HermeticisminIamblichusMysteries.pdf"
+  },
+  "HistoricalMagicalTexts.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\HistoricalMagicalTexts.pdf"
+  },
+  "HistoriographyofAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\HistoriographyofAlchemy.pdf"
+  },
+  "HypnerotomachiaPoliphiliPlotSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\HypnerotomachiaPoliphiliPlotSummary.pdf"
+  },
+  "Iamblichus.pdf": {
+    "category": "primary",
+    "reason": "filename matches primary source: ^iamblichus\\b",
+    "path": "E:\\pdf\\esoteric studies chats\\Iamblichus.pdf"
+  },
+  "IamblichusandHermeticism.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\IamblichusandHermeticism.pdf"
+  },
+  "ImprovingMagicSkills.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ImprovingMagicSkills.pdf"
+  },
+  "IncipitLiberMysticaeTheologiae.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\IncipitLiberMysticaeTheologiae.pdf"
+  },
+  "InstagramPostsAlchemyEmblems.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\InstagramPostsAlchemyEmblems.pdf"
+  },
+  "JewishMagicLateAntiquity.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\JewishMagicLateAntiquity.pdf"
+  },
+  "JewishMagicLiteratureSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\JewishMagicLiteratureSummary.pdf"
+  },
+  "JewishMandaicMagicAnalysis.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: and[a-z]+magic",
+    "path": "E:\\pdf\\esoteric studies chats\\JewishMandaicMagicAnalysis.pdf"
+  },
+  "KhunrathTheosophySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\KhunrathTheosophySummary.pdf"
+  },
+  "LabelofMagicthc.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\LabelofMagicthc.pdf"
+  },
+  "LatinVocabularyMagicalTexts.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\LatinVocabularyMagicalTexts.pdf"
+  },
+  "Lesserknownmagicalsources.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Lesserknownmagicalsources.pdf"
+  },
+  "Magic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\Magic.pdf"
+  },
+  "MagicalLatinPhrases.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalLatinPhrases.pdf"
+  },
+  "MagicalMaterialsinPicatrix.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalMaterialsinPicatrix.pdf"
+  },
+  "MagicalMedievalGrimWars.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalMedievalGrimWars.pdf"
+  },
+  "MagicalPalindromeRequest.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalPalindromeRequest.pdf"
+  },
+  "MagicalPracticesinLatinWest.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalPracticesinLatinWest.pdf"
+  },
+  "MagicalVocabularyTranslationSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicalVocabularyTranslationSummary.pdf"
+  },
+  "MagicCardAlphabet.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicCardAlphabet.pdf"
+  },
+  "MagicCardDataAnalysis.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicCardDataAnalysis.pdf"
+  },
+  "MagicDeckAppPlan.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicDeckAppPlan.pdf"
+  },
+  "MagicDeckArchetypesSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicDeckArchetypesSummary.pdf"
+  },
+  "MagicDiscoursePolemicSyriac.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicDiscoursePolemicSyriac.pdf"
+  },
+  "MagicinRomeSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicinRomeSummary.pdf"
+  },
+  "MagickinTheorySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\MagickinTheorySummary.pdf"
+  },
+  "MagicReligioninPGM.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicReligioninPGM.pdf"
+  },
+  "MagicSquareSigilApp.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MagicSquareSigilApp.pdf"
+  },
+  "MedievalMagicScholars.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MedievalMagicScholars.pdf"
+  },
+  "MedievalMagicSummaryRequest.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MedievalMagicSummaryRequest.pdf"
+  },
+  "MetabolicDominationinAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\MetabolicDominationinAlchemy.pdf"
+  },
+  "NeoplatonicMagicCurriculumOutline.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: outline$",
+    "path": "E:\\pdf\\esoteric studies chats\\NeoplatonicMagicCurriculumOutline.pdf"
+  },
+  "NewHistoriographyofAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\NewHistoriographyofAlchemy.pdf"
+  },
+  "NewinsightsinPlatonism.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\NewinsightsinPlatonism.pdf"
+  },
+  "NewpictureofAbulafia.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\NewpictureofAbulafia.pdf"
+  },
+  "NJanowitzRomanMagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\NJanowitzRomanMagic.pdf"
+  },
+  "OverviewofZosimosresearch.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\OverviewofZosimosresearch.pdf"
+  },
+  "Pico.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\Pico.pdf"
+  },
+  "PicoandDivineBeing.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PicoandDivineBeing.pdf"
+  },
+  "PicoandDivineBeing_1.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PicoandDivineBeing_1.pdf"
+  },
+  "PicoConclusionsExegesis.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PicoConclusionsExegesis.pdf"
+  },
+  "PicodellaMirandolaPhilosophySummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\PicodellaMirandolaPhilosophySummary.pdf"
+  },
+  "PicodellaMirandolaSummary.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: summary$",
+    "path": "E:\\pdf\\esoteric studies chats\\PicodellaMirandolaSummary.pdf"
+  },
+  "PicosOrationandCabala.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PicosOrationandCabala.pdf"
+  },
+  "PlatoandAristotleonAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\PlatoandAristotleonAlchemy.pdf"
+  },
+  "PlatoMagicTermsList.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\PlatoMagicTermsList.pdf"
+  },
+  "PlatoNeoplatonismandRenaissanceMagic.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: and[a-z]+magic",
+    "path": "E:\\pdf\\esoteric studies chats\\PlatoNeoplatonismandRenaissanceMagic.pdf"
+  },
+  "PlotinusinfluenceonBruno.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PlotinusinfluenceonBruno.pdf"
+  },
+  "PracticalSigilMagicOverview.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: overview$",
+    "path": "E:\\pdf\\esoteric studies chats\\PracticalSigilMagicOverview.pdf"
+  },
+  "ProclusMereologyExplained.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\ProclusMereologyExplained.pdf"
+  },
+  "PseudoJabirPlatoRectifications.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\PseudoJabirPlatoRectifications.pdf"
+  },
+  "PythonAlchemyPDFDatabase.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\PythonAlchemyPDFDatabase.pdf"
+  },
+  "ReactMagicCardDisplay.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ReactMagicCardDisplay.pdf"
+  },
+  "RecentAlchemyPublications.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\RecentAlchemyPublications.pdf"
+  },
+  "ReligiousStudiesVisionaryTheories.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ReligiousStudiesVisionaryTheories.pdf"
+  },
+  "RenaissanceMagicBoardGame.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\RenaissanceMagicBoardGame.pdf"
+  },
+  "RenaissanceMagiciansMTGCards.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\RenaissanceMagiciansMTGCards.pdf"
+  },
+  "Reuchlin.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\Reuchlin.pdf"
+  },
+  "ScholarsinGrecoRomanMagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\ScholarsinGrecoRomanMagic.pdf"
+  },
+  "SigilMagicSummaryRequest.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\SigilMagicSummaryRequest.pdf"
+  },
+  "SpiritualAlchemyCloseReading.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\SpiritualAlchemyCloseReading.pdf"
+  },
+  "SpiritualityoftheWestAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\SpiritualityoftheWestAlchemy.pdf"
+  },
+  "StoicismandNeoplatonismInfluence.pdf": {
+    "category": "generated",
+    "reason": "filename pattern suggests AI-generated: and[a-z]+influence",
+    "path": "E:\\pdf\\esoteric studies chats\\StoicismandNeoplatonismInfluence.pdf"
+  },
+  "SummaryofBrunosWork.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\SummaryofBrunosWork.pdf"
+  },
+  "TalmudicSourcesonMagic.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\TalmudicSourcesonMagic.pdf"
+  },
+  "TiltononSpiritualAlchemy.pdf": {
+    "category": "scholarly",
+    "reason": "known scholar in filename: tilton",
+    "path": "E:\\pdf\\esoteric studies chats\\TiltononSpiritualAlchemy.pdf"
+  },
+  "TimeTravelAlchemyEpisode.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\TimeTravelAlchemyEpisode.pdf"
+  },
+  "Trithemius.pdf": {
+    "category": "uncertain",
+    "reason": "could not auto-classify",
+    "path": "E:\\pdf\\esoteric studies chats\\Trithemius.pdf"
+  },
+  "UnpackingHenadsinNeoplatonism.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\UnpackingHenadsinNeoplatonism.pdf"
+  },
+  "WilsononLitPhilMagick.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\WilsononLitPhilMagick.pdf"
+  },
+  "WilsonsMagicalSelfEngineering.pdf": {
+    "category": "scholarly",
+    "reason": "title contains tradition keywords",
+    "path": "E:\\pdf\\esoteric studies chats\\WilsonsMagicalSelfEngineering.pdf"
+  },
+  "__stats__": {
+    "scholarly": 156,
+    "primary": 3,
+    "generated": 47,
+    "exclude": 0,
+    "uncertain": 44
+  }
+}
