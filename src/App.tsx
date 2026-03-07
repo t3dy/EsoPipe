@@ -3,6 +3,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider } from './contexts/AppContext';
 import { TrailProvider } from './contexts/TrailContext';
 import { AnnotationProvider } from './contexts/AnnotationContext';
+import { ChatProvider } from './contexts/ChatContext';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Lessons } from './pages/Lessons';
@@ -27,9 +28,10 @@ export default function App() {
   return (
     <ThemeProvider>
       <AppProvider>
-        <TrailProvider>
-          <AnnotationProvider>
-            <HashRouter>
+        <ChatProvider>
+          <TrailProvider>
+            <AnnotationProvider>
+              <HashRouter>
               <Routes>
                 <Route element={<Layout />}>
                   <Route index element={<Home />} />
@@ -52,9 +54,10 @@ export default function App() {
                   <Route path='about' element={<About />} />
                 </Route>
               </Routes>
-            </HashRouter>
-          </AnnotationProvider>
-        </TrailProvider>
+              </HashRouter>
+            </AnnotationProvider>
+          </TrailProvider>
+        </ChatProvider>
       </AppProvider>
     </ThemeProvider>
   );

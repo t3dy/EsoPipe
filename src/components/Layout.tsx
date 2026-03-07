@@ -4,6 +4,8 @@ import { Drawer } from './Drawer';
 import { SearchBox } from './SearchBox';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { ReadingTrail } from './ReadingTrail';
+import { ChatPanel } from './ChatPanel';
+import { ChatToggleButton } from './ChatToggleButton';
 import { useApp } from '../contexts/AppContext';
 
 function ValidationBanner() {
@@ -50,6 +52,8 @@ export function Layout() {
             <SearchBox />
           </div>
           <ThemeSwitcher />
+          {/* LLM chat toggle button */}
+          <ChatToggleButton />
         </header>
 
         <ValidationBanner />
@@ -62,6 +66,9 @@ export function Layout() {
         {/* Reading trail — collapsible bottom strip */}
         <ReadingTrail />
       </div>
+
+      {/* LLM chat panel — right-side drawer */}
+      <ChatPanel />
 
       <Drawer />
     </div>

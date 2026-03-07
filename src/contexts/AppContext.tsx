@@ -34,9 +34,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Detect desktop mode by pinging the FastAPI backend
+  // Detect desktop mode: the FastAPI server uses a RANDOM port selected at
+  // runtime, so we must use a RELATIVE fetch (same-origin) rather than a
+  // hard-coded port. In desktop mode the React SPA is served BY FastAPI so
+  // relative /health resolves correctly. In static/GitHub-Pages mode it 404s.
   useEffect(() => {
-    fetch('http://127.0.0.1:3000/health', { signal: AbortSignal.timeout(1500) })
+    fetch('/health', { signal: AbortSignal.timeout(2000) })
       .then(r => { if (r.ok) setIsDesktop(true); })
       .catch(() => { /* static mode — no backend */ });
   }, []);

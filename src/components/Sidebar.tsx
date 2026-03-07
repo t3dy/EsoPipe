@@ -4,6 +4,7 @@ import {
   MessageSquare, FlaskConical, Layers, Search,
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useChat } from '../contexts/ChatContext';
 
 const NAV = [
   { to: '/', label: 'Home', icon: Home },
@@ -25,6 +26,7 @@ const NAV = [
 export function Sidebar() {
   const { theme } = useTheme();
   const isMac = theme === 'mac80s';
+  const { llmStatus } = useChat();
 
   return (
     <aside
@@ -94,10 +96,24 @@ export function Sidebar() {
 
       {/* Footer */}
       <div
-        className="px-4 py-3 text-xs"
+        className="px-4 py-3 text-xs flex items-center justify-between"
         style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
-        v0.3.0-alpha
+        <span>v0.3.0-alpha</span>
+        <div
+          className="flex items-center gap-1"
+          title={llmStatus.running
+            ? `Ollama online · ${llmStatus.models.length} model${llmStatus.models.length !== 1 ? 's' : ''}`
+            : 'Ollama offline — start Ollama to enable AI assistant'}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: llmStatus.running ? '#22c55e' : '#9ca3af' }}
+          />
+          <span style={{ fontSize: '10px' }}>
+            {llmStatus.running ? 'AI' : 'offline'}
+          </span>
+        </div>
       </div>
     </aside>
   );
