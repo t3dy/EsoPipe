@@ -21,7 +21,7 @@ const FEATURES = [
     to: '/timelines',
     icon: CalendarDays,
     title: 'Timelines',
-    desc: "Interactive chronologies of Neoplatonism's transmission and Renaissance Florence, linked to entities and events.",
+    desc: 'Five tradition timelines — Neoplatonism, Alchemy, Kabbalah, Islamic Esotericism, and Renaissance Magic — with 60 annotated events linked to the entity graph.',
     color: '#7c3aed',
   },
   {
@@ -40,7 +40,7 @@ export function Home() {
     lessons: data?.lessons.length ?? 0,
     entities: data?.entities.length ?? 0,
     edges: data?.edges.length ?? 0,
-    timelines: data?.timelines.length ?? 0,
+    timelineEvents: data?.timelines.reduce((sum, t) => sum + t.events.length, 0) ?? 0,
   };
 
   return (
@@ -109,7 +109,7 @@ export function Home() {
             { label: 'Lessons', value: counts.lessons },
             { label: 'Entities', value: counts.entities },
             { label: 'Edges', value: counts.edges },
-            { label: 'Timelines', value: counts.timelines },
+            { label: 'Timeline Events', value: counts.timelineEvents },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <div

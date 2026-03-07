@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { X, Calendar, Tag } from 'lucide-react';
+import { X, Calendar, Tag, ChevronUp, ChevronDown } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import type { TimelineEvent, Timeline } from '../types';
+
+/** Format a raw start/end string for display.
+ *  Negative strings (BCE) → "387 BCE", positive → "c. 0204" */
+function formatYear(raw: string): string {
+  if (raw.startsWith('-')) return `${raw.slice(1)} BCE`;
+  return `c. ${raw.slice(0, 4)}`;
+}
 
 // ─── Simple Markdown renderer for event descriptions ──────────────────────
 function EventMarkdown({ md }: { md: string }) {
@@ -31,7 +38,8 @@ function EventRow({
   isSelected: boolean;
   onClick: () => void;
 }) {
-  const displayYear = event.start.length >= 4 ? `c. ${event.start.slice(0, 4)}` : event.start;
+  const displayYear = formatYear(event.start);
+  const displayEnd = event.end ? event.end.slice(0, 4) : null;
 
   return (
     <div
@@ -66,7 +74,7 @@ function EventRow({
           style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}
         >
           {displayYear}
-          {event.end && ` — ${event.end.slice(0, 4)}`}
+          {displayEnd && ` — ${displayEnd}`}
         </div>
         <div
           className="font-semibold text-sm mb-1 transition-colors"
@@ -92,23 +100,34 @@ function EventRow({
 // ─── Event detail panel ───────────────────────────────────────────────────
 function EventPanel({
   event,
+  filteredEvents,
   onClose,
+  onNavigate,
 }: {
   event: TimelineEvent;
   timeline?: Timeline;
+  filteredEvents: TimelineEvent[];
   onClose: () => void;
+  onNavigate: (event: TimelineEvent) => void;
 }) {
   const { data, openEntityDrawer } = useApp();
   const entityMap = Object.fromEntries((data?.entities ?? []).map(e => [e.id, e]));
-  const displayYear = event.start.length >= 4 ? `c. ${event.start.slice(0, 4)}` : event.start;
+  const displayYear = formatYear(event.start);
+
+  const currentIdx = filteredEvents.findIndex(e => e.id === event.id);
+  const prevEvent = currentIdx > 0 ? filteredEvents[currentIdx - 1] : null;
+  const nextEvent = currentIdx < filteredEvents.length - 1 ? filteredEvents[currentIdx + 1] : null;
 
   return (
     <div
-      className="flex flex-col h-full overflow-hidden"
+      className="flex flex-col overflow-hidden"
       style={{
         background: 'var(--bg-surface)',
         border: '1px solid var(--border)',
         borderRadius: 'var(--radius)',
+        position: 'sticky',
+        top: '1.5rem',
+        maxHeight: 'calc(100vh - 8rem)',
       }}
     >
       {/* Header */}
@@ -121,6 +140,10 @@ function EventPanel({
             <Calendar size={12} style={{ color: 'var(--text-muted)' }} />
             <span className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
               {displayYear}
+              {event.end && ` — ${event.end.slice(0, 4)}`}
+            </span>
+            <span className="text-xs" style={{ color: 'var(--border-strong)', fontFamily: 'var(--font-mono)' }}>
+              {currentIdx + 1} / {filteredEvents.length}
             </span>
           </div>
           <h3
@@ -130,12 +153,38 @@ function EventPanel({
             {event.title}
           </h3>
         </div>
-        <button
-          onClick={onClose}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }}
-        >
-          <X size={16} />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={() => prevEvent && onNavigate(prevEvent)}
+            disabled={!prevEvent}
+            title={prevEvent ? prevEvent.title : 'No earlier event'}
+            style={{
+              background: 'none', border: '1px solid var(--border)', cursor: prevEvent ? 'pointer' : 'not-allowed',
+              color: prevEvent ? 'var(--text-muted)' : 'var(--border)', borderRadius: 'var(--radius)',
+              padding: '2px 4px', opacity: prevEvent ? 1 : 0.4,
+            }}
+          >
+            <ChevronUp size={14} />
+          </button>
+          <button
+            onClick={() => nextEvent && onNavigate(nextEvent)}
+            disabled={!nextEvent}
+            title={nextEvent ? nextEvent.title : 'No later event'}
+            style={{
+              background: 'none', border: '1px solid var(--border)', cursor: nextEvent ? 'pointer' : 'not-allowed',
+              color: nextEvent ? 'var(--text-muted)' : 'var(--border)', borderRadius: 'var(--radius)',
+              padding: '2px 4px', opacity: nextEvent ? 1 : 0.4,
+            }}
+          >
+            <ChevronDown size={14} />
+          </button>
+          <button
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px 4px', marginLeft: '4px' }}
+          >
+            <X size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Body */}
@@ -242,24 +291,38 @@ export function Timelines() {
 
       {/* Timeline selector */}
       <div className="flex gap-2 mb-6 flex-wrap">
-        {timelines.map(tl => (
-          <button
-            key={tl.id}
-            onClick={() => selectTimeline(tl)}
-            className="px-4 py-2 text-sm transition-colors"
-            style={{
-              background: activeTimeline?.id === tl.id ? 'var(--primary)' : 'var(--bg-surface)',
-              color: activeTimeline?.id === tl.id ? 'var(--primary-text)' : 'var(--text)',
-              border: '1px solid',
-              borderColor: activeTimeline?.id === tl.id ? 'var(--primary)' : 'var(--border)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-            }}
-          >
-            {tl.title}
-          </button>
-        ))}
+        {timelines.map(tl => {
+          const isActive = activeTimeline?.id === tl.id;
+          return (
+            <button
+              key={tl.id}
+              onClick={() => selectTimeline(tl)}
+              className="px-4 py-2 text-sm transition-colors flex items-center gap-2"
+              style={{
+                background: isActive ? 'var(--primary)' : 'var(--bg-surface)',
+                color: isActive ? 'var(--primary-text)' : 'var(--text)',
+                border: '1px solid',
+                borderColor: isActive ? 'var(--primary)' : 'var(--border)',
+                borderRadius: 'var(--radius)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              {tl.title}
+              <span
+                className="text-xs px-1.5 py-0.5 rounded-full"
+                style={{
+                  background: isActive ? 'rgba(255,255,255,0.25)' : 'var(--bg-hover)',
+                  color: isActive ? 'var(--primary-text)' : 'var(--text-muted)',
+                  fontFamily: 'var(--font-mono)',
+                  lineHeight: 1,
+                }}
+              >
+                {tl.events.length}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {activeTimeline && (
@@ -320,11 +383,13 @@ export function Timelines() {
                 <EventPanel
                   event={selectedEvent}
                   timeline={activeTimeline}
+                  filteredEvents={filteredEvents}
                   onClose={() => setSearchParams({ timeline: activeTimeline.id })}
+                  onNavigate={selectEvent}
                 />
               ) : (
                 <div
-                  className="flex items-center justify-center h-48 text-sm"
+                  className="flex flex-col items-center justify-center gap-3 py-16 text-sm"
                   style={{
                     background: 'var(--bg-surface)',
                     border: '1px dashed var(--border)',
@@ -332,7 +397,16 @@ export function Timelines() {
                     color: 'var(--text-muted)',
                   }}
                 >
-                  Click an event to see details
+                  <Calendar size={28} style={{ color: 'var(--border-strong)', opacity: 0.7 }} />
+                  <div className="text-center">
+                    <div className="font-medium mb-1" style={{ color: 'var(--text)' }}>
+                      Select an event
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                      {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''} in this timeline
+                      {activeTag ? ` · filtered by "${activeTag}"` : ''}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

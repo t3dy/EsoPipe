@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { useTrail } from '../contexts/TrailContext';
-import { Layers, ChevronRight, Link2, Link2Off } from 'lucide-react';
+import { Layers, ChevronRight, ChevronLeft, Link2, Link2Off } from 'lucide-react';
 import { LinkifyText } from '../components/LinkifyText';
 import type { Topic } from '../types';
 
@@ -20,11 +20,28 @@ export function Topics() {
     const [linkingOn, setLinkingOn] = useState(true);
 
     const topics: Topic[] = data?.topics ?? [];
+    const sortedRanks = [...topics].map(t => t.rank).sort((a, b) => a - b);
     const topic = topics.find(t => t.rank === selected);
+    const currentIdx = sortedRanks.indexOf(selected);
+    const prevRank = currentIdx > 0 ? sortedRanks[currentIdx - 1] : null;
+    const nextRank = currentIdx < sortedRanks.length - 1 ? sortedRanks[currentIdx + 1] : null;
+
+    const goTo = useCallback((rank: number) => setSelected(rank), []);
 
     useEffect(() => {
         if (topic) addEntry(`/topics#${topic.rank}`, topic.name);
     }, [selected, topic?.name]);
+
+    // Keyboard navigation: ↑ prev topic, ↓ next topic
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if ((e.target as HTMLElement).tagName === 'INPUT') return;
+            if (e.key === 'ArrowUp' && prevRank != null) { e.preventDefault(); goTo(prevRank); }
+            if (e.key === 'ArrowDown' && nextRank != null) { e.preventDefault(); goTo(nextRank); }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [prevRank, nextRank, goTo]);
 
     return (
         <div className="flex h-full bg-[var(--bg)]">
@@ -67,7 +84,17 @@ export function Topics() {
                 {!topic ? (
                     <div className="p-10 text-center text-[var(--text-muted)] italic">Select a topic from the sidebar.</div>
                 ) : (
-                    <TopicView topic={topic} linkingOn={linkingOn} onToggleLinking={() => setLinkingOn(v => !v)} />
+                    <TopicView
+                        topic={topic}
+                        linkingOn={linkingOn}
+                        onToggleLinking={() => setLinkingOn(v => !v)}
+                        prevRank={prevRank}
+                        nextRank={nextRank}
+                        prevName={prevRank != null ? topics.find(t => t.rank === prevRank)?.name : undefined}
+                        nextName={nextRank != null ? topics.find(t => t.rank === nextRank)?.name : undefined}
+                        onNavigate={goTo}
+                        totalCount={sortedRanks.length}
+                    />
                 )}
             </main>
         </div>
@@ -78,10 +105,22 @@ function TopicView({
     topic,
     linkingOn,
     onToggleLinking,
+    prevRank,
+    nextRank,
+    prevName,
+    nextName,
+    onNavigate,
+    totalCount,
 }: {
     topic: Topic;
     linkingOn: boolean;
     onToggleLinking: () => void;
+    prevRank: number | null;
+    nextRank: number | null;
+    prevName?: string;
+    nextName?: string;
+    onNavigate: (rank: number) => void;
+    totalCount: number;
 }) {
     return (
         <div className="max-w-2xl mx-auto py-8 px-6" id={String(topic.rank)}>
@@ -156,6 +195,54 @@ function TopicView({
                     </div>
                 </Section>
             )}
+
+            {/* Prev / Next navigation */}
+            <div
+                className="flex items-center justify-between mt-8 pt-4"
+                style={{ borderTop: '1px solid var(--border)' }}
+            >
+                <button
+                    onClick={() => prevRank != null && onNavigate(prevRank)}
+                    disabled={prevRank == null}
+                    className="flex items-center gap-2 text-sm transition-opacity"
+                    style={{
+                        background: 'none', border: 'none', cursor: prevRank != null ? 'pointer' : 'default',
+                        color: prevRank != null ? 'var(--primary)' : 'var(--border)', padding: 0,
+                        opacity: prevRank != null ? 1 : 0.3,
+                    }}
+                    title="Previous topic (↑)"
+                >
+                    <ChevronLeft size={14} />
+                    <span>
+                        {prevRank != null
+                            ? <span><span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>{prevRank}. </span>{prevName}</span>
+                            : 'First topic'
+                        }
+                    </span>
+                </button>
+                <span className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    {topic.rank} / {totalCount}
+                </span>
+                <button
+                    onClick={() => nextRank != null && onNavigate(nextRank)}
+                    disabled={nextRank == null}
+                    className="flex items-center gap-2 text-sm transition-opacity"
+                    style={{
+                        background: 'none', border: 'none', cursor: nextRank != null ? 'pointer' : 'default',
+                        color: nextRank != null ? 'var(--primary)' : 'var(--border)', padding: 0,
+                        opacity: nextRank != null ? 1 : 0.3,
+                    }}
+                    title="Next topic (↓)"
+                >
+                    <span>
+                        {nextRank != null
+                            ? <span>{nextName}<span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}> .{nextRank}</span></span>
+                            : 'Last topic'
+                        }
+                    </span>
+                    <ChevronRight size={14} />
+                </button>
+            </div>
         </div>
     );
 }
