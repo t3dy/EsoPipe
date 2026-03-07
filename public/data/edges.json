@@ -77,7 +77,7 @@
     "target": "thinker_ficino",
     "type": "derived-from",
     "weight": 3,
-    "notes": "Pico was Ficino's student and collaborator at the Platonic Academy in Florence"
+    "notes": "Pico was Ficino’s student and collaborator at the Platonic Academy in Florence"
   },
   {
     "id": "e11",
@@ -85,7 +85,7 @@
     "target": "thinker_plotinus",
     "type": "derived-from",
     "weight": 3,
-    "notes": "Ficino's entire philosophical project was a recovery and Christianization of Plotinian Neoplatonism"
+    "notes": "Ficino’s entire philosophical project was a recovery and Christianization of Plotinian Neoplatonism"
   },
   {
     "id": "e12",
@@ -93,7 +93,7 @@
     "target": "concept_emanation",
     "type": "explains",
     "weight": 2,
-    "notes": "The Rasail presents an emanationist cosmology central to the Brethren's metaphysics"
+    "notes": "The Rasail presents an emanationist cosmology central to the Brethren’s metaphysics"
   },
   {
     "id": "e13",
@@ -117,6 +117,646 @@
     "target": "thinker_pico",
     "type": "mentions",
     "weight": 1,
-    "notes": "The Oration on the Dignity of Man is Pico's most famous text"
+    "notes": "The Oration on the Dignity of Man is Pico’s most famous text"
+  },
+  {
+    "id": "e16",
+    "source": "thinker_ficino",
+    "target": "thinker_plato",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ficino’s project was the recovery of Platonic philosophy; he produced the first complete Latin translation of Plato"
+  },
+  {
+    "id": "e17",
+    "source": "thinker_ficino",
+    "target": "thinker_hermes",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ficino translated the Corpus Hermeticum before completing his Plato translations, treating Hermes as the founding figure of the prisca theologia"
+  },
+  {
+    "id": "e18",
+    "source": "thinker_ficino",
+    "target": "concept_world_soul",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Ficino theorised anima mundi extensively in De vita coelitus comparanda, arguing the world has a living soul mediating between intellect and matter"
+  },
+  {
+    "id": "e19",
+    "source": "thinker_ficino",
+    "target": "concept_spiritus",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Ficino developed a sophisticated pneumatology in which spiritus is the subtle vehicle through which stellar influences are transmitted to the human body and soul"
+  },
+  {
+    "id": "e20",
+    "source": "thinker_ficino",
+    "target": "concept_astral_magic",
+    "type": "explains",
+    "weight": 3,
+    "notes": "De vita III is the primary Renaissance text of theoretical and practical astral magic, explaining how to draw down planetary spiritus"
+  },
+  {
+    "id": "e21",
+    "source": "thinker_ficino",
+    "target": "concept_prisca_theologia",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Ficino coined and developed the doctrine of prisca theologia, the ancient theology underlying all genuine wisdom traditions from Hermes and Zoroaster to Plato"
+  },
+  {
+    "id": "e22",
+    "source": "thinker_ficino",
+    "target": "text_corpus_hermeticum",
+    "type": "uses",
+    "weight": 3,
+    "notes": "Ficino produced the first Latin translation of the Corpus Hermeticum in 1463; it shaped his philosophical project in fundamental ways"
+  },
+  {
+    "id": "e23",
+    "source": "thinker_pico",
+    "target": "concept_kabbalah",
+    "type": "uses",
+    "weight": 3,
+    "notes": "Pico della Mirandola was the first Latin thinker to systematically incorporate Jewish Kabbalah into Christian humanist philosophy, pioneering Christian Kabbalah"
+  },
+  {
+    "id": "e24",
+    "source": "thinker_pico",
+    "target": "concept_prisca_theologia",
+    "type": "explains",
+    "weight": 2,
+    "notes": "Pico expanded the prisca theologia into a concordia philosophorum, claiming all philosophical traditions ultimately agree on fundamental truths"
+  },
+  {
+    "id": "e25",
+    "source": "thinker_agrippa",
+    "target": "thinker_ficino",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "De occulta philosophia directly builds on Ficino’s theories of spiritus, astral magic, and world soul as foundational premises"
+  },
+  {
+    "id": "e26",
+    "source": "thinker_agrippa",
+    "target": "thinker_pico",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Agrippa knew and incorporated Pico’s Kabbalistic work, especially the nine hundred theses, into his own three-book synthesis"
+  },
+  {
+    "id": "e27",
+    "source": "thinker_agrippa",
+    "target": "concept_kabbalah",
+    "type": "uses",
+    "weight": 3,
+    "notes": "Book III of De occulta philosophia is devoted to Christian Kabbalah, treating divine names, sephirot, and angelic hierarchies as the highest magical level"
+  },
+  {
+    "id": "e28",
+    "source": "thinker_agrippa",
+    "target": "concept_astral_magic",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Book II of De occulta philosophia is a comprehensive treatment of celestial magic, including planetary seals, characters, and astral correspondences"
+  },
+  {
+    "id": "e29",
+    "source": "thinker_agrippa",
+    "target": "concept_magic_squares",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Agrippa systematised the planetary kameas (magic squares) in De occulta philosophia Book II, providing the definitive Renaissance treatment of their magical use"
+  },
+  {
+    "id": "e30",
+    "source": "thinker_agrippa",
+    "target": "text_de_occulta",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "De occulta philosophia is Agrippa’s primary and defining work, the great synthesis of Renaissance occult philosophy"
+  },
+  {
+    "id": "e31",
+    "source": "thinker_bruno",
+    "target": "thinker_ficino",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Bruno extends Ficinian astral magic and memory theory into a more radical and explicitly magical direction, treating the cosmos as a living animated system"
+  },
+  {
+    "id": "e32",
+    "source": "thinker_bruno",
+    "target": "concept_memory_palace",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Bruno transformed the classical art of memory into a magical system charged with astrological images, aiming at a universal magical memory linking the operator to cosmic forces"
+  },
+  {
+    "id": "e33",
+    "source": "thinker_bruno",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Bruno’s natural magic and cosmology are explicitly Hermetic; he regarded Hermes Trismegistus as the highest ancient authority and his own philosophy as a Hermetic reform"
+  },
+  {
+    "id": "e34",
+    "source": "thinker_paracelsus",
+    "target": "concept_alchemy",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Paracelsus transformed alchemy from a metallurgical art into iatrochemistry, applying alchemical principles to medicine and founding a new chemical pharmacopoeia"
+  },
+  {
+    "id": "e35",
+    "source": "thinker_paracelsus",
+    "target": "thinker_aristotle",
+    "type": "compares",
+    "weight": 2,
+    "notes": "Paracelsus explicitly and polemically rejected the Aristotelian-Galenic medical tradition, publicly burning Avicenna’s Canon and claiming experience over ancient authority"
+  },
+  {
+    "id": "e36",
+    "source": "thinker_dee",
+    "target": "thinker_agrippa",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Dee owned and annotated De occulta philosophia and knew Agrippa’s work well; it informed his own angelic and Kabbalistic experiments"
+  },
+  {
+    "id": "e37",
+    "source": "thinker_dee",
+    "target": "concept_kabbalah",
+    "type": "uses",
+    "weight": 2,
+    "notes": "Dee’s Enochian angelic system has significant structural parallels to Kabbalistic frameworks of divine names and angelic hierarchies"
+  },
+  {
+    "id": "e38",
+    "source": "thinker_dee",
+    "target": "text_de_occulta",
+    "type": "uses",
+    "weight": 2,
+    "notes": "De occulta philosophia was one of Dee’s key sources; his library copy survives with his annotations"
+  },
+  {
+    "id": "e39",
+    "source": "thinker_fludd",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Fludd’s entire cosmological system in Utriusque cosmi historia is Hermetic in foundation, presenting the macrocosm-microcosm correspondence as Hermetic truth"
+  },
+  {
+    "id": "e40",
+    "source": "thinker_fludd",
+    "target": "concept_kabbalah",
+    "type": "uses",
+    "weight": 2,
+    "notes": "Fludd incorporates Kabbalistic sephirot and divine name hierarchies into his elaborate cosmological diagrams, blending them with Christian and Hermetic frameworks"
+  },
+  {
+    "id": "e41",
+    "source": "thinker_fludd",
+    "target": "thinker_agrippa",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Fludd builds on Agrippa’s three-world synthesis and encyclopedic approach to occult philosophy, developing it into an even more elaborately illustrated cosmological system"
+  },
+  {
+    "id": "e42",
+    "source": "thinker_kircher",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Kircher’s Oedipus Aegyptiacus decodes Egyptian hieroglyphs through the lens of Hermetic philosophy, treating Egypt as the source of prisca theologia"
+  },
+  {
+    "id": "e43",
+    "source": "thinker_kircher",
+    "target": "concept_kabbalah",
+    "type": "uses",
+    "weight": 2,
+    "notes": "Kircher applied Kabbalistic methods of letter mysticism and sephirotic analysis to his interpretation of Egyptian hieroglyphs and ancient religious symbols"
+  },
+  {
+    "id": "e44",
+    "source": "thinker_kircher",
+    "target": "thinker_ficino",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Kircher situated himself within the Hermetic-Neoplatonic lineage descending from Ficino, treating the prisca theologia as the organising framework of universal history"
+  },
+  {
+    "id": "e45",
+    "source": "thinker_proclus",
+    "target": "thinker_plotinus",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Proclus provided the most rigorous and systematic elaboration of Plotinian Neoplatonism, formalising its logic in the Elements of Theology"
+  },
+  {
+    "id": "e46",
+    "source": "thinker_proclus",
+    "target": "thinker_iamblichus",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Proclus inherited and continued the theurgic synthesis of Iamblichus, integrating ritual practice into the metaphysical system of late Neoplatonism"
+  },
+  {
+    "id": "e47",
+    "source": "thinker_proclus",
+    "target": "concept_theurgy",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Proclus provided the most philosophically sophisticated account of theurgy, explaining how ritual acts ascend through the emanative hierarchy to reach the divine"
+  },
+  {
+    "id": "e48",
+    "source": "thinker_proclus",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Proclus gave the most detailed and formally rigorous elaboration of emanation doctrine, distinguishing multiple levels within each hypostasis with great precision"
+  },
+  {
+    "id": "e49",
+    "source": "thinker_iamblichus",
+    "target": "thinker_plotinus",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Iamblichus was a pupil of Porphyry, himself Plotinus’s direct student; he transformed Plotinian metaphysics by insisting on the necessity of theurgic ritual for ascent"
+  },
+  {
+    "id": "e50",
+    "source": "thinker_iamblichus",
+    "target": "concept_theurgy",
+    "type": "explains",
+    "weight": 3,
+    "notes": "De mysteriis is the primary theoretical and apologetic text of theurgy, defending ritual practice against philosophical objections and systematising its metaphysical basis"
+  },
+  {
+    "id": "e51",
+    "source": "thinker_iamblichus",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 2,
+    "notes": "Iamblichus modified Plotinus’s emanationism by introducing additional levels of hypostasis and insisting more strongly on the radical transcendence of the One"
+  },
+  {
+    "id": "e52",
+    "source": "thinker_porphyry",
+    "target": "thinker_plotinus",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Porphyry was Plotinus’s direct student and literary executor, editing and publishing the Enneads and writing the primary biography of Plotinus"
+  },
+  {
+    "id": "e53",
+    "source": "thinker_porphyry",
+    "target": "concept_theurgy",
+    "type": "compares",
+    "weight": 2,
+    "notes": "Porphyry critiqued the legitimacy of theurgic ritual in his Letter to Anebo, generating Iamblichus’s rebuttal in De mysteriis and defining the central debate of late Neoplatonism"
+  },
+  {
+    "id": "e54",
+    "source": "thinker_pseudo_dionysius",
+    "target": "thinker_proclus",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "The Pseudo-Dionysian corpus Christianises Proclus almost wholesale, transposing his emanative hierarchy and terminology into a Christian theological framework"
+  },
+  {
+    "id": "e55",
+    "source": "thinker_pseudo_dionysius",
+    "target": "concept_neoplatonism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Pseudo-Dionysius was the primary conduit through which Neoplatonic thought entered mainstream Christian theology and mysticism in the medieval West"
+  },
+  {
+    "id": "e56",
+    "source": "thinker_pseudo_dionysius",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Pseudo-Dionysius reframes Neoplatonic emanation as divine procession (proodos), the outward movement of divine goodness creating and sustaining all beings"
+  },
+  {
+    "id": "e57",
+    "source": "thinker_ibn_sina",
+    "target": "thinker_al_farabi",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ibn Sina built systematically on Al-Farabi’s synthesis of Aristotelian and Neoplatonic philosophy, extending it into medicine, psychology, and metaphysics"
+  },
+  {
+    "id": "e58",
+    "source": "thinker_ibn_sina",
+    "target": "thinker_aristotle",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ibn Sina’s philosophy operates within an Aristotelian framework across logic, natural philosophy, psychology, and metaphysics, substantially modified by Neoplatonic elements"
+  },
+  {
+    "id": "e59",
+    "source": "thinker_ibn_sina",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Ibn Sina adapted Neoplatonic emanationism for an Islamic philosophical context, developing a ten-intellect cosmology in which the Active Intellect emanates the sublunar world"
+  },
+  {
+    "id": "e60",
+    "source": "thinker_ibn_rushd",
+    "target": "thinker_aristotle",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Ibn Rushd (Averroes) was the definitive Aristotelian commentator whose interpretations shaped both Islamic and Latin scholastic philosophy for centuries"
+  },
+  {
+    "id": "e61",
+    "source": "thinker_ibn_rushd",
+    "target": "thinker_ibn_sina",
+    "type": "compares",
+    "weight": 2,
+    "notes": "Ibn Rushd extensively critiqued Ibn Sina’s Neoplatonising interpretation of Aristotle, arguing it distorted genuine Aristotelianism with Platonic accretions"
+  },
+  {
+    "id": "e62",
+    "source": "thinker_al_farabi",
+    "target": "thinker_aristotle",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Al-Farabi founded the Islamic Aristotelian tradition, producing systematic commentaries and summaries of Aristotle’s logic, natural philosophy, and political philosophy"
+  },
+  {
+    "id": "e63",
+    "source": "thinker_al_farabi",
+    "target": "thinker_plato",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Al-Farabi sought to synthesise Plato and Aristotle, arguing their philosophies were ultimately in agreement, and drew on Platonic political philosophy for his ideal state"
+  },
+  {
+    "id": "e64",
+    "source": "thinker_al_farabi",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Al-Farabi developed a ten-intellect emanationist cosmology in which the First Cause overflows into successive intellects down to the Active Intellect governing the sublunar realm"
+  },
+  {
+    "id": "e65",
+    "source": "thinker_al_buni",
+    "target": "concept_magic_squares",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Al-Buni systematised planetary magic squares and letter-number correspondences, providing the most detailed Arabic treatment of their construction and use in Islamic occult tradition"
+  },
+  {
+    "id": "e66",
+    "source": "thinker_al_buni",
+    "target": "concept_kabbalah",
+    "type": "compares",
+    "weight": 2,
+    "notes": "Al-Buni’s letter mysticism and methods of divine name manipulation run in close parallel to Kabbalistic approaches, raising questions of shared sources or mutual influence"
+  },
+  {
+    "id": "e67",
+    "source": "thinker_al_buni",
+    "target": "text_shams_al_maarif",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Shams al-Maarif is Al-Buni’s primary work and the most influential compendium of Islamic occult science"
+  },
+  {
+    "id": "e68",
+    "source": "thinker_abulafia",
+    "target": "concept_kabbalah",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Abraham Abulafia founded the ecstatic or prophetic strand of Kabbalah, centred on letter permutation, divine name meditation, and techniques for achieving prophetic consciousness"
+  },
+  {
+    "id": "e69",
+    "source": "thinker_abulafia",
+    "target": "text_sefer_yetzirah",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Abulafia’s entire system of letter permutation mysticism derives from and elaborates the letter-combination methods of Sefer Yetzirah, treated as the key to prophetic technique"
+  },
+  {
+    "id": "e70",
+    "source": "thinker_albertus_magnus",
+    "target": "thinker_aristotle",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Albertus Magnus was the greatest medieval Aristotelian encyclopedist, producing comprehensive paraphrases of the entire Aristotelian corpus and naturalising it within Christian learning"
+  },
+  {
+    "id": "e71",
+    "source": "thinker_albertus_magnus",
+    "target": "concept_alchemy",
+    "type": "explains",
+    "weight": 2,
+    "notes": "Albertus catalogued and evaluated alchemical literature, including in his De mineralibus, and was credited (probably falsely) with important alchemical texts in the later tradition"
+  },
+  {
+    "id": "e72",
+    "source": "thinker_albertus_magnus",
+    "target": "thinker_ibn_sina",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Albertus drew heavily on Avicenna’s natural philosophical writings, particularly on mineralogy, psychology, and cosmology, integrating them into his Aristotelian synthesis"
+  },
+  {
+    "id": "e73",
+    "source": "thinker_plotinus",
+    "target": "thinker_plato",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "Plotinus presented his philosophy as a systematic development of Plato, treating the Enneads as the recovery of Plato’s true and hidden metaphysical teaching"
+  },
+  {
+    "id": "e74",
+    "source": "thinker_plotinus",
+    "target": "concept_neoplatonism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Plotinus is the founder of Neoplatonism as a distinct philosophical tradition, establishing its characteristic doctrines of the One, Intellect, and Soul in the Enneads"
+  },
+  {
+    "id": "e75",
+    "source": "thinker_plotinus",
+    "target": "concept_world_soul",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Plotinus elaborated the World Soul as the third great hypostasis in the emanative hierarchy, mediating between the Intellect and the material world"
+  },
+  {
+    "id": "e76",
+    "source": "thinker_roger_bacon",
+    "target": "thinker_aristotle",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Roger Bacon worked within the Aristotelian natural philosophical tradition while pushing its empirical dimensions toward experimental method and mathematical optics"
+  },
+  {
+    "id": "e77",
+    "source": "thinker_roger_bacon",
+    "target": "thinker_ibn_sina",
+    "type": "derived-from",
+    "weight": 2,
+    "notes": "Bacon drew on Avicenna’s optics and natural philosophy, especially his theories of species and the multiplication of forms, as key sources for his own scientific programme"
+  },
+  {
+    "id": "e78",
+    "source": "thinker_roger_bacon",
+    "target": "concept_alchemy",
+    "type": "uses",
+    "weight": 2,
+    "notes": "Bacon endorsed alchemy as a legitimate branch of natural philosophy capable of producing artificial gold and extending human life, situating it within his broader scientific vision"
+  },
+  {
+    "id": "e79",
+    "source": "thinker_pythagoras",
+    "target": "concept_neoplatonism",
+    "type": "explains",
+    "weight": 2,
+    "notes": "Neoplatonism absorbed and substantially amplified the Pythagorean heritage, treating number mysticism and harmonic cosmology as an anticipation of Platonic metaphysics"
+  },
+  {
+    "id": "e80",
+    "source": "thinker_hermes",
+    "target": "text_corpus_hermeticum",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "Hermes Trismegistus is the credited author and divine speaker of the Corpus Hermeticum dialogues; his authority as sage legitimated the texts for Renaissance readers"
+  },
+  {
+    "id": "e81",
+    "source": "thinker_hermes",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Hermes Trismegistus is the founding figure of the Hermetic tradition; all Hermetic philosophy is conducted under his authority as the thrice-great sage of Egypt"
+  },
+  {
+    "id": "e82",
+    "source": "text_picatrix",
+    "target": "concept_astral_magic",
+    "type": "explains",
+    "weight": 3,
+    "notes": "The Picatrix is the most comprehensive manual of astral magic in the Western tradition, systematically presenting talismanic theory, planetary ritual, and astrological image magic"
+  },
+  {
+    "id": "e83",
+    "source": "text_picatrix",
+    "target": "concept_spiritus",
+    "type": "explains",
+    "weight": 2,
+    "notes": "The Picatrix explains the pneumatic mechanism by which astral influence descends through spiritus to affect material substances and prepared talismans"
+  },
+  {
+    "id": "e84",
+    "source": "text_de_mysteriis",
+    "target": "concept_theurgy",
+    "type": "explains",
+    "weight": 3,
+    "notes": "De mysteriis Aegyptiorum is the primary theoretical text of theurgy, providing the philosophical defence and systematic account of ritual ascent in late Neoplatonism"
+  },
+  {
+    "id": "e85",
+    "source": "text_de_mysteriis",
+    "target": "thinker_iamblichus",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "De mysteriis is attributed to Iamblichus and is his most influential work; it defines his contribution to theurgic Neoplatonism"
+  },
+  {
+    "id": "e86",
+    "source": "text_enneads",
+    "target": "thinker_plotinus",
+    "type": "mentions",
+    "weight": 1,
+    "notes": "The Enneads is the collected philosophical writings of Plotinus, edited by Porphyry; it is the foundational text of the Neoplatonic tradition"
+  },
+  {
+    "id": "e87",
+    "source": "text_enneads",
+    "target": "concept_emanation",
+    "type": "explains",
+    "weight": 3,
+    "notes": "The Enneads contains the original and most authoritative exposition of the emanation of the One, Intellect, and Soul as the three primary hypostases"
+  },
+  {
+    "id": "e88",
+    "source": "text_corpus_hermeticum",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 3,
+    "notes": "The Corpus Hermeticum is the primary textual foundation of Hermeticism, presenting dialogues on cosmology, gnosis, and the soul’s ascent attributed to Hermes Trismegistus"
+  },
+  {
+    "id": "e89",
+    "source": "text_zohar",
+    "target": "concept_kabbalah",
+    "type": "explains",
+    "weight": 3,
+    "notes": "The Zohar is the central and most authoritative text of the Kabbalistic tradition, presenting mystical commentary on Torah through the lens of the ten sefirot"
+  },
+  {
+    "id": "e90",
+    "source": "text_sefer_yetzirah",
+    "target": "concept_kabbalah",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Sefer Yetzirah is the earliest surviving Kabbalistic text, presenting the creation of the world through the thirty-two paths of wisdom: ten sefirot and twenty-two Hebrew letters"
+  },
+  {
+    "id": "e91",
+    "source": "concept_world_soul",
+    "target": "concept_emanation",
+    "type": "derived-from",
+    "weight": 3,
+    "notes": "The World Soul is the third emanation in the Plotinian hierarchy, proceeding from the Intellect, which itself proceeds from the One; it is structurally inseparable from emanation theory"
+  },
+  {
+    "id": "e92",
+    "source": "concept_theurgy",
+    "target": "concept_emanation",
+    "type": "uses",
+    "weight": 2,
+    "notes": "Theurgy presupposes the emanative hierarchy as its metaphysical framework; ritual acts work precisely by engaging the sympathetic links within the descending chain of emanations"
+  },
+  {
+    "id": "e93",
+    "source": "concept_spiritus",
+    "target": "concept_astral_magic",
+    "type": "explains",
+    "weight": 3,
+    "notes": "Spiritus is the metaphysical mechanism of astral magic: the subtle pneumatic medium through which stellar influences travel from the heavens into the sublunary world and into prepared objects"
+  },
+  {
+    "id": "e94",
+    "source": "concept_prisca_theologia",
+    "target": "concept_hermeticism",
+    "type": "explains",
+    "weight": 2,
+    "notes": "Hermeticism is one of the primary strands of the prisca theologia; Hermes Trismegistus was placed at or near the origin of the ancient wisdom chain by Ficino and his successors"
+  },
+  {
+    "id": "e95",
+    "source": "concept_kabbalah",
+    "target": "concept_emanation",
+    "type": "compares",
+    "weight": 2,
+    "notes": "The ten sefirot of Kabbalah function as a parallel to Neoplatonic emanations; Christian Kabbalists explicitly mapped sephirotic structure onto Neoplatonic hypostases"
   }
 ]

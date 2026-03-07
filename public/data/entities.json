@@ -4,89 +4,552 @@
     "type": "thinker",
     "label": "Marsilio Ficino",
     "aliases": ["Ficino"],
-    "blurb": "Florentine philosopher and priest (1433–1499), head of the Platonic Academy in Florence. Translated the Corpus Hermeticum and Plato's complete works into Latin, synthesizing Neoplatonism with Christian theology. His De vita libri tres (1489) is the foundational text of Renaissance natural magic.",
+    "blurb": "Florentine philosopher and priest (1433–1499), head of the Platonic Academy in Florence. Translated the Corpus Hermeticum and Plato's complete works into Latin for the first time, synthesising Neoplatonism with Christian theology. His De vita libri tres (1489) integrated medical astrology, Neoplatonic cosmology, and natural magic into the foundational text of Renaissance occult philosophy.",
     "tags": ["neoplatonism", "renaissance", "hermeticism", "florence", "translation"],
-    "links": []
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/ficino/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Marsilio_Ficino"}
+    ]
   },
   {
     "id": "thinker_pico",
     "type": "thinker",
     "label": "Pico della Mirandola",
-    "aliases": ["Pico"],
-    "blurb": "Italian Renaissance philosopher (1463–1494), author of the Oration on the Dignity of Man and the 900 Theses. Synthesized Neoplatonism, Kabbalah, Hermeticism, and scholastic philosophy. Student and collaborator of Ficino at the Platonic Academy.",
+    "aliases": ["Pico", "Giovanni Pico"],
+    "blurb": "Italian Renaissance philosopher (1463–1494), author of the Oration on the Dignity of Man and the 900 Theses. Attempted to reconcile Plato, Aristotle, Kabbalah, and Christianity into a universal synthesis. Introduced Hebrew Kabbalah into the Latin intellectual tradition, founding Christian Kabbalah, and collaborated with Ficino at the Platonic Academy in Florence.",
     "tags": ["neoplatonism", "renaissance", "kabbalah", "florence", "humanism"],
-    "links": []
-  },
-  {
-    "id": "thinker_ikhwan",
-    "type": "thinker",
-    "label": "Ikhwān al-Ṣafāʾ",
-    "aliases": ["Brethren of Purity", "Ikhwan al-Safa"],
-    "blurb": "Anonymous 10th-century philosophical brotherhood active in Basra (Abbasid Iraq). Authors of the Rasāʾil, a 52-treatise encyclopedia synthesizing Pythagoreanism, Neoplatonism, and Islamic theology. A model of collective authorship and epistemic integration.",
-    "tags": ["islamicate", "neoplatonism", "pythagoreanism", "encyclopedism", "10th-century"],
-    "links": []
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/pico-della-mirandola/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Giovanni_Pico_della_Mirandola"}
+    ]
   },
   {
     "id": "thinker_plotinus",
     "type": "thinker",
     "label": "Plotinus",
     "aliases": [],
-    "blurb": "Roman-era philosopher (c. 204–270 CE), founder of Neoplatonism. His Enneads describe the emanation of all reality from the One through Intellect and Soul. The most influential philosopher of late antiquity for both Islamic and Renaissance thought.",
+    "blurb": "Egyptian-born philosopher (204–270 CE) and founder of Neoplatonism. His Enneads — edited by Porphyry — describe the emanation of all reality from the One through Intellect (Nous) and Soul to matter, and the soul's contemplative return to the One. The single most influential philosopher of late antiquity for Islamic, Byzantine, and Renaissance thought.",
     "tags": ["neoplatonism", "late-antiquity", "greek", "enneads"],
-    "links": []
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/plotinus/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Plotinus"}
+    ]
   },
   {
     "id": "thinker_proclus",
     "type": "thinker",
     "label": "Proclus",
     "aliases": ["Proclus Diadochus"],
-    "blurb": "Greek Neoplatonist philosopher (412–485 CE), head of the Platonic Academy in Athens. Systematized Neoplatonism with mathematical precision. Influenced Islamic philosophy through the Liber de Causis and Renaissance thought through Ficino's translations.",
-    "tags": ["neoplatonism", "late-antiquity", "greek", "mathematics"],
-    "links": []
+    "blurb": "Greek Neoplatonist (412–485 CE), last head of the Platonic Academy in Athens. His Elements of Theology and Platonic Theology systematised Neoplatonism with mathematical rigour, elaborating hierarchies of henads, intellects, and souls. Influenced Islamic philosophy through Arabic translations and the Renaissance through Ficino; the Pseudo-Dionysius Christianised his metaphysics almost wholesale.",
+    "tags": ["neoplatonism", "late-antiquity", "greek", "theurgy"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/proclus/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Proclus"}
+    ]
+  },
+  {
+    "id": "thinker_ikhwan",
+    "type": "thinker",
+    "label": "Ikhwān al-Ṣafāʾ",
+    "aliases": ["Brethren of Purity", "Ikhwan al-Safa"],
+    "blurb": "Anonymous 10th-century philosophical brotherhood active in Basra (Abbasid Iraq). Authors of the Rasāʾil, a 52-treatise encyclopaedia synthesising Pythagoreanism, Neoplatonism, and Islamic theology. A model of collective authorship, their work ascends from arithmetic through music, astronomy, and theology toward union with the Active Intellect.",
+    "tags": ["islamicate", "neoplatonism", "pythagoreanism", "encyclopedism", "10th-century"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Brethren_of_Purity"}
+    ]
+  },
+  {
+    "id": "thinker_iamblichus",
+    "type": "thinker",
+    "label": "Iamblichus",
+    "aliases": [],
+    "blurb": "Syrian Neoplatonist (ca. 245–325 CE) who redirected the tradition by insisting on the necessity of theurgy — ritual action with the gods — for the soul's return to the divine. His De mysteriis (On the Mysteries) rebutted Porphyry's purely intellectualist approach and became the foundational text of theurgic philosophy. Teacher of a generation of late-antique Platonists, he stands at the origin of the ritual-magical strand of Neoplatonism.",
+    "tags": ["neoplatonism", "late-antiquity", "theurgy", "ritual", "syrian"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/iamblichus/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Iamblichus"}
+    ]
+  },
+  {
+    "id": "thinker_porphyry",
+    "type": "thinker",
+    "label": "Porphyry",
+    "aliases": [],
+    "blurb": "Phoenician-born Neoplatonist (ca. 234–305 CE), pupil of Plotinus, editor of the Enneads, and author of their biographical preface. His Isagoge became the standard medieval introduction to Aristotle; his Letter to Anebo questioned theurgic ritual, drawing Iamblichus's rebuttal in De mysteriis. Porphyry represents the more intellectualist wing of Neoplatonism: union with the One requires philosophy alone, not ritual.",
+    "tags": ["neoplatonism", "late-antiquity", "philosophy", "biography"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Porphyry_(philosopher)"}
+    ]
+  },
+  {
+    "id": "thinker_pseudo_dionysius",
+    "type": "thinker",
+    "label": "Pseudo-Dionysius the Areopagite",
+    "aliases": ["Pseudo-Dionysius", "Dionysius the Areopagite"],
+    "blurb": "Anonymous Syrian Christian (probably fl. ca. 500 CE) who produced the mystical-theological corpus — Divine Names, Mystical Theology, Celestial Hierarchy, Ecclesiastical Hierarchy — that Christianised Proclean Neoplatonism almost wholesale. Eriugena's ninth-century Latin translation made the corpus central to medieval theology; Ficino and Pico read it as confirmation of Platonic-Christian harmony.",
+    "tags": ["neoplatonism", "christian-mysticism", "late-antiquity", "byzantine", "apophatic"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/pseudo-dionysius-areopagite/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Pseudo-Dionysius_the_Areopagite"}
+    ]
+  },
+  {
+    "id": "thinker_agrippa",
+    "type": "thinker",
+    "label": "Heinrich Cornelius Agrippa",
+    "aliases": ["Agrippa", "Agrippa von Nettesheim"],
+    "blurb": "German polymath (1486–1535) and the most systematic synthesiser of Renaissance occult philosophy. His Three Books of Occult Philosophy (De occulta philosophia, 1531–33) organised natural magic, celestial magic, and ceremonial magic into a unified Neoplatonic framework. His companion sceptical work De incertitudine et vanitate scientiarum (1530) subjected all arts and sciences — including magic — to biting critique.",
+    "tags": ["renaissance", "magic", "kabbalah", "occult-philosophy", "german"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Heinrich_Cornelius_Agrippa"}
+    ]
+  },
+  {
+    "id": "thinker_paracelsus",
+    "type": "thinker",
+    "label": "Paracelsus",
+    "aliases": ["Theophrastus Bombastus von Hohenheim"],
+    "blurb": "Swiss-German physician and alchemist (1493–1541) who rejected Galenic medicine and built a new system on the tria prima — sulphur, mercury, and salt. His iatrochemistry made alchemy a therapeutic discipline; his speculative cosmology introduced elemental spirits, the astral body, and macrocosm-microcosm correspondences into natural philosophy. One of the most original and chaotic thinkers of the sixteenth century.",
+    "tags": ["alchemy", "medicine", "renaissance", "iatrochemistry", "german"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/paracelsus/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Paracelsus"}
+    ]
+  },
+  {
+    "id": "thinker_bruno",
+    "type": "thinker",
+    "label": "Giordano Bruno",
+    "aliases": ["Bruno"],
+    "blurb": "Italian Dominican friar and philosopher (1548–1600) executed by the Roman Inquisition for defending an infinite Copernican universe and Hermetic natural magic. Bruno's art of memory — drawing on Ficino and Lull — was a magical technology for impressing universal images on the mind. Frances Yates's influential thesis that Bruno was primarily a Hermetic magician who read heliocentrism through Egyptian religion remains the indispensable starting point for his study.",
+    "tags": ["renaissance", "hermeticism", "magic", "cosmology", "memory"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/bruno/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Giordano_Bruno"}
+    ]
+  },
+  {
+    "id": "thinker_dee",
+    "type": "thinker",
+    "label": "John Dee",
+    "aliases": ["Dee"],
+    "blurb": "English mathematician, astrologer, and occult philosopher (1527–1608/9) who advised Elizabeth I and obsessively pursued angelic communication. With his scryer Edward Kelley, Dee received (or believed he received) the Enochian angelic language and a system of ceremonial magic. His library of roughly 4,000 volumes was among the largest private collections in Elizabethan England. Dee stands at the junction of practical mathematical science, Renaissance Hermeticism, and statecraft.",
+    "tags": ["renaissance", "magic", "enochian", "england", "mathematics"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/John_Dee"}
+    ]
+  },
+  {
+    "id": "thinker_fludd",
+    "type": "thinker",
+    "label": "Robert Fludd",
+    "aliases": ["Fludd"],
+    "blurb": "English physician and Rosicrucian apologist (1574–1637) whose lavishly illustrated Utriusque cosmi historia (1617–26) presented a complete Hermetic cosmology mapping macrocosm and microcosm through musical proportions and Kabbalistic sephirot. He defended the Rosicrucian manifestos and engaged in a celebrated polemic with Kepler over the role of harmony in natural philosophy, representing the last grand synthesis of Hermetic encyclopedism.",
+    "tags": ["renaissance", "hermeticism", "rosicrucianism", "kabbalah", "england"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Robert_Fludd"}
+    ]
+  },
+  {
+    "id": "thinker_kircher",
+    "type": "thinker",
+    "label": "Athanasius Kircher",
+    "aliases": ["Kircher"],
+    "blurb": "German Jesuit polymath (1602–1680) whose vast output spanned Egyptology, Sinology, geology, optics, and musicology, almost always informed by a Hermetic framework holding all knowledge in providential harmony. His Oedipus Aegyptiacus (1652–55) attempted to decode Egyptian hieroglyphics through Hermetic and Kabbalistic keys. Kircher represents the last attempt to hold universal learning and esoteric Christian syncretism together before the modern disciplines separated.",
+    "tags": ["baroque", "hermeticism", "jesuit", "encyclopedism", "egypt"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Athanasius_Kircher"}
+    ]
+  },
+  {
+    "id": "thinker_albertus",
+    "type": "thinker",
+    "label": "Albertus Magnus",
+    "aliases": ["Albert the Great"],
+    "blurb": "Dominican bishop and encyclopedist (ca. 1200–1280), the greatest synthesiser of Aristotelian natural philosophy in the medieval Latin West. His commentaries on Aristotle, treatises on minerals, plants, and animals, and the Speculum astronomiae — a catalogue of astrological and magical literature — made him the standard authority on natural philosophy for a century. Teacher of Thomas Aquinas; canonised 1931.",
+    "tags": ["medieval", "aristotelianism", "natural-philosophy", "dominican", "scholasticism"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Albertus_Magnus"}
+    ]
+  },
+  {
+    "id": "thinker_pythagoras",
+    "type": "thinker",
+    "label": "Pythagoras",
+    "aliases": [],
+    "blurb": "Pre-Socratic mathematician and mystic (ca. 570–495 BCE) whose doctrine — that number is the ultimate reality, the soul is immortal and transmigrates, and the heavenly spheres emit music — became one of the most durable currents in Western esotericism. The historical Pythagoras wrote nothing; the tradition accumulated around his name includes mathematical cosmology, ritual prescriptions, and a brotherhood of initiates. Neopythagoreanism and Neoplatonism amplified his legacy across the subsequent two millennia.",
+    "tags": ["ancient-greece", "mathematics", "music-of-spheres", "transmigration", "esotericism"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/pythagoras/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Pythagoras"}
+    ]
+  },
+  {
+    "id": "thinker_plato",
+    "type": "thinker",
+    "label": "Plato",
+    "aliases": [],
+    "blurb": "Athenian philosopher (428–348 BCE) whose dialogues established the doctrine of eternal non-material Forms as the true objects of knowledge. The Timaeus gave Renaissance thinkers a divinely ordered cosmogony; the Symposium described the erotic ascent to the Beautiful Itself; the Republic elaborated the soul's return to the divine. Neoplatonism is the systematic philosophy built from the implications Plato's texts left open.",
+    "tags": ["ancient-greece", "philosophy", "forms", "cosmology", "soul"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/plato/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Plato"}
+    ]
+  },
+  {
+    "id": "thinker_aristotle",
+    "type": "thinker",
+    "label": "Aristotle",
+    "aliases": ["The Philosopher"],
+    "blurb": "Macedonian-born philosopher (384–322 BCE) whose systems of logic, natural philosophy, and metaphysics defined the intellectual framework of the medieval Islamic and Christian worlds. His hylomorphism, four-cause analysis, and cosmology of the unmoved mover were absorbed, challenged, and reworked by every thinker in this archive. Though not himself an esotericist, Aristotle is the inescapable intellectual background against which Neoplatonism, alchemy, and Renaissance magic all define themselves.",
+    "tags": ["ancient-greece", "philosophy", "logic", "natural-philosophy", "cosmology"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/aristotle/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Aristotle"}
+    ]
+  },
+  {
+    "id": "thinker_hermes",
+    "type": "thinker",
+    "label": "Hermes Trismegistus",
+    "aliases": ["Trismegistus", "Mercurius Ter Maximus"],
+    "blurb": "The legendary thrice-great Hermes, a syncretic figure fusing Greek Hermes with Egyptian Thoth, credited as the author of the Hermetic corpus — Greek philosophical and religious texts composed ca. 100–300 CE but long believed to be primordial Egyptian wisdom. Ficino's 1463 translation ignited the Renaissance Hermetic movement; Casaubon's 1614 dating of the texts to the Hellenistic period corrected the chronology without ending their influence.",
+    "tags": ["hermeticism", "egypt", "antiquity", "gnosis", "primordial-wisdom"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Hermes_Trismegistus"}
+    ]
+  },
+  {
+    "id": "thinker_ibn_sina",
+    "type": "thinker",
+    "label": "Ibn Sina",
+    "aliases": ["Avicenna", "Abū ʿAlī al-Ḥusayn ibn Sīnā"],
+    "blurb": "Persian polymath (980–1037), known in the Latin West as Avicenna. His Canon of Medicine remained the standard European medical textbook into the seventeenth century. His philosophical synthesis integrated Aristotelian logic with Neoplatonic emanationism into the most influential system in medieval Islamic philosophy. His 'flying man' argument anticipated phenomenological accounts of self-awareness; his mystical writings opened an illuminationist strand that Suhrawardi would develop further.",
+    "tags": ["islamicate", "medieval", "medicine", "neoplatonism", "persian"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/ibn-sina/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Avicenna"}
+    ]
+  },
+  {
+    "id": "thinker_ibn_rushd",
+    "type": "thinker",
+    "label": "Ibn Rushd",
+    "aliases": ["Averroes", "The Commentator"],
+    "blurb": "Andalusian philosopher (1126–1198), authoritative commentator on Aristotle and the most important figure in the medieval Latin reception of Greek philosophy. His rigorous Aristotelianism challenged Neoplatonising readings; his monopsychism — the claim that all humans share one Active Intellect — became theologically explosive. Averroist controversies at the University of Paris shaped the entire trajectory of late medieval natural philosophy.",
+    "tags": ["islamicate", "medieval", "aristotelianism", "andalusia", "scholasticism"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/ibn-rushd/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Averroes"}
+    ]
+  },
+  {
+    "id": "thinker_al_farabi",
+    "type": "thinker",
+    "label": "Al-Farabi",
+    "aliases": ["Abū Naṣr al-Fārābī", "the Second Teacher"],
+    "blurb": "Central Asian philosopher (ca. 872–950), known as the Second Teacher after Aristotle, who founded Islamic Neoplatonised Aristotelianism. His emanationist cosmology, account of the prophet-philosopher as ideal legislator, and reconciliation of Plato with Aristotle shaped Ibn Sina, Ibn Rushd, and the entire trajectory of medieval Islamic and Jewish philosophy. He also wrote the foundational Islamic treatises on music and its cosmic dimensions.",
+    "tags": ["islamicate", "medieval", "neoplatonism", "aristotelianism", "political-philosophy"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/al-farabi/"},
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Al-Farabi"}
+    ]
+  },
+  {
+    "id": "thinker_al_buni",
+    "type": "thinker",
+    "label": "Al-Būnī",
+    "aliases": ["Ahmad ibn Ali al-Buni", "Al-Buni"],
+    "blurb": "Egyptian Sufi scholar (d. ca. 1225) whose Shams al-Maʿārif (Sun of Gnosis) became the most widely copied Arabic manual of talismanic magic, letter mysticism, and the science of divine names. Al-Buni systematised the 99 divine names, magic squares (awfāq), planetary correspondences, and the mystical Arabic alphabet into a comprehensive operational framework — a parallel tradition of learned magic to the Latin Hermetic lineage.",
+    "tags": ["islamicate", "magic", "sufi", "talismans", "egypt"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Ahmad_al-Buni"}
+    ]
+  },
+  {
+    "id": "thinker_abulafia",
+    "type": "thinker",
+    "label": "Abraham Abulafia",
+    "aliases": ["Abulafia"],
+    "blurb": "Spanish-born Kabbalist (1240–ca. 1291) and founder of Prophetic or Ecstatic Kabbalah — a contemplative path aimed at prophetic experience through systematic permutation of the Hebrew letters (tzeruf), combined with breath control and melodic recitation. Where the Zoharic Kabbalah focuses on the divine sefirot, Abulafia's path uses language as the vehicle of mystical ascent. Gershom Scholem identified him as the fountainhead of the ecstatic-prophetic tradition in Jewish mysticism.",
+    "tags": ["kabbalah", "jewish-mysticism", "medieval", "spain", "prophetic"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Abraham_Abulafia"}
+    ]
+  },
+  {
+    "id": "thinker_roger_bacon",
+    "type": "thinker",
+    "label": "Roger Bacon",
+    "aliases": ["Friar Bacon"],
+    "blurb": "English Franciscan natural philosopher (ca. 1214–1292) who argued for mathematics, optics, and experimental inquiry as instruments of theological and intellectual reform. His Opus Majus treated languages, optics, and alchemy as ascending disciplines. Often cast as a proto-scientist, Bacon in fact endorsed occult properties and astral magic as legitimate natural-philosophical domains and was deeply interested in the pneumatic mechanisms of celestial influence.",
+    "tags": ["medieval", "natural-philosophy", "optics", "alchemy", "english"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Roger_Bacon"}
+    ]
+  },
+  {
+    "id": "thinker_albertus_magnus",
+    "type": "thinker",
+    "label": "Albertus Magnus",
+    "aliases": ["Albert the Great", "Albert of Cologne"],
+    "blurb": "Dominican bishop and encyclopedist (ca. 1200–1280), the greatest synthesiser of Aristotelian natural philosophy in the medieval Latin West. His commentaries on Aristotle, treatises on minerals, plants, and animals, and the Speculum astronomiae — a critical catalogue of astrological and magical literature — shaped a century of natural philosophy. Teacher of Thomas Aquinas; canonised 1931.",
+    "tags": ["medieval", "scholasticism", "natural-philosophy", "dominican", "aristotle"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Albertus_Magnus"}
+    ]
   },
   {
     "id": "text_rasail",
     "type": "text",
     "label": "Rasāʾil Ikhwān al-Ṣafāʾ",
     "aliases": ["Epistles of the Brethren of Purity", "Rasa'il"],
-    "blurb": "A corpus of 52 philosophical treatises compiled by the Ikhwān al-Ṣafāʾ (c. 950–1000). Covers mathematics, natural science, psychology, and metaphysics in ascending encyclopedic order. One of the great synthetic works of medieval Islamic philosophy.",
+    "blurb": "A corpus of 52 philosophical treatises compiled by the Ikhwān al-Ṣafāʾ (ca. 950–1000 CE). Ascending from arithmetic and geometry through music, astronomy, natural science, psychology, and metaphysics to theology, it synthesises Pythagoreanism, Neoplatonism, and Islamic thought. One of the great encyclopedic works of medieval Islamic philosophy and a model of how to integrate all the sciences into a unified soteriological vision.",
     "tags": ["islamicate", "neoplatonism", "encyclopedism", "10th-century", "primary-source"],
-    "links": []
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Epistles_of_the_Brethren_of_Purity"}
+    ]
   },
   {
     "id": "text_oration",
     "type": "text",
     "label": "Oration on the Dignity of Man",
     "aliases": ["Oratio de hominis dignitate"],
-    "blurb": "Pico della Mirandola's 1486 preface to his 900 Theses. Often called the 'manifesto of the Renaissance,' it argues for human freedom and the synthesis of all philosophical traditions. A key primary source for Renaissance humanism and the dignity of the human intellect.",
+    "blurb": "Pico della Mirandola's 1486 preface to his 900 Theses, often called the manifesto of the Renaissance. It argues that human beings possess no fixed nature and can ascend or descend the entire hierarchy of being by their own will. A foundational text for Renaissance humanism, the syncretist philosophy of the Platonic Academy, and the concept of human dignity in Western thought.",
     "tags": ["renaissance", "humanism", "kabbalah", "1486", "primary-source"],
-    "links": []
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Oration_on_the_Dignity_of_Man"}
+    ]
+  },
+  {
+    "id": "text_corpus_hermeticum",
+    "type": "text",
+    "label": "Corpus Hermeticum",
+    "aliases": ["Hermetic Corpus"],
+    "blurb": "A collection of seventeen Greek philosophical and religious dialogues attributed to Hermes Trismegistus, composed ca. 100–300 CE but believed in the Renaissance to be ancient Egyptian wisdom. Ficino's 1463 Latin translation (Pimander) ignited the Renaissance Hermetic movement. Casaubon's 1614 demonstration of their Hellenistic date corrected the chronology without diminishing their influence on European esotericism.",
+    "tags": ["hermeticism", "gnosis", "late-antiquity", "primary-source", "translation"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Corpus_Hermeticum"}
+    ]
+  },
+  {
+    "id": "text_de_occulta",
+    "type": "text",
+    "label": "De Occulta Philosophia",
+    "aliases": ["Three Books of Occult Philosophy", "De occulta philosophia libri tres"],
+    "blurb": "Agrippa's 1531–33 encyclopaedia of Renaissance occult philosophy in three ascending books: natural magic (elemental and sympathetic), celestial magic (astrology and music), and ceremonial magic (Kabbalah, divine names, angels). The most comprehensive synthesis of Renaissance occult thought, drawing on Ficino, Pico, classical sources, and Kabbalistic texts. The indispensable reference for the Renaissance magical tradition.",
+    "tags": ["renaissance", "magic", "kabbalah", "agrippa", "primary-source"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/De_Occulta_Philosophia_libri_tres"}
+    ]
+  },
+  {
+    "id": "text_enneads",
+    "type": "text",
+    "label": "Enneads",
+    "aliases": ["Plotinus's Enneads"],
+    "blurb": "The collected philosophical writings of Plotinus, edited and arranged into six groups of nine (enneads) by his pupil Porphyry after Plotinus's death. Covering topics from ethics and aesthetics to cosmology, the nature of the soul, and the mystical return to the One, the Enneads are the foundational texts of Neoplatonism and the most important single source for late-antique and Renaissance Platonic mysticism.",
+    "tags": ["neoplatonism", "plotinus", "late-antiquity", "primary-source", "mysticism"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Enneads"}
+    ]
+  },
+  {
+    "id": "text_picatrix",
+    "type": "text",
+    "label": "Picatrix",
+    "aliases": ["Ghāyat al-Ḥakīm"],
+    "blurb": "An Arabic compendium of astral magic (Ghāyat al-Ḥakīm, 'Goal of the Sage'), composed ca. 1000 CE and translated into Latin in 1256. The most comprehensive medieval manual of talismanic magic, integrating Neoplatonic philosophy, astrology, and ritual to explain how images can attract planetary powers. Agrippa, Ficino, and Bruno all drew on it, making it one of the most influential texts in the European magical tradition.",
+    "tags": ["magic", "astrology", "islamicate", "talismans", "primary-source"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Picatrix"}
+    ]
+  },
+  {
+    "id": "text_zohar",
+    "type": "text",
+    "label": "Zohar",
+    "aliases": ["Sefer ha-Zohar", "Book of Splendour"],
+    "blurb": "The central text of Kabbalah, a collection of mystical commentary on the Torah composed in Aramaic in thirteenth-century Castile and attributed (pseudepigraphically) to the second-century sage Shimon bar Yochai. Gershom Scholem established its composition by Moses de León ca. 1280–1286. The Zohar's theosophical system of ten sefirot (divine emanations) and its allegorical scriptural exegesis became the foundation of all subsequent Kabbalistic thought.",
+    "tags": ["kabbalah", "jewish-mysticism", "medieval", "primary-source", "sefirot"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Zohar"}
+    ]
+  },
+  {
+    "id": "text_sefer_yetzirah",
+    "type": "text",
+    "label": "Sefer Yetzirah",
+    "aliases": ["Book of Formation", "Book of Creation"],
+    "blurb": "One of the earliest extant Jewish mystical texts (probably composed between the third and sixth centuries CE), the Sefer Yetzirah describes God's creation of the world through thirty-two 'wondrous paths of wisdom' — ten sefirot and the twenty-two letters of the Hebrew alphabet. Its theory of letters as cosmic elements became foundational for all subsequent Kabbalah, for Jewish and Christian magical traditions, and for Abulafia's letter-permutation mysticism.",
+    "tags": ["kabbalah", "jewish-mysticism", "antiquity", "primary-source", "hebrew-letters"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Sefer_Yetzirah"}
+    ]
+  },
+  {
+    "id": "text_shams_al_maarif",
+    "type": "text",
+    "label": "Shams al-Maʿārif",
+    "aliases": ["Sun of Gnosis", "Shams al-Ma'arif"],
+    "blurb": "Al-Buni's encyclopaedic manual of Islamic magical knowledge (ca. 1200 CE), comprising sections on divine names, magic squares (awfāq), letter mysticism, and talismanic recipes integrating Quranic material, Sufi spirituality, and astrological correspondence. The most widely copied Arabic magical text in the manuscript tradition, influential from Morocco to Indonesia and a parallel tradition of learned magic to the Latin Hermetic lineage.",
+    "tags": ["islamicate", "magic", "sufi", "al-buni", "primary-source"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Shams_al-Ma%27arif"}
+    ]
+  },
+  {
+    "id": "text_de_mysteriis",
+    "type": "text",
+    "label": "De Mysteriis",
+    "aliases": ["On the Mysteries", "Theurgia"],
+    "blurb": "Iamblichus's fourth-century defence of theurgic ritual in response to Porphyry's Letter to Anebo, which had questioned whether the gods are truly constrained by human ritual. De Mysteriis argues that ritual acts do not compel the gods — rather, the gods descend voluntarily through symbols (symbola) and signs (synthemata) placed in material objects. The foundational text of theurgic philosophy and a key source for understanding late antique religion and magic.",
+    "tags": ["neoplatonism", "theurgy", "ritual", "late-antiquity", "primary-source"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/De_Mysteriis_(Iamblichus)"}
+    ]
   },
   {
     "id": "concept_emanation",
     "type": "concept",
     "label": "Emanation",
-    "aliases": ["emanationism", "procession"],
-    "blurb": "The Neoplatonic doctrine that all reality flows outward from a supreme principle (the One) through successive ontological levels: Intellect, Soul, and Matter. Not creation ex nihilo but continuous overflow of being. Central to Plotinus, Proclus, Ikhwan al-Safa, and Ficino.",
+    "aliases": ["emanationism", "procession", "hypostasis"],
+    "blurb": "The Neoplatonic doctrine that all reality flows outward from a supreme principle (the One) through successive ontological levels — Intellect (Nous), Soul, and Matter — without diminishing the source. Not creation ex nihilo but a continuous overflow of being analogous to light from the sun. Central to Plotinus, Proclus, Iamblichus, the Ikhwān al-Ṣafāʾ, Ibn Sina, Al-Farabi, and Ficino.",
     "tags": ["neoplatonism", "metaphysics", "cosmology", "ontology"],
-    "links": []
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/neoplatonism/"}
+    ]
   },
   {
     "id": "concept_neoplatonism",
     "type": "concept",
     "label": "Neoplatonism",
     "aliases": ["Neo-Platonism"],
-    "blurb": "A philosophical tradition originating with Plotinus (c. 3rd century CE) that systematizes Plato's philosophy into a hierarchical cosmology of emanation. Transmitted through Proclus into Islamic philosophy (via the Abbasid translation movement), then into the Latin West through Ficino's translations.",
+    "blurb": "A philosophical tradition originating with Plotinus (3rd century CE) that systematises Plato's philosophy into a hierarchical cosmology of emanation from the One through Intellect and Soul to matter, with the corresponding return of the soul through contemplation. Transmitted through Proclus into Islamic philosophy (via the Abbasid translation movement), into the Latin Middle Ages through Pseudo-Dionysius, and into the Renaissance through Ficino's translations.",
     "tags": ["philosophy", "metaphysics", "late-antiquity", "renaissance", "transmission"],
-    "links": []
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/neoplatonism/"}
+    ]
+  },
+  {
+    "id": "concept_theurgy",
+    "type": "concept",
+    "label": "Theurgy",
+    "aliases": ["theurgic ritual", "divine work"],
+    "blurb": "Ritual practice aimed at drawing the divine downward into matter and the soul upward toward the divine — 'divine work' as opposed to mere theology. Theorised by Iamblichus against Porphyry's purely intellectualist Neoplatonism: the gods voluntarily descend through material symbols and sacred rites, enabling the soul to ascend. The central concept in late antique Platonic religion and a key source for understanding Renaissance ceremonial magic.",
+    "tags": ["neoplatonism", "ritual", "late-antiquity", "magic", "iamblichus"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/theurgy/"}
+    ]
+  },
+  {
+    "id": "concept_kabbalah",
+    "type": "concept",
+    "label": "Kabbalah",
+    "aliases": ["Qabbalah", "Cabala", "Jewish mysticism"],
+    "blurb": "The principal tradition of Jewish mysticism and esoteric philosophy, centred on the ten sefirot (divine emanations), the Hebrew letters as cosmic forces, and allegorical interpretation of Torah. The Zohar (ca. 1280s) is its foundational text; Isaac Luria's 16th-century school introduced tzimtzum (divine contraction) and tikkun (cosmic repair). Christian Kabbalah — founded by Pico and developed by Agrippa and Reuchlin — adapted Kabbalistic methods to Renaissance humanist and magical purposes.",
+    "tags": ["jewish-mysticism", "sefirot", "medieval", "renaissance", "hebrew-letters"],
+    "links": [
+      {"label": "Stanford Encyclopedia of Philosophy", "url": "https://plato.stanford.edu/entries/kabbalah/"}
+    ]
+  },
+  {
+    "id": "concept_hermeticism",
+    "type": "concept",
+    "label": "Hermeticism",
+    "aliases": ["Hermetic philosophy", "Hermetic tradition"],
+    "blurb": "A philosophical and religious tradition claiming descent from Hermes Trismegistus and the Corpus Hermeticum, centred on the idea that the cosmos is a living, ensouled, divinely ordered whole and that the wise can align themselves with its hidden sympathies. Flourished in the Renaissance after Ficino's 1463 translation; persisted in Rosicrucianism, Freemasonry, and modern esoteric movements. Faivre identified prisca theologia, living nature, imagination, and transmutation as its defining characteristics.",
+    "tags": ["hermeticism", "renaissance", "gnosis", "cosmic-sympathy", "tradition"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Hermeticism"}
+    ]
+  },
+  {
+    "id": "concept_prisca_theologia",
+    "type": "concept",
+    "label": "Prisca Theologia",
+    "aliases": ["perennial philosophy", "philosophia perennis", "ancient theology"],
+    "blurb": "The Renaissance doctrine that a single primordial divine wisdom underlies all the great philosophical and religious traditions — Orpheus, Pythagoras, Plato, the Sibylline Oracles, Hermes Trismegistus, and Moses all teaching the same truth. Proposed by Ficino, developed by Pico as concordia philosophorum. The prisca theologia justified the syncretist project of the Platonic Academy and legitimated pagan learning within Christian humanism.",
+    "tags": ["renaissance", "syncretism", "hermeticism", "ficino", "philosophy"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Prisca_theologia"}
+    ]
+  },
+  {
+    "id": "concept_world_soul",
+    "type": "concept",
+    "label": "World Soul",
+    "aliases": ["Anima Mundi", "anima mundi"],
+    "blurb": "The principle in Neoplatonic and Platonic cosmology (Plato, Timaeus) that the cosmos is itself a living, ensouled being — the World Soul mediating between the divine Intellect and the material world and giving the cosmos its orderly motion. For Ficino, the anima mundi is also the vehicle through which astral influences are transmitted to earthly bodies, making it the philosophical foundation of Renaissance natural magic and astrological medicine.",
+    "tags": ["neoplatonism", "cosmology", "plato", "ficino", "natural-magic"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/World_soul"}
+    ]
+  },
+  {
+    "id": "concept_alchemy",
+    "type": "concept",
+    "label": "Alchemy",
+    "aliases": ["chymistry", "al-kimiya"],
+    "blurb": "The pre-modern discipline that sought to transmute base metals into gold while simultaneously encoding a symbolic vocabulary for spiritual transformation. Received in the Latin West from Greek and Arabic sources, it flourished as both laboratory practice and allegorical system from the twelfth century through the seventeenth. Historians Principe and Newman have made the strongest modern case that alchemy was a serious experimental discipline, not primitive pseudoscience.",
+    "tags": ["alchemy", "natural-philosophy", "transformation", "laboratory", "symbolism"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Alchemy"}
+    ]
+  },
+  {
+    "id": "concept_astral_magic",
+    "type": "concept",
+    "label": "Astral Magic",
+    "aliases": ["natural magic", "celestial magic", "talismanic magic"],
+    "blurb": "Magic that operates by drawing down the influences of the stars and planets into terrestrial objects — images, talismans, stones, plants — through the medium of the World Soul and spiritus. Theorised by Ficino in De vita III (Liber de vita coelitus comparanda) and by the Picatrix tradition; the central practice of Renaissance natural magic. Distinguished from demonic magic by its claim to work through natural, not supernatural, channels.",
+    "tags": ["magic", "astrology", "renaissance", "ficino", "talismans"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Astrology_and_magic_in_the_medieval_Islamic_world"}
+    ]
+  },
+  {
+    "id": "concept_memory_palace",
+    "type": "concept",
+    "label": "Art of Memory",
+    "aliases": ["memory palace", "method of loci", "ars memorativa"],
+    "blurb": "An ancient and Renaissance mnemonic technique in which information is encoded as vivid images placed at specific locations in a mentally visualised architectural space (the 'memory palace'). In the Renaissance, Ficino, Bruno, and Camillo elevated the art of memory into a magical and cosmological tool for impressing universal archetypes on the mind and aligning the practitioner with cosmic order. Frances Yates's The Art of Memory (1966) is the foundational modern study.",
+    "tags": ["memory", "renaissance", "magic", "rhetoric", "brunoo"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Method_of_loci"}
+    ]
+  },
+  {
+    "id": "concept_spiritus",
+    "type": "concept",
+    "label": "Spiritus",
+    "aliases": ["spirit", "pneuma", "subtle body"],
+    "blurb": "In Neoplatonic and Renaissance medical philosophy, spiritus is the subtle vaporous medium between the gross material body and the immaterial soul — a fine, luminous substance generated from blood in the heart that carries sense impressions and vital heat. For Ficino, spiritus is also the vehicle through which stellar influences enter the body and the mechanism of natural magic: the magician's own spiritus, refined by practice, becomes receptive to cosmic influences.",
+    "tags": ["medicine", "natural-philosophy", "ficino", "renaissance", "body-soul"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Pneuma"}
+    ]
+  },
+  {
+    "id": "concept_magic_squares",
+    "type": "concept",
+    "label": "Magic Squares",
+    "aliases": ["awfaq", "wafq", "kamea"],
+    "blurb": "Numerical grids in which every row, column, and diagonal sums to the same total. In Islamic magic (especially Al-Buni's Shams al-Maʿārif) and in Renaissance occultism (Agrippa's De occulta philosophia), magic squares were associated with the seven classical planets and used as the basis for talismans. The 3×3 square (Saturn), 4×4 (Jupiter), 5×5 (Mars), 6×6 (Sun), 7×7 (Venus), 8×8 (Mercury), and 9×9 (Moon) correspond to the planetary hierarchy.",
+    "tags": ["magic", "mathematics", "talismans", "agrippa", "al-buni"],
+    "links": [
+      {"label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Magic_square"}
+    ]
   },
   {
     "id": "tool_sqlite",
     "type": "tool",
     "label": "SQLite",
     "aliases": [],
-    "blurb": "A lightweight, serverless, file-based relational database engine. Ideal for local scholarly archives: a single .db file stores all your entities, texts, and relationships with full SQL query support. No server required — works offline and is included in Python's standard library.",
+    "blurb": "A lightweight, serverless, file-based relational database engine used as the archive backend for EsoPipe. A single .db file stores all conversations, entities, tables, and relationships with full SQL query support including FTS5 full-text search. No server required — works offline and is included in Python's standard library.",
     "tags": ["database", "python", "local-first", "sql", "open-source"],
-    "links": []
+    "links": [
+      {"label": "SQLite Documentation", "url": "https://www.sqlite.org/docs.html"}
+    ]
   }
 ]
