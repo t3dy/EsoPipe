@@ -162,6 +162,58 @@ function TopicView({
                 </Section>
             )}
 
+            {/* Encyclopedia entry — written by Ollama/Gemini pipeline */}
+            {topic.blurb_long && (
+                <Section title="Encyclopedia Entry">
+                    <div className="text-sm text-[var(--text)] leading-relaxed space-y-3">
+                        {topic.blurb_long.split(/\n\n+/).map((para, i) => (
+                            <p key={i}>
+                                {linkingOn ? <LinkifyText text={para.trim()} /> : para.trim()}
+                            </p>
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            {/* Key Figures */}
+            {topic.key_figures && topic.key_figures.length > 0 && (
+                <Section title="Key Figures">
+                    <div className="flex flex-wrap gap-2">
+                        {topic.key_figures.map(f => (
+                            <span key={f} className="text-xs bg-[var(--bg-card)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-muted)]">
+                                {linkingOn ? <LinkifyText text={f} /> : f}
+                            </span>
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            {/* Key Texts */}
+            {topic.key_texts && topic.key_texts.length > 0 && (
+                <Section title="Key Texts">
+                    <div className="flex flex-wrap gap-2">
+                        {topic.key_texts.map(t => (
+                            <span key={t} className="text-xs bg-[var(--bg-card)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-muted)]">
+                                {linkingOn ? <LinkifyText text={t} /> : t}
+                            </span>
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            {/* Key Scholars */}
+            {topic.key_scholars && topic.key_scholars.length > 0 && (
+                <Section title="Key Scholars">
+                    <div className="flex flex-wrap gap-2">
+                        {topic.key_scholars.map(s => (
+                            <span key={s} className="text-xs bg-[var(--bg-card)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-muted)]">
+                                {linkingOn ? <LinkifyText text={s} /> : s}
+                            </span>
+                        ))}
+                    </div>
+                </Section>
+            )}
+
             {topic.what_studied && (
                 <Section title="What you've studied">
                     <div className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap">
@@ -193,6 +245,19 @@ function TopicView({
                             : topic.open_questions
                         }
                     </div>
+                </Section>
+            )}
+
+            {/* Sources — from writer pipeline */}
+            {topic.sources && topic.sources.length > 0 && (
+                <Section title="Sources">
+                    <ul className="space-y-1">
+                        {topic.sources.map((src, i) => (
+                            <li key={i} className="text-xs text-[var(--text-muted)] leading-relaxed pl-3 border-l border-[var(--border)]">
+                                {src}
+                            </li>
+                        ))}
+                    </ul>
                 </Section>
             )}
 

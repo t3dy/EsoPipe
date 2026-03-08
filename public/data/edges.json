@@ -1,13 +1,5 @@
 [
   {
-    "id": "e01",
-    "source": "lesson_schema_design",
-    "target": "tool_sqlite",
-    "type": "uses",
-    "weight": 2,
-    "notes": "SQLite is the primary database tool introduced and used throughout this lesson"
-  },
-  {
     "id": "e02",
     "source": "lesson_schema_design",
     "target": "thinker_ikhwan",

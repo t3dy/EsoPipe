@@ -94,13 +94,87 @@ export function EntityDetail() {
                 <main className="flex-1 p-8 overflow-auto">
                     <div className="max-w-2xl mx-auto space-y-8">
 
-                        {/* Blurb — linkified */}
-                        {entity.blurb && (
+                        {/* Blurb short — hover-card summary */}
+                        {entity.blurb && !entity.blurb_long && (
                             <section>
                                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">About</h2>
                                 <p className="text-sm text-[var(--text)] leading-relaxed">
                                     <LinkifyText text={entity.blurb} />
                                 </p>
+                            </section>
+                        )}
+
+                        {/* Blurb long — DGWE-style encyclopedia entry */}
+                        {entity.blurb_long && (
+                            <section>
+                                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">Encyclopedia Entry</h2>
+                                {entity.blurb && (
+                                    <p className="text-sm text-[var(--text-muted)] italic mb-3 leading-relaxed border-l-2 border-[var(--primary)] pl-3">
+                                        <LinkifyText text={entity.blurb} />
+                                    </p>
+                                )}
+                                <div className="text-sm text-[var(--text)] leading-relaxed space-y-3">
+                                    {entity.blurb_long.split(/\n\n+/).map((para, i) => (
+                                        <p key={i}>
+                                            <LinkifyText text={para.trim()} />
+                                        </p>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Open Questions */}
+                        {entity.open_questions && (
+                            <section>
+                                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">Open Questions</h2>
+                                <p className="text-sm text-[var(--text-muted)] italic leading-relaxed border-l-2 border-[var(--border)] pl-3">
+                                    <LinkifyText text={entity.open_questions} />
+                                </p>
+                            </section>
+                        )}
+
+                        {/* Connections — writer-generated cross-links */}
+                        {entity.connections && entity.connections.length > 0 && (
+                            <section>
+                                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">Connections</h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {entity.connections.map(conn => {
+                                        const linked = data.entities.find(e =>
+                                            e.label.toLowerCase() === conn.toLowerCase() ||
+                                            e.aliases?.some(a => a.toLowerCase() === conn.toLowerCase())
+                                        );
+                                        return linked ? (
+                                            <button
+                                                key={conn}
+                                                onClick={() => navigate(`/entities/${linked.id}`)}
+                                                className="text-xs px-2 py-1 rounded border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-[var(--primary-text)] transition-colors"
+                                            >
+                                                {conn}
+                                            </button>
+                                        ) : (
+                                            <span
+                                                key={conn}
+                                                className="text-xs px-2 py-1 rounded border border-[var(--border)] text-[var(--text-muted)] bg-[var(--bg-card)]"
+                                            >
+                                                {conn}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Sources */}
+                        {entity.sources && entity.sources.length > 0 && (
+                            <section>
+                                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] mb-3">Sources</h2>
+                                <ul className="space-y-1">
+                                    {entity.sources.map((src, i) => (
+                                        <li key={i} className="text-xs text-[var(--text-muted)] leading-relaxed pl-3 border-l border-[var(--border)]">
+                                            {src}
+                                        </li>
+                                    ))}
+                                </ul>
                             </section>
                         )}
 

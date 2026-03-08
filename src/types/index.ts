@@ -11,6 +11,8 @@ export const EntitySchema = z.object({
   label: z.string(),
   aliases: z.array(z.string()).default([]),
   blurb: z.string().default(''),
+  // Long-form DGWE-style encyclopedia entry (2000–3000 chars), written by the Ollama/Gemini pipeline.
+  blurb_long: z.string().optional(),
   tags: z.array(z.string()).default([]),
   links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
   // Editorial control: set false to exclude this entity from autolinking entirely.
@@ -19,6 +21,10 @@ export const EntitySchema = z.object({
   pub_date: z.string().optional(),
   author: z.string().optional(),
   publisher: z.string().optional(),
+  // Writer-generated relational fields
+  connections: z.array(z.string()).default([]),
+  open_questions: z.string().optional(),
+  sources: z.array(z.string()).default([]),
 });
 export type Entity = z.infer<typeof EntitySchema>;
 
@@ -377,6 +383,12 @@ export interface Topic {
   what_studied: string;
   connections: string[];
   open_questions: string;
+  // Writer-generated enrichment fields (populated by Ollama/Gemini pipeline)
+  key_figures?: string[];
+  key_texts?: string[];
+  key_scholars?: string[];
+  blurb_long?: string;
+  sources?: string[];
 }
 
 // ─── Entity Details ────────────────────────────────────────────────────────

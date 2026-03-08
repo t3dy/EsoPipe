@@ -20,6 +20,8 @@ function makeEntity(overrides: Partial<Entity> & { id: string; label: string }):
     blurb: '',
     tags: [],
     links: [],
+    connections: [],
+    sources: [],
     ...overrides,
   };
 }
