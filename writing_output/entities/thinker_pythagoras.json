@@ -1,0 +1,26 @@
+{
+  "id": "thinker_pythagoras",
+  "blurb": "Pythagoras (ca. 570–495 BCE) was a seminal pre-Socratic philosopher and mystic whose profound, albeit unwritten, doctrines established one of the most enduring currents in Western esotericism. He taught that number is the ultimate reality governing the cosmos, a principle exemplified by the \"music of the spheres,\" where planetary movements produce a harmonious numerical order. Central to his philosophy was also the belief in the soul's immortality and its transmigration, with purification achieved through rigorous philosophical and mathematical study. The historical Pythagoras left no personal writings, yet a rich and influential tradition accumulated around his name, encompassing not only mathematical cosmology but also ritual prescriptions and the formation of a disciplined brotherhood of initiates. His legacy was significantly amplified across subsequent millennia by movements such as Neopythagoreanism and Neoplatonism, and continued to profoundly influence Renaissance thinkers like Pico della Mirandola and Heinrich Cornelius Agrippa, who saw in his numerical philosophy keys to metaphysical truths and magical practices.",
+  "blurb_long": "Pythagoras, a pre-Socratic philosopher and mystic born on an Aegean island around 570 BCE, is a foundational figure in Western thought, particularly within esoteric traditions. While the historical Pythagoras left no written works, his teachings were preserved and elaborated by his followers, forming a distinct school of thought. Early accounts, such as those by Iamblichus in his *Life of Pythagoras*, portray him as a \"scientist-sage\" who gained extensive wisdom from Egyptian priests and Babylonian Magi, being initiated into divine mysteries and instructed in music, astronomy, and the mathematical sciences. A cornerstone of Pythagorean philosophy is the doctrine that numbers are the fundamental essence of reality, governing the entire cosmos. This numerical understanding underpinned the famous concept of the \"music of the spheres,\" positing that the celestial bodies, in their movements, produce an inaudible, harmonious numerical order. Furthermore, Pythagoras advocated for the immortality of the soul and its transmigration through various bodies, with purification and liberation achieved through philosophical inquiry, ethical living, and mathematical contemplation. His teachings also involved a communal way of life and specific ritual prescriptions for his brotherhood of initiates.\n\nThe influence of Pythagorean thought permeated subsequent philosophical and esoteric currents for millennia. Plato, for instance, deeply integrated Pythagorean ideas, particularly concerning the role of numbers and geometry, into his theory of Forms, viewing mathematical sciences as essential stepping stones to understanding higher realities, including the Form of the Good, as discussed in his *Republic*. Later, Neoplatonists like Porphyry, in his own *Life of Pythagoras*, and Iamblichus were instrumental in reviving and synthesizing Pythagorean philosophy with Platonic metaphysics, extending its scope to include theurgical practices and advanced numerology. Iamblichus, in particular, emphasized the importance of ritual and the active role of the divine in the soul's ascent, building upon Pythagorean principles. During the Renaissance, thinkers such as Pico della Mirandola explicitly embraced Pythagorean symbolism, integrating it into his syncretic philosophy where numbers were seen as keys to unlocking metaphysical and divine truths, a concept he termed \"Formal Number.\" This numerical mysticism further informed the mathematical magic of figures like Heinrich Cornelius Agrippa. The enduring legacy of Pythagoras is evident in the persistent fascination with mathematical cosmology, cosmic harmony, and the esoteric dimensions of number throughout Western intellectual history. The popular anecdote, recounted by Macrobius, of Pythagoras discovering musical intervals from blacksmiths' hammers, though apocryphal, highlights his profound association with the mathematical underpinnings of music and the order of the universe.",
+  "tags": [
+    "ancient-greece",
+    "mathematics",
+    "philosophy",
+    "mysticism",
+    "cosmology",
+    "neoplatonism",
+    "renaissance"
+  ],
+  "connections": [
+    "thinker_plato",
+    "thinker_porphyry",
+    "thinker_iamblichus",
+    "thinker_pico",
+    "thinker_agrippa",
+    "concept_neoplatonism",
+    "concept_renaissance_magic"
+  ],
+  "open_questions": "What remains contested in scholarship is the precise extent to which doctrines attributed to Pythagoras originated with him versus being later developments within the Pythagorean tradition, particularly given his lack of written works and the legendary nature of many accounts. Distinguishing the historical figure from the accumulated tradition continues to be a central challenge for scholars of ancient philosophy and esotericism.",
+  "_source_entity": "thinker_pythagoras",
+  "_model": "gemini-2.5-flash"
+}

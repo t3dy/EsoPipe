@@ -1,0 +1,30 @@
+{
+  "id": "thinker_plotinus",
+  "blurb": "Plotinus (204–270 CE), an Egyptian-born philosopher, is widely regarded as the founder of Neoplatonism, a highly influential philosophical and mystical system of late antiquity. His collected writings, the *Enneads*, meticulously edited and organized by his student Porphyry, articulate a hierarchical metaphysics centered on the emanation of all reality from an utterly transcendent principle, the One. From the One proceeds Intellect (Nous), then Soul (Psyche), and finally matter, with the ultimate goal of human existence being the soul's contemplative ascent and return to the One. Plotinus's profound and systematic thought, characterized by its mystical orientation and rigorous philosophical method, became the single most influential philosophical framework for subsequent Islamic, Byzantine, and Renaissance intellectual traditions, shaping diverse fields from theology to magic.",
+  "blurb_long": "Plotinus, born in Lycopolis, Egypt, around 204 CE, established the philosophical school known as Neoplatonism in Rome during the third century CE. His philosophical system builds upon and significantly deepens the metaphysical concepts of Middle Platonism, transforming them into a structured and mystical framework concerning divine unity and participation. Precursors like Eudorus of Alexandria, with his Pythagorean view of the One as the supreme Monad (*archē monadōn*), set the stage for Plotinus's radical understanding of the ultimate principle. His magnum opus, the *Enneads*, a collection of 54 treatises arranged into six books by his student Porphyry, systematically expounds his cosmology and ethics.\n\nAt the core of Plotinus's philosophy is the doctrine of emanation from the One (τὸ ἕν), an absolutely simple and transcendent principle beyond all predication, thought, and even being, as stated in *Enneads* VI.9.3, \"The One is beyond being and beyond intellect.\" This 'Unum primum' (Enneads I.1) does not 'think' or act, but rather, all reality flows from it automatically, akin to light emanating from the sun. Below the One is the Nous, or Divine Intellect, which contains the intelligible forms and is inseparable from them. The Soul, or Psyche, emanates from the Nous, mediating between the intelligible and sensible realms, with imagination (*phantasia*) and memory playing crucial roles in its interaction with both higher realities and the material world. The ultimate aim for the human soul, which is a part of the universal Soul, is a process of spiritual ascent, involving purgation and inward focus, leading to a mystical union with the One, as detailed in treatises such as *On Beauty* (Enneads I.6) and *On Virtues* (Enneads I.2).\n\nPlotinus's influence was immense and far-reaching. His ideas were foundational for later Neoplatonists like Proclus, who, while building upon Plotinus's system, introduced a more articulated hierarchy, including the concept of Henads to mediate the One's relation to multiplicity. The question of whether Plotinus himself implicitly taught such pluralities, or maintained a more radical simplicity of the One, remains a point of scholarly debate, with figures like Edward Butler arguing for a Plotinian henadology and Eric D. Perl resisting it, emphasizing the One's absolute transcendence of individuation. Through Latin and Arabic translations and commentaries, Plotinus profoundly shaped Islamic and Byzantine philosophy. In the Renaissance, Marsilio Ficino's translation and commentary on the *Enneads* were pivotal. Giovanni Pico della Mirandola engaged critically with Plotinus, integrating his emanationist framework with Pythagorean and Christian ideas, notably drawing on Greek and Arabic intermediaries before Ficino's complete translation. Giordano Bruno also adapted Plotinus's concepts of emanation and ascent to construct his mnemonic systems, viewing them as a 'ladder of nature' for the soul's journey from multiplicity to unity.",
+  "tags": [
+    "neoplatonism",
+    "philosophy",
+    "mysticism",
+    "emanation",
+    "late-antiquity",
+    "greek",
+    "synthesis"
+  ],
+  "connections": [
+    "thinker_porphyry",
+    "thinker_proclus",
+    "thinker_pico",
+    "thinker_bruno",
+    "thinker_ficino",
+    "thinker_plato",
+    "thinker_aristotle",
+    "concept_emanation",
+    "concept_neoplatonism",
+    "concept_the_one",
+    "text_enneads"
+  ],
+  "open_questions": "The precise nature of Plotinus's 'One' and its relationship to later Neoplatonic concepts like the Henads remains a subject of ongoing scholarly discussion, particularly concerning whether Plotinus's system implicitly allows for such pluralities or maintains a radical simplicity.",
+  "_source_entity": "thinker_plotinus",
+  "_model": "gemini-2.5-flash"
+}

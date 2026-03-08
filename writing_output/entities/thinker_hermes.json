@@ -1,0 +1,28 @@
+{
+  "id": "thinker_hermes",
+  "blurb": "Hermes Trismegistus, the \"thrice-great Hermes,\" is a legendary syncretic figure who embodies a fusion of the Greek god Hermes and the Egyptian deity Thoth. He is traditionally revered as the author of the Hermetic corpus, a collection of Greek philosophical and religious texts primarily composed between approximately 100 and 300 CE. For centuries, these writings were widely regarded as primordial Egyptian wisdom, representing an ancient, pre-Platonic theological tradition known as the prisca theologia. His perceived authorship lent immense authority to these texts, which profoundly influenced Western esotericism. The figure of Hermes Trismegistus is also central to the alchemical tradition, where he is invoked as a foundational authority on processes of purification, transformation, and the sacred union of elements, as seen in works like Michael Maier's Atalanta Fugiens. Marsilio Ficino's 1463 translation of the Corpus Hermeticum into Latin was pivotal, igniting the Renaissance Hermetic movement. Although Isaac Casaubon's 1614 philological analysis correctly dated the texts to the Hellenistic period, this re-evaluation did not diminish Hermes Trismegistus's enduring symbolic and philosophical impact on esoteric thought.",
+  "blurb_long": "Hermes Trismegistus, a legendary and profoundly influential figure in Western esotericism, represents a syncretic amalgamation of the Greek god Hermes and the Egyptian deity Thoth. Revered as the \"thrice-great,\" he was traditionally considered the primordial author of the Hermetic corpus, a collection of Greek philosophical and religious texts. While these texts were composed primarily between 100 and 300 CE, they were long believed to contain ancient Egyptian wisdom, predating even Plato, thus establishing Hermes Trismegistus as a fount of prisca theologia, or primordial theology. This attribution granted the Hermetic writings immense authority and contributed significantly to their reception across various esoteric traditions.\n\nBeyond the philosophical texts, Hermes Trismegistus is a foundational authority in the alchemical tradition. His name is frequently invoked in alchemical treatises, where he is associated with the principles of transformation and purification. For instance, alchemical emblems, such as those found in Michael Maier's Atalanta Fugiens, explicitly echo Hermes Trismegistus's teachings, advising practitioners to learn from processes like the washing of linen, symbolizing the purification of base matter through repeated operations to reveal its essence (p. 7219). Fire and water are presented as agents of this transformation, leading to the discovery of \"gold,\" both literally and metaphorically. The concept of the \"Sacred Union,\" central to alchemical processes, is also embodied in emblems attributed to Hermetic wisdom (p. 7219). Furthermore, the alchemical tria prima of Salt, Sulfur, and Mercury, fundamental to later alchemical systems like Paracelsus's, implicitly links back to the broader Hermetic-alchemical framework (p. 629).\n\nThe historical reception of Hermes Trismegistus and the Hermetic corpus has been transformative. Marsilio Ficino's 1463 Latin translation of the Corpus Hermeticum for Cosimo de' Medici was a watershed moment, igniting the vibrant Renaissance Hermetic movement and profoundly influencing thinkers like Giovanni Pico della Mirandola and Giordano Bruno. This translation integrated Hermetic philosophy into the intellectual currents of Neoplatonism and Renaissance magic. Although Isaac Casaubon's 1614 philological analysis demonstrated that the texts were Hellenistic rather than ancient Egyptian, this re-dating, while correcting the historical chronology, did not entirely diminish the symbolic power or the enduring influence of Hermes Trismegistus and the Hermetic tradition on subsequent esoteric currents, including Rosicrucianism and later alchemical and mystical movements. Scholarly debates continue regarding the precise nature of the syncretism involved in his figure and the extent of genuine Egyptian influence versus Hellenistic philosophical synthesis within the corpus.",
+  "tags": [
+    "hermeticism",
+    "alchemy",
+    "antiquity",
+    "renaissance",
+    "philosophy",
+    "synthesis"
+  ],
+  "connections": [
+    "thinker_ficino",
+    "thinker_pico",
+    "thinker_bruno",
+    "thinker_paracelsus",
+    "text_corpus_hermeticum",
+    "concept_hermeticism",
+    "concept_alchemy",
+    "concept_prisca_theologia",
+    "concept_renaissance_magic",
+    "concept_neoplatonism"
+  ],
+  "open_questions": "Scholarly inquiry continues to explore the precise nature of the syncretism that shaped the figure of Hermes Trismegistus, particularly the extent to which the Hermetic corpus reflects genuine ancient Egyptian wisdom versus a Hellenistic philosophical synthesis. Further research also delves into the specific channels of transmission and adaptation of Hermetic ideas across diverse esoteric traditions.",
+  "_source_entity": "thinker_hermes",
+  "_model": "gemini-2.5-flash"
+}

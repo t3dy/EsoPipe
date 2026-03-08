@@ -1,0 +1,29 @@
+{
+  "id": "thinker_ibn_sina",
+  "blurb": "Ibn Sina, known in the Latin West as Avicenna, was a Persian polymath (980–1037) whose profound contributions shaped medieval thought across philosophy, medicine, and the sciences. His monumental *Canon of Medicine* (al-Qanun fi al-Tibb) served as the authoritative medical textbook in Europe for centuries, influencing medical practice and education until the seventeenth century. Philosophically, Ibn Sina forged a highly influential synthesis, integrating Aristotelian logic and metaphysics with Neoplatonic emanationism, establishing the dominant philosophical system in the medieval Islamic world and significantly impacting later scholasticism. His innovative 'flying man' argument explored self-awareness and consciousness, anticipating later phenomenological inquiries into the nature of the soul. Furthermore, his mystical treatises, such as the *Treatise on Love* and *Hayy ibn Yaqzan*, laid foundational groundwork for an illuminationist philosophical tradition, which later thinkers like Suhrawardi would significantly develop, underscoring his complex engagement with both rational inquiry and spiritual insight within the Islamic intellectual landscape.",
+  "blurb_long": "Ibn Sina, or Avicenna, born in Afshana near Bukhara in 980 CE, was a prodigious intellect who mastered various sciences, including medicine, mathematics, astronomy, and philosophy, by his late teens. His intellectual formation was deeply rooted in the rich Greco-Arabic translation movement, absorbing the works of Aristotle and Neoplatonists like Plotinus and Proclus, alongside Islamic theological and scientific traditions. His philosophical magnum opus, *Kitāb al-Shifāʾ* (The Book of Healing), is a comprehensive encyclopedia covering logic, natural philosophy, mathematics, and metaphysics. In this work, he meticulously integrated Aristotelian epistemology and physics with a sophisticated Neoplatonic cosmology centered on emanation. He posited a necessary existence, God, from whom a hierarchy of intellects emanates, culminating in the active intellect, which governs the sublunar world and facilitates human knowledge. This system provided a rational framework for understanding creation and the universe, distinguishing between necessary existence and contingent existence, a distinction that became central to Islamic metaphysics. His \"flying man\" thought experiment, positing a human created in a void with no sensory input yet aware of their own existence, profoundly argued for the soul's immateriality and self-awareness, influencing later theories of consciousness.\n\nWhile primarily known for his rational philosophy and medical contributions, Ibn Sina also engaged with mystical and esoteric themes, particularly in his later works. Texts such as *Risālat al-ʿIshq* (Treatise on Love) and *Hayy ibn Yaqzan* (The Living Son of the Awake) explore the soul's journey towards divine knowledge and union, often employing allegorical narratives and symbolic language reminiscent of Hermetic and Gnostic traditions, albeit reinterpreted within an Islamic framework. These writings are considered precursors to the illuminationist (Ishraqi) school of philosophy, later formalized by Suhrawardi, which emphasized intuitive knowledge and mystical experience as paths to truth, complementing or even transcending rational demonstration. Ibn Sina's influence extended far beyond the Islamic world; his works were extensively translated into Latin in the twelfth century, profoundly shaping scholastic philosophy in Europe. Thinkers like Albertus Magnus and Thomas Aquinas grappled with his ideas, particularly his metaphysics and theory of the soul, even as they often critiqued certain aspects, such as his concept of the intellect. His *Canon of Medicine* remained a cornerstone of medical education and practice in Europe until the early modern period, testifying to his enduring legacy in both theoretical and practical sciences.\n\nContemporary scholarship on Ibn Sina continues to debate the precise relationship between his \"rational\" and \"mystical\" writings, with some arguing for a consistent philosophical development and others suggesting a more distinct trajectory in his later thought. The extent of his engagement with specific esoteric currents, such as Hermeticism or early Sufi thought, and how these informed his unique synthesis of Aristotelianism and Neoplatonism, remains an area of ongoing investigation.",
+  "tags": [
+    "islamic",
+    "philosophy",
+    "medicine",
+    "neoplatonism",
+    "synthesis",
+    "mysticism",
+    "mathematics"
+  ],
+  "connections": [
+    "thinker_aristotle",
+    "thinker_plotinus",
+    "thinker_proclus",
+    "thinker_al_farabi",
+    "thinker_ibn_rushd",
+    "thinker_albertus_magnus",
+    "concept_emanation",
+    "concept_neoplatonism",
+    "concept_hermeticism",
+    "text_enneads"
+  ],
+  "open_questions": "Scholarly debate persists regarding the precise relationship between Ibn Sina's rational philosophical system and his later mystical writings, questioning whether they represent a continuous development or distinct intellectual phases. Further investigation is also needed into the extent of his engagement with specific esoteric currents, such as Hermeticism or early Sufi thought, and their role in shaping his unique synthesis.",
+  "_source_entity": "thinker_ibn_sina",
+  "_model": "gemini-2.5-flash"
+}

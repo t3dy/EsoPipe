@@ -23,6 +23,12 @@ import argparse
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
+# Force UTF-8 output on Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 ROOT           = Path(__file__).parent
 DATA_DIR       = ROOT / "cs-magical-scholarship" / "public" / "data"
 OUTPUT_DIR     = ROOT / "writing_output"

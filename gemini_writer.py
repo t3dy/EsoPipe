@@ -44,6 +44,12 @@ import time
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
+# Force UTF-8 output on Windows to handle non-ASCII entity labels
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # ── Load env ──────────────────────────────────────────────────────────────────
 try:
     from dotenv import load_dotenv
@@ -70,25 +76,30 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 (OUTPUT_DIR / "timelines").mkdir(exist_ok=True)
 
 # ── Gemini setup ──────────────────────────────────────────────────────────────
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
-genai.configure(api_key=GEMINI_API_KEY)
+_gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
-# gemini-1.5-flash: 1M context, fast, cheap — ideal for batch processing
-# gemini-1.5-pro:  1M context, highest quality — use for important entries
-DEFAULT_MODEL = "gemini-1.5-flash"
+# gemini-2.5-flash: free tier thinking model, excellent for scholarly writing
+# gemini-2.0-flash: free tier but may have 0 quota on some accounts
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 def call_gemini(prompt: str, model_name: str = DEFAULT_MODEL, temperature: float = 0.4) -> str:
     """Call the Gemini API and return the text response."""
-    model = genai.GenerativeModel(
-        model_name,
-        generation_config=genai.GenerationConfig(
+    response = _gemini_client.models.generate_content(
+        model=model_name,
+        contents=prompt,
+        config=types.GenerateContentConfig(
             temperature=temperature,
             response_mime_type="application/json",  # structured JSON output
         ),
     )
-    response = model.generate_content(prompt)
-    return response.text
+    text = response.text or ""
+    # Strip markdown code fences if model wraps JSON
+    text = re.sub(r'^```(?:json)?\s*', '', text.strip())
+    text = re.sub(r'\s*```$', '', text.strip())
+    return text
 
 # ── Chat retrieval ─────────────────────────────────────────────────────────────
 
@@ -226,7 +237,7 @@ Write an improved encyclopedia entry for **{label}**. Use the archive conversati
 Tags should be 3-7 lowercase single-word or hyphenated terms from: neoplatonism, alchemy, kabbalah, hermeticism, renaissance, islamic, gnosticism, theurgy, magic, astrology, medicine, theology, philosophy, translation, synthesis, christianity, mysticism, sufism, mathematics.
 
 Connections should be entity IDs from this set (use only what is genuinely relevant):
-thinker_ficino, thinker_pico, thinker_plotinus, thinker_proclus, thinker_ikhwan, thinker_iamblichus, thinker_porphyry, thinker_pseudo_dionysius, thinker_agrippa, thinker_paracelsus, thinker_bruno, thinker_dee, thinker_fludd, thinker_kircher, thinker_albertus, thinker_pythagoras, thinker_plato, thinker_aristotle, thinker_hermes, thinker_ibn_sina, thinker_ibn_rushd, thinker_al_farabi
+thinker_ficino, thinker_pico, thinker_plotinus, thinker_proclus, thinker_ikhwan, thinker_iamblichus, thinker_porphyry, thinker_pseudo_dionysius, thinker_agrippa, thinker_paracelsus, thinker_bruno, thinker_dee, thinker_fludd, thinker_kircher, thinker_albertus_magnus, thinker_pythagoras, thinker_plato, thinker_aristotle, thinker_hermes, thinker_ibn_sina, thinker_ibn_rushd, thinker_al_farabi, thinker_al_buni, thinker_abulafia, thinker_roger_bacon, thinker_ikhwan, text_corpus_hermeticum, text_enneads, text_de_occulta, text_picatrix, text_zohar, text_sefer_yetzirah, text_oration, concept_emanation, concept_neoplatonism, concept_theurgy, concept_kabbalah, concept_hermeticism, concept_prisca_theologia, concept_world_soul, concept_alchemy, concept_astral_magic, concept_the_one, concept_renaissance_magic
 """
 
 def build_topic_prompt(topic: Dict, chat_ctx: str, pdf_ctx: str) -> str:
@@ -424,8 +435,8 @@ def main():
                         help=f"Gemini model (default: {DEFAULT_MODEL})")
     parser.add_argument("--timeline-id",  default=None,
                         help="Timeline ID filter when mode=timeline and no --all")
-    parser.add_argument("--delay",        type=float, default=2.0,
-                        help="Seconds between API calls (to stay within rate limits)")
+    parser.add_argument("--delay",        type=float, default=5.0,
+                        help="Seconds between API calls (default 5s = 12 RPM, within 15 RPM free tier)")
     args = parser.parse_args()
 
     # ── Entity mode ────────────────────────────────────────────────────────────

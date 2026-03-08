@@ -1,0 +1,26 @@
+{
+  "id": "thinker_agrippa",
+  "blurb": "Heinrich Cornelius Agrippa von Nettesheim (1486–1535) was a German polymath and a pivotal figure in the popularization and systematic synthesis of Renaissance occult philosophy. His magnum opus, *De Occulta Philosophia* (Three Books of Occult Philosophy, 1531–33), unified natural, celestial, and ceremonial magic within a comprehensive Neoplatonic framework, drawing extensively from Hermeticism, Kabbalah, and Christian theology. Agrippa's intellectual contributions also include his companion skeptical work, *De Incertitudine et Vanitate Scientiarum et Artium* (On the Uncertainty and Vanity of the Sciences and Arts, 1530), which offered a biting critique of all contemporary arts and sciences, including magic itself. His complex blend of esoteric traditions and critical thought profoundly influenced subsequent Western esotericism.",
+  "blurb_long": "Heinrich Cornelius Agrippa von Nettesheim (1486–1535), born in Cologne, was a German polymath who spent much of his life traveling across Europe, holding various positions as a lawyer and physician. He emerged as a pivotal figure in the Renaissance, instrumental in the popularization of Kabbalah and the broader currents of occult philosophy. Agrippa's intellectual project involved a unique synthesis of diverse traditions, including Christian thought, Neoplatonism, Hermeticism, and Kabbalah, a blend that illuminated how he navigated the delicate balance between orthodoxy and heterodoxy in his era. He was notably influenced by the work of Johann Reuchlin, particularly in his approach to Kabbalistic thought. \n\nAgrippa is best known for his monumental work, *De Occulta Philosophia* (Three Books of Occult Philosophy), published in its complete form between 1531 and 1533. This treatise stands as the most systematic synthesis of Renaissance magic, meticulously organizing natural magic, celestial magic, and ceremonial magic into a unified Neoplatonic system. It served as a foundational text for subsequent generations of esotericists, detailing the interconnectedness of the three worlds, elemental forces, planetary influences, and the power of divine names. Complementing this work, Agrippa authored *De Incertitudine et Vanitate Scientiarum et Artium* (On the Uncertainty and Vanity of the Sciences and Arts), published in 1530. This skeptical treatise subjected all established arts and sciences, including the very magical practices he detailed in his other work, to a rigorous and often scathing critique, highlighting the limitations of human knowledge.\n\nAgrippa's legacy is that of an enigmatic figure whose works straddle the boundaries between magic, Christian theology, and the broader intellectual currents of his time. His comprehensive synthesis profoundly shaped the trajectory of Western esotericism, influencing thinkers for centuries. Modern scholarship continues to examine Agrippa's unique blend of Christian thought, Neoplatonism, Hermeticism, and Kabbalah, exploring how he reconciled these diverse elements. Debates persist regarding his theological contributions, the paradox inherent in his discussions of magical language, and the contested authorship of certain texts, such as the Pseudo-Ficinian *De Arte Chimica*.",
+  "tags": [
+    "renaissance",
+    "magic",
+    "kabbalah",
+    "neoplatonism",
+    "hermeticism",
+    "christianity",
+    "synthesis"
+  ],
+  "connections": [
+    "thinker_ficino",
+    "thinker_pico",
+    "concept_neoplatonism",
+    "concept_kabbalah",
+    "concept_hermeticism",
+    "concept_renaissance_magic",
+    "text_de_occulta"
+  ],
+  "open_questions": "Scholarly work continues to explore the precise nature of Agrippa's theological contributions, the paradox of his magical language in light of his skepticism, and the authenticity of his authorship for certain attributed works like the Pseudo-Ficinian *De Arte Chimica*.",
+  "_source_entity": "thinker_agrippa",
+  "_model": "gemini-2.5-flash"
+}

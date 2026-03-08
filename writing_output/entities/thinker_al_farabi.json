@@ -1,0 +1,27 @@
+{
+  "id": "thinker_al_farabi",
+  "blurb": "Al-Farabi (ca. 872–950), widely known as the \"Second Teacher\" after Aristotle, was a seminal Central Asian philosopher who founded Islamic Neoplatonised Aristotelianism. His philosophical project involved a profound synthesis, integrating Platonic political theory and a sophisticated Neoplatonic emanationist cosmology with Aristotelian logic and metaphysics, thereby laying a crucial intellectual groundwork for subsequent Islamic and Jewish traditions. Central to his thought was an elaborate emanationist cosmology, where the cosmos unfolds from the One through a hierarchy of intellects and souls, influencing the structure of the universal soul and its permeation throughout the cosmos, a process he saw as analogous to the human body's faculties (Nasr & Aminrazavi, p. 226, 236). He articulated the concept of the prophet-philosopher as the ideal legislator, capable of receiving divine emanation and translating its truths into laws for the virtuous city, thus reconciling philosophy with religious revelation. His profound influence shaped the philosophical trajectories of major figures such as Ibn Sina and Ibn Rushd, and he also authored foundational Islamic treatises on music, exploring its cosmic dimensions and ethical implications.",
+  "blurb_long": "Abū Naṣr al-Fārābī, born around 872 in Transoxiana, emerged as one of the most significant intellectual figures of the medieval Islamic world, earning the epithet \"the Second Teacher\" for his unparalleled contributions to philosophy following Aristotle. His intellectual formation was deeply rooted in the rich Greco-Arabic translation movement, allowing him to engage directly with the works of Plato and Aristotle, as well as their Neoplatonic commentators. Al-Farabi's central philosophical endeavor was to reconcile the seemingly divergent philosophies of Plato and Aristotle, arguing that their core doctrines, particularly on metaphysics and politics, were fundamentally in agreement. He achieved this synthesis by interpreting Aristotle through a Neoplatonic lens, developing an elaborate emanationist cosmology where existence proceeds from the One through a series of intellects and souls, culminating in the active intellect, which serves as the source of human intellection and prophecy. This cosmic hierarchy, as seen in contemporary thought, posited a Universal Soul whose powers permeate the cosmos, with the structure of the human body mirroring the composition of the celestial spheres (Nasr & Aminrazavi, p. 226, 236).\n\nAl-Farabi's political philosophy, articulated in works such as *The Virtuous City* (*Kitāb Ārāʾ Ahl al-Madīna al-Fāḍila*), is inextricably linked to his metaphysics and cosmology. He posited that the ideal ruler is a prophet-philosopher, an individual who, through intellectual perfection, achieves conjunction with the Active Intellect and receives divine emanation. This enables them to grasp universal truths and translate them into symbols and laws comprehensible to the populace, guiding the city towards happiness. This concept bridged the gap between philosophical reason and religious revelation, offering a rational framework for understanding prophecy and the role of the divine lawgiver. His engagement with the \"realities of their meanings\" in prophetic books, understood by the \"intelligent, discerning and philosophical\" (Nasr & Aminrazavi, p. 242), highlights his attempt to integrate esoteric insights within a philosophical system. Beyond philosophy, Al-Farabi was a polymath who made significant contributions to logic, ethics, and music theory, with his *Kitāb al-Mūsīqā al-Kabīr* (The Great Book of Music) exploring the mathematical and cosmic dimensions of music, reflecting a broader Neoplatonic understanding of harmony.\n\nAl-Farabi's historical reception was immense and enduring. His systematic approach to philosophy profoundly influenced subsequent generations of Islamic thinkers, most notably Ibn Sina (Avicenna) and Ibn Rushd (Averroes), who built upon his Neoplatonised Aristotelian framework. His ideas were also transmitted to the Latin West, impacting medieval scholasticism, and played a crucial role in shaping Jewish philosophy, particularly Maimonides. Scholarly debates continue regarding the precise balance of Platonic versus Aristotelian elements in his synthesis, and the extent to which his political philosophy contains esoteric dimensions beyond its exoteric presentation. His legacy remains central to understanding the development of philosophy in the Islamicate world and its transmission to other intellectual traditions.",
+  "tags": [
+    "islamic",
+    "neoplatonism",
+    "philosophy",
+    "synthesis",
+    "theology",
+    "mysticism"
+  ],
+  "connections": [
+    "thinker_plato",
+    "thinker_aristotle",
+    "thinker_ibn_sina",
+    "thinker_ibn_rushd",
+    "thinker_plotinus",
+    "thinker_ikhwan",
+    "concept_emanation",
+    "concept_neoplatonism",
+    "concept_world_soul"
+  ],
+  "open_questions": "Scholarly debates continue regarding the precise balance of Platonic versus Aristotelian elements in his synthesis, and the extent to which his political philosophy contains esoteric dimensions beyond its exoteric presentation.",
+  "_source_entity": "thinker_al_farabi",
+  "_model": "gemini-2.5-flash"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "thinker_proclus",
+  "blurb": "Proclus Diadochus (412–485 CE) was a pivotal Greek Neoplatonist and the last head of the Platonic Academy in Athens, whose work profoundly systematised late antique philosophy with unparalleled rigour. He meticulously elaborated the Neoplatonic hierarchy of henads, intellects, and souls, offering extensive commentaries on Plato's dialogues, particularly concerning the metaphysical concepts of the One, the Limited, and the Unlimited. Proclus also developed a sophisticated philosophy of science, establishing a methodological parallel between natural philosophy and geometry, where theorems are derived from definitions and axioms conceived as hypotheses, as seen in his commentary on the Timaeus. His major works, including Elements of Theology and Platonic Theology, became foundational texts for subsequent esoteric and philosophical traditions. Proclus's intricate metaphysics significantly influenced Christian thought through Pseudo-Dionysius the Areopagite, was transmitted to Islamic philosophy via Arabic translations, and later impacted Renaissance thinkers such as Marsilio Ficino and Giordano Bruno, the latter adopting his tripartite classification of reality, demonstrating his enduring legacy in Western esotericism.",
+  "blurb_long": "Proclus Diadochus, born in Constantinople in 412 CE and serving as the last head of the Platonic Academy in Athens until his death in 485 CE, stands as a towering figure in the history of Neoplatonism and Western esotericism. His intellectual project was primarily one of systematisation and rigorous interpretation of Plato, building upon the foundations laid by Plotinus and Iamblichus. Proclus's extensive commentaries on Plato's dialogues, particularly his analyses of the Timaeus, meticulously explored the metaphysical concepts of the One, the Limited, and the Unlimited, seeking to provide a comprehensive and internally consistent framework for understanding reality. He elaborated a complex hierarchical cosmology, ascending from the sensible world through various levels of souls, intellects, and ultimately to the ineffable One, mediated by a multitude of henads, or unities. This intricate system, presented with almost mathematical precision in works like his Elements of Theology and Platonic Theology, aimed to reconcile the diverse strands of Platonic tradition and address philosophical challenges of his era.\n\nBeyond metaphysics, Proclus also made significant contributions to the philosophy of science, developing a methodological parallel between the science of nature and geometry. He argued that both disciplines establish their theorems from definitions and axioms, which must be conceived as hypotheses, a perspective detailed in his commentary on the Timaeus (1.237.30–1). This approach reflects a deep concern for the epistemological status of philosophical inquiry. Proclus's thought, while deeply rooted in classical Greek philosophy, provided a fertile ground for later esoteric traditions. His classification of reality into three spheres, including an \"Original Form\" or \"Hyperousia\" as the ultimate source, resonated with subsequent thinkers.\n\nThe historical reception and influence of Proclus were immense and multifaceted. His metaphysics were almost wholesale Christianised by the anonymous author known as Pseudo-Dionysius the Areopagite, whose works became foundational for medieval Christian mysticism and theology. Through Arabic translations, Proclus's ideas were transmitted to Islamic philosophy, influencing thinkers who engaged with Neoplatonic concepts. During the Renaissance, his writings experienced a significant revival, particularly through the Latin translations and interpretations of Marsilio Ficino, who integrated Proclean thought into his own syncretic philosophy. Giordano Bruno, for instance, explicitly borrowed from Proclus's Neoplatonism, particularly in his conceptualization of the unity of form and matter and his tripartite division of reality. While the complexity of Proclean metaphysics as a framework for a philosophy of science has invited scholarly scrutiny, the core problems he addressed remain relevant, demonstrating his enduring impact on both philosophy and the esoteric tradition.",
+  "tags": [
+    "neoplatonism",
+    "philosophy",
+    "theology",
+    "synthesis",
+    "mathematics",
+    "renaissance",
+    "islamic"
+  ],
+  "connections": [
+    "thinker_plotinus",
+    "thinker_iamblichus",
+    "thinker_pseudo_dionysius",
+    "thinker_ficino",
+    "thinker_bruno",
+    "thinker_plato",
+    "concept_neoplatonism",
+    "concept_emanation",
+    "concept_the_one",
+    "concept_renaissance_magic"
+  ],
+  "open_questions": "Scholarly inquiry continues to assess the precise epistemological status and scientific implications of Proclus's methodological parallel between natural philosophy and geometry, particularly how his complex Neoplatonic metaphysics functions as a framework for scientific understanding.",
+  "_source_entity": "thinker_proclus",
+  "_model": "gemini-2.5-flash"
+}

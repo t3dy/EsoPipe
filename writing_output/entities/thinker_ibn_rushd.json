@@ -1,0 +1,24 @@
+{
+  "id": "thinker_ibn_rushd",
+  "blurb": "Ibn Rushd (Averroes, 1126–1198) was a pivotal Andalusian philosopher, physician, and judge whose rigorous Aristotelianism profoundly shaped both Islamic and Latin European intellectual traditions. Revered as \"The Commentator,\" he championed Aristotle as the supreme guide in philosophy, asserting its capacity for demonstrative certainty and its integral role in religious inquiry. His extensive commentaries on Aristotle challenged prevailing Neoplatonizing interpretations, notably those of Avicenna, advocating for a more direct and unadulterated engagement with the Stagirite's texts. A central, and often controversial, aspect of his thought was his theory of monopsychism, positing a single Active Intellect shared by all humanity. This doctrine sparked intense theological debates, particularly at the University of Paris, where Averroist controversies significantly influenced the trajectory of late medieval natural philosophy and scholasticism, establishing him as a foundational source for post-classical European thought and a key figure in the transmission of classical knowledge.",
+  "blurb_long": "Ibn Rushd, known in the Latin West as Averroes, was born in Córdoba, al-Andalus, in 1126 and died in Marrakesh in 1198. As a polymath, he excelled as a philosopher, physician, and judge, embodying the intellectual vibrancy of medieval Islamic civilization. His philosophical project was fundamentally characterized by an unwavering commitment to Aristotle, whom he considered the paramount authority in demonstrative philosophy. Ibn Rushd dedicated his intellectual life to producing comprehensive commentaries on Aristotle's corpus, which earned him the epithet \"The Commentator.\" In these works, he meticulously sought to restore what he perceived as the authentic Aristotelian doctrine, often by rigorously distinguishing it from the Neoplatonizing interpretations that had become prevalent in the Islamic world, particularly through the influential synthesis of Ibn Sina (Avicenna). Unlike Avicenna, who integrated Aristotelianism with Neoplatonic concepts like emanation and a hierarchical cosmology, Ibn Rushd emphasized a more direct and rationalistic reading of Aristotle, asserting philosophy's capacity to achieve certain truth independently, while also affirming its compatibility with religious inquiry.\n\nOne of Ibn Rushd's most distinctive and controversial doctrines was his theory of the unity of the intellect, or monopsychism. He posited that there is a single, universal Active Intellect shared by all human beings, rather than individual, distinct intellects. This concept, derived from his interpretation of Aristotle's *De Anima*, became a flashpoint for theological and philosophical debate. In the Latin West, where his works were translated and widely studied from the 13th century onwards, Averroes became a foundational source for scholastic thought. However, his monopsychism was deemed heretical by Christian theologians, leading to significant controversies at the University of Paris. These \"Averroist controversies\" profoundly shaped the intellectual landscape of late medieval Europe, influencing debates on the nature of the soul, individual immortality, and the relationship between faith and reason, and ultimately contributing to the development of natural philosophy. Even Renaissance thinkers like Giovanni Pico della Mirandola engaged critically with Averroes, rejecting his radical positions such as the unity of the intellect, yet still integrating elements of Averroism into their broader philosophical syntheses, thereby shaping the Christian Platonist tradition.",
+  "tags": [
+    "islamic",
+    "philosophy",
+    "theology",
+    "medicine",
+    "translation",
+    "christianity",
+    "neoplatonism"
+  ],
+  "connections": [
+    "thinker_pico",
+    "thinker_aristotle",
+    "thinker_ibn_sina",
+    "concept_neoplatonism",
+    "concept_emanation"
+  ],
+  "open_questions": "Scholarly debates continue regarding the precise nature of Ibn Rushd's monopsychism and its full implications for individual immortality, as well as the nuanced extent of his influence on both Islamic and Latin scholastic thought beyond the immediate controversies.",
+  "_source_entity": "thinker_ibn_rushd",
+  "_model": "gemini-2.5-flash"
+}

@@ -44,6 +44,12 @@ import httpx
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
+# Force UTF-8 output on Windows to handle non-ASCII entity labels
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT           = Path(__file__).parent
 DB_PATH        = ROOT / "esoteric_archive.db"

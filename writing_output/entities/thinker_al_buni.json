@@ -1,0 +1,26 @@
+{
+  "id": "thinker_al_buni",
+  "blurb": "Ahmad ibn Ali al-Buni, known as Al-Būnī, was a pivotal Egyptian Sufi scholar who died around 1225, whose profound contributions shaped the landscape of Islamic esotericism. His magnum opus, Shams al-Maʿārif (Sun of Gnosis), emerged as the most widely circulated Arabic manual dedicated to talismanic magic, letter mysticism, and the intricate science of divine names. Al-Būnī meticulously systematized the ninety-nine divine names, intricate magic squares known as awfāq, planetary correspondences, and the mystical properties of the Arabic alphabet into a comprehensive operational framework. This sophisticated system enabled practitioners to harness celestial influences and divine power through precise ritual and the construction of talismans, which were believed to embody specific cosmic energies. His work established a learned tradition of Islamic magic, operating in parallel to, and often in dialogue with, the Latin Hermetic lineage, profoundly influencing subsequent esoteric thought and practice across the Islamic world for centuries.",
+  "blurb_long": "Al-Būnī, Ahmad ibn Ali, an influential Egyptian Sufi scholar who passed away around 1225, stands as a towering figure in the history of Islamic esotericism. His intellectual formation was deeply rooted in the rich traditions of Sufism, Islamic Neoplatonism, and the broader currents of Hermetic sciences that flourished in the medieval Islamic world. He is primarily celebrated for his monumental work, Shams al-Maʿārif al-Kubrā (The Great Sun of Gnosis), a comprehensive manual that systematized various esoteric disciplines. This text, alongside its numerous abridgments and commentaries, became the most widely copied and influential Arabic treatise on talismanic magic, letter mysticism (ḥurūfīya), and the science of divine names (ʿilm al-asmāʾ). Al-Būnī’s system integrated the ninety-nine divine names of God, assigning them specific numerical values and occult properties derived from the Arabic alphabet. He meticulously detailed the construction of magic squares, or awfāq, which were believed to be microcosmic representations of celestial harmonies and divine attributes, capable of attracting specific spiritual influences.\n\nAl-Būnī’s operational framework extended to include detailed planetary correspondences, associating specific celestial bodies, their qualities, and their influences, with particular letters, numbers, and divine names. For instance, astrological principles, such as the division of zodiacal signs into elemental qualities like hot and dry, or into mobile and fixed categories, as discussed in twelfth-century cosmography, informed the selection and timing for talismanic creation (Obrist, p. 35). The process of creating talismans, as described in texts on learned magic, involved not merely the figure itself, but its fabrication under specific celestial configurations and the influx of newly acquired properties from the heavens, acting as an instrumental principle (Magic, p. 5760). This sophisticated approach positioned Al-Būnī's work as a learned tradition of magic, often seen as a parallel development to the Latin Hermetic lineage, exemplified by texts like the Picatrix, both drawing from shared Greco-Egyptian and Sasanian sources. His influence was immense, shaping magical practices and mystical thought across the Islamic world for centuries, with his works being copied, studied, and adapted from North Africa to Southeast Asia.\n\nWhile Al-Būnī's historical significance is undisputed, scholarly debates often revolve around the precise nature of his theological orthodoxy and the extent to which his magical practices align with mainstream Sufi thought. Some scholars emphasize his Sufi piety and the spiritual aims of his work, viewing the magic as a means to attain divine knowledge and influence through legitimate channels. Others highlight the more practical, often utilitarian, applications of his magic, which sometimes drew criticism from more conservative religious authorities. The exact historical trajectory of his influence and the specific ways in which his ideas were transmitted and transformed in different cultural contexts also remain areas of ongoing research.",
+  "tags": [
+    "islamic",
+    "sufism",
+    "magic",
+    "astrology",
+    "mathematics",
+    "mysticism",
+    "hermeticism"
+  ],
+  "connections": [
+    "text_picatrix",
+    "concept_astral_magic",
+    "concept_hermeticism",
+    "concept_theurgy",
+    "concept_neoplatonism",
+    "thinker_ikhwan",
+    "thinker_hermes"
+  ],
+  "open_questions": "The precise extent of Al-Būnī's theological orthodoxy and the nuanced relationship between his magical practices and mainstream Sufi thought remain subjects of scholarly debate. Further research is also needed to fully map the historical trajectory of his influence and the specific cultural adaptations of his esoteric system across the Islamic world.",
+  "_source_entity": "thinker_al_buni",
+  "_model": "gemini-2.5-flash"
+}
